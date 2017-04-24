@@ -4,12 +4,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fizzed.rocker.runtime.ArrayOfByteArraysOutput;
 import com.fizzed.rocker.runtime.DefaultRockerModel;
 import com.networknt.codegen.Generator;
+import com.networknt.codegen.Utils;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static java.io.File.separator;
@@ -62,6 +66,10 @@ public class RestGenerator implements Generator {
         transfer(targetPath, ("src.main.resources").replace(".", separator), "logback.xml", templates.logback.template());
         transfer(targetPath, ("src.test.resources").replace(".", separator), "logback-test.xml", templates.logback.template());
 
+        // routing
+        transfer(targetPath, ("src.main.java." + rootPackage).replace(".", separator), "PathHandlerProvider.java", templates.handlerProvider.template(rootPackage, handlerPackage, getOperationList(model)));
+
+
         // model
 
 
@@ -78,8 +86,31 @@ public class RestGenerator implements Generator {
 
     }
 
-    public void writeSwagger(Path path, Object model) throws IOException {
+    private void writeSwagger(Path path, Object model) throws IOException {
 
         mapper.writerWithDefaultPrettyPrinter().writeValue(new FileOutputStream(path.toFile()), model);
+    }
+
+    public List<Map<String, Object>> getOperationList(Object model) {
+        List<Map<String, Object>> result = new ArrayList<>();
+        Map<String, Object> map = (Map<String, Object>)model;
+        String basePath = (String)map.get("basePath");
+        Map<String, Object> paths = (Map<String, Object>)map.get("paths");
+
+        for(Map.Entry<String, Object> entryPath: paths.entrySet()) {
+            String path = entryPath.getKey();
+            Map<String, Object> pathValues = (Map<String, Object>)entryPath.getValue();
+            for(Map.Entry<String, Object> entryOps: pathValues.entrySet()) {
+                Map<String, Object> flattened = new HashMap<>();
+                flattened.put("method", entryOps.getKey().toUpperCase());
+                flattened.put("path", basePath + path);
+                String normalizedPath = path.replace("{", "").replace("}", "");
+                flattened.put("handlerName", Utils.camelize(normalizedPath) + Utils.camelize(entryOps.getKey()) + "Handler");
+                result.add(flattened);
+            }
+        }
+
+
+        return result;
     }
 }

@@ -15,6 +15,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -45,5 +46,13 @@ public class RestGeneratorTest {
 
         RestGenerator generator = new RestGenerator();
         generator.generate(targetPath, model, config);
+    }
+
+    @Test
+    public void testGetOperationList() throws IOException {
+        Map<String, Object> model = mapper.readValue(RestGeneratorTest.class.getResourceAsStream(swaggerName), new TypeReference<Map<String,Object>>(){});
+        RestGenerator generator = new RestGenerator();
+        List list = generator.getOperationList(model);
+        System.out.println(list);
     }
 }
