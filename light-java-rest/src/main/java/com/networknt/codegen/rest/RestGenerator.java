@@ -44,6 +44,15 @@ public class RestGenerator implements Generator {
 
         // config
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "server.yml", templates.server.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version")));
+        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "secret.yml", templates.secret.template());
+
+        transfer(targetPath, ("src.main.resources.config.tls").replace(".", separator), "server.keystore", templates.serverkeystore.template());
+        transfer(targetPath, ("src.main.resources.config.tls").replace(".", separator), "server.truststore", templates.servertruststore.template());
+
+        transfer(targetPath, ("src.main.resources.META-INF.services").replace(".", separator), "com.networknt.server.HandlerProvider", templates.routingService.template(rootPackage));
+        transfer(targetPath, ("src.main.resources.META-INF.services").replace(".", separator), "com.networknt.server.MiddlewareHandler", templates.middlewareService.template());
+        transfer(targetPath, ("src.main.resources.META-INF.services").replace(".", separator), "com.networknt.server.StartupHookProvider", templates.startupHookProvider.template());
+        transfer(targetPath, ("src.main.resources.META-INF.services").replace(".", separator), "com.networknt.server.ShutdownHookProvider", templates.shutdownHookProvider.template());
 
         // test cases
         transfer(targetPath, ("src.test.java." + handlerPackage + ".").replace(".", separator),  "TestServer.java", templates.testServer.template(handlerPackage));

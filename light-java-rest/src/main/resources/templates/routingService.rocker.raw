@@ -1,0 +1,2 @@
+@args (String rootPackage)
+@with (provider = rootPackage + ".PathHandlerProvider") {@provider}
