@@ -32,14 +32,4 @@ public interface Generator {
             fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
         }
     }
-
-    default void copy(String folder, String path, String filename, Path src) throws IOException {
-        /*
-        if(Files.notExists(Paths.get(absPath))) {
-            Files.createDirectories(Paths.get(absPath));
-        }
-        */
-        Files.copy(src, Paths.get(folder, path, filename), StandardCopyOption.REPLACE_EXISTING);
-    }
-
 }

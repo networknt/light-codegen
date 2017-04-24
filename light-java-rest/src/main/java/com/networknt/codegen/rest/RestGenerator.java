@@ -91,6 +91,9 @@ public class RestGenerator implements Generator {
         }
 
         // transfer binary files without touching them.
+        if(Files.notExists(Paths.get(targetPath, ("src.main.resources.config.tls").replace(".", separator)))) {
+            Files.createDirectories(Paths.get(targetPath, ("src.main.resources.config.tls").replace(".", separator)));
+        }
         try (InputStream is = RestGenerator.class.getResourceAsStream("/binaries/server.keystore")) {
             Files.copy(is, Paths.get(targetPath, ("src.main.resources.config.tls").replace(".", separator), "server.keystore"), StandardCopyOption.REPLACE_EXISTING);
         }
