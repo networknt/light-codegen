@@ -66,8 +66,9 @@ public class RestGenerator implements Generator {
         transfer(targetPath, ("src.main.resources").replace(".", separator), "logback.xml", templates.logback.template());
         transfer(targetPath, ("src.test.resources").replace(".", separator), "logback-test.xml", templates.logback.template());
 
+        List<Map<String, Object>> operationList = getOperationList(model);
         // routing
-        transfer(targetPath, ("src.main.java." + rootPackage).replace(".", separator), "PathHandlerProvider.java", templates.handlerProvider.template(rootPackage, handlerPackage, getOperationList(model)));
+        transfer(targetPath, ("src.main.java." + rootPackage).replace(".", separator), "PathHandlerProvider.java", templates.handlerProvider.template(rootPackage, handlerPackage, operationList));
 
 
         // model
@@ -75,6 +76,10 @@ public class RestGenerator implements Generator {
 
         // handler
 
+        for(Map<String, Object> op : operationList){
+            String className = (String)op.get("handlerName");
+            transfer(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), className + ".java", templates.handler.template(handlerPackage, className));
+        }
 
         // handler test cases
         transfer(targetPath, ("src.test.java." + handlerPackage + ".").replace(".", separator),  "TestServer.java", templates.testServer.template(handlerPackage));
