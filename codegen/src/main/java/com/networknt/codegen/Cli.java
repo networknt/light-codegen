@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.networknt.codegen.rest.RestGenerator;
 
+import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
@@ -40,10 +41,22 @@ public class Cli {
         try {
             // TODO All generators should be implemented as SPI.
             if(framework != null && framework.equals("light-java-rest")) {
-                Path modelPath = Paths.get(model); // swagger.json
-                Map<String, Object> modelJson = mapper.readValue(modelPath.toFile(), new TypeReference<Map<String,Object>>(){});
-                Path configPath = Paths.get(config); // config.json
-                Map<String, Object> configJson = mapper.readValue(configPath.toFile(), new TypeReference<Map<String,Object>>(){});
+                Map<String, Object> modelJson;
+                if(isUrl(model)) {
+                    modelJson = mapper.readValue(new URL(model), new TypeReference<Map<String,Object>>(){});
+                } else {
+                    Path modelPath = Paths.get(model); // swagger.json
+                    modelJson = mapper.readValue(modelPath.toFile(), new TypeReference<Map<String,Object>>(){});
+                }
+
+                Map<String, Object> configJson;
+                if(isUrl(config)) {
+                    configJson = mapper.readValue(new URL(config), new TypeReference<Map<String,Object>>(){});
+                } else {
+                    Path configPath = Paths.get(config); // config.json
+                    configJson = mapper.readValue(configPath.toFile(), new TypeReference<Map<String,Object>>(){});
+                }
+
                 RestGenerator generator = new RestGenerator();
                 generator.generate(output, modelJson, configJson);
             }
@@ -51,5 +64,9 @@ public class Cli {
             e.printStackTrace();
         }
 
+    }
+
+    private boolean isUrl(String location) {
+        return location.startsWith("http://") || location.startsWith("https://");
     }
 }
