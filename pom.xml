@@ -93,6 +93,7 @@
         <version.curator>3.2.1</version.curator>
         <version.snakeyaml>1.18</version.snakeyaml>
         <version.rocker>0.16.0</version.rocker>
+        <version.jcommander>1.69</version.jcommander>
         <argLine>-Xmx512m -XX:MaxPermSize=256m</argLine>
     </properties>
 
@@ -102,6 +103,7 @@
         <module>light-eventuate</module>
         <module>light-java-hybrid</module>
         <module>light-java-graphql</module>
+        <module>codegen</module>
     </modules>
 
     <dependencyManagement>
@@ -229,6 +231,11 @@
                 <groupId>com.fizzed</groupId>
                 <artifactId>rocker-runtime</artifactId>
                 <version>${version.rocker}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.beust</groupId>
+                <artifactId>jcommander</artifactId>
+                <version>${version.jcommander}</version>
             </dependency>
 
             <!-- Test dependencies -->
