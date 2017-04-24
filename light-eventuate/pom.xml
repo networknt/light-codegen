@@ -25,9 +25,9 @@
         <relativePath>..</relativePath>
     </parent>
 
-    <artifactId>light-java-eventuate</artifactId>
+    <artifactId>light-eventuate</artifactId>
     <packaging>jar</packaging>
-    <description>light-java-eventuate code generator.</description>
+    <description>light-eventuate code generator.</description>
 
     <dependencies>
         <dependency>

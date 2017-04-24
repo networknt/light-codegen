@@ -97,8 +97,9 @@
     </properties>
 
     <modules>
+        <module>light-generator</module>
         <module>light-java-rest</module>
-        <module>light-java-eventuate</module>
+        <module>light-eventuate</module>
         <module>light-java-hybrid</module>
         <module>light-java-graphql</module>
     </modules>
@@ -106,6 +107,11 @@
     <dependencyManagement>
         <dependencies>
             <!-- Modules in this project -->
+            <dependency>
+                <groupId>com.networknt</groupId>
+                <artifactId>light-generator</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <dependency>
                 <groupId>com.networknt</groupId>
                 <artifactId>light-java-rest</artifactId>

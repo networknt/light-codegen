@@ -25,15 +25,11 @@
         <relativePath>..</relativePath>
     </parent>
 
-    <artifactId>light-java-rest</artifactId>
+    <artifactId>light-generator</artifactId>
     <packaging>jar</packaging>
-    <description>light-java-rest code generator.</description>
+    <description>light-generator core.</description>
 
     <dependencies>
-        <dependency>
-            <groupId>com.networknt</groupId>
-            <artifactId>light-generator</artifactId>
-        </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
@@ -83,26 +79,5 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>com.fizzed</groupId>
-                <artifactId>rocker-maven-plugin</artifactId>
-                <version>${version.rocker}</version>
-                <executions>
-                    <execution>
-                        <id>generate-rocker-templates</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                        <configuration>
-                            <templateDirectory>src/main/resources</templateDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
 
-        </plugins>
-    </build>
 </project>
