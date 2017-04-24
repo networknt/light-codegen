@@ -45,9 +45,13 @@ public class RestGenerator implements Generator {
         // config
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "server.yml", templates.server.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version")));
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "secret.yml", templates.secret.template());
+        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "security.yml", templates.security.template());
 
         transfer(targetPath, ("src.main.resources.config.tls").replace(".", separator), "server.keystore", templates.serverkeystore.template());
         transfer(targetPath, ("src.main.resources.config.tls").replace(".", separator), "server.truststore", templates.servertruststore.template());
+
+        transfer(targetPath, ("src.main.resources.config.oauth").replace(".", separator), "primary.crt", templates.primaryCrt.template());
+        transfer(targetPath, ("src.main.resources.config.oauth").replace(".", separator), "secondary.crt", templates.secondaryCrt.template());
 
         transfer(targetPath, ("src.main.resources.META-INF.services").replace(".", separator), "com.networknt.server.HandlerProvider", templates.routingService.template(rootPackage));
         transfer(targetPath, ("src.main.resources.META-INF.services").replace(".", separator), "com.networknt.server.MiddlewareHandler", templates.middlewareService.template());
