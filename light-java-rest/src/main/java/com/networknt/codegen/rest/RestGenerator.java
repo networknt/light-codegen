@@ -83,6 +83,9 @@ public class RestGenerator implements Generator {
 
         // handler test cases
         transfer(targetPath, ("src.test.java." + handlerPackage + ".").replace(".", separator),  "TestServer.java", templates.testServer.template(handlerPackage));
+        for(Map<String, Object> op : operationList){
+            transfer(targetPath, ("src.test.java." + handlerPackage).replace(".", separator), (String)op.get("handlerName") + "Test.java", templates.handlerTest.template(handlerPackage, op));
+        }
 
 
         // last step to write swagger.json as the directory must be there already.
@@ -108,6 +111,7 @@ public class RestGenerator implements Generator {
             for(Map.Entry<String, Object> entryOps: pathValues.entrySet()) {
                 Map<String, Object> flattened = new HashMap<>();
                 flattened.put("method", entryOps.getKey().toUpperCase());
+                flattened.put("capMethod", entryOps.getKey().substring(0, 1).toUpperCase() + entryOps.getKey().substring(1));
                 flattened.put("path", basePath + path);
                 String normalizedPath = path.replace("{", "").replace("}", "");
                 flattened.put("handlerName", Utils.camelize(normalizedPath) + Utils.camelize(entryOps.getKey()) + "Handler");
