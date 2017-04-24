@@ -58,6 +58,10 @@ public class RestGenerator implements Generator {
         transfer(targetPath, ("src.main.resources.META-INF.services").replace(".", separator), "com.networknt.server.StartupHookProvider", templates.startupHookProvider.template());
         transfer(targetPath, ("src.main.resources.META-INF.services").replace(".", separator), "com.networknt.server.ShutdownHookProvider", templates.shutdownHookProvider.template());
 
+        // logging
+        transfer(targetPath, ("src.main.resources").replace(".", separator), "logback.xml", templates.logback.template());
+        transfer(targetPath, ("src.test.resources").replace(".", separator), "logback-test.xml", templates.logback.template());
+
         // test cases
         transfer(targetPath, ("src.test.java." + handlerPackage + ".").replace(".", separator),  "TestServer.java", templates.testServer.template(handlerPackage));
 
