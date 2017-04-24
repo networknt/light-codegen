@@ -29,6 +29,11 @@ public class RestGenerator implements Generator {
 
         transfer(targetPath, "pom.xml", templates.pom.template(config));
         transfer(targetPath, "Dockerfile", templates.dockerfile.template(config));
+        transfer(targetPath, ".gitignore", templates.gitignore.template());
+        transfer(targetPath, "README.md", templates.README.template());
+        transfer(targetPath, "LICENSE", templates.LICENSE.template());
+        transfer(targetPath, ".classpath", templates.classpath.template());
+        transfer(targetPath, ".project", templates.project.template());
     }
 
 }
