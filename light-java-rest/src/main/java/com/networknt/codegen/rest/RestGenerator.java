@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.nio.channels.ReadableByteChannel;
 import java.util.Map;
 
+import static java.io.File.separator;
+
 /**
  * The input for rest generator include config with json format
  * and swagger specification in json format.
@@ -27,13 +29,17 @@ public class RestGenerator implements Generator {
         String modelPackage = (String)config.get("modelPackage");
         String handlerPackage = (String)config.get("handlerPackage");
 
-        transfer(targetPath, "pom.xml", templates.pom.template(config));
-        transfer(targetPath, "Dockerfile", templates.dockerfile.template(config));
-        transfer(targetPath, ".gitignore", templates.gitignore.template());
-        transfer(targetPath, "README.md", templates.README.template());
-        transfer(targetPath, "LICENSE", templates.LICENSE.template());
-        transfer(targetPath, ".classpath", templates.classpath.template());
-        transfer(targetPath, ".project", templates.project.template());
+        transfer(targetPath, "", "pom.xml", templates.pom.template(config));
+        transfer(targetPath, "", "Dockerfile", templates.dockerfile.template(config));
+        transfer(targetPath, "", ".gitignore", templates.gitignore.template());
+        transfer(targetPath, "", "README.md", templates.README.template());
+        transfer(targetPath, "", "LICENSE", templates.LICENSE.template());
+        transfer(targetPath, "", ".classpath", templates.classpath.template());
+        transfer(targetPath, "", ".project", templates.project.template());
+
+        transfer(targetPath, ("src.test.java." + handlerPackage + ".").replace(".", separator),  "TestServer.java", templates.testServer.template(handlerPackage));
+
+
     }
 
 }

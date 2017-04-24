@@ -3,9 +3,12 @@ package com.networknt.codegen;
 import com.fizzed.rocker.runtime.ArrayOfByteArraysOutput;
 import com.fizzed.rocker.runtime.DefaultRockerModel;
 
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.ReadableByteChannel;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Map;
 
 import static java.io.File.separator;
@@ -16,8 +19,12 @@ import static java.io.File.separator;
 public interface Generator {
     void generate(String targetPath, Object model, Map<String, Object> config) throws IOException;
 
-    default void transfer(String targetPath, String filename, DefaultRockerModel rockerModel) throws IOException {
-        try(FileOutputStream fos = new FileOutputStream(targetPath + separator + filename);
+    default void transfer(String folder, String path, String filename, DefaultRockerModel rockerModel) throws IOException {
+        String absPath = folder + (path.isEmpty()? "" : separator + path);
+        if(Files.notExists(Paths.get(absPath))) {
+            Files.createDirectories(Paths.get(absPath));
+        }
+        try(FileOutputStream fos = new FileOutputStream(absPath + separator + filename);
             ReadableByteChannel rbc = rockerModel.render(ArrayOfByteArraysOutput.FACTORY).asReadableByteChannel()) {
             fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
         }
