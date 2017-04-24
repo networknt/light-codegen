@@ -1,0 +1,29 @@
+@args (String rootPackage, String handlerPackage)
+package @rootPackage;
+
+import com.networknt.config.Config;
+import com.networknt.server.HandlerProvider;
+import io.undertow.Handlers;
+import io.undertow.server.HttpHandler;
+import io.undertow.server.HttpServerExchange;
+import io.undertow.util.Methods;
+import com.networknt.info.ServerInfoGetHandler;
+@with (package = handlerPackage + ".*;") {@package}
+
+public class PathHandlerProvider implements HandlerProvider {
+    @@Override
+    public HttpHandler getHandler() {
+        return Handlers.routing()
+{{#apiInfo}}
+{{#apis}}
+{{#operations}}
+{{#operation}}
+            .add(Methods.{{httpMethod}}, "{{basePathWithoutHost}}{{path}}", new {{classname}}())
+{{/operation}}
+{{/operations}}
+{{/apis}}
+{{/apiInfo}}
+        ;
+    }
+}
+

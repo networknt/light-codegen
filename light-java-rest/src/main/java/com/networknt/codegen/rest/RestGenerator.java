@@ -62,11 +62,18 @@ public class RestGenerator implements Generator {
         transfer(targetPath, ("src.main.resources").replace(".", separator), "logback.xml", templates.logback.template());
         transfer(targetPath, ("src.test.resources").replace(".", separator), "logback-test.xml", templates.logback.template());
 
-        // test cases
+        // model
+
+
+        // handler
+
+
+        // handler test cases
         transfer(targetPath, ("src.test.java." + handlerPackage + ".").replace(".", separator),  "TestServer.java", templates.testServer.template(handlerPackage));
 
 
         // last step to write swagger.json as the directory must be there already.
+        // TODO add server info before write it.
         writeSwagger(FileSystems.getDefault().getPath(targetPath, ("src.main.resources.config").replace(".", separator), "swagger.json"), model);
 
     }
