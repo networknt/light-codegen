@@ -10,7 +10,7 @@ import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.Methods;
 import com.networknt.info.ServerInfoGetHandler;
-@with (p = handlerPackage + ".*;") {@p}
+import @with (p = handlerPackage + ".*;") {@p}
 
 public class PathHandlerProvider implements HandlerProvider {
     @@Override
@@ -22,4 +22,3 @@ public class PathHandlerProvider implements HandlerProvider {
         ;
     }
 }
-

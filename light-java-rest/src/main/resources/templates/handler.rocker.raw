@@ -1,4 +1,5 @@
-@args (String handlerPackage, String className)
+@import org.apache.commons.lang3.StringEscapeUtils
+@args (String handlerPackage, String className, String example)
 package @handlerPackage;
 
 import io.undertow.server.HttpHandler;
@@ -6,29 +7,15 @@ import io.undertow.server.HttpServerExchange;
 import io.undertow.util.HttpString;
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.commons.lang3.StringEscapeUtils;
 
 public class @className implements HttpHandler {
     @@Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {
-        @*
-        {{^returnType}}
-        {{/returnType}}
-        {{#returnType}}
-        Map<String, Object> examples = new HashMap<>();
-        {{#examples}}
-        examples.put("{{contentType}}", StringEscapeUtils.unescapeHtml4("{{example}}"));
-        {{/examples}}
-        if(examples.size() > 0) {
+        @if(example != null) {
             exchange.getResponseHeaders().add(new HttpString("Content-Type"), "application/json");
-            exchange.getResponseSender().send((String)examples.get("application/json"));
+            @with (e = StringEscapeUtils.escapeJson(example)) { exchange.getResponseSender().send("@e");}
         } else {
             exchange.endExchange();
         }
-        {{/returnType}}
-        {{^returnType}}
-        exchange.endExchange();
-        {{/returnType}}
-        *@
     }
 }

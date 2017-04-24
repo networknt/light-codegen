@@ -22,7 +22,7 @@ import java.io.IOException;
        method = map.get("handlerName") + "Test()",
        loggerName = map.get("handlerName") + "Test" + ".class",
        capMethod = map.get("capMethod"),
-       path = map.get("path")) {
+       path = map.get("normalizedPath")) {
 public class @className {
     @@ClassRule
     public static TestServer server = TestServer.getInstance();

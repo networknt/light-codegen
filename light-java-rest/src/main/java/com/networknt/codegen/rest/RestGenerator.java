@@ -1,5 +1,6 @@
 package com.networknt.codegen.rest;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fizzed.rocker.runtime.ArrayOfByteArraysOutput;
 import com.fizzed.rocker.runtime.DefaultRockerModel;
@@ -8,9 +9,9 @@ import com.networknt.codegen.Utils;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.channels.ReadableByteChannel;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
+import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -51,8 +52,6 @@ public class RestGenerator implements Generator {
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "secret.yml", templates.secret.template());
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "security.yml", templates.security.template());
 
-        transfer(targetPath, ("src.main.resources.config.tls").replace(".", separator), "server.keystore", templates.serverkeystore.template());
-        transfer(targetPath, ("src.main.resources.config.tls").replace(".", separator), "server.truststore", templates.servertruststore.template());
 
         transfer(targetPath, ("src.main.resources.config.oauth").replace(".", separator), "primary.crt", templates.primaryCrt.template());
         transfer(targetPath, ("src.main.resources.config.oauth").replace(".", separator), "secondary.crt", templates.secondaryCrt.template());
@@ -78,7 +77,11 @@ public class RestGenerator implements Generator {
 
         for(Map<String, Object> op : operationList){
             String className = (String)op.get("handlerName");
-            transfer(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), className + ".java", templates.handler.template(handlerPackage, className));
+            String example = null;
+            if(op.get("example") != null) {
+                example = mapper.writeValueAsString(op.get("example"));
+            }
+            transfer(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), className + ".java", templates.handler.template(handlerPackage, className, example));
         }
 
         // handler test cases
@@ -87,10 +90,18 @@ public class RestGenerator implements Generator {
             transfer(targetPath, ("src.test.java." + handlerPackage).replace(".", separator), (String)op.get("handlerName") + "Test.java", templates.handlerTest.template(handlerPackage, op));
         }
 
+        // transfer binary files without touching them.
+        try (InputStream is = RestGenerator.class.getResourceAsStream("/binaries/server.keystore")) {
+            Files.copy(is, Paths.get(targetPath, ("src.main.resources.config.tls").replace(".", separator), "server.keystore"), StandardCopyOption.REPLACE_EXISTING);
+        }
+        try (InputStream is = RestGenerator.class.getResourceAsStream("/binaries/server.truststore")) {
+            Files.copy(is, Paths.get(targetPath, ("src.main.resources.config.tls").replace(".", separator), "server.truststore"), StandardCopyOption.REPLACE_EXISTING);
+        }
 
         // last step to write swagger.json as the directory must be there already.
         // TODO add server info before write it.
         writeSwagger(FileSystems.getDefault().getPath(targetPath, ("src.main.resources.config").replace(".", separator), "swagger.json"), model);
+
 
     }
 
@@ -114,7 +125,20 @@ public class RestGenerator implements Generator {
                 flattened.put("capMethod", entryOps.getKey().substring(0, 1).toUpperCase() + entryOps.getKey().substring(1));
                 flattened.put("path", basePath + path);
                 String normalizedPath = path.replace("{", "").replace("}", "");
+                flattened.put("normalizedPath", basePath + normalizedPath);
                 flattened.put("handlerName", Utils.camelize(normalizedPath) + Utils.camelize(entryOps.getKey()) + "Handler");
+                Map<String, Object> values = (Map<String, Object>)entryOps.getValue();
+                Map<String, Object> responses = (Map<String, Object>)values.get("responses");
+                if(responses != null) {
+                    Map<String, Object> sucessRes = (Map<String, Object>)responses.get("200");
+                    if(sucessRes != null) {
+                        Map<String, Object> examples = (Map<String, Object>)sucessRes.get("examples");
+                        if(examples != null) {
+                            Object jsonRes = examples.get("application/json");
+                            flattened.put("example", jsonRes);
+                        }
+                    }
+                }
                 result.add(flattened);
             }
         }

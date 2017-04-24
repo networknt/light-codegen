@@ -261,6 +261,24 @@
             "description": "successful operation",
             "schema": {
               "$ref": "#/definitions/Pet"
+            },
+            "examples": {
+              "application/json": {
+                "photoUrls" : [ "aeiou" ],
+                "name" : "doggie",
+                "id" : 123456789,
+                "category" : {
+                  "name" : "aeiou",
+                  "id" : 123456789
+                },
+                "tags" : [
+                  {
+                    "name" : "aeiou",
+                    "id" : 123456789
+                  }
+                ],
+                "status" : "aeiou"
+              }
             }
           },
           "400": {
