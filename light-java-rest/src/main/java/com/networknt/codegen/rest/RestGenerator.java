@@ -1,5 +1,6 @@
 package com.networknt.codegen.rest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fizzed.rocker.runtime.ArrayOfByteArraysOutput;
 import com.fizzed.rocker.runtime.DefaultRockerModel;
 import com.networknt.codegen.Generator;
@@ -7,6 +8,8 @@ import com.networknt.codegen.Generator;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.ReadableByteChannel;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
 import java.util.Map;
 
 import static java.io.File.separator;
@@ -22,6 +25,8 @@ import static java.io.File.separator;
  * Created by stevehu on 2017-04-23.
  */
 public class RestGenerator implements Generator {
+    static ObjectMapper mapper = new ObjectMapper();
+
     @Override
     public void generate(String targetPath, Object model, Map<String, Object> config) throws IOException {
         // whoever is calling this needs to make sure that model is converted to Map<String, Object>
@@ -37,9 +42,20 @@ public class RestGenerator implements Generator {
         transfer(targetPath, "", ".classpath", templates.classpath.template());
         transfer(targetPath, "", ".project", templates.project.template());
 
+        // config
+        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "server.yml", templates.server.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version")));
+
+        // test cases
         transfer(targetPath, ("src.test.java." + handlerPackage + ".").replace(".", separator),  "TestServer.java", templates.testServer.template(handlerPackage));
 
 
+        // last step to write swagger.json as the directory must be there already.
+        writeSwagger(FileSystems.getDefault().getPath(targetPath, ("src.main.resources.config").replace(".", separator), "swagger.json"), model);
+
     }
 
+    public void writeSwagger(Path path, Object model) throws IOException {
+
+        mapper.writerWithDefaultPrettyPrinter().writeValue(new FileOutputStream(path.toFile()), model);
+    }
 }

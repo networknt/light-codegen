@@ -39,45 +39,6 @@ public class RestGeneratorTest {
     }
 
     @Test
-    public void testGenerate() throws IOException {
-        Map<String, Object> config = mapper.readValue(RestGeneratorTest.class.getResourceAsStream(configName), new TypeReference<Map<String,Object>>(){});
-        Map<String, Object> model = mapper.readValue(RestGeneratorTest.class.getResourceAsStream(swaggerName), new TypeReference<Map<String,Object>>(){});
-        System.out.println(config);
-        System.out.println(model);
-        String rootPackage = (String)config.get("rootPackage");
-        String modelPackage = (String)config.get("modelPackage");
-        String handlerPackage = (String)config.get("handlerPackage");
-
-        /*
-        String output = templates.pom.template(config)
-                .render()
-                .toString();
-        System.out.println(output);
-        */
-        /*
-        ArrayOfByteArraysOutput out = templates.pom.template(config)
-                .render(ArrayOfByteArraysOutput.FACTORY);
-        ReadableByteChannel rbc = out.asReadableByteChannel();
-        FileOutputStream fos = new FileOutputStream(targetPath + "/pom.xml");
-        fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
-        fos.close();
-        rbc.close();
-        System.out.println("File is written");
-        */
-
-        try(FileOutputStream fos = new FileOutputStream(targetPath + "/pom.xml");
-            ReadableByteChannel rbc = templates.pom.template(config).render(ArrayOfByteArraysOutput.FACTORY).asReadableByteChannel()) {
-            fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
-        }
-        /*
-        supportingFiles.add(new SupportingFile("swagger.mustache", ("src.main.resources.config").replace(".", java.io.File.separator), "swagger.json"));
-        supportingFiles.add(new SupportingFile("handler.mustache", ("src.main.java." + invokerPackage).replace(".", java.io.File.separator), "PathHandlerProvider.java"));
-        supportingFiles.add(new SupportingFile("testServer.mustache", ("src.test.java." + apiPackage).replace(".", java.io.File.separator), "TestServer.java"));
-        */
-
-    }
-
-    @Test
     public void testGenerator() throws IOException {
         Map<String, Object> config = mapper.readValue(RestGeneratorTest.class.getResourceAsStream(configName), new TypeReference<Map<String,Object>>(){});
         Map<String, Object> model = mapper.readValue(RestGeneratorTest.class.getResourceAsStream(swaggerName), new TypeReference<Map<String,Object>>(){});
