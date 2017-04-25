@@ -98,12 +98,13 @@
     </properties>
 
     <modules>
-        <module>light-generator</module>
+        <module>codegen-core</module>
         <module>light-java-rest</module>
         <module>light-eventuate</module>
         <module>light-java-hybrid</module>
         <module>light-java-graphql</module>
-        <module>codegen</module>
+        <module>codegen-cli</module>
+        <module>codegen-web</module>
     </modules>
 
     <dependencyManagement>
@@ -111,7 +112,7 @@
             <!-- Modules in this project -->
             <dependency>
                 <groupId>com.networknt</groupId>
-                <artifactId>light-generator</artifactId>
+                <artifactId>codegen-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -132,6 +133,16 @@
             <dependency>
                 <groupId>com.networknt</groupId>
                 <artifactId>light-java-graphql</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.networknt</groupId>
+                <artifactId>codegen-cli</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.networknt</groupId>
+                <artifactId>codegen-web</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <!-- External dependencies -->

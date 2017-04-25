@@ -25,14 +25,14 @@
         <relativePath>..</relativePath>
     </parent>
 
-    <artifactId>codegen</artifactId>
+    <artifactId>codegen-cli</artifactId>
     <packaging>jar</packaging>
     <description>light-generator cli.</description>
 
     <dependencies>
         <dependency>
             <groupId>com.networknt</groupId>
-            <artifactId>light-generator</artifactId>
+            <artifactId>codegen-core</artifactId>
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>

@@ -6,7 +6,7 @@
     <version>0.1.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>codegen</artifactId>
+  <artifactId>codegen-web</artifactId>
   <description>light-generator cli.</description>
   <build>
     <defaultGoal>install</defaultGoal>

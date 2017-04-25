@@ -25,9 +25,9 @@
         <relativePath>..</relativePath>
     </parent>
 
-    <artifactId>light-generator</artifactId>
+    <artifactId>codegen-core</artifactId>
     <packaging>jar</packaging>
-    <description>light-generator core.</description>
+    <description>light generator core.</description>
 
     <dependencies>
         <dependency>
