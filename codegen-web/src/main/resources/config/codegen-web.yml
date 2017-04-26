@@ -1,0 +1,8 @@
+# Code generation web service configuration
+---
+# Temp folder to hold the generated projects
+tmpFolder: /tmp
+# The folder that contains generated and zipped files
+zipFolder: /tmp/zip
+# Geneated project zip file will be removed after 15 minutes
+zipKeptMinute: 15
