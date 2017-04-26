@@ -1,10 +1,8 @@
 package com.networknt.codegen;
 
-import java.io.BufferedInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
+import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.util.regex.Matcher;
@@ -29,6 +27,17 @@ public class Utils {
         fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
         fos.close();
         rbc.close();
+    }
+
+    public static ByteBuffer toByteBuffer(String s) {
+        ByteBuffer buffer = ByteBuffer.allocateDirect(s.length());
+        try {
+            buffer.put(s.getBytes("US-ASCII"));
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+        buffer.flip();
+        return buffer;
     }
 
     /**

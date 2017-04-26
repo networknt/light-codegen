@@ -26,6 +26,24 @@ public class GeneratorServiceHandlerTest {
     static final Logger logger = LoggerFactory.getLogger(GeneratorServiceHandlerTest.class);
 
     @Test
+    public void testInvalidFramework() throws ClientException, ApiException, UnsupportedEncodingException {
+        String s = "{\"host\":\"lightapi.net\",\"service\":\"codegen\",\"action\":\"generate\",\"version\":\"0.0.1\",\"model\":{\"key\":\"value\"},\"config\":{\"key\":\"value\"},\"framework\":\"framework\"}";
+
+        CloseableHttpClient client = Client.getInstance().getSyncClient();
+        HttpPost httpPost = new HttpPost("http://localhost:8080/api/json");
+        httpPost.setHeader("Content-type", "application/json");
+        httpPost.setEntity(new StringEntity(s));
+        try {
+            CloseableHttpResponse response = client.execute(httpPost);
+            String body = IOUtils.toString(response.getEntity().getContent(), "utf8");
+            Assert.assertTrue(body.contains("ERR11100"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    @Test
     public void testGenerator() throws ClientException, ApiException, UnsupportedEncodingException {
         String s = "{\n" +
                 "  \"host\": \"lightapi.net\",\n" +
