@@ -55,10 +55,6 @@
             <artifactId>json-path</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.swagger</groupId>
-            <artifactId>swagger-parser</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.fizzed</groupId>
             <artifactId>rocker-runtime</artifactId>
         </dependency>

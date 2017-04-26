@@ -66,6 +66,8 @@
     <properties>
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <version.light-java>1.2.7</version.light-java>
+        <version.light-java-hybrid>1.2.7</version.light-java-hybrid>
         <version.jackson>2.8.7</version.jackson>
         <version.slf4j>1.7.25</version.slf4j>
         <version.jose4j>0.5.5</version.jose4j>
@@ -146,11 +148,10 @@
                 <version>${project.version}</version>
             </dependency>
             <!-- External dependencies -->
-
             <dependency>
-                <groupId>io.swagger</groupId>
-                <artifactId>swagger-parser</artifactId>
-                <version>${version.swagger}</version>
+                <groupId>com.networknt</groupId>
+                <artifactId>rpc-router</artifactId>
+                <version>${version.light-java-hybrid}</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>

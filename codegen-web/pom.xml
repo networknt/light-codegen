@@ -38,6 +38,32 @@
             <groupId>com.networknt</groupId>
             <artifactId>light-java-rest</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>com.networknt</groupId>
+            <artifactId>client</artifactId>
+            <version>${version.light-java}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.networknt</groupId>
+            <artifactId>metrics</artifactId>
+            <version>${version.light-java}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.networknt</groupId>
+            <artifactId>traceability</artifactId>
+            <version>${version.light-java}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.networknt</groupId>
+            <artifactId>correlation</artifactId>
+            <version>${version.light-java}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.networknt</groupId>
+            <artifactId>rpc-router</artifactId>
+            <version>${version.light-java-hybrid}</version>
+        </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
@@ -58,6 +84,7 @@
             <groupId>com.beust</groupId>
             <artifactId>jcommander</artifactId>
         </dependency>
+
 
         <dependency>
             <groupId>ch.qos.logback</groupId>

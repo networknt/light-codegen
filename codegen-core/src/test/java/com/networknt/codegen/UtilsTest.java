@@ -1,9 +1,11 @@
 package com.networknt.codegen;
 
-import com.google.common.collect.ImmutableMap;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -11,32 +13,36 @@ import java.util.Map;
  */
 public class UtilsTest {
 
-    private static final Map<String, String> camelToUnderscore_ = ImmutableMap.<String, String>builder()
-            .put("Product", "product")
-            .put("SpecialGuest", "special_guest")
-            .put("ApplicationController", "application_controller")
-            .put("Area51Controller", "area51_controller")
-            .put("InnerClassTest", "inner_class__test")
-            .build();
 
-    private static final Map<String, String> underscoreToLowerCamel_ = ImmutableMap.<String, String>builder()
-            .put("product","product")
-            .put("special_guest","specialGuest")
-            .put("application_controller","applicationController")
-            .put("area51_controller","area51Controller")
-            .build();
+    Map<String, String> camelToUnderscore_ = new HashMap<>();
+    Map<String, String> underscoreToLowerCamel_ = new HashMap<>();
+    Map<String, String> underscoreToCamel_ = new HashMap<>();
+    Map<String, String> slashToCamel_ = new HashMap<>();
 
-    private static final Map<String, String> underscoreToCamel_ = ImmutableMap.<String, String>builder()
-            .put("product","Product")
-            .put("special_guest","SpecialGuest")
-            .put("application_controller","ApplicationController")
-            .put("area51_controller","Area51Controller")
-            .build();
+    @Before
+    public void setUp() {
 
-    private static final Map<String, String> slashToCamel_ = ImmutableMap.<String, String>builder()
-            .put("product","Product")
-            .put("/pet/findByStatus","PetFindByStatus")
-            .build();
+        camelToUnderscore_.put("Product", "product");
+        camelToUnderscore_.put("SpecialGuest", "special_guest");
+        camelToUnderscore_.put("ApplicationController", "application_controller");
+        camelToUnderscore_.put("Area51Controller", "area51_controller");
+        camelToUnderscore_.put("InnerClassTest", "inner_class__test");
+
+        underscoreToLowerCamel_.put("product","product");
+        underscoreToLowerCamel_.put("special_guest","specialGuest");
+        underscoreToLowerCamel_.put("application_controller","applicationController");
+        underscoreToLowerCamel_.put("area51_controller","area51Controller");
+
+        underscoreToCamel_.put("product","Product");
+        underscoreToCamel_.put("special_guest","SpecialGuest");
+        underscoreToCamel_.put("application_controller","ApplicationController");
+        underscoreToCamel_.put("area51_controller","Area51Controller");
+
+        slashToCamel_.put("product","Product");
+        slashToCamel_.put("/pet/findByStatus","PetFindByStatus");
+
+    }
+
 
     @Test
     public void testUnderscoreToLowerCamel() {
