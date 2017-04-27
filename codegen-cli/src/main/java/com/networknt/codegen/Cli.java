@@ -10,6 +10,7 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by steve on 24/04/17.
@@ -38,9 +39,11 @@ public class Cli {
 
     public void run() {
         System.out.printf("%s %s %s %s", framework, model, config, output);
-        try {
-            // TODO All generators should be implemented as SPI.
-            if(framework != null && framework.equals("light-java-rest")) {
+        FrameworkRegistry registry = FrameworkRegistry.getInstance();
+        Set<String> frameworks = registry.getFrameworks();
+        if(frameworks.contains(framework)) {
+            Generator generator = registry.getGenerator(framework);
+            try {
                 Map<String, Object> modelJson;
                 if(isUrl(model)) {
                     modelJson = mapper.readValue(new URL(model), new TypeReference<Map<String,Object>>(){});
@@ -56,14 +59,13 @@ public class Cli {
                     Path configPath = Paths.get(config); // config.json
                     configJson = mapper.readValue(configPath.toFile(), new TypeReference<Map<String,Object>>(){});
                 }
-
-                RestGenerator generator = new RestGenerator();
-                generator.generate(output, modelJson, configJson);
+               generator.generate(output, modelJson, configJson);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } else {
+            System.out.printf("Invalid framework %s", framework);
         }
-
     }
 
     private boolean isUrl(String location) {

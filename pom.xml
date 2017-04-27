@@ -105,6 +105,7 @@
         <module>light-eventuate</module>
         <module>light-java-hybrid</module>
         <module>light-java-graphql</module>
+        <module>codegen-fwk</module>
         <module>codegen-cli</module>
         <module>codegen-web</module>
     </modules>
@@ -135,6 +136,11 @@
             <dependency>
                 <groupId>com.networknt</groupId>
                 <artifactId>light-java-graphql</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.networknt</groupId>
+                <artifactId>codegen-fwk</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

@@ -33,6 +33,11 @@ public class RestGenerator implements Generator {
     static ObjectMapper mapper = new ObjectMapper();
 
     @Override
+    public String getFramework() {
+        return "light-java-rest";
+    }
+
+    @Override
     public void generate(String targetPath, Object model, Map<String, Object> config) throws IOException {
         // whoever is calling this needs to make sure that model is converted to Map<String, Object>
         String rootPackage = (String)config.get("rootPackage");

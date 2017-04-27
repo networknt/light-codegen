@@ -1,6 +1,8 @@
 package com.networknt.codegen.handler;
 
 import com.networknt.codegen.CodegenWebConfig;
+import com.networknt.codegen.FrameworkRegistry;
+import com.networknt.codegen.Generator;
 import com.networknt.codegen.Utils;
 import com.networknt.codegen.rest.RestGenerator;
 import com.networknt.config.Config;
@@ -43,7 +45,7 @@ public class GeneratorServiceHandler implements Handler {
         String framework = (String)map.get("framework");
         Map<String, Object> model = (Map<String, Object>)map.get("model");  // should be a json of spec
         Map<String, Object> config = (Map<String, Object>)map.get("config"); // should be a json of config
-        if(!FrameworkListHandler.frameworks.contains(framework)) {
+        if(!FrameworkRegistry.getInstance().getFrameworks().contains(framework)) {
             Status status = new Status(STATUS_INVALID_FRAMEWORK, framework);
             return Utils.toByteBuffer(status.toString());
         }
@@ -55,10 +57,8 @@ public class GeneratorServiceHandler implements Handler {
         String projectFolder = codegenWebConfig.getTmpFolder() + separator + output;
 
         try {
-            if(framework != null && framework.equals("light-java-rest")) {
-                RestGenerator generator = new RestGenerator();
-                generator.generate(projectFolder, model, config);
-            }
+            Generator generator = FrameworkRegistry.getInstance().getGenerator(framework);
+            generator.generate(projectFolder, model, config);
 
             // TODO generated code is in tmp folder, zip and move to the target folder
             NioUtils.create(codegenWebConfig.getZipFolder() + separator + zipFile, projectFolder);
@@ -74,27 +74,6 @@ public class GeneratorServiceHandler implements Handler {
             e.printStackTrace();
             logger.error("Exception:", e);
         }
-
-        /*
-        CompletableFuture.runAsync(() -> {
-            try {
-                if(framework != null && framework.equals("light-java-rest")) {
-                    RestGenerator generator = new RestGenerator();
-                    generator.generate(projectFolder, model, config);
-                }
-
-                // TODO generated code is in tmp folder, zip and move to the target folder
-                NioUtils.create(codegenWebConfig.getZipFolder() + separator + zipFile, projectFolder);
-                // delete the project folder.
-                Files.delete(Paths.get(projectFolder));
-                // check if any zip file that needs to be deleted from zipFolder
-                NioUtils.deleteOldFiles(codegenWebConfig.getZipFolder(), codegenWebConfig.getZipKeptMinute());
-            } catch (Exception e) {
-                e.printStackTrace();
-                logger.error("Exception:", e);
-            }
-        });
-        */
 
         // return the location of the zip file
         return Utils.toByteBuffer(zipFile);

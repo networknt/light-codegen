@@ -22,6 +22,8 @@ import static java.io.File.separator;
 public interface Generator {
     void generate(String targetPath, Object model, Map<String, Object> config) throws IOException;
 
+    String getFramework();
+
     default void transfer(String folder, String path, String filename, DefaultRockerModel rockerModel) throws IOException {
         String absPath = folder + (path.isEmpty()? "" : separator + path);
         if(Files.notExists(Paths.get(absPath))) {
