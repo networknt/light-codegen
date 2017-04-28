@@ -1,0 +1,11 @@
+{
+  "rootPackage": "com.networknt.petstore",
+  "handlerPackage":"com.networknt.petstore.handler",
+  "modelPackage":"com.networknt.petstore.model",
+  "artifactId": "petstore",
+  "groupId": "com.networknt",
+  "name": "petstore",
+  "version": "1.0.1",
+  "overwriteHandler": false,
+  "overwriteHandlerTest": false
+}

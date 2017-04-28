@@ -21,7 +21,7 @@
     <parent>
         <groupId>com.networknt</groupId>
         <artifactId>light-codegen</artifactId>
-        <version>0.1.0</version>
+        <version>1.2.7</version>
         <relativePath>..</relativePath>
     </parent>
 
@@ -38,11 +38,6 @@
             <groupId>com.networknt</groupId>
             <artifactId>codegen-fwk</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.networknt</groupId>
-            <artifactId>light-java-rest</artifactId>
-        </dependency>
-
         <dependency>
             <groupId>com.networknt</groupId>
             <artifactId>client</artifactId>
@@ -87,6 +82,10 @@
         <dependency>
             <groupId>com.beust</groupId>
             <artifactId>jcommander</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.github.lukehutch</groupId>
+            <artifactId>fast-classpath-scanner</artifactId>
         </dependency>
 
 

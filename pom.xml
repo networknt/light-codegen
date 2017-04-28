@@ -19,7 +19,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.networknt</groupId>
     <artifactId>light-codegen</artifactId>
-    <version>0.1.0</version>
+    <version>1.2.7</version>
     <packaging>pom</packaging>
     <name>Parent POM</name>
     <description>Light Code Generator</description>
@@ -68,6 +68,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <version.light-java>1.2.7</version.light-java>
         <version.light-java-hybrid>1.2.7</version.light-java-hybrid>
+        <version.light-java-rest>1.2.7</version.light-java-rest>
         <version.jackson>2.8.7</version.jackson>
         <version.slf4j>1.7.25</version.slf4j>
         <version.jose4j>0.5.5</version.jose4j>
@@ -96,6 +97,7 @@
         <version.snakeyaml>1.18</version.snakeyaml>
         <version.rocker>0.16.0</version.rocker>
         <version.jcommander>1.69</version.jcommander>
+        <version.fastscanner>2.0.8</version.fastscanner>
         <argLine>-Xmx512m -XX:MaxPermSize=256m</argLine>
     </properties>
 
@@ -244,6 +246,11 @@
                 <groupId>com.beust</groupId>
                 <artifactId>jcommander</artifactId>
                 <version>${version.jcommander}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.lukehutch</groupId>
+                <artifactId>fast-classpath-scanner</artifactId>
+                <version>${version.fastscanner}</version>
             </dependency>
 
             <!-- Test dependencies -->
