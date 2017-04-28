@@ -55,10 +55,6 @@
             <artifactId>commons-lang3</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.owasp.encoder</groupId>
-            <artifactId>encoder</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.fizzed</groupId>
             <artifactId>rocker-runtime</artifactId>
         </dependency>
