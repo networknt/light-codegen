@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 import java.util.Map;
 
 import static java.io.File.separator;
@@ -57,11 +58,18 @@ public class HybridServiceGenerator implements Generator {
         transfer(targetPath, ("src.test.resources").replace(".", separator), "logback-test.xml", templates.logback.template());
 
         // handler
-        transfer(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), "HelloWorld.java", templates.handler.template(handlerPackage));
+        String host = (String)((Map<String, Object>)model).get("host");
+        String service = (String)((Map<String, Object>)model).get("service");
+        List<Map<String, Object>> items = (List<Map<String, Object>>)((Map<String, Object>)model).get("action");
+        for(Map<String, Object> item : items) {
+            transfer(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), (String)item.get("handler") + ".java", templates.handler.template(handlerPackage, host, service, item));
+        }
 
         // handler test cases
         transfer(targetPath, ("src.test.java." + handlerPackage + ".").replace(".", separator),  "TestServer.java", templates.testServer.template(handlerPackage));
-        transfer(targetPath, ("src.test.java." + handlerPackage).replace(".", separator), "HelloWorldTest.java", templates.handlerTest.template(handlerPackage));
+        for(Map<String, Object> item : items) {
+            transfer(targetPath, ("src.test.java." + handlerPackage).replace(".", separator), (String)item.get("handler") + "Test.java", templates.handlerTest.template(handlerPackage, host, service, item));
+        }
 
         // transfer binary files without touching them.
         if(Files.notExists(Paths.get(targetPath, ("src.test.resources.config.tls").replace(".", separator)))) {

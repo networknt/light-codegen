@@ -1,4 +1,5 @@
-@args (String handlerPackage)
+@import java.util.Map
+@args (String handlerPackage, String host, String service, Map<String, Object> item)
 package @handlerPackage;
 
 import com.networknt.codegen.Utils;
@@ -6,8 +7,8 @@ import com.networknt.rpc.Handler;
 import com.networknt.rpc.router.ServiceHandler;
 import java.nio.ByteBuffer;
 
-@@ServiceHandler(id="lightapi.net/world/hello/0.0.1")
-public class HelloWorld implements Handler {
+@@ServiceHandler(id="@host/@service/@item.get("name")/@item.get("version")")
+public class @item.get("handler") implements Handler {
     @@Override
     public ByteBuffer handle(Object input)  {
         return Utils.toByteBuffer("{\"message\":\"Hello World!\"}");

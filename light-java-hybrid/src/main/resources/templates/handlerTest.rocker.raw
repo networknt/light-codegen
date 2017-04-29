@@ -1,4 +1,5 @@
-@args (String handlerPackage)
+@import java.util.Map
+@args (String handlerPackage, String host, String service, Map<String, Object> item)
 package @handlerPackage;
 
 import com.networknt.client.Client;
@@ -17,14 +18,14 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
-public class HelloWorldTest {
+@with(s1 = item.get("handler") + "Test") {public class @s1} {
     @@ClassRule
     public static TestServer server = TestServer.getInstance();
 
-    static final Logger logger = LoggerFactory.getLogger(HelloWorld.class);
+    @with(s2 = item.get("handler") + ".class") {static final Logger logger = LoggerFactory.getLogger(@s2); }
 
     @@Test
-    public void testHelloWorld() throws ClientException, ApiException {
+    @with(s3 = item.get("handler") + "()") {public void test@s3} throws ClientException, ApiException {
         CloseableHttpClient client = Client.getInstance().getSyncClient();
         HttpPost httpPost = new HttpPost("http://localhost:8080/api/json");
         /*
