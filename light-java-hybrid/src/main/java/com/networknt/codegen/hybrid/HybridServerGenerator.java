@@ -34,7 +34,7 @@ public class HybridServerGenerator implements Generator {
         transfer(targetPath, "", "pom.xml", templates.server.pom.template(config));
         transfer(targetPath, "", "Dockerfile", templates.server.dockerfile.template(config));
         transfer(targetPath, "", ".gitignore", templates.gitignore.template());
-        transfer(targetPath, "", "README.md", templates.README.template());
+        transfer(targetPath, "", "README.md", templates.server.README.template());
         transfer(targetPath, "", "LICENSE", templates.LICENSE.template());
         transfer(targetPath, "", ".classpath", templates.classpath.template());
         transfer(targetPath, "", ".project", templates.project.template());
