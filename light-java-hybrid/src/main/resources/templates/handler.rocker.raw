@@ -1,16 +1,15 @@
 @args (String handlerPackage)
 package @handlerPackage;
 
-import io.undertow.server.HttpHandler;
-import io.undertow.server.HttpServerExchange;
-import io.undertow.util.HttpString;
-import java.util.HashMap;
-import java.util.Map;
+import com.networknt.codegen.Utils;
+import com.networknt.rpc.Handler;
+import com.networknt.rpc.router.ServiceHandler;
+import java.nio.ByteBuffer;
 
-public class HelloWorld implements HttpHandler {
+@@ServiceHandler(id="lightapi.net/world/hello/0.0.1")
+public class HelloWorld implements Handler {
     @@Override
-    public void handleRequest(HttpServerExchange exchange) throws Exception {
-        exchange.getResponseHeaders().add(new HttpString("Content-Type"), "application/json");
-        exchange.getResponseSender().send("Hello World!");
+    public ByteBuffer handle(Object input)  {
+        return Utils.toByteBuffer("Hello World!");
     }
 }

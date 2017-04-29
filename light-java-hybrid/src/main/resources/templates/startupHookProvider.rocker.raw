@@ -3,3 +3,5 @@
 
 # config Json Path to use Jackson Parser
 com.networknt.server.JsonPathStartupHookProvider
+# registry all service handlers by from annotations
+com.networknt.rpc.router.RpcStartupHookProvider

@@ -36,6 +36,7 @@
         <version.jsonpath>2.2.0</version.jsonpath>
         <version.httpclient>4.5.2</version.httpclient>
         <version.httpasyncclient>4.1.2</version.httpasyncclient>
+        <version.fastscanner>2.0.8</version.fastscanner>
         <version.swagger>1.5.13</version.swagger>
     </properties>
 
@@ -112,6 +113,11 @@
             <artifactId>httpclient</artifactId>
             <version>${version.httpclient}</version>
         </dependency>
+        <dependency>
+            <groupId>io.github.lukehutch</groupId>
+            <artifactId>fast-classpath-scanner</artifactId>
+            <version>${version.fastscanner}</version>
+        </dependency>
 
         <!-- Test Dependencies -->
         <dependency>
@@ -128,48 +134,6 @@
         <directory>target</directory>
         <finalName>${project.artifactId}-${project.version}</finalName>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>2.4.3</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <transformers>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
-                            </transformers>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>2.6</version>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <mainClass>com.networknt.server.Server</mainClass>
-                        </manifest>
-                    </archive>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>1.4.0</version>
-                <configuration>
-                    <executable>java</executable>
-                    <arguments>
-                        <argument>-jar</argument>
-                        <argument>target/${project.build.finalName}.jar</argument>
-                    </arguments>
-                </configuration>
-            </plugin>
             <!-- Google error-prone compiles -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

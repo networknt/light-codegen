@@ -31,7 +31,7 @@ public class HybridServerGenerator implements Generator {
         String modelPackage = (String)config.get("modelPackage");
         String handlerPackage = (String)config.get("handlerPackage");
 
-        transfer(targetPath, "", "pom.xml", templates.pom.template(config));
+        transfer(targetPath, "", "pom.xml", templates.server.pom.template(config));
         transfer(targetPath, "", "Dockerfile", templates.server.dockerfile.template(config));
         transfer(targetPath, "", ".gitignore", templates.gitignore.template());
         transfer(targetPath, "", "README.md", templates.README.template());
