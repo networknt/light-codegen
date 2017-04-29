@@ -6,6 +6,7 @@ import com.fizzed.rocker.runtime.ArrayOfByteArraysOutput;
 import com.fizzed.rocker.runtime.DefaultRockerModel;
 import com.networknt.codegen.Generator;
 import com.networknt.codegen.Utils;
+import com.networknt.utility.NioUtils;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -108,14 +109,7 @@ public class RestGenerator implements Generator {
 
         // last step to write swagger.json as the directory must be there already.
         // TODO add server info before write it.
-        writeSwagger(FileSystems.getDefault().getPath(targetPath, ("src.main.resources.config").replace(".", separator), "swagger.json"), model);
-
-
-    }
-
-    private void writeSwagger(Path path, Object model) throws IOException {
-
-        mapper.writerWithDefaultPrettyPrinter().writeValue(new FileOutputStream(path.toFile()), model);
+        NioUtils.writeJson(FileSystems.getDefault().getPath(targetPath, ("src.main.resources.config").replace(".", separator), "swagger.json"), model);
     }
 
     public List<Map<String, Object>> getOperationList(Object model) {

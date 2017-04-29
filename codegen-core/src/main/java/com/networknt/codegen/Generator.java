@@ -34,4 +34,5 @@ public interface Generator {
             fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
         }
     }
+
 }

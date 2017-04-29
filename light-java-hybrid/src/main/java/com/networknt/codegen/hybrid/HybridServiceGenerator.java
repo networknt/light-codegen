@@ -2,12 +2,15 @@ package com.networknt.codegen.hybrid;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.networknt.codegen.Generator;
+import com.networknt.utility.NioUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -58,11 +61,14 @@ public class HybridServiceGenerator implements Generator {
         transfer(targetPath, ("src.test.resources").replace(".", separator), "logback-test.xml", templates.logback.template());
 
         // handler
+        Map<String, Object> schema = new HashMap<String, Object>();
         String host = (String)((Map<String, Object>)model).get("host");
         String service = (String)((Map<String, Object>)model).get("service");
         List<Map<String, Object>> items = (List<Map<String, Object>>)((Map<String, Object>)model).get("action");
         for(Map<String, Object> item : items) {
             transfer(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), (String)item.get("handler") + ".java", templates.handler.template(handlerPackage, host, service, item));
+            String serviceId  = host + "/" + service + "/" + item.get("name") + "/" + item.get("version");
+            schema.put(serviceId, item.get("schema"));
         }
 
         // handler test cases
@@ -82,5 +88,10 @@ public class HybridServiceGenerator implements Generator {
             Files.copy(is, Paths.get(targetPath, ("src.test.resources.config.tls").replace(".", separator), "server.truststore"), StandardCopyOption.REPLACE_EXISTING);
         }
 
+        if(Files.notExists(Paths.get(targetPath, ("src.main.resources.config").replace(".", separator)))) {
+            Files.createDirectories(Paths.get(targetPath, ("src.main.resources.config").replace(".", separator)));
+        }
+        // write the generated schema into the config folder for schema validation.
+        NioUtils.writeJson(FileSystems.getDefault().getPath(targetPath, ("src.main.resources.config").replace(".", separator), "schema.json"), schema);
     }
 }

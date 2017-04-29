@@ -155,11 +155,17 @@
                 <artifactId>codegen-web</artifactId>
                 <version>${project.version}</version>
             </dependency>
+
             <!-- External dependencies -->
             <dependency>
                 <groupId>com.networknt</groupId>
                 <artifactId>rpc-router</artifactId>
                 <version>${version.light-java-hybrid}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.networknt</groupId>
+                <artifactId>utility</artifactId>
+                <version>${version.light-java}</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
