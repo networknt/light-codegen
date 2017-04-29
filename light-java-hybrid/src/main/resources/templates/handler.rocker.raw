@@ -2,7 +2,7 @@
 @args (String handlerPackage, String host, String service, Map<String, Object> item)
 package @handlerPackage;
 
-import com.networknt.codegen.Utils;
+import com.networknt.utility.NioUtils;
 import com.networknt.rpc.Handler;
 import com.networknt.rpc.router.ServiceHandler;
 import java.nio.ByteBuffer;
@@ -11,6 +11,6 @@ import java.nio.ByteBuffer;
 public class @item.get("handler") implements Handler {
     @@Override
     public ByteBuffer handle(Object input)  {
-        return Utils.toByteBuffer("{\"message\":\"Hello World!\"}");
+        return NioUtils.toByteBuffer("{\"message\":\"Hello World!\"}");
     }
 }
