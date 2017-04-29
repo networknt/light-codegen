@@ -29,17 +29,6 @@ public class Utils {
         rbc.close();
     }
 
-    public static ByteBuffer toByteBuffer(String s) {
-        ByteBuffer buffer = ByteBuffer.allocateDirect(s.length());
-        try {
-            buffer.put(s.getBytes("US-ASCII"));
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
-        buffer.flip();
-        return buffer;
-    }
-
     /**
      * Camelize name (parameter, property, method, etc) with upper case for first letter
      * copied from Twitter elephant bird

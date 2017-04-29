@@ -47,7 +47,7 @@ public class GeneratorServiceHandler implements Handler {
         Map<String, Object> config = (Map<String, Object>)map.get("config"); // should be a json of config
         if(!FrameworkRegistry.getInstance().getFrameworks().contains(framework)) {
             Status status = new Status(STATUS_INVALID_FRAMEWORK, framework);
-            return Utils.toByteBuffer(status.toString());
+            return NioUtils.toByteBuffer(status.toString());
         }
         // TODO validate the model and config with json schema
 
@@ -76,6 +76,6 @@ public class GeneratorServiceHandler implements Handler {
         }
 
         // return the location of the zip file
-        return Utils.toByteBuffer(zipFile);
+        return NioUtils.toByteBuffer(zipFile);
     }
 }

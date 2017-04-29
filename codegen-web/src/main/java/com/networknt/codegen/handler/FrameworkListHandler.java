@@ -8,6 +8,7 @@ import com.networknt.config.Config;
 import com.networknt.rpc.Handler;
 import com.networknt.rpc.router.ServiceHandler;
 import com.networknt.utility.HashUtil;
+import com.networknt.utility.NioUtils;
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
 
@@ -35,7 +36,7 @@ public class FrameworkListHandler implements Handler {
         } catch (JsonProcessingException e) {
             // return empty back in this case.
         }
-        return Utils.toByteBuffer(result);
+        return NioUtils.toByteBuffer(result);
     }
 
 }
