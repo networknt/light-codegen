@@ -10,6 +10,6 @@ import java.nio.ByteBuffer;
 public class HelloWorld implements Handler {
     @@Override
     public ByteBuffer handle(Object input)  {
-        return Utils.toByteBuffer("Hello World!");
+        return Utils.toByteBuffer("{\"message\":\"Hello World!\"}");
     }
 }
