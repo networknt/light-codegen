@@ -61,14 +61,18 @@ public class HybridServiceGenerator implements Generator {
         transfer(targetPath, ("src.test.resources").replace(".", separator), "logback-test.xml", templates.logback.template());
 
         // handler
-        Map<String, Object> schema = new HashMap<String, Object>();
+        Map<String, Object> services = new HashMap<String, Object>();
         String host = (String)((Map<String, Object>)model).get("host");
         String service = (String)((Map<String, Object>)model).get("service");
         List<Map<String, Object>> items = (List<Map<String, Object>>)((Map<String, Object>)model).get("action");
         for(Map<String, Object> item : items) {
             transfer(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), (String)item.get("handler") + ".java", templates.handler.template(handlerPackage, host, service, item));
+
             String serviceId  = host + "/" + service + "/" + item.get("name") + "/" + item.get("version");
-            schema.put(serviceId, item.get("schema"));
+            Map<String, Object> map = new HashMap<>();
+            map.put("schema", item.get("schema"));
+            map.put("scope", item.get("scope"));
+            services.put(serviceId, map);
         }
 
         // handler test cases
@@ -92,6 +96,6 @@ public class HybridServiceGenerator implements Generator {
             Files.createDirectories(Paths.get(targetPath, ("src.main.resources.config").replace(".", separator)));
         }
         // write the generated schema into the config folder for schema validation.
-        NioUtils.writeJson(FileSystems.getDefault().getPath(targetPath, ("src.main.resources.config").replace(".", separator), "schema.json"), schema);
+        NioUtils.writeJson(FileSystems.getDefault().getPath(targetPath, ("src.main.resources.config").replace(".", separator), "schema.json"), services);
     }
 }
