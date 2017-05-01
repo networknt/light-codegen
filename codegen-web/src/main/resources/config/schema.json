@@ -1,0 +1,27 @@
+{
+  "lightapi.net/framework/list/0.0.1" : {
+    "schema": {
+    },
+    "scope": "codegen.r"
+  },
+  "lightapi.net/codegen/generate/0.0.1" : {
+    "schema": {
+      "title" : "Service",
+      "type" : "object",
+      "properties" : {
+        "model" : {
+          "type" : "object"
+        },
+        "config" : {
+          "type" : "object"
+        },
+        "framework": {
+          "type" : "string"
+        }
+      },
+      "required" : [ "config", "framework"]
+    },
+    "scope": "codegen.w"
+  }
+
+}

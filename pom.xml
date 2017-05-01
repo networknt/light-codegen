@@ -89,7 +89,7 @@
         <version.assertj>2.1.0</version.assertj>
         <version.hdrhistogram>2.1.8</version.hdrhistogram>
         <version.jsr305>3.0.1</version.jsr305>
-        <version.json-schema-validator>0.1.5</version.json-schema-validator>
+        <version.json-schema-validator>0.1.7</version.json-schema-validator>
         <version.consul>1.2.1</version.consul>
         <version.zookeeper>3.5.2-alpha</version.zookeeper>
         <version.zkclient>0.3</version.zkclient>
@@ -98,6 +98,7 @@
         <version.rocker>0.16.0</version.rocker>
         <version.jcommander>1.69</version.jcommander>
         <version.fastscanner>2.0.8</version.fastscanner>
+        <version.graphql>2.4.0</version.graphql>
         <argLine>-Xmx512m -XX:MaxPermSize=256m</argLine>
     </properties>
 
@@ -167,6 +168,37 @@
                 <artifactId>utility</artifactId>
                 <version>${version.light-java}</version>
             </dependency>
+            <dependency>
+                <groupId>com.networknt</groupId>
+                <artifactId>client</artifactId>
+                <version>${version.light-java}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.networknt</groupId>
+                <artifactId>metrics</artifactId>
+                <version>${version.light-java}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.networknt</groupId>
+                <artifactId>correlation</artifactId>
+                <version>${version.light-java}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.networknt</groupId>
+                <artifactId>traceability</artifactId>
+                <version>${version.light-java}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.networknt</groupId>
+                <artifactId>security</artifactId>
+                <version>${version.light-java}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.networknt</groupId>
+                <artifactId>json-schema-validator</artifactId>
+                <version>${version.json-schema-validator}</version>
+            </dependency>
+
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
@@ -257,6 +289,11 @@
                 <groupId>io.github.lukehutch</groupId>
                 <artifactId>fast-classpath-scanner</artifactId>
                 <version>${version.fastscanner}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.graphql-java</groupId>
+                <artifactId>graphql-java</artifactId>
+                <version>${version.graphql}</version>
             </dependency>
 
             <!-- Test dependencies -->

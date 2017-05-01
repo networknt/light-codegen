@@ -2,8 +2,12 @@
 # for cross cutting concerns. In most cases, you should replace some of the default handlers with your own implementation
 # Please note: the sequence of these handlers are very important.
 
+#Validator Validate request based on graphql schema
+com.networknt.graphql.validator.ValidatorHandler
 #SimpleAudit Log important info about the request into audit log
 com.networknt.audit.AuditHandler
+#Security JWT token verification and scope verification for GraphQL
+com.networknt.graphql.security.JwtVerifyHandler
 #Correlation Create correlationId if it doesn't exist in the request header and put it into the request header
 com.networknt.correlation.CorrelationHandler
 #Traceability Put traceabilityId into response header from request header if it exists

@@ -52,7 +52,7 @@ public class HybridServiceGenerator implements Generator {
         transfer(targetPath, ("src.test.resources.config.oauth").replace(".", separator), "secondary.crt", templates.secondaryCrt.template());
 
         transfer(targetPath, ("src.test.resources.META-INF.services").replace(".", separator), "com.networknt.server.HandlerProvider", templates.routingService.template());
-        transfer(targetPath, ("src.test.resources.META-INF.services").replace(".", separator), "com.networknt.server.MiddlewareHandler", templates.middlewareService.template());
+        transfer(targetPath, ("src.test.resources.META-INF.services").replace(".", separator), "com.networknt.handler.MiddlewareHandler", templates.middlewareService.template());
         transfer(targetPath, ("src.test.resources.META-INF.services").replace(".", separator), "com.networknt.server.StartupHookProvider", templates.startupHookProvider.template());
         transfer(targetPath, ("src.test.resources.META-INF.services").replace(".", separator), "com.networknt.server.ShutdownHookProvider", templates.shutdownHookProvider.template());
 
