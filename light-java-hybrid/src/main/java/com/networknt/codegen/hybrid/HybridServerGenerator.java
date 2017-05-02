@@ -31,31 +31,31 @@ public class HybridServerGenerator implements Generator {
         String modelPackage = (String)config.get("modelPackage");
         String handlerPackage = (String)config.get("handlerPackage");
 
-        transfer(targetPath, "", "pom.xml", templates.server.pom.template(config));
-        transfer(targetPath, "", "Dockerfile", templates.server.dockerfile.template(config));
-        transfer(targetPath, "", ".gitignore", templates.gitignore.template());
-        transfer(targetPath, "", "README.md", templates.server.README.template());
-        transfer(targetPath, "", "LICENSE", templates.LICENSE.template());
-        transfer(targetPath, "", ".classpath", templates.classpath.template());
-        transfer(targetPath, "", ".project", templates.project.template());
+        transfer(targetPath, "", "pom.xml", templates.hybrid.server.pom.template(config));
+        transfer(targetPath, "", "Dockerfile", templates.hybrid.server.dockerfile.template(config));
+        transfer(targetPath, "", ".gitignore", templates.hybrid.gitignore.template());
+        transfer(targetPath, "", "README.md", templates.hybrid.server.README.template());
+        transfer(targetPath, "", "LICENSE", templates.hybrid.LICENSE.template());
+        transfer(targetPath, "", ".classpath", templates.hybrid.classpath.template());
+        transfer(targetPath, "", ".project", templates.hybrid.project.template());
 
         // config
-        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "server.yml", templates.serverYml.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version")));
-        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "secret.yml", templates.secretYml.template());
-        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "security.yml", templates.securityYml.template());
+        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "server.yml", templates.hybrid.serverYml.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version")));
+        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "secret.yml", templates.hybrid.secretYml.template());
+        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "security.yml", templates.hybrid.securityYml.template());
 
 
-        transfer(targetPath, ("src.main.resources.config.oauth").replace(".", separator), "primary.crt", templates.primaryCrt.template());
-        transfer(targetPath, ("src.main.resources.config.oauth").replace(".", separator), "secondary.crt", templates.secondaryCrt.template());
+        transfer(targetPath, ("src.main.resources.config.oauth").replace(".", separator), "primary.crt", templates.hybrid.primaryCrt.template());
+        transfer(targetPath, ("src.main.resources.config.oauth").replace(".", separator), "secondary.crt", templates.hybrid.secondaryCrt.template());
 
-        transfer(targetPath, ("src.main.resources.META-INF.services").replace(".", separator), "com.networknt.server.HandlerProvider", templates.routingService.template());
-        transfer(targetPath, ("src.main.resources.META-INF.services").replace(".", separator), "com.networknt.handler.MiddlewareHandler", templates.middlewareService.template());
-        transfer(targetPath, ("src.main.resources.META-INF.services").replace(".", separator), "com.networknt.server.StartupHookProvider", templates.startupHookProvider.template());
-        transfer(targetPath, ("src.main.resources.META-INF.services").replace(".", separator), "com.networknt.server.ShutdownHookProvider", templates.shutdownHookProvider.template());
+        transfer(targetPath, ("src.main.resources.META-INF.services").replace(".", separator), "com.networknt.server.HandlerProvider", templates.hybrid.routingProvider.template());
+        transfer(targetPath, ("src.main.resources.META-INF.services").replace(".", separator), "com.networknt.handler.MiddlewareHandler", templates.hybrid.middlewareService.template());
+        transfer(targetPath, ("src.main.resources.META-INF.services").replace(".", separator), "com.networknt.server.StartupHookProvider", templates.hybrid.startupHookProvider.template());
+        transfer(targetPath, ("src.main.resources.META-INF.services").replace(".", separator), "com.networknt.server.ShutdownHookProvider", templates.hybrid.shutdownHookProvider.template());
 
         // logging
-        transfer(targetPath, ("src.main.resources").replace(".", separator), "logback.xml", templates.logback.template());
-        transfer(targetPath, ("src.test.resources").replace(".", separator), "logback-test.xml", templates.logback.template());
+        transfer(targetPath, ("src.main.resources").replace(".", separator), "logback.xml", templates.hybrid.logback.template());
+        transfer(targetPath, ("src.test.resources").replace(".", separator), "logback-test.xml", templates.hybrid.logback.template());
 
         // no handler as this is a server platform which supports other handlers to be deployed
 

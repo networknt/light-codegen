@@ -295,14 +295,13 @@
                 <artifactId>graphql-java</artifactId>
                 <version>${version.graphql}</version>
             </dependency>
-
-            <!-- Test dependencies -->
             <dependency>
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-classic</artifactId>
                 <version>${version.logback}</version>
-                <scope>test</scope>
             </dependency>
+
+            <!-- Test dependencies -->
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>

@@ -1,1 +1,4 @@
 com.networknt.codegen.rest.RestGenerator
+com.networknt.codegen.hybrid.HybridServerGenerator
+com.networknt.codegen.hybrid.HybridServiceGenerator
+com.networknt.codegen.graphql.GraphqlGenerator

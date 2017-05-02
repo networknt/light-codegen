@@ -44,12 +44,15 @@ public class Cli {
         if(frameworks.contains(framework)) {
             Generator generator = registry.getGenerator(framework);
             try {
-                Map<String, Object> modelJson;
-                if(isUrl(model)) {
-                    modelJson = mapper.readValue(new URL(model), new TypeReference<Map<String,Object>>(){});
-                } else {
-                    Path modelPath = Paths.get(model); // swagger.json
-                    modelJson = mapper.readValue(modelPath.toFile(), new TypeReference<Map<String,Object>>(){});
+                Map<String, Object> modelJson = null;
+                // model can be empty in some cases.
+                if(model != null) {
+                    if(isUrl(model)) {
+                        modelJson = mapper.readValue(new URL(model), new TypeReference<Map<String,Object>>(){});
+                    } else {
+                        Path modelPath = Paths.get(model); // swagger.json
+                        modelJson = mapper.readValue(modelPath.toFile(), new TypeReference<Map<String,Object>>(){});
+                    }
                 }
 
                 Map<String, Object> configJson;

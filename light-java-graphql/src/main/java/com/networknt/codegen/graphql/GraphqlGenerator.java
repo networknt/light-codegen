@@ -32,37 +32,37 @@ public class GraphqlGenerator implements Generator {
         String schemaPackage = (String)config.get("schemaPackage");
         String schemaClass = (String)config.get("schemaClass");
 
-        transfer(targetPath, "", "pom.xml", templates.pom.template(config));
-        transfer(targetPath, "", "Dockerfile", templates.dockerfile.template(config));
-        transfer(targetPath, "", ".gitignore", templates.gitignore.template());
-        transfer(targetPath, "", "README.md", templates.README.template());
-        transfer(targetPath, "", "LICENSE", templates.LICENSE.template());
-        transfer(targetPath, "", ".classpath", templates.classpath.template());
-        transfer(targetPath, "", ".project", templates.project.template());
+        transfer(targetPath, "", "pom.xml", templates.graphql.pom.template(config));
+        transfer(targetPath, "", "Dockerfile", templates.graphql.dockerfile.template(config));
+        transfer(targetPath, "", ".gitignore", templates.graphql.gitignore.template());
+        transfer(targetPath, "", "README.md", templates.graphql.README.template());
+        transfer(targetPath, "", "LICENSE", templates.graphql.LICENSE.template());
+        transfer(targetPath, "", ".classpath", templates.graphql.classpath.template());
+        transfer(targetPath, "", ".project", templates.graphql.project.template());
 
         // config
-        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "server.yml", templates.serverYml.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version")));
-        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "secret.yml", templates.secretYml.template());
-        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "security.yml", templates.securityYml.template());
+        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "server.yml", templates.graphql.serverYml.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version")));
+        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "secret.yml", templates.graphql.secretYml.template());
+        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "security.yml", templates.graphql.securityYml.template());
 
 
-        transfer(targetPath, ("src.main.resources.config.oauth").replace(".", separator), "primary.crt", templates.primaryCrt.template());
-        transfer(targetPath, ("src.main.resources.config.oauth").replace(".", separator), "secondary.crt", templates.secondaryCrt.template());
+        transfer(targetPath, ("src.main.resources.config.oauth").replace(".", separator), "primary.crt", templates.graphql.primaryCrt.template());
+        transfer(targetPath, ("src.main.resources.config.oauth").replace(".", separator), "secondary.crt", templates.graphql.secondaryCrt.template());
 
-        transfer(targetPath, ("src.main.resources.META-INF.services").replace(".", separator), "com.networknt.server.HandlerProvider", templates.routingService.template());
-        transfer(targetPath, ("src.main.resources.META-INF.services").replace(".", separator), "com.networknt.handler.MiddlewareHandler", templates.middlewareService.template());
-        transfer(targetPath, ("src.main.resources.META-INF.services").replace(".", separator), "com.networknt.server.StartupHookProvider", templates.startupHookProvider.template());
-        transfer(targetPath, ("src.main.resources.META-INF.services").replace(".", separator), "com.networknt.server.ShutdownHookProvider", templates.shutdownHookProvider.template());
-        transfer(targetPath, ("src.main.resources.META-INF.services").replace(".", separator), "com.networknt.graphql.router.SchemaProvider", templates.schemaProvider.template(schemaPackage + "." + schemaClass));
+        transfer(targetPath, ("src.main.resources.META-INF.services").replace(".", separator), "com.networknt.handler.MiddlewareHandler", templates.graphql.middlewareService.template());
+        transfer(targetPath, ("src.main.resources.META-INF.services").replace(".", separator), "com.networknt.server.StartupHookProvider", templates.graphql.startupHookProvider.template());
+        transfer(targetPath, ("src.main.resources.META-INF.services").replace(".", separator), "com.networknt.server.ShutdownHookProvider", templates.graphql.shutdownHookProvider.template());
+        transfer(targetPath, ("src.main.resources.META-INF.services").replace(".", separator), "com.networknt.graphql.router.SchemaProvider", templates.graphql.schemaProvider.template(schemaPackage + "." + schemaClass));
+        transfer(targetPath, ("src.main.resources.META-INF.services").replace(".", separator), "com.networknt.server.HandlerProvider", templates.graphql.routingProvider.template());
 
         // logging
-        transfer(targetPath, ("src.main.resources").replace(".", separator), "logback.xml", templates.logback.template());
-        transfer(targetPath, ("src.test.resources").replace(".", separator), "logback-test.xml", templates.logback.template());
+        transfer(targetPath, ("src.main.resources").replace(".", separator), "logback.xml", templates.graphql.logback.template());
+        transfer(targetPath, ("src.test.resources").replace(".", separator), "logback-test.xml", templates.graphql.logback.template());
 
         // Generate schema
         // TODO waiting for graphql-java 3.0.0 release with IDL to generate schema from definition file
         // Now it is hard coded hello world
-        transfer(targetPath, ("src.main.java." + schemaPackage).replace(".", separator), schemaClass + ".java", templates.schemaClass.template(schemaPackage, schemaClass));
+        transfer(targetPath, ("src.main.java." + schemaPackage).replace(".", separator), schemaClass + ".java", templates.graphql.schemaClass.template(schemaPackage, schemaClass));
 
 
         // no handler test case as this is a server platform which supports other handlers to be deployed.

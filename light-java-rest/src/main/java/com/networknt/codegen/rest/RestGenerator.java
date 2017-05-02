@@ -45,35 +45,35 @@ public class RestGenerator implements Generator {
         String modelPackage = (String)config.get("modelPackage");
         String handlerPackage = (String)config.get("handlerPackage");
 
-        transfer(targetPath, "", "pom.xml", templates.pom.template(config));
-        transfer(targetPath, "", "Dockerfile", templates.dockerfile.template(config));
-        transfer(targetPath, "", ".gitignore", templates.gitignore.template());
-        transfer(targetPath, "", "README.md", templates.README.template());
-        transfer(targetPath, "", "LICENSE", templates.LICENSE.template());
-        transfer(targetPath, "", ".classpath", templates.classpath.template());
-        transfer(targetPath, "", ".project", templates.project.template());
+        transfer(targetPath, "", "pom.xml", templates.rest.pom.template(config));
+        transfer(targetPath, "", "Dockerfile", templates.rest.dockerfile.template(config));
+        transfer(targetPath, "", ".gitignore", templates.rest.gitignore.template());
+        transfer(targetPath, "", "README.md", templates.rest.README.template());
+        transfer(targetPath, "", "LICENSE", templates.rest.LICENSE.template());
+        transfer(targetPath, "", ".classpath", templates.rest.classpath.template());
+        transfer(targetPath, "", ".project", templates.rest.project.template());
 
         // config
-        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "server.yml", templates.server.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version")));
-        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "secret.yml", templates.secret.template());
-        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "security.yml", templates.security.template());
+        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "server.yml", templates.rest.server.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version")));
+        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "secret.yml", templates.rest.secret.template());
+        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "security.yml", templates.rest.security.template());
 
 
-        transfer(targetPath, ("src.main.resources.config.oauth").replace(".", separator), "primary.crt", templates.primaryCrt.template());
-        transfer(targetPath, ("src.main.resources.config.oauth").replace(".", separator), "secondary.crt", templates.secondaryCrt.template());
+        transfer(targetPath, ("src.main.resources.config.oauth").replace(".", separator), "primary.crt", templates.rest.primaryCrt.template());
+        transfer(targetPath, ("src.main.resources.config.oauth").replace(".", separator), "secondary.crt", templates.rest.secondaryCrt.template());
 
-        transfer(targetPath, ("src.main.resources.META-INF.services").replace(".", separator), "com.networknt.server.HandlerProvider", templates.routingService.template(rootPackage));
-        transfer(targetPath, ("src.main.resources.META-INF.services").replace(".", separator), "com.networknt.handler.MiddlewareHandler", templates.middlewareService.template());
-        transfer(targetPath, ("src.main.resources.META-INF.services").replace(".", separator), "com.networknt.server.StartupHookProvider", templates.startupHookProvider.template());
-        transfer(targetPath, ("src.main.resources.META-INF.services").replace(".", separator), "com.networknt.server.ShutdownHookProvider", templates.shutdownHookProvider.template());
+        transfer(targetPath, ("src.main.resources.META-INF.services").replace(".", separator), "com.networknt.server.HandlerProvider", templates.rest.routingService.template(rootPackage));
+        transfer(targetPath, ("src.main.resources.META-INF.services").replace(".", separator), "com.networknt.handler.MiddlewareHandler", templates.rest.middlewareService.template());
+        transfer(targetPath, ("src.main.resources.META-INF.services").replace(".", separator), "com.networknt.server.StartupHookProvider", templates.rest.startupHookProvider.template());
+        transfer(targetPath, ("src.main.resources.META-INF.services").replace(".", separator), "com.networknt.server.ShutdownHookProvider", templates.rest.shutdownHookProvider.template());
 
         // logging
-        transfer(targetPath, ("src.main.resources").replace(".", separator), "logback.xml", templates.logback.template());
-        transfer(targetPath, ("src.test.resources").replace(".", separator), "logback-test.xml", templates.logback.template());
+        transfer(targetPath, ("src.main.resources").replace(".", separator), "logback.xml", templates.rest.logback.template());
+        transfer(targetPath, ("src.test.resources").replace(".", separator), "logback-test.xml", templates.rest.logback.template());
 
         List<Map<String, Object>> operationList = getOperationList(model);
         // routing
-        transfer(targetPath, ("src.main.java." + rootPackage).replace(".", separator), "PathHandlerProvider.java", templates.handlerProvider.template(rootPackage, handlerPackage, operationList));
+        transfer(targetPath, ("src.main.java." + rootPackage).replace(".", separator), "PathHandlerProvider.java", templates.rest.handlerProvider.template(rootPackage, handlerPackage, operationList));
 
 
         // model
@@ -87,13 +87,13 @@ public class RestGenerator implements Generator {
             if(op.get("example") != null) {
                 example = mapper.writeValueAsString(op.get("example"));
             }
-            transfer(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), className + ".java", templates.handler.template(handlerPackage, className, example));
+            transfer(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), className + ".java", templates.rest.handler.template(handlerPackage, className, example));
         }
 
         // handler test cases
-        transfer(targetPath, ("src.test.java." + handlerPackage + ".").replace(".", separator),  "TestServer.java", templates.testServer.template(handlerPackage));
+        transfer(targetPath, ("src.test.java." + handlerPackage + ".").replace(".", separator),  "TestServer.java", templates.rest.testServer.template(handlerPackage));
         for(Map<String, Object> op : operationList){
-            transfer(targetPath, ("src.test.java." + handlerPackage).replace(".", separator), (String)op.get("handlerName") + "Test.java", templates.handlerTest.template(handlerPackage, op));
+            transfer(targetPath, ("src.test.java." + handlerPackage).replace(".", separator), (String)op.get("handlerName") + "Test.java", templates.rest.handlerTest.template(handlerPackage, op));
         }
 
         // transfer binary files without touching them.

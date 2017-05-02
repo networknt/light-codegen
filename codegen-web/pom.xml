@@ -40,6 +40,18 @@
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
+            <artifactId>light-java-rest</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.networknt</groupId>
+            <artifactId>light-java-hybrid</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.networknt</groupId>
+            <artifactId>light-java-graphql</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.networknt</groupId>
             <artifactId>client</artifactId>
         </dependency>
         <dependency>
@@ -90,13 +102,11 @@
             <groupId>io.github.lukehutch</groupId>
             <artifactId>fast-classpath-scanner</artifactId>
         </dependency>
-
-
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

@@ -43,6 +43,14 @@
             <artifactId>light-java-rest</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.networknt</groupId>
+            <artifactId>light-java-hybrid</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.networknt</groupId>
+            <artifactId>light-java-graphql</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
         </dependency>
@@ -62,12 +70,11 @@
             <groupId>com.beust</groupId>
             <artifactId>jcommander</artifactId>
         </dependency>
-
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
