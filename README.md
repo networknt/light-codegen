@@ -36,7 +36,7 @@ following command line will generate petstore API at /tmp/gen folder.
 
 
 ```
-java -jar target/codegen-cli-1.2.7.jar -f light-java-rest -o /tmp/gen -m ~/networknt/light-codegen/light-java-rest/src/test/resources/swagger.json -c ~/networknt/light-codegen/light-java-rest/src/test/resources/config.json
+java -jar target/codegen-cli.jar -f light-java-rest -o /tmp/gen -m ~/networknt/light-codegen/light-java-rest/src/test/resources/swagger.json -c ~/networknt/light-codegen/light-java-rest/src/test/resources/config.json
 ```
 
 Note: Above command assume that your working directory is ~/networknt
@@ -59,7 +59,7 @@ github.com
 
 
 ```
-java -jar target/codegen-cli-1.2.7.jar -f light-java-rest -o /tmp/petstore -m https://raw.githubusercontent.com/networknt/swagger/master/petstore/swagger.json -c https://raw.githubusercontent.com/networknt/swagger/master/petstore/config.json
+java -jar target/codegen-cli.jar -f light-java-rest -o /tmp/petstore -m https://raw.githubusercontent.com/networknt/swagger/master/petstore/swagger.json -c https://raw.githubusercontent.com/networknt/swagger/master/petstore/config.json
 ```
 
 Please note that you need to use raw url when access github file. The above command line will
@@ -77,7 +77,7 @@ and its [document]()
 
 
 ```
-java -jar target/codegen-cli-1.2.7.jar -f light-java-hybrid-server -o /tmp/hybridserver -c ~/networknt/light-codegen/light-java-hybrid/src/test/resources/serverConfig.json
+java -jar target/codegen-cli.jar -f light-java-hybrid-server -o /tmp/hybridserver -c ~/networknt/light-codegen/light-java-hybrid/src/test/resources/serverConfig.json
 ```
 
 
@@ -92,7 +92,7 @@ should create a folder like /service or /lib and put all jar files into it and p
 part of the classpath when start the server platform.
 
 ```
-java -jar target/codegen-cli-1.2.7.jar -f light-java-hybrid-service -o /tmp/hybridservice -m ~/networknt/light-codegen/light-java-hybrid/src/test/resources/schema.json -c ~/networknt/light-codegen/light-java-hybrid/src/test/resources/serverConfig.json
+java -jar target/codegen-cli.jar -f light-java-hybrid-service -o /tmp/hybridservice -m ~/networknt/light-codegen/light-java-hybrid/src/test/resources/schema.json -c ~/networknt/light-codegen/light-java-hybrid/src/test/resources/serverConfig.json
 ```
 
 Now we have a server and a service generated. Let's start the server with one service deployed. 
@@ -136,7 +136,7 @@ This is a generator that scaffolds a light-java-graphql project. Currently, it g
 "Hello World" and in the future it will support Graphql IDL to generate schema from IDL.  
 
 ```
-java -jar target/codegen-cli-1.2.7.jar -f light-java-graphql -o /tmp/graphql -c ~/networknt/light-codegen/light-java-graphql/src/test/resources/config.json
+java -jar target/codegen-cli.jar -f light-java-graphql -o /tmp/graphql -c ~/networknt/light-codegen/light-java-graphql/src/test/resources/config.json
 ```
 
 Now you should have a project created at /tmp/graphql
