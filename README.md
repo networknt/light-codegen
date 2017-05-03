@@ -92,7 +92,7 @@ should create a folder like /service or /lib and put all jar files into it and p
 part of the classpath when start the server platform.
 
 ```
-java -jar target/codegen-cli.jar -f light-java-hybrid-service -o /tmp/hybridservice -m ~/networknt/light-codegen/light-java-hybrid/src/test/resources/schema.json -c ~/networknt/light-codegen/light-java-hybrid/src/test/resources/serverConfig.json
+java -jar target/codegen-cli.jar -f light-java-hybrid-service -o /tmp/hybridservice -m ~/networknt/light-codegen/light-java-hybrid/src/test/resources/schema.json -c ~/networknt/light-codegen/light-java-hybrid/src/test/resources/serviceConfig.json
 ```
 
 Now we have a server and a service generated. Let's start the server with one service deployed. 
@@ -149,6 +149,145 @@ mvn clean install exec:exec
 Open your browser and point to http://localhost:8080/graphql and graphiql interface will show
 up in your browser. 
 
+### Docker Command Line
+
+Above local build and command line utilty works but it is very hard to use that in devops script. 
+In order to make scripting easier, we have dockerized the command line utility. 
+
+#### light-java-rest
+
+The following command is using docker image to generate the code into /tmp/light-codegen/generated. 
+
+```
+docker run -it -v ~/networknt/light-codegen/light-java-rest/src/test/resources:/light-api/input -v /tmp/light-codegen:/light-api/out networknt/light-codegen -f light-java-rest -m /light-api/input/swagger.json -c /light-api/input/config.json -o /light-api/out/generated
+```
+On Linux environment, the generated code might belong to root:root and you need to change the
+owner to yourself before building it.
+
+```
+cd /tmp/light-codegen
+sudo chown -R steve:steve generated
+cd generated
+mvn clean install exec:exec
+```
+To test it.
+```
+curl localhost:8080/v2/pet/111
+```
+
+#### light-java-hybrid server
+
+The following command is using docker to generate light-java-hybrid server into 
+/tmp/light-codegen/hybridserver folder
+
+```
+docker run -it -v ~/networknt/light-codegen/light-java-hybrid/src/test/resources:/light-api/input -v /tmp/light-codegen:/light-api/out networknt/light-codegen -f light-java-hybrid-server -c /light-api/input/serverConfig.json -o /light-api/out/hybridserver
+```
+
+Let's change the owner and build the server
+
+```
+cd /tmp/light-codegen
+sudo chown -R steve:steve hybridserver
+cd hybridserver
+mvn clean install
+```
+Let's wait until we have a server generated to start the server and test it.
+
+
+#### light-java-hybrid service
+
+The following command is using docker to generate light-java-hybrid service into
+/tmp/light-codegen/hybridservice folder
+
+```
+docker run -it -v ~/networknt/light-codegen/light-java-hybrid/src/test/resources:/light-api/input -v /tmp/light-codegen:/light-api/out networknt/light-codegen -f light-java-hybrid-service -m /light-api/input/schema.json -c /light-api/input/serviceConfig.json -o /light-api/out/hybridservice
+```
+
+Let's change the owner and build the service
+
+```
+cd /tmp/light-codegen
+sudo chown -R steve:steve hybridservice
+cd hybridservice
+mvn clean install
+
+```
+
+To run the server with services, please following the instruction in utility command line.
+
+
+#### light-java-graphql
+
+The following command is using docker to generate light-java-graphql into 
+/tmp/light-codegen/graphql folder
+
+```
+docker run -it -v ~/networknt/light-codegen/light-java-graphql/src/test/resources:/light-api/input -v /tmp/light-codegen:/light-api/out networknt/light-codegen -f light-java-graphql -c /light-api/input/config.json -o /light-api/out/graphql
+```
+Let's change the owner and build the service
+
+```
+cd /tmp/light-codegen
+sudo chown -R steve:steve graphql
+cd graphql
+mvn clean install exec:exec
+
+```
+
+To test the server, please follow the instructions above in utility command line.
+
+### Scripting
+
+You can use docker run command to call the generator but it is very complicated for the parameters.
+In order to make things easier and friendlier to devops flow. Let's create a script to call the
+command line from docker image.
+
+If you look at the docker run command you can see that we basically need one input folder for 
+schema and config files and one output folder to generated code. Once these volumes are mapped to 
+local directory and with framework specified, it is easy to derive other files based on
+convention. 
+
+#### light-java-rest
+
+```
+git clone git@github.com:networknt/model-config.git
+cd model-config
+./generate.sh light-java-rest ~/networknt/model-config/rest/petstore /tmp/petstore
+```
+Now you should have a project generated in /tmp/petstore/genereted
+
+
+#### light-java-hybrid server
+
+```
+git clone git@github.com:networknt/model-config.git
+cd model-config
+./generate.sh light-java-hybrid-server ~/networknt/model-config/hybrid/generic-server /tmp/hybridserver
+```
+Now you should have a project generated in /tmp/hybridserver/generated
+
+
+#### light-java-hybrid service
+
+```
+git clone git@github.com:networknt/model-config.git
+cd model-config
+./generate.sh light-java-hybrid-service ~/networknt/model-config/hybrid/generic-service /tmp/hybridservice
+```
+
+Now you should have a project generated in /tmp/hybridservice/generated
+
+
+#### light-java-graphql
+
+```
+git clone git@github.com:networknt/model-config.git
+cd model-config
+./generate.sh light-java-graphql ~/networknt/model-config/graphql/helloworld /tmp/graphql
+```
+
+Now you should have a project generated in /tmp/graphql/generated
 
 ### Codegen Site
 
