@@ -41,7 +41,7 @@ public class FrameworkListHandlerTest {
             int statusCode = response.getStatusLine().getStatusCode();
             String body = IOUtils.toString(response.getEntity().getContent(), "utf8");
             Assert.assertEquals(200, statusCode);
-            Assert.assertTrue(body.contains("light-java-rest"));
+            Assert.assertTrue(body.contains("light-rest-4j"));
         } catch (Exception e) {
             e.printStackTrace();
         }

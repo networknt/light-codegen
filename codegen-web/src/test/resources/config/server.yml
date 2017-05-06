@@ -25,7 +25,7 @@ enableTwoWayTls: false
 truststoreName: tls/server.truststore
 
 # Unique service identifier. Used in service registration and discovery etc.
-serviceId: io.swagger.swagger-light-java-1.0.0
+serviceId: io.swagger.swagger-light-4j-1.0.0
 
 # Flag to enable service registration. Only be true if running as standalone Java jar.
 enableRegistry: false

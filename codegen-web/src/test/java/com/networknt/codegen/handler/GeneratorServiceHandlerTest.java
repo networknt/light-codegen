@@ -1119,7 +1119,7 @@ public class GeneratorServiceHandlerTest {
                 "    \"overwriteHandler\": false,\n" +
                 "    \"overwriteHandlerTest\": false\n" +
                 "  },\n" +
-                "  \"framework\": \"light-java-rest\"\n" +
+                "  \"framework\": \"light-rest-4j\"\n" +
                 "}";
 
         CloseableHttpClient client = Client.getInstance().getSyncClient();
