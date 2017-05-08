@@ -122,6 +122,9 @@ public class RestGenerator implements Generator {
             String path = entryPath.getKey();
             Map<String, Object> pathValues = (Map<String, Object>)entryPath.getValue();
             for(Map.Entry<String, Object> entryOps: pathValues.entrySet()) {
+                // skip all the entries that are not http method. The only possible entries
+                // here are extensions. which will be just a key value pair.
+                if(entryOps.getKey().startsWith("x-")) continue;
                 Map<String, Object> flattened = new HashMap<>();
                 flattened.put("method", entryOps.getKey().toUpperCase());
                 flattened.put("capMethod", entryOps.getKey().substring(0, 1).toUpperCase() + entryOps.getKey().substring(1));
