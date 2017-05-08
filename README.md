@@ -1,6 +1,11 @@
 # light-codegen
 A code generator based on rocker that can be used as a command line utility or web service
 
+## Rebuld
+
+Every time, you have template change, you have to rebuild the entire project in order to
+regenerate the template code. Otherwise, the old template is still in use. 
+
 ## Input
 
 * A list of files as template
