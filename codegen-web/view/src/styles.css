@@ -1,0 +1,15 @@
+/* You can add global styles to this file, and also import other style files */
+body {
+	margin: 0;
+}
+
+
+
+.light4j-primary-background, .light4j-primary-background * {
+	background-color: rgb(232, 78, 64) !important;
+	color: #ffffff !important;
+}
+
+.light4j-primary-text {
+	color: rgb(232, 78, 64) !important;
+}
