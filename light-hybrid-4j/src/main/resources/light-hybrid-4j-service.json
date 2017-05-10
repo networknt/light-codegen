@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "definitions": {},
+  "id": "http://example.com/example.json",
+  "properties": {
+    "artifactId": {
+      "id": "/properties/artifactId",
+      "type": "string"
+    },
+    "groupId": {
+      "id": "/properties/groupId",
+      "type": "string"
+    },
+    "handlerPackage": {
+      "id": "/properties/handlerPackage",
+      "type": "string"
+    },
+    "modelPackage": {
+      "id": "/properties/modelPackage",
+      "type": "string"
+    },
+    "name": {
+      "id": "/properties/name",
+      "type": "string"
+    },
+    "overwriteHandler": {
+      "id": "/properties/overwriteHandler",
+      "type": "boolean"
+    },
+    "overwriteHandlerTest": {
+      "id": "/properties/overwriteHandlerTest",
+      "type": "boolean"
+    },
+    "rootPackage": {
+      "id": "/properties/rootPackage",
+      "type": "string"
+    },
+    "version": {
+      "id": "/properties/version",
+      "type": "string"
+    }
+  },
+  "type": "object"
+}

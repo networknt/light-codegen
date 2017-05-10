@@ -2,12 +2,14 @@ package com.networknt.codegen.graphql;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Map;
@@ -48,4 +50,19 @@ public class GraphqlGeneratorTest {
         java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
         return s.hasNext() ? s.next() : "";
     }
+
+    @Test
+    public void testGetFramework() {
+        GraphqlGenerator generator = new GraphqlGenerator();
+        Assert.assertEquals("light-graphql-4j", generator.getFramework());
+    }
+
+    @Test
+    public void testGetConfigSchema() throws IOException {
+        GraphqlGenerator generator = new GraphqlGenerator();
+        ByteBuffer bf = generator.getConfigSchema();
+        Assert.assertNotNull(bf);
+        System.out.println(bf.toString());
+    }
+
 }
