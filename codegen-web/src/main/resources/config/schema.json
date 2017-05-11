@@ -22,17 +22,26 @@
       "title" : "Service",
       "type" : "object",
       "properties" : {
-        "model" : {
-          "type" : "object"
-        },
-        "config" : {
-          "type" : "object"
-        },
-        "framework": {
-          "type" : "string"
+        "generators" : {
+          "type" : "array",
+          "items": {
+            "properties": {
+              "model": {
+                "type": "object"
+              },
+              "config" : {
+                "type" : "object"
+              },
+              "framework": {
+                "type" : "string"
+              }
+            },
+            "required": ["config", "framework"]
+          },
+          "maxItems": 5,
+          "minItems": 1
         }
-      },
-      "required" : [ "config", "framework"]
+      }
     },
     "scope": "codegen.w"
   }
