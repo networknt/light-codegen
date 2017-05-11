@@ -22,7 +22,7 @@ import java.util.Set;
 /**
  * Created by steve on 26/04/17.
  */
-@ServiceHandler(id="lightapi.net/framework/list/0.0.1")
+@ServiceHandler(id="lightapi.net/codegen/listFramework/0.0.1")
 public class FrameworkListHandler implements Handler {
     static private final XLogger logger = XLoggerFactory.getXLogger(FrameworkListHandler.class);
     static private Set<String> frameworks = FrameworkRegistry.getInstance().getFrameworks();

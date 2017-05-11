@@ -1,18 +1,19 @@
 package com.networknt.codegen.rest;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fizzed.rocker.runtime.ArrayOfByteArraysOutput;
-import com.fizzed.rocker.runtime.DefaultRockerModel;
+import com.google.common.io.ByteStreams;
 import com.networknt.codegen.Generator;
 import com.networknt.codegen.Utils;
 import com.networknt.utility.NioUtils;
+import org.apache.commons.io.IOUtils;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.file.*;
+import java.nio.ByteBuffer;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +33,8 @@ import static java.io.File.separator;
  */
 public class RestGenerator implements Generator {
     static ObjectMapper mapper = new ObjectMapper();
+
+    byte[] schemaBuf = null;
 
     @Override
     public String getFramework() {

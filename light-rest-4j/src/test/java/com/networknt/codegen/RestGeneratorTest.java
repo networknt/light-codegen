@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fizzed.rocker.runtime.ArrayOfByteArraysOutput;
 import com.networknt.codegen.rest.RestGenerator;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -54,5 +55,19 @@ public class RestGeneratorTest {
         RestGenerator generator = new RestGenerator();
         List list = generator.getOperationList(model);
         System.out.println(list);
+    }
+
+    @Test
+    public void testGetFramework() {
+        RestGenerator generator = new RestGenerator();
+        Assert.assertEquals("light-rest-4j", generator.getFramework());
+    }
+
+    @Test
+    public void testGetConfigSchema() throws IOException {
+        RestGenerator generator = new RestGenerator();
+        ByteBuffer bf = generator.getConfigSchema();
+        Assert.assertNotNull(bf);
+        System.out.println(bf.toString());
     }
 }

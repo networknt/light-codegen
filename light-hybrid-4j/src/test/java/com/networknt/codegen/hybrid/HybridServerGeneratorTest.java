@@ -2,6 +2,7 @@ package com.networknt.codegen.hybrid;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -39,4 +40,16 @@ public class HybridServerGeneratorTest {
         generator.generate(targetPath, null, config);
     }
 
+    @Test
+    public void testGetFramework() {
+        HybridServerGenerator generator = new HybridServerGenerator();
+        Assert.assertEquals("light-hybrid-4j-server", generator.getFramework());
+    }
+
+    @Test
+    public void testGetConfigSchema() throws IOException {
+        HybridServerGenerator generator = new HybridServerGenerator();
+        Assert.assertNotNull(generator.getConfigSchema());
+        System.out.println(generator.getConfigSchema().toString());
+    }
 }
