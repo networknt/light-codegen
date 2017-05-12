@@ -38,20 +38,9 @@
         <version.httpasyncclient>4.1.2</version.httpasyncclient>
         <version.fastscanner>2.0.8</version.fastscanner>
         <version.json-schema-validator>0.1.7</version.json-schema-validator>
-        <version.swagger>1.5.13</version.swagger>
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>com.networknt</groupId>
-            <artifactId>codegen-core</artifactId>
-            <version>${version.light-hybrid-4j}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.networknt</groupId>
-            <artifactId>codegen-fwk</artifactId>
-            <version>${version.light-hybrid-4j}</version>
-        </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
             <artifactId>client</artifactId>
