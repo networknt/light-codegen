@@ -16,6 +16,7 @@ import {compose} from '@ngrx/core';
 import {storeFreeze} from 'ngrx-store-freeze';
 
 import * as fromCodegen from './codegen/codegen.state';
+import {CodegenCommonModule} from 'app/common/codegen-common.module';
 
 const reducers = {
 	codegen: fromCodegen.codegen
@@ -35,6 +36,7 @@ export let MODULE_IMPORTS = [
 	BrowserAnimationsModule,
 	HeaderModule,
 	CodegenModule,
+	CodegenCommonModule,
 	StoreModule.provideStore(reducer),
 	RouterModule.forRoot(appRoutes, {useHash: true})
 ];

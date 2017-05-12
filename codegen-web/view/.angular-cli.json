@@ -20,11 +20,14 @@
       "prefix": "app",
       "styles": [
 		  "../node_modules/semantic-ui-css/semantic.min.css",
+		  "../node_modules/selectize/dist/css/selectize.css",
+		  "../node_modules/ng-selectize/selectize/selectize.semantic.css",
 		  "styles.css"
       ],
       "scripts": [
 		  "../node_modules/jquery/dist/jquery.min.js",
-		  "../node_modules/semantic-ui-css/semantic.min.js"
+		  "../node_modules/semantic-ui-css/semantic.min.js",
+		  "../node_modules/ng-selectize/selectize/selectize.standalone.js"
 	  ],
       "environmentSource": "environments/environment.ts",
       "environments": {
