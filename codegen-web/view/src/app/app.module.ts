@@ -9,21 +9,45 @@ import {HeaderModule} from 'app/header/header.module';
 import {RouterModule} from '@angular/router';
 import {appRoutes} from './app.routes';
 import {CodegenModule} from './codegen/codegen.module';
+import {environment} from '../environments/environment';
+import {StoreDevtoolsModule} from '@ngrx/store-devtools';
+import {combineReducers, StoreModule} from '@ngrx/store';
+import {compose} from '@ngrx/core';
+import {storeFreeze} from 'ngrx-store-freeze';
 
+import * as fromCodegen from './codegen/codegen.state';
+
+const reducers = {
+	codegen: fromCodegen.codegen
+};
+
+export function reducer(state: any, action: any) {
+	if (environment.production) {
+		return combineReducers(reducers)(state, action);
+	}
+	return compose(storeFreeze, combineReducers)(reducers)(state, action);
+}
+
+export let MODULE_IMPORTS = [
+	BrowserModule,
+	FormsModule,
+	HttpModule,
+	BrowserAnimationsModule,
+	HeaderModule,
+	CodegenModule,
+	StoreModule.provideStore(reducer),
+	RouterModule.forRoot(appRoutes, {useHash: true})
+];
+
+if (!environment.production) {
+	MODULE_IMPORTS.push(StoreDevtoolsModule.instrumentOnlyWithExtension());
+}
 
 @NgModule({
 	declarations: [
 		AppComponent
 	],
-	imports: [
-		BrowserModule,
-		FormsModule,
-		HttpModule,
-		BrowserAnimationsModule,
-		HeaderModule,
-		CodegenModule,
-		RouterModule.forRoot(appRoutes, {useHash: true})
-	],
+	imports: [MODULE_IMPORTS],
 	providers: [],
 	bootstrap: [AppComponent]
 })
