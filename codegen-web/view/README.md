@@ -1,6 +1,13 @@
-# LightCodegen
+# Light-4j Codegen
 
-TODO REAME
+User interface for the code generation functionality within the Light-4j framework.
+ 
+## Development watch server
+```javascript
+npm start
+```
 
-npm i
-ng serve
+## Packaging for production
+```javascript
+npm run build:prod
+```
