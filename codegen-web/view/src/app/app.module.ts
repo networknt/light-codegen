@@ -16,10 +16,12 @@ import {compose} from '@ngrx/core';
 import {storeFreeze} from 'ngrx-store-freeze';
 
 import * as fromCodegen from './codegen/codegen.state';
+import * as fromSchema from './codegen/schema-tab/schema.state'
 import {CodegenCommonModule} from 'app/common/codegen-common.module';
 
 const reducers = {
-	codegen: fromCodegen.codegen
+	codegen: fromCodegen.codegen,
+	schema: fromSchema.schema
 };
 
 export function reducer(state: any, action: any) {

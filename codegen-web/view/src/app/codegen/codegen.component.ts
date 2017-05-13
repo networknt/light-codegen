@@ -1,10 +1,10 @@
 import {Component, OnInit} from '@angular/core';
-import {CodegenService} from 'app/codegen/codegen.service';
 import {Store} from '@ngrx/store';
-import {getGeneratorTypes, getIsLoadingGeneratorTypes} from 'app/codegen/codegen.state';
+import {getCodegenStage} from 'app/codegen/codegen.state';
 import {AppState} from 'app/app.state';
 import {Observable} from 'rxjs/Observable';
-import {GENERATORS_DROPDOWN_CONFIG} from 'app/codegen/codegen.config';
+import {CodegenStage} from 'app/codegen/codegen.config';
+import {CodegenService} from './codegen.service';
 
 @Component({
 	selector: 'app-codegen',
@@ -13,18 +13,18 @@ import {GENERATORS_DROPDOWN_CONFIG} from 'app/codegen/codegen.config';
 })
 export class CodegenComponent implements OnInit {
 
-	generatorTypes: Observable<{[item: string]: string}>;
-	isLoadingGeneratorTypes: Observable<boolean>;
 
-	generatorTypesDropdownConfig = GENERATORS_DROPDOWN_CONFIG;
+	codegenStage: Observable<CodegenStage>;
+	CODEGEN_STAGE_ENUM = CodegenStage;
 
-	constructor(private codegenService: CodegenService, private store: Store<AppState>) {
-		this.generatorTypes = this.store.select(getGeneratorTypes);
-		this.isLoadingGeneratorTypes = this.store.select(getIsLoadingGeneratorTypes);
+	constructor(private store: Store<AppState>, private codegenService: CodegenService) {
+		this.codegenStage = this.store.select(getCodegenStage);
 	}
 
-	ngOnInit() {
-		this.codegenService.getGeneratorTypes();
+	ngOnInit() {}
+
+	onSchemaAdded() {
+		this.codegenService.setStage(CodegenStage.FEATURES_SELECTION);
 	}
 
 }

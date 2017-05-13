@@ -2,66 +2,29 @@
 	<h2 class="ui header light4j-primary-text">Codegen</h2>
 
 	<div class="ui attached raised segment" style="padding: 30px; margin-top: 30px;">
-		<div class="ui grid">
-			<div class="four wide column">
-				<h4 class="dividing header">Schemas Added</h4>
-				<div class="ui segment" style="height: 80%; overflow-y: auto">
-					<div class="ui divided list">
-						<div class="item">
-							<div class="header">light-hybrid-4j-server</div>
-							Some file.txt
-						</div>
-						<div class="item">
-							<div class="header">light-graphql-4j</div>
-							hello-world.yml
-						</div>
-						<div class="item">
-							<div class="header">angular > react</div>
-							And now you know
-						</div>
-						<div class="item">
-							<div class="header">Some other example</div>
-							.jpg
-						</div>
-					</div>
-				</div>
+		<div [ngSwitch]="codegenStage | async">
+			<div *ngSwitchCase="CODEGEN_STAGE_ENUM.SCHEMA_DEFINITION">
+				<codegen-schema-tab (onContinue)="onSchemaAdded()"></codegen-schema-tab>
 			</div>
-			<div class="one wide column"></div>
-			<div class="seven wide column">
-				<form class="ui form">
-					<h4 class="dividing header">Add a Schema</h4>
-					<div class="field">
-						<label>Select Generator:</label>
-						<ng-selectize [config]="generatorTypesDropdownConfig" [options]="generatorTypes | async"></ng-selectize>
-					</div>
-					<div class="field">
-						<label>Upload your API Schema:</label>
-						<label for="file" class="ui primary basic icon button">
-							<i class="file icon"></i>
-							Upload File
-						</label>
-						<input type="file" id="file" style="display:none">
-					</div>
-				</form>
-			</div>
+			<div *ngSwitchDefault>WIP</div>
 		</div>
 	</div>
 	<div class="ui three bottom attached steps">
-		<div class="active step">
+		<div class="step" [ngClass]="{'active': (codegenStage | async) == CODEGEN_STAGE_ENUM.SCHEMA_DEFINITION}">
 			<i class="upload icon"></i>
 			<div class="content">
 				<div class="title">Schema</div>
 				<div class="description">Upload your API Schema</div>
 			</div>
 		</div>
-		<div class="disabled step">
+		<div class="step" [class.disabled]="(codegenStage | async) < CODEGEN_STAGE_ENUM.FEATURES_SELECTION" [ngClass]="{'active': (codegenStage | async) == CODEGEN_STAGE_ENUM.FEATURES_SELECTION}">
 			<i class="puzzle icon"></i>
 			<div class="content">
 				<div class="title">Features</div>
 				<div class="description">Pick which features to include</div>
 			</div>
 		</div>
-		<div class="disabled step">
+		<div class="step" [class.disabled]="(codegenStage | async) < CODEGEN_STAGE_ENUM.VERIFICATION" [ngClass]="{'active': (codegenStage | async) == CODEGEN_STAGE_ENUM.VERIFICATION}">
 			<i class="child icon"></i>
 			<div class="content">
 				<div class="title">Generate</div>

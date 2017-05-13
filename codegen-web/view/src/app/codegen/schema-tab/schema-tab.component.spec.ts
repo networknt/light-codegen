@@ -1,20 +1,20 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {CodegenComponent} from './codegen.component';
+import {CodegenSchemaTabComponent} from './schema-tab.component';
 
-describe('CodegenComponent', () => {
-	let component: CodegenComponent;
-	let fixture: ComponentFixture<CodegenComponent>;
+describe('CodegenSchemaTabComponent', () => {
+	let component: CodegenSchemaTabComponent;
+	let fixture: ComponentFixture<CodegenSchemaTabComponent>;
 
 	beforeEach(async(() => {
 		TestBed.configureTestingModule({
-			declarations: [CodegenComponent]
+			declarations: [CodegenSchemaTabComponent]
 		})
 			.compileComponents();
 	}));
 
 	beforeEach(() => {
-		fixture = TestBed.createComponent(CodegenComponent);
+		fixture = TestBed.createComponent(CodegenSchemaTabComponent);
 		component = fixture.componentInstance;
 		fixture.detectChanges();
 	});

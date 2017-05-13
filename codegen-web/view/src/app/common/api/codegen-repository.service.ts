@@ -25,7 +25,7 @@ export class CodegenRepositoryService {
 			.map(handleRequestResponse)
 			.map((arrayOfGenerators: string[]) => {
 				return arrayOfGenerators.map((generator: string) => {
-					return {item: generator};
+					return {label: generator, value: generator};
 				});
 			})
 			.catch(CodegenRepositoryService.handleRequestError);
