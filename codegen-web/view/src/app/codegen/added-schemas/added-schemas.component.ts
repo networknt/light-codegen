@@ -11,7 +11,8 @@ export class AddedSchemasComponent implements OnInit {
 
 	@Input() addedSchemas: Schema[];
 	@Input() selectable = false;
-	@Input() selectedSchemaIndex = 0;
+
+	selectedSchemaIndex = 0;
 
 	constructor(private schemaService: SchemaService) {}
 
@@ -27,6 +28,7 @@ export class AddedSchemasComponent implements OnInit {
 
 	onSchemaSelectClick(schemaIndex: number) {
 		if (this.selectable) {
+			this.selectedSchemaIndex = schemaIndex;
 			this.schemaService.selectSchema(schemaIndex);
 		}
 	}
