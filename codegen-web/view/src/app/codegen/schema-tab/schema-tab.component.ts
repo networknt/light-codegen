@@ -22,18 +22,18 @@ export class CodegenSchemaTabComponent implements OnInit {
 
 	@Output() onContinue: EventEmitter<void> = new EventEmitter<void>(false);
 
-	constructor(private store: Store<AppState>, private codegenService: SchemaService) {
+	constructor(private store: Store<AppState>, private schemaService: SchemaService) {
 		this.generatorTypes = this.store.select(getGeneratorTypes);
 		this.isLoadingGeneratorTypes = this.store.select(getIsLoadingGeneratorTypes);
 		this.addedSchemas = this.store.select(getAddedSchemas);
 	}
 
 	ngOnInit() {
-		this.codegenService.getGeneratorTypes();
+		this.schemaService.getGeneratorTypes();
 	}
 
 	onAddAnotherClick() {
-		this.codegenService.addSchema({
+		this.schemaService.addSchema({
 			generatorType: this.addSchemaForm.get('generatorDropdown').value,
 			uploadedSchemaFile: this.addSchemaForm.get('schemaFile').value
 		});
@@ -42,7 +42,7 @@ export class CodegenSchemaTabComponent implements OnInit {
 
 	onContinueClick() {
 		if (this.addSchemaForm.valid) {
-			this.codegenService.addSchema({
+			this.schemaService.addSchema({
 				generatorType: this.addSchemaForm.get('generatorDropdown').value,
 				uploadedSchemaFile: this.addSchemaForm.get('schemaFile').value
 			});
@@ -53,5 +53,4 @@ export class CodegenSchemaTabComponent implements OnInit {
 	onAddSchemaFormChange(addSchemaForm: FormGroup) {
 		this.addSchemaForm = addSchemaForm;
 	}
-
 }

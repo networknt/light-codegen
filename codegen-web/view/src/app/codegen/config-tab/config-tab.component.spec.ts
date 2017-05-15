@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SchemasAddedViewComponent } from './schemas-added-view.component';
+import { ConfigTabComponent } from './config-tab.component';
 
-describe('SchemasAddedViewComponent', () => {
-  let component: SchemasAddedViewComponent;
-  let fixture: ComponentFixture<SchemasAddedViewComponent>;
+describe('ConfigTabComponent', () => {
+  let component: ConfigTabComponent;
+  let fixture: ComponentFixture<ConfigTabComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ SchemasAddedViewComponent ]
+      declarations: [ ConfigTabComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(SchemasAddedViewComponent);
+    fixture = TestBed.createComponent(ConfigTabComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

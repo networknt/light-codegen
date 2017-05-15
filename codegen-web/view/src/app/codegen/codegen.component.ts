@@ -6,6 +6,8 @@ import {Observable} from 'rxjs/Observable';
 import {CodegenStage} from 'app/codegen/codegen.config';
 import {CodegenService} from './codegen.service';
 
+import 'rxjs/add/operator/take';
+
 @Component({
 	selector: 'app-codegen',
 	templateUrl: './codegen.component.html',
@@ -24,7 +26,13 @@ export class CodegenComponent implements OnInit {
 	ngOnInit() {}
 
 	onSchemaAdded() {
-		this.codegenService.setStage(CodegenStage.FEATURES_SELECTION);
+		this.codegenService.setStage(CodegenStage.CONFIG_SELECTION);
+	}
+
+	onBackClick() {
+		this.codegenStage.take(1).subscribe((currentStage: CodegenStage) => {
+			this.codegenService.setStage(currentStage - 1);
+		});
 	}
 
 }

@@ -6,6 +6,9 @@
 			<div *ngSwitchCase="CODEGEN_STAGE_ENUM.SCHEMA_DEFINITION">
 				<codegen-schema-tab (onContinue)="onSchemaAdded()"></codegen-schema-tab>
 			</div>
+			<div *ngSwitchCase="CODEGEN_STAGE_ENUM.CONFIG_SELECTION">
+				<codegen-config-tab (onBack)="onBackClick()"></codegen-config-tab>
+			</div>
 			<div *ngSwitchDefault>WIP</div>
 		</div>
 	</div>
@@ -17,10 +20,10 @@
 				<div class="description">Upload your API Schema</div>
 			</div>
 		</div>
-		<div class="step" [class.disabled]="(codegenStage | async) < CODEGEN_STAGE_ENUM.FEATURES_SELECTION" [ngClass]="{'active': (codegenStage | async) == CODEGEN_STAGE_ENUM.FEATURES_SELECTION}">
+		<div class="step" [class.disabled]="(codegenStage | async) < CODEGEN_STAGE_ENUM.CONFIG_SELECTION" [ngClass]="{'active': (codegenStage | async) == CODEGEN_STAGE_ENUM.CONFIG_SELECTION}">
 			<i class="puzzle icon"></i>
 			<div class="content">
-				<div class="title">Features</div>
+				<div class="title">Configuration</div>
 				<div class="description">Pick which features to include</div>
 			</div>
 		</div>

@@ -1,7 +1,7 @@
 import {Component, OnInit, Input, Output, EventEmitter} from '@angular/core';
-import {GENERATORS_DROPDOWN_CONFIG, Schema} from 'app/codegen/schema-tab/schema.config';
+import {Schema} from 'app/codegen/schema-tab/schema.config';
 import {FormGroup, FormBuilder} from '@angular/forms';
-import {ADD_SCHEMA_FORM_GROUP} from 'app/codegen/schema-tab/add-schema-form/add-schema-form.config';
+import {ADD_SCHEMA_FORM_GROUP, GENERATORS_DROPDOWN_CONFIG} from 'app/codegen/schema-tab/add-schema-form/add-schema-form.config';
 
 @Component({
 	selector: 'codegen-add-schema-form',

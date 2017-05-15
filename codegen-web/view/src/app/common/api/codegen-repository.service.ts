@@ -31,6 +31,14 @@ export class CodegenRepositoryService {
 			.catch(CodegenRepositoryService.handleRequestError);
 	}
 
+	getConfigSchema(framework: string): Observable<string> {
+		const requestBody: ActionRequest = Object.assign({framework: framework}, buildActionRequest('getSchema'));
+
+		return this.http.post(API_URL, requestBody, POST_REQUEST)
+			.map(handleRequestResponse)
+			.catch(CodegenRepositoryService.handleRequestError);
+	}
+
 
 	static handleRequestError(errorResponse: Response | any): ErrorObservable {
 		let errorMessage: string;

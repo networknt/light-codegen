@@ -27,4 +27,12 @@ export class SchemaService {
 	addSchema(schema: Schema): void {
 		this.store.dispatch(SchemaActions.addSchema(schema));
 	}
+
+	removeSchema(schemaIndex: number): void {
+		this.store.dispatch(SchemaActions.removeSchema(schemaIndex));
+	}
+
+	selectSchema(schemaIndex: number): void {
+		this.store.dispatch(SchemaActions.selectSchema(schemaIndex));
+	}
 }

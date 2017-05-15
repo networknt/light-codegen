@@ -1,36 +1,38 @@
 <div class="ui two column divided grid">
 	<div class="row">
-		<div class="wide column" [ngClass]="(addedSchemas | async).length > 0 ? 'eleven': 'sixteen'" style="margin: 0 auto;">
-			<codegen-add-schema-form [generatorTypes]="generatorTypes | async"
-									 [isLoadingGeneratorTypes]="isLoadingGeneratorTypes | async"
-									 (onFormChange)="onAddSchemaFormChange($event)"></codegen-add-schema-form>
+		<div [ngClass]="(addedSchemas | async).length > 0 ? 'eleven wide column': 'sixteen wide column'"
+			 style="margin: 0 auto;">
+			<div class="ui grid">
+				<div class="row">
+					<div class="sixteen wide column">
+						<codegen-add-schema-form [generatorTypes]="generatorTypes | async"
+												 [isLoadingGeneratorTypes]="isLoadingGeneratorTypes | async"
+												 (onFormChange)="onAddSchemaFormChange($event)"></codegen-add-schema-form>
+					</div>
+				</div>
 
-			<div style="text-align:center; margin-top: 20px;" *ngIf="addSchemaForm && addSchemaForm.valid">
-				<div class="ui buttons">
-					<button class="compact ui left labeled icon button" style="padding-left: 50px !important;" (click)="onAddAnotherClick()">
-						<i class="plus icon margin-fix"></i>
-						Another
-					</button>
-					<div class="or"></div>
-					<button class="compact ui right labeled icon button light4j-secondary-background" style="padding-right: 40px !important;" (click)="onContinueClick()">
-						Continue
-						<i class="right arrow icon margin-fix"></i>
-					</button>
+				<div class="row" *ngIf="addSchemaForm && ((addedSchemas | async).length > 0 || addSchemaForm.valid)"
+					 style="padding: 0;">
+					<div class="sixteen wide column" [style.textAlign]="addSchemaForm.valid ? 'center' : 'right'">
+
+						<div class="ui vertical animated button" (click)="onAddAnotherClick()" *ngIf="addSchemaForm.valid">
+							<div class="visible content">Add</div>
+							<div class="hidden content"><i class="plus icon" style="margin:0;"></i></div>
+						</div>
+
+						<div class="ui animated button light4j-secondary-background"
+							 (click)="onContinueClick()">
+							<div class="visible content">Continue</div>
+							<div class="hidden content">
+								<i class="right arrow icon"></i>
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
 		<div class="five wide column" *ngIf="(addedSchemas | async).length > 0">
-			<codegen-schemas-added-view [addedSchemas]="addedSchemas | async"></codegen-schemas-added-view>
-
-		</div>
-	</div>
-	<div class="row" *ngIf="(addedSchemas | async).length > 0 && addSchemaForm.invalid" style="padding: 0;">
-		<div class="sixteen wide column" style="text-align: right;">
-			<button class="compact ui right labeled icon button light4j-secondary-background" style="padding-right: 40px !important;"
-					(click)="onContinueClick()">
-				Continue
-				<i class="right arrow icon margin-fix"></i>
-			</button>
+			<codegen-added-schemas [addedSchemas]="addedSchemas | async"></codegen-added-schemas>
 		</div>
 	</div>
 </div>

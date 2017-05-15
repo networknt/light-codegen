@@ -16,12 +16,15 @@ import {compose} from '@ngrx/core';
 import {storeFreeze} from 'ngrx-store-freeze';
 
 import * as fromCodegen from './codegen/codegen.state';
-import * as fromSchema from './codegen/schema-tab/schema.state'
+import * as fromSchema from './codegen/schema-tab/schema.state';
+import * as fromConfig from './codegen/config-tab/config.state';
 import {CodegenCommonModule} from 'app/common/codegen-common.module';
 
 const reducers = {
 	codegen: fromCodegen.codegen,
-	schema: fromSchema.schema
+	schema: fromSchema.schema,
+	config: fromConfig.config
+
 };
 
 export function reducer(state: any, action: any) {
@@ -48,11 +51,8 @@ if (!environment.production) {
 }
 
 @NgModule({
-	declarations: [
-		AppComponent
-	],
+	declarations: [AppComponent],
 	imports: [MODULE_IMPORTS],
-	providers: [],
 	bootstrap: [AppComponent]
 })
 export class AppModule {

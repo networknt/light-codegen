@@ -16,4 +16,8 @@ export class CodegenApiService {
 		return this.codegenRepository.getGeneratorTypes();
 	}
 
+	getConfigSchema(framework: string): Observable<string> {
+		return this.codegenRepository.getConfigSchema(framework);
+	}
+
 }
