@@ -3,7 +3,7 @@
 		<div class="eleven wide column" style="margin: 0 auto;">
 			<div class="row">
 				<div class="sixteen wide column" style="min-height: 200px;">
-					{{(loadedSchema | async) | json}}
+					<add-config-form></add-config-form>
 				</div>
 			</div>
 
@@ -21,9 +21,6 @@
 					</div>
 				</div>
 			</div>
-			<!--<codegen-add-schema-form [generatorTypes]="generatorTypes | async"-->
-									 <!--[isLoadingGeneratorTypes]="isLoadingGeneratorTypes | async"-->
-									 <!--(onFormChange)="onAddSchemaFormChange($event)"></codegen-add-schema-form>-->
 		</div>
 		<div class="five wide column">
 			<codegen-added-schemas [addedSchemas]="addedSchemas | async" [selectable]="true"></codegen-added-schemas>

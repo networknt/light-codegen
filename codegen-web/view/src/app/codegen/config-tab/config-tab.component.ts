@@ -20,7 +20,6 @@ export class ConfigTabComponent implements OnInit, OnDestroy {
 	addedSchemas: Observable<Schema[]>;
 	selectedSchema: Observable<Schema>;
 	loadedSchema: Observable<any>;
-
 	selectedSchemaSubscription: Subscription;
 
 	constructor(private store: Store<AppState>, private configService: ConfigService) {
@@ -47,5 +46,4 @@ export class ConfigTabComponent implements OnInit, OnDestroy {
 			this.selectedSchemaSubscription.unsubscribe();
 		}
 	}
-
 }
