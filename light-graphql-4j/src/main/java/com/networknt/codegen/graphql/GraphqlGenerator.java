@@ -2,12 +2,17 @@ package com.networknt.codegen.graphql;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.networknt.codegen.Generator;
+import com.networknt.utility.NioUtils;
+import graphql.schema.GraphQLSchema;
+import graphql.schema.idl.RuntimeWiring;
+import graphql.schema.idl.SchemaGenerator;
+import graphql.schema.idl.SchemaParser;
+import graphql.schema.idl.TypeDefinitionRegistry;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.*;
 import java.util.Map;
 
 import static java.io.File.separator;
@@ -59,12 +64,20 @@ public class GraphqlGenerator implements Generator {
         transfer(targetPath, ("src.main.resources").replace(".", separator), "logback.xml", templates.graphql.logback.template());
         transfer(targetPath, ("src.test.resources").replace(".", separator), "logback-test.xml", templates.graphql.logback.template());
 
-        // Generate schema
-        // TODO waiting for graphql-java 3.0.0 release with IDL to generate schema from definition file
-        // Now it is hard coded hello world
-        transfer(targetPath, ("src.main.java." + schemaPackage).replace(".", separator), schemaClass + ".java", templates.graphql.schemaClass.template(schemaPackage, schemaClass));
 
-
+        // Copy schema
+        // The generator support both manually coded schema or schema defined in IDL. If schema.graphqls exists
+        // then it will be copied to the resources folder and corresponding code will be generated to load it and
+        // to generate schema on the fly.
+        // If no schema file is passed in, then it will just hard-coded as a Hello World example so that developer
+        // can expand that to code his/her own schema.
+        if(model == null) {
+            transfer(targetPath, ("src.main.java." + schemaPackage).replace(".", separator), schemaClass + ".java", templates.graphql.schemaClassExample.template(schemaPackage, schemaClass));
+        } else {
+            Files.write(FileSystems.getDefault().getPath(targetPath, ("src.main.resources").replace(".", separator), "schema.graphqls"), ((String)model).getBytes());
+            // schema class loader/generator template.
+            transfer(targetPath, ("src.main.java." + schemaPackage).replace(".", separator), schemaClass + ".java", templates.graphql.schemaClass.template(schemaPackage, schemaClass));
+        }
         // no handler test case as this is a server platform which supports other handlers to be deployed.
 
         // transfer binary files without touching them.

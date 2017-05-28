@@ -37,13 +37,20 @@ public class GraphqlGeneratorTest {
     }
 
     @Test
-    public void testGenerator() throws IOException {
+    public void testGeneratorWithSchema() throws IOException {
         Map<String, Object> config = mapper.readValue(GraphqlGenerator.class.getResourceAsStream(configName), new TypeReference<Map<String,Object>>(){});
-        InputStream is = GraphqlGenerator.class.getResourceAsStream(schemaName);
-        String schema = convertStreamToString(is);
+        try(InputStream is = GraphqlGenerator.class.getResourceAsStream(schemaName)) {
+            String schema = convertStreamToString(is);
+            GraphqlGenerator generator = new GraphqlGenerator();
+            generator.generate(targetPath, schema, config);
+        }
+    }
 
+    @Test
+    public void testGeneratorWithoutSchema() throws IOException {
+        Map<String, Object> config = mapper.readValue(GraphqlGenerator.class.getResourceAsStream(configName), new TypeReference<Map<String,Object>>(){});
         GraphqlGenerator generator = new GraphqlGenerator();
-        generator.generate(targetPath, schema, config);
+        generator.generate(targetPath, null, config);
     }
 
     static String convertStreamToString(java.io.InputStream is) {
