@@ -98,7 +98,7 @@
         <version.rocker>0.16.0</version.rocker>
         <version.jcommander>1.69</version.jcommander>
         <version.fastscanner>2.0.8</version.fastscanner>
-        <version.graphql>2.4.0</version.graphql>
+        <version.graphql>3.0.0</version.graphql>
         <argLine>-Xmx512m -XX:MaxPermSize=256m</argLine>
     </properties>
 

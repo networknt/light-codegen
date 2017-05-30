@@ -1,0 +1,38 @@
+<div class="ui two column divided grid">
+	<div class="row">
+		<div [ngClass]="(addedSchemas | async).length > 0 ? 'eleven wide column': 'sixteen wide column'"
+			 style="margin: 0 auto;">
+			<div class="ui grid">
+				<div class="row">
+					<div class="sixteen wide column">
+						<codegen-add-schema-form [generatorTypes]="generatorTypes | async"
+												 [isLoadingGeneratorTypes]="isLoadingGeneratorTypes | async"
+												 (onFormChange)="onAddSchemaFormChange($event)"></codegen-add-schema-form>
+					</div>
+				</div>
+
+				<div class="row" *ngIf="addSchemaForm && ((addedSchemas | async).length > 0 || addSchemaForm.valid)"
+					 style="padding: 0;">
+					<div class="sixteen wide column" [style.textAlign]="addSchemaForm.valid ? 'center' : 'right'">
+
+						<div class="ui vertical animated button" (click)="onAddAnotherClick()" *ngIf="addSchemaForm.valid">
+							<div class="visible content">Add</div>
+							<div class="hidden content"><i class="plus icon" style="margin:0;"></i></div>
+						</div>
+
+						<div class="ui animated button light4j-secondary-background"
+							 (click)="onContinueClick()">
+							<div class="visible content">Continue</div>
+							<div class="hidden content">
+								<i class="right arrow icon"></i>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="five wide column" *ngIf="(addedSchemas | async).length > 0">
+			<codegen-added-schemas [addedSchemas]="addedSchemas | async"></codegen-added-schemas>
+		</div>
+	</div>
+</div>

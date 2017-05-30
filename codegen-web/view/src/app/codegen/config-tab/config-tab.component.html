@@ -1,0 +1,29 @@
+<div class="ui two column divided grid">
+	<div class="row">
+		<div class="eleven wide column" style="margin: 0 auto;">
+			<div class="row">
+				<div class="sixteen wide column" style="min-height: 200px;">
+					<add-config-form></add-config-form>
+				</div>
+			</div>
+
+			<div class="row" style="padding: 0; text-align: left;">
+				<div class="sixteen wide column">
+					<div class="ui two column grid">
+						<div class="eight wide column" style="text-align: left;">
+							<button class="compact ui left labeled icon button"
+									(click)="onBackClick()">
+								<i class="left arrow icon margin-fix"></i>
+								Back
+							</button>
+						</div>
+						<div class="eight wide column" style="text-align: right;"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="five wide column">
+			<codegen-added-schemas [addedSchemas]="addedSchemas | async" [selectable]="true"></codegen-added-schemas>
+		</div>
+	</div>
+</div>

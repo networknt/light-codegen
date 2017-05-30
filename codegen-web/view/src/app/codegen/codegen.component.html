@@ -1,32 +1,33 @@
 <div class="ui container">
 	<h2 class="ui header light4j-primary-text">Codegen</h2>
 
-	<div class="ui attached raised segment" style="text-align:center;padding: 30px; margin-top: 30px;">
-		<h4>Upload your API Schema</h4>
-		<div>
-			<label for="file" class="ui primary basic icon button">
-				<i class="file icon"></i>
-				Upload File
-			</label>
-			<input type="file" id="file" style="display:none">
+	<div class="ui attached raised segment" style="padding: 30px; margin-top: 30px;">
+		<div [ngSwitch]="codegenStage | async">
+			<div *ngSwitchCase="CODEGEN_STAGE_ENUM.SCHEMA_DEFINITION">
+				<codegen-schema-tab (onContinue)="onSchemaAdded()"></codegen-schema-tab>
+			</div>
+			<div *ngSwitchCase="CODEGEN_STAGE_ENUM.CONFIG_SELECTION">
+				<codegen-config-tab (onBack)="onBackClick()"></codegen-config-tab>
+			</div>
+			<div *ngSwitchDefault>WIP</div>
 		</div>
 	</div>
 	<div class="ui three bottom attached steps">
-		<div class="active step">
+		<div class="step" [ngClass]="{'active': (codegenStage | async) == CODEGEN_STAGE_ENUM.SCHEMA_DEFINITION}">
 			<i class="upload icon"></i>
 			<div class="content">
 				<div class="title">Schema</div>
 				<div class="description">Upload your API Schema</div>
 			</div>
 		</div>
-		<div class="disabled step">
+		<div class="step" [class.disabled]="(codegenStage | async) < CODEGEN_STAGE_ENUM.CONFIG_SELECTION" [ngClass]="{'active': (codegenStage | async) == CODEGEN_STAGE_ENUM.CONFIG_SELECTION}">
 			<i class="puzzle icon"></i>
 			<div class="content">
-				<div class="title">Features</div>
+				<div class="title">Configuration</div>
 				<div class="description">Pick which features to include</div>
 			</div>
 		</div>
-		<div class="disabled step">
+		<div class="step" [class.disabled]="(codegenStage | async) < CODEGEN_STAGE_ENUM.VERIFICATION" [ngClass]="{'active': (codegenStage | async) == CODEGEN_STAGE_ENUM.VERIFICATION}">
 			<i class="child icon"></i>
 			<div class="content">
 				<div class="title">Generate</div>

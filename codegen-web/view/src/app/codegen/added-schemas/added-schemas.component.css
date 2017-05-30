@@ -1,0 +1,4 @@
+div.header.selected {
+	color: rgb(232, 78, 64) !important;
+	font-weight: bold;
+}

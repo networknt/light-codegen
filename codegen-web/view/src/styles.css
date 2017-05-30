@@ -13,3 +13,18 @@ body {
 .light4j-primary-text {
 	color: rgb(232, 78, 64) !important;
 }
+
+.light4j-secondary-background, .light4j-secondary-background * {
+	background-color: #00bfa5 !important;
+	color: #fff !important;
+}
+
+
+div.or:before {
+	line-height: 23px !important;
+}
+
+i.icon.margin-fix {
+	margin-right: 0 !important;
+	margin-left: 0 !important;
+}

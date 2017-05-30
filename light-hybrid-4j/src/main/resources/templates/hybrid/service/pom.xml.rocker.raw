@@ -42,16 +42,6 @@
     <dependencies>
         <dependency>
             <groupId>com.networknt</groupId>
-            <artifactId>codegen-core</artifactId>
-            <version>${version.light-hybrid-4j}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.networknt</groupId>
-            <artifactId>codegen-fwk</artifactId>
-            <version>${version.light-hybrid-4j}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.networknt</groupId>
             <artifactId>client</artifactId>
             <version>${version.light-4j}</version>
         </dependency>

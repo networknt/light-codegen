@@ -1,0 +1,31 @@
+<h4 class="dividing header">Schemas Added</h4>
+<!--<div class="ui segment" >-->
+	<div class="ui divided list" style="max-height: 200px;overflow-y: auto" [class.selection]="selectable">
+
+		<div class="item" *ngFor="let schema of addedSchemas; let schemaIndex = index" (click)="onSchemaSelectClick(schemaIndex)">
+			<div class="right floated content">
+				<div class="ui circular compact icon button" (click)="onSchemaRemoveClick(schemaIndex)">
+					<i class="ui icon trash outline"></i>
+				</div>
+			</div>
+			<i class="middle aligned left arrow icon" *ngIf="selectable && (selectedSchemaIndex == schemaIndex)"></i>
+			<div class="content">
+				<div class="header" [class.selected]="selectable && (selectedSchemaIndex == schemaIndex)">{{schema.generatorType}}</div>
+				<div class="description">{{schema.uploadedSchemaFile.name}}</div>
+			</div>
+		</div>
+
+		<!--<div class="item">-->
+			<!--<div class="right floated content">-->
+				<!--<div class="ui circular compact icon button">-->
+					<!--<i class="ui icon trash outline"></i>-->
+				<!--</div>-->
+			<!--</div>-->
+			<!--<i class="middle aligned left arrow icon"></i>-->
+			<!--<div class="content">-->
+				<!--<a class="header">light-4j-rest</a>-->
+				<!--<div class="description">some file name.txt</div>-->
+			<!--</div>-->
+		<!--</div>-->
+	</div>
+<!--</div>-->
