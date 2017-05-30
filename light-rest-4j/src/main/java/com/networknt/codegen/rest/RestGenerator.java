@@ -34,8 +34,6 @@ import static java.io.File.separator;
 public class RestGenerator implements Generator {
     static ObjectMapper mapper = new ObjectMapper();
 
-    byte[] schemaBuf = null;
-
     @Override
     public String getFramework() {
         return "light-rest-4j";
