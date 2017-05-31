@@ -1,6 +1,7 @@
 package com.networknt.codegen.graphql;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jsoniter.any.Any;
 import com.networknt.codegen.Generator;
 import com.networknt.utility.NioUtils;
 import graphql.schema.GraphQLSchema;
@@ -29,13 +30,13 @@ public class GraphqlGenerator implements Generator {
     }
 
     @Override
-    public void generate(String targetPath, Object model, Map<String, Object> config) throws IOException {
+    public void generate(String targetPath, Object model, Any config) throws IOException {
         // whoever is calling this needs to make sure that model is converted to Map<String, Object>
-        String rootPackage = (String)config.get("rootPackage");
-        String modelPackage = (String)config.get("modelPackage");
-        String handlerPackage = (String)config.get("handlerPackage");
-        String schemaPackage = (String)config.get("schemaPackage");
-        String schemaClass = (String)config.get("schemaClass");
+        String rootPackage = config.get("rootPackage").toString();
+        String modelPackage = config.get("modelPackage").toString();
+        String handlerPackage = config.get("handlerPackage").toString();
+        String schemaPackage = config.get("schemaPackage").toString();
+        String schemaClass = config.get("schemaClass").toString();
 
         transfer(targetPath, "", "pom.xml", templates.graphql.pom.template(config));
         transfer(targetPath, "", "Dockerfile", templates.graphql.dockerfile.template(config));

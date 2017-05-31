@@ -2,6 +2,8 @@ package com.networknt.codegen.hybrid;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jsoniter.JsonIterator;
+import com.jsoniter.any.Any;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -19,8 +21,6 @@ public class HybridServiceGeneratorTest {
     public static String configName = "/serviceConfig.json";
     public static String schemaName = "/schema.json";
 
-    ObjectMapper mapper = new ObjectMapper();
-
     @BeforeClass
     public static void setUp() throws IOException {
         // create the output directory
@@ -34,11 +34,11 @@ public class HybridServiceGeneratorTest {
 
     @Test
     public void testGenerator() throws IOException {
-        Map<String, Object> config = mapper.readValue(HybridServerGenerator.class.getResourceAsStream(configName), new TypeReference<Map<String,Object>>(){});
-        Map<String, Object> schema = mapper.readValue(HybridServerGenerator.class.getResourceAsStream(schemaName), new TypeReference<Map<String,Object>>(){});
+        Any anyConfig = JsonIterator.parse(HybridServiceGeneratorTest.class.getResourceAsStream(configName), 1024).readAny();
+        Any anyModel = JsonIterator.parse(HybridServiceGeneratorTest.class.getResourceAsStream(schemaName), 1024).readAny();
 
         HybridServiceGenerator generator = new HybridServiceGenerator();
-        generator.generate(targetPath, schema, config);
+        generator.generate(targetPath, anyModel, anyConfig);
     }
 
     @Test

@@ -1,15 +1,14 @@
 package com.networknt.codegen.rest;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.io.ByteStreams;
+import com.jsoniter.any.Any;
+import com.jsoniter.output.JsonStream;
 import com.networknt.codegen.Generator;
 import com.networknt.codegen.Utils;
 import com.networknt.utility.NioUtils;
-import org.apache.commons.io.IOUtils;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -32,19 +31,26 @@ import static java.io.File.separator;
  * Created by stevehu on 2017-04-23.
  */
 public class RestGenerator implements Generator {
-    static ObjectMapper mapper = new ObjectMapper();
+    //static ObjectMapper mapper = new ObjectMapper();
 
     @Override
     public String getFramework() {
         return "light-rest-4j";
     }
 
+    /**
+     *
+     * @param targetPath The output directory of the generated project
+     * @param model The optional model data that trigger the generation, i.e. swagger specification, graphql IDL etc.
+     * @param config A json object that controls how the generator behaves.
+     * @throws IOException
+     */
     @Override
-    public void generate(String targetPath, Object model, Map<String, Object> config) throws IOException {
+    public void generate(String targetPath, Object model, Any config) throws IOException {
         // whoever is calling this needs to make sure that model is converted to Map<String, Object>
-        String rootPackage = (String)config.get("rootPackage");
-        String modelPackage = (String)config.get("modelPackage");
-        String handlerPackage = (String)config.get("handlerPackage");
+        String rootPackage = config.get("rootPackage").toString();
+        String modelPackage = config.get("modelPackage").toString();
+        String handlerPackage = config.get("handlerPackage").toString();
 
         transfer(targetPath, "", "pom.xml", templates.rest.pom.template(config));
         transfer(targetPath, "", "Dockerfile", templates.rest.dockerfile.template(config));
@@ -72,7 +78,10 @@ public class RestGenerator implements Generator {
         transfer(targetPath, ("src.main.resources").replace(".", separator), "logback.xml", templates.rest.logback.template());
         transfer(targetPath, ("src.test.resources").replace(".", separator), "logback-test.xml", templates.rest.logback.template());
 
-        List<Map<String, Object>> operationList = getOperationList(model);
+        // preprocess the swagger.json to inject health check and server info endpoints
+        injectEndpoints(model);
+
+        List<Map<String, Any>> operationList = getOperationList(model);
         // routing
         transfer(targetPath, ("src.main.java." + rootPackage).replace(".", separator), "PathHandlerProvider.java", templates.rest.handlerProvider.template(rootPackage, handlerPackage, operationList));
 
@@ -82,19 +91,24 @@ public class RestGenerator implements Generator {
 
         // handler
 
-        for(Map<String, Object> op : operationList){
-            String className = (String)op.get("handlerName");
+        for(Map<String, Any> op : operationList){
+            String className = op.get("handlerName").toString();
             String example = null;
             if(op.get("example") != null) {
-                example = mapper.writeValueAsString(op.get("example"));
+                //example = mapper.writeValueAsString(op.get("example"));
+                example = JsonStream.serialize(op.get("example"));
+            }
+            if("ServerInfoGetHandler".equals(className) || "HealthGetHandler".equals(className)) {
+                // don't generate handler for server info and health as they are injected and the impls are in light-4j
+                continue;
             }
             transfer(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), className + ".java", templates.rest.handler.template(handlerPackage, className, example));
         }
 
         // handler test cases
         transfer(targetPath, ("src.test.java." + handlerPackage + ".").replace(".", separator),  "TestServer.java", templates.rest.testServer.template(handlerPackage));
-        for(Map<String, Object> op : operationList){
-            transfer(targetPath, ("src.test.java." + handlerPackage).replace(".", separator), (String)op.get("handlerName") + "Test.java", templates.rest.handlerTest.template(handlerPackage, op));
+        for(Map<String, Any> op : operationList){
+            transfer(targetPath, ("src.test.java." + handlerPackage).replace(".", separator), op.get("handlerName") + "Test.java", templates.rest.handlerTest.template(handlerPackage, op));
         }
 
         // transfer binary files without touching them.
@@ -108,39 +122,95 @@ public class RestGenerator implements Generator {
             Files.copy(is, Paths.get(targetPath, ("src.main.resources.config.tls").replace(".", separator), "server.truststore"), StandardCopyOption.REPLACE_EXISTING);
         }
 
-        // last step to write swagger.json as the directory must be there already.
-        // TODO add server info before write it.
-        NioUtils.writeJson(FileSystems.getDefault().getPath(targetPath, ("src.main.resources.config").replace(".", separator), "swagger.json"), model);
+        JsonStream.serialize(model, new FileOutputStream(FileSystems.getDefault().getPath(targetPath, ("src.main.resources.config").replace(".", separator), "swagger.json").toFile()));
     }
 
-    public List<Map<String, Object>> getOperationList(Object model) {
-        List<Map<String, Object>> result = new ArrayList<>();
-        Map<String, Object> map = (Map<String, Object>)model;
-        String basePath = (String)map.get("basePath");
-        Map<String, Object> paths = (Map<String, Object>)map.get("paths");
+    public void injectHealthCheck(Map<String, Any> paths) {
 
-        for(Map.Entry<String, Object> entryPath: paths.entrySet()) {
+    }
+
+    public void injectEndpoints(Object model) {
+        Any anyModel = (Any)model;
+        Map<String, Any> paths = anyModel.get("paths").asMap();
+        Any securityDefinitions = anyModel.get("securityDefinitions");
+
+        // inject scope server.info.r
+        String authName = null;
+        if(securityDefinitions != null) {
+            Map<String, Any> sdMap = securityDefinitions.asMap();
+            for(String name : sdMap.keySet()) {
+                Map<String, Any> def = sdMap.get(name).asMap();
+                if(def != null && "oauth2".equals(def.get("type").toString())) {
+                    authName = name;
+                    Any scopes = def.get("scopes");
+                    if(scopes != null) {
+                        scopes.asMap().put("server.info.r", Any.wrap("read server info"));
+                    }
+                    break;
+                }
+            }
+        }
+        // inject server info endpoint
+        Map<String, Object> serverInfoMap = new HashMap<>();
+
+        List<String> scopes = new ArrayList<>();
+        scopes.add("server.info.r");
+        Map<String, List> authMap = new HashMap<>();
+        authMap.put(authName, scopes);
+        List<Map<String, List>> authList = new ArrayList<>();
+        authList.add(authMap);
+        serverInfoMap.put("security", authList);
+
+        Map<String, Object> descMap = new HashMap<>();
+        descMap.put("description", "successful operation");
+        Map<String, Object> codeMap = new HashMap<>();
+        codeMap.put("200", descMap);
+        serverInfoMap.put("responses", codeMap);
+        serverInfoMap.put("parameters", new ArrayList());
+
+        Map<String, Object> serverInfo = new HashMap<>();
+        serverInfo.put("get", serverInfoMap);
+        paths.put("/server/info", Any.wrap(serverInfo));
+
+        // inject health check endpoint
+        Map<String, Object> healthMap = new HashMap<>();
+        healthMap.put("responses", codeMap);
+        healthMap.put("parameters", new ArrayList());
+
+        Map<String, Object> health = new HashMap<>();
+        health.put("get", healthMap);
+        paths.put("/health", Any.wrap(health));
+
+    }
+
+    public List<Map<String, Any>> getOperationList(Object model) {
+        List<Map<String, Any>> result = new ArrayList<>();
+        Any anyModel = (Any)model;
+        String basePath = anyModel.get("basePath").toString();
+        Map<String, Any> paths = anyModel.get("paths").asMap();
+
+        for(Map.Entry<String, Any> entryPath: paths.entrySet()) {
             String path = entryPath.getKey();
-            Map<String, Object> pathValues = (Map<String, Object>)entryPath.getValue();
-            for(Map.Entry<String, Object> entryOps: pathValues.entrySet()) {
+            Map<String, Any> pathValues = entryPath.getValue().asMap();
+            for(Map.Entry<String, Any> entryOps: pathValues.entrySet()) {
                 // skip all the entries that are not http method. The only possible entries
                 // here are extensions. which will be just a key value pair.
                 if(entryOps.getKey().startsWith("x-")) continue;
-                Map<String, Object> flattened = new HashMap<>();
-                flattened.put("method", entryOps.getKey().toUpperCase());
-                flattened.put("capMethod", entryOps.getKey().substring(0, 1).toUpperCase() + entryOps.getKey().substring(1));
-                flattened.put("path", basePath + path);
+                Map<String, Any> flattened = new HashMap<>();
+                flattened.put("method", Any.wrap(entryOps.getKey().toUpperCase()));
+                flattened.put("capMethod", Any.wrap(entryOps.getKey().substring(0, 1).toUpperCase() + entryOps.getKey().substring(1)));
+                flattened.put("path", Any.wrap(basePath + path));
                 String normalizedPath = path.replace("{", "").replace("}", "");
-                flattened.put("normalizedPath", basePath + normalizedPath);
-                flattened.put("handlerName", Utils.camelize(normalizedPath) + Utils.camelize(entryOps.getKey()) + "Handler");
-                Map<String, Object> values = (Map<String, Object>)entryOps.getValue();
-                Map<String, Object> responses = (Map<String, Object>)values.get("responses");
+                flattened.put("normalizedPath", Any.wrap(basePath + normalizedPath));
+                flattened.put("handlerName", Any.wrap(Utils.camelize(normalizedPath) + Utils.camelize(entryOps.getKey()) + "Handler"));
+                Map<String, Any> values = entryOps.getValue().asMap();
+                Any responses = values.get("responses");
                 if(responses != null) {
-                    Map<String, Object> sucessRes = (Map<String, Object>)responses.get("200");
-                    if(sucessRes != null) {
-                        Map<String, Object> examples = (Map<String, Object>)sucessRes.get("examples");
+                    Any response = responses.asMap().get("200");
+                    if(response != null) {
+                        Any examples = response.asMap().get("examples");
                         if(examples != null) {
-                            Object jsonRes = examples.get("application/json");
+                            Any jsonRes = examples.asMap().get("application/json");
                             flattened.put("example", jsonRes);
                         }
                     }
@@ -148,8 +218,6 @@ public class RestGenerator implements Generator {
                 result.add(flattened);
             }
         }
-
-
         return result;
     }
 }

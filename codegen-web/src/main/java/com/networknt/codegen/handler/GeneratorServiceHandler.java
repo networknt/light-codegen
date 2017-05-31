@@ -1,5 +1,8 @@
 package com.networknt.codegen.handler;
 
+import com.jsoniter.JsonIterator;
+import com.jsoniter.any.Any;
+import com.jsoniter.output.JsonStream;
 import com.networknt.codegen.CodegenWebConfig;
 import com.networknt.codegen.FrameworkRegistry;
 import com.networknt.codegen.Generator;
@@ -62,7 +65,7 @@ public class GeneratorServiceHandler implements Handler {
         }
         for(Map<String, Object> generatorMap: generators) {
             String framework = (String)generatorMap.get("framework");
-            Map<String, Object> model = (Map<String, Object>)generatorMap.get("model");  // should be a json of spec
+            Object model = generatorMap.get("model");  // should be a JSON of spec or IDL
             Map<String, Object> config = (Map<String, Object>)generatorMap.get("config"); // should be a json of config
             if(!FrameworkRegistry.getInstance().getFrameworks().contains(framework)) {
                 Status status = new Status(STATUS_INVALID_FRAMEWORK, framework);
@@ -71,7 +74,7 @@ public class GeneratorServiceHandler implements Handler {
             // TODO validate the model and config with json schema
             try {
                 Generator generator = FrameworkRegistry.getInstance().getGenerator(framework);
-                generator.generate(projectFolder, model, config);
+                generator.generate(projectFolder, model, Any.wrap(config));
             } catch (Exception e) {
                 e.printStackTrace();
                 logger.error("Exception:", e);

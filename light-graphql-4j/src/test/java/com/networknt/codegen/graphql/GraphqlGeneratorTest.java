@@ -2,6 +2,8 @@ package com.networknt.codegen.graphql;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jsoniter.JsonIterator;
+import com.jsoniter.any.Any;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -38,19 +40,19 @@ public class GraphqlGeneratorTest {
 
     @Test
     public void testGeneratorWithSchema() throws IOException {
-        Map<String, Object> config = mapper.readValue(GraphqlGenerator.class.getResourceAsStream(configName), new TypeReference<Map<String,Object>>(){});
+        Any anyConfig = JsonIterator.parse(GraphqlGeneratorTest.class.getResourceAsStream(configName), 1024).readAny();
         try(InputStream is = GraphqlGenerator.class.getResourceAsStream(schemaName)) {
             String schema = convertStreamToString(is);
             GraphqlGenerator generator = new GraphqlGenerator();
-            generator.generate(targetPath, schema, config);
+            generator.generate(targetPath, schema, anyConfig);
         }
     }
 
     @Test
     public void testGeneratorWithoutSchema() throws IOException {
-        Map<String, Object> config = mapper.readValue(GraphqlGenerator.class.getResourceAsStream(configName), new TypeReference<Map<String,Object>>(){});
+        Any anyConfig = JsonIterator.parse(GraphqlGeneratorTest.class.getResourceAsStream(configName), 1024).readAny();
         GraphqlGenerator generator = new GraphqlGenerator();
-        generator.generate(targetPath, null, config);
+        generator.generate(targetPath, null, anyConfig);
     }
 
     static String convertStreamToString(java.io.InputStream is) {

@@ -1,5 +1,5 @@
-@import java.util.Map
-@args (String handlerPackage, String host, String service, Map<String, Object> item)
+@import com.jsoniter.any.Any
+@args (String handlerPackage, String host, String service, Any item)
 package @handlerPackage;
 
 import com.networknt.utility.NioUtils;

@@ -4,9 +4,18 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.networknt.codegen.rest.RestGenerator;
+import com.jsoniter.JsonIterator;
+import com.jsoniter.any.Any;
+import io.swagger.util.Json;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
@@ -44,25 +53,23 @@ public class Cli {
         if(frameworks.contains(framework)) {
             Generator generator = registry.getGenerator(framework);
             try {
-                Map<String, Object> modelJson = null;
+                Any anyModel = null;
                 // model can be empty in some cases.
                 if(model != null) {
                     if(isUrl(model)) {
-                        modelJson = mapper.readValue(new URL(model), new TypeReference<Map<String,Object>>(){});
+                        anyModel = JsonIterator.deserialize(urlToByteArray(new URL(model)));
                     } else {
-                        Path modelPath = Paths.get(model); // swagger.json
-                        modelJson = mapper.readValue(modelPath.toFile(), new TypeReference<Map<String,Object>>(){});
+                        anyModel = JsonIterator.deserialize(Files.readAllBytes(Paths.get(model)));
                     }
                 }
 
-                Map<String, Object> configJson;
+                Any anyConfig = null;
                 if(isUrl(config)) {
-                    configJson = mapper.readValue(new URL(config), new TypeReference<Map<String,Object>>(){});
+                    anyConfig = JsonIterator.deserialize(urlToByteArray(new URL(config)));
                 } else {
-                    Path configPath = Paths.get(config); // config.json
-                    configJson = mapper.readValue(configPath.toFile(), new TypeReference<Map<String,Object>>(){});
+                    anyConfig = JsonIterator.deserialize(Files.readAllBytes(Paths.get(config)));
                 }
-               generator.generate(output, modelJson, configJson);
+               generator.generate(output, anyModel, anyConfig);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -73,5 +80,16 @@ public class Cli {
 
     private boolean isUrl(String location) {
         return location.startsWith("http://") || location.startsWith("https://");
+    }
+
+    private byte[] urlToByteArray(URL url) throws IOException{
+        try (BufferedInputStream in = new BufferedInputStream(url.openStream()); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            byte data[] = new byte[1024];
+            int count;
+            while ((count = in.read(data, 0, 1024)) != -1) {
+                out.write(data, 0, count);
+            }
+            return out.toByteArray();
+        }
     }
 }

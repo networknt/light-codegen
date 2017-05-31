@@ -1,5 +1,6 @@
 @import java.util.Map
-@args (String handlerPackage, Map<String, Object> map)
+@import com.jsoniter.any.Any
+@args (String handlerPackage, Map<String, Any> map)
 package @handlerPackage;
 
 import com.networknt.client.Client;

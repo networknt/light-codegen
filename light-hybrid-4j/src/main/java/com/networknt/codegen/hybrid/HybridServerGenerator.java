@@ -1,6 +1,7 @@
 package com.networknt.codegen.hybrid;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jsoniter.any.Any;
 import com.networknt.codegen.Generator;
 import sun.nio.cs.Surrogate;
 
@@ -17,7 +18,6 @@ import static java.io.File.separator;
  * Created by steve on 28/04/17.
  */
 public class HybridServerGenerator implements Generator {
-    static ObjectMapper mapper = new ObjectMapper();
 
     @Override
     public String getFramework() {
@@ -25,11 +25,11 @@ public class HybridServerGenerator implements Generator {
     }
 
     @Override
-    public void generate(String targetPath, Object model, Map<String, Object> config) throws IOException {
+    public void generate(String targetPath, Object model, Any config) throws IOException {
         // whoever is calling this needs to make sure that model is converted to Map<String, Object>
-        String rootPackage = (String)config.get("rootPackage");
-        String modelPackage = (String)config.get("modelPackage");
-        String handlerPackage = (String)config.get("handlerPackage");
+        String rootPackage = config.get("rootPackage").toString();
+        String modelPackage = config.get("modelPackage").toString();
+        String handlerPackage = config.get("handlerPackage").toString();
 
         transfer(targetPath, "", "pom.xml", templates.hybrid.server.pom.template(config));
         transfer(targetPath, "", "Dockerfile", templates.hybrid.server.dockerfile.template(config));

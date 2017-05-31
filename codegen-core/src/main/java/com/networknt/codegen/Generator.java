@@ -2,6 +2,7 @@ package com.networknt.codegen;
 
 import com.fizzed.rocker.runtime.ArrayOfByteArraysOutput;
 import com.fizzed.rocker.runtime.DefaultRockerModel;
+import com.jsoniter.any.Any;
 import org.apache.commons.io.IOUtils;
 
 import java.io.FileOutputStream;
@@ -39,7 +40,7 @@ public interface Generator {
      * @param config A json object that controls how the generator behaves.
      * @throws IOException throws IOException
      */
-    void generate(String targetPath, Object model, Map<String, Object> config) throws IOException;
+    void generate(String targetPath, Object model, Any config) throws IOException;
 
     /**
      * Get generator name

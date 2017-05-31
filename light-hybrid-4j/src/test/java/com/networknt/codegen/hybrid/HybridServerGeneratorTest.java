@@ -2,6 +2,8 @@ package com.networknt.codegen.hybrid;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jsoniter.JsonIterator;
+import com.jsoniter.any.Any;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -34,10 +36,10 @@ public class HybridServerGeneratorTest {
 
     @Test
     public void testGenerator() throws IOException {
-        Map<String, Object> config = mapper.readValue(HybridServerGenerator.class.getResourceAsStream(configName), new TypeReference<Map<String,Object>>(){});
+        Any anyConfig = JsonIterator.parse(HybridServerGeneratorTest.class.getResourceAsStream(configName), 1024).readAny();
 
         HybridServerGenerator generator = new HybridServerGenerator();
-        generator.generate(targetPath, null, config);
+        generator.generate(targetPath, null, anyConfig);
     }
 
     @Test

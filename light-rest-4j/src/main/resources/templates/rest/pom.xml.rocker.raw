@@ -1,5 +1,5 @@
-@import java.util.Map
-@args (Map<String, Object> config)
+@import com.jsoniter.any.Any
+@args (Any config)
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <groupId>org.sonatype.oss</groupId>
@@ -67,6 +67,11 @@
         <dependency>
             <groupId>com.networknt</groupId>
             <artifactId>info</artifactId>
+            <version>${version.light-4j}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.networknt</groupId>
+            <artifactId>health</artifactId>
             <version>${version.light-4j}</version>
         </dependency>
         <dependency>
