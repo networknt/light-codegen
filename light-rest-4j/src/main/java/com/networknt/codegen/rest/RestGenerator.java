@@ -87,7 +87,12 @@ public class RestGenerator implements Generator {
 
 
         // model
-
+        Map<String, Any> definitions = ((Any)model).get("definitions").asMap();
+        for(Map.Entry<String, Any> entry : definitions.entrySet()) {
+            String key = entry.getKey();
+            Any value = entry.getValue();
+            transfer(targetPath, ("src.main.java." + modelPackage).replace(".", separator), key + ".java", templates.rest.model.template(modelPackage, key, value));
+        }
 
         // handler
 
