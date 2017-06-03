@@ -94,6 +94,8 @@ public class RestGenerator implements Generator {
             transfer(targetPath, ("src.main.java." + modelPackage).replace(".", separator), key + ".java", templates.rest.model.template(modelPackage, key, value));
         }
 
+        List<Any> modelList = getPojoList(model);
+
         // handler
 
         for(Map<String, Any> op : operationList){
@@ -225,4 +227,19 @@ public class RestGenerator implements Generator {
         }
         return result;
     }
+
+    public List<Any> getPojoList(Object model) {
+        List<Any> result = new ArrayList<>();
+        Any anyModel = (Any)model;
+        Any definitions = anyModel.get("definitions");
+        if(definitions != null) {
+            for(Map.Entry<String, Any> entryPath: definitions.asMap().entrySet()) {
+                String name = entryPath.getKey();
+                // TODO add more attributes to the result so that model class
+                // can be generated based on the info.
+            }
+        }
+        return result;
+    }
+
 }
