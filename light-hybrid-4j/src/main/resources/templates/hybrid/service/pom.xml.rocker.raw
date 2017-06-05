@@ -65,7 +65,11 @@
             <artifactId>rpc-router</artifactId>
             <version>${version.light-hybrid-4j}</version>
         </dependency>
-
+        <dependency>
+            <groupId>com.networknt</groupId>
+            <artifactId>rpc-security</artifactId>
+            <version>${version.light-hybrid-4j}</version>
+        </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
