@@ -48,6 +48,16 @@
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
+            <artifactId>server</artifactId>
+            <version>${version.light-4j}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.networknt</groupId>
+            <artifactId>service</artifactId>
+            <version>${version.light-4j}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.networknt</groupId>
             <artifactId>metrics</artifactId>
             <version>${version.light-4j}</version>
         </dependency>
