@@ -32,11 +32,9 @@ public class GraphqlGenerator implements Generator {
     @Override
     public void generate(String targetPath, Object model, Any config) throws IOException {
         // whoever is calling this needs to make sure that model is converted to Map<String, Object>
-        String rootPackage = config.get("rootPackage").toString();
-        String modelPackage = config.get("modelPackage").toString();
-        String handlerPackage = config.get("handlerPackage").toString();
         String schemaPackage = config.get("schemaPackage").toString();
         String schemaClass = config.get("schemaClass").toString();
+        boolean overwriteSchemaClass = config.toBoolean("overwriteSchemaClass");
 
         transfer(targetPath, "", "pom.xml", templates.graphql.pom.template(config));
         transfer(targetPath, "", "Dockerfile", templates.graphql.dockerfile.template(config));
@@ -72,12 +70,14 @@ public class GraphqlGenerator implements Generator {
         // to generate schema on the fly.
         // If no schema file is passed in, then it will just hard-coded as a Hello World example so that developer
         // can expand that to code his/her own schema.
-        if(model == null) {
-            transfer(targetPath, ("src.main.java." + schemaPackage).replace(".", separator), schemaClass + ".java", templates.graphql.schemaClassExample.template(schemaPackage, schemaClass));
-        } else {
-            Files.write(FileSystems.getDefault().getPath(targetPath, ("src.main.resources").replace(".", separator), "schema.graphqls"), ((String)model).getBytes());
-            // schema class loader/generator template.
-            transfer(targetPath, ("src.main.java." + schemaPackage).replace(".", separator), schemaClass + ".java", templates.graphql.schemaClass.template(schemaPackage, schemaClass));
+        if(overwriteSchemaClass) {
+            if(model == null) {
+                transfer(targetPath, ("src.main.java." + schemaPackage).replace(".", separator), schemaClass + ".java", templates.graphql.schemaClassExample.template(schemaPackage, schemaClass));
+            } else {
+                Files.write(FileSystems.getDefault().getPath(targetPath, ("src.main.resources").replace(".", separator), "schema.graphqls"), ((String)model).getBytes());
+                // schema class loader/generator template.
+                transfer(targetPath, ("src.main.java." + schemaPackage).replace(".", separator), schemaClass + ".java", templates.graphql.schemaClass.template(schemaPackage, schemaClass));
+            }
         }
         // no handler test case as this is a server platform which supports other handlers to be deployed.
 

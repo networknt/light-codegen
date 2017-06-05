@@ -5,7 +5,5 @@
   "artifactId": "petstore",
   "groupId": "com.networknt",
   "name": "petstore",
-  "version": "1.0.1",
-  "overwriteHandler": false,
-  "overwriteHandlerTest": false
+  "version": "1.0.1"
 }
