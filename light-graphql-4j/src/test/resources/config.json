@@ -5,5 +5,5 @@
   "name": "starwars",
   "version": "1.0.1",
   "schemaClass": "StarWarsSchema",
-  "overwriteSchemaClass": false
+  "overwriteSchemaClass": true
 }

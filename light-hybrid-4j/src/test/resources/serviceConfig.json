@@ -6,6 +6,6 @@
   "groupId": "com.networknt",
   "name": "petstore",
   "version": "1.0.1",
-  "overwriteHandler": false,
-  "overwriteHandlerTest": false
+  "overwriteHandler": true,
+  "overwriteHandlerTest": true
 }
