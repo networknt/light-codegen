@@ -57,7 +57,7 @@ In most of the cases, developers will only update handlers, handler tests and mo
 
 # Usage
 
-### Java Command line
+## Java Command line
 
 Before using the command line to generate the code, you need to check out the repo and build it.
 I am using ~/networknt as workspace but it can be anywhere in your home.  
@@ -110,7 +110,7 @@ java -jar codegen-cli/target/codegen-cli.jar -f light-rest-4j -o /tmp/petstore -
 
 ```
 
-### Docker Command Line
+## Docker Command Line
 
 Above local build and command line utility works but it is very hard to use that in devops script. 
 In order to make scripting easier, we have dockerized the command line utility. 
@@ -134,7 +134,7 @@ To test it.
 curl localhost:8080/v2/pet/111
 ```
 
-### Docker Scripting
+## Docker Scripting
 
 You can use docker run command to call the generator but it is very complicated for the parameters.
 In order to make things easier and friendlier to devops flow. Let's create a script to call the
@@ -153,7 +153,7 @@ cd model-config
 ```
 Now you should have a project generated in /tmp/petstore/genereted
 
-### Codegen Site
+## Codegen Site
 
 The service API is ready. We are working on the UI with a generation wizard.
  
