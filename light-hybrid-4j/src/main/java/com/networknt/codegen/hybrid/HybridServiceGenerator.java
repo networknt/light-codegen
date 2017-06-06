@@ -35,6 +35,8 @@ public class HybridServiceGenerator implements Generator {
         String rootPackage = config.get("rootPackage").toString();
         String modelPackage = config.get("modelPackage").toString();
         String handlerPackage = config.get("handlerPackage").toString();
+        boolean overwriteHandler = config.toBoolean("overwriteHandler");
+        boolean overwriteHandlerTest = config.toBoolean("overwriteHandlerTest");
 
         transfer(targetPath, "", "pom.xml", templates.hybrid.service.pom.template(config));
         //transfer(targetPath, "", "Dockerfile", templates.dockerfile.template(config));
@@ -69,9 +71,8 @@ public class HybridServiceGenerator implements Generator {
         String service = anyModel.get("service").toString();
         List<Any> items = anyModel.get("action").asList();
         if(items != null && items.size() > 0) {
-
             for(Any item : items) {
-                transfer(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), item.get("handler") + ".java", templates.hybrid.handler.template(handlerPackage, host, service, item));
+                if(overwriteHandler) transfer(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), item.get("handler") + ".java", templates.hybrid.handler.template(handlerPackage, host, service, item));
 
                 String serviceId  = host + "/" + service + "/" + item.get("name") + "/" + item.get("version");
                 Map<String, Object> map = new HashMap<>();
@@ -82,8 +83,10 @@ public class HybridServiceGenerator implements Generator {
 
             // handler test cases
             transfer(targetPath, ("src.test.java." + handlerPackage + ".").replace(".", separator),  "TestServer.java", templates.hybrid.testServer.template(handlerPackage));
-            for(Any item : items) {
-                transfer(targetPath, ("src.test.java." + handlerPackage).replace(".", separator), item.get("handler") + "Test.java", templates.hybrid.handlerTest.template(handlerPackage, host, service, item));
+            if(overwriteHandlerTest) {
+                for(Any item : items) {
+                    transfer(targetPath, ("src.test.java." + handlerPackage).replace(".", separator), item.get("handler") + "Test.java", templates.hybrid.handlerTest.template(handlerPackage, host, service, item));
+                }
             }
         }
 

@@ -1,13 +1,9 @@
 {
-  "rootPackage": "com.networknt.starwars",
-  "handlerPackage":"com.networknt.starwars.handler",
-  "modelPackage":"com.networknt.starwars.model",
+  "schemaPackage": "com.networknt.starwars.schema",
   "artifactId": "starwars",
   "groupId": "com.networknt",
   "name": "starwars",
   "version": "1.0.1",
-  "schemaPackage": "com.networknt.starwars.schema",
   "schemaClass": "StarWarsSchema",
-  "overwriteHandler": false,
-  "overwriteHandlerTest": false
+  "overwriteSchemaClass": false
 }

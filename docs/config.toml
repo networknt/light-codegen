@@ -1,0 +1,99 @@
+baseurl = "https://networknt.github.io/light-codegen/"
+languageCode = "en-us"
+title = "Light Code Generator"
+theme = "hugo-material-docs"
+metadataformat = "yaml"
+canonifyurls = true
+# Enable Google Analytics by entering your tracking id
+googleAnalytics = ""
+
+[params]
+	# General information
+	author = "Steve Hu"
+	description = "Light Codegen Docs"
+	copyright = "Released under the MIT license"
+
+	# Repository
+	provider = "GitHub"
+	repo_url = "https://github.com/networknt/light-codegen"
+
+	version = "1.3.1"
+	logo = "images/logo.png"
+	favicon = ""
+
+	permalink = "#"
+
+	# Custom assets
+	custom_css = []
+	custom_js  = []
+
+	# Syntax highlighting theme
+	highlight_css  = ""
+
+	[params.palette]
+    	primary = "red"
+    	accent  = "teal"
+
+    [params.font]
+    	text = "Ubuntu"
+    	code = "Ubuntu Mono"
+
+
+[social]
+	twitter = ""
+	github  = "stevehu"
+	email   = "stevehu@gmail.com"
+
+
+[[menu.main]]
+	name   = "Introduction"
+	url    = "/index.html"
+	weight = 5
+
+[[menu.main]]
+	name   = "Getting started"
+	url    = "getting-started/"
+	weight = 10
+
+
+[[menu.main]]
+	name   = "Architecture"
+	url    = "architecture/"
+	weight = 20
+
+[[menu.main]]
+	name   = "Design"
+	url    = "design/"
+	weight = 30
+
+[[menu.main]]
+	name   = "Generator"
+	url    = "generator/"
+	weight = 40
+
+[[menu.main]]
+	name   = "Benchmark"
+	url    = "benchmark/"
+	weight = 50
+
+[[menu.main]]
+	name   = "Tutorial"
+	url    = "tutorial/"
+	weight = 60
+
+[[menu.main]]
+	name   = "Issues & Help"
+	url    = "https://github.com/networknt/light-codegen/issues"
+	weight = 70
+
+[[menu.main]]
+	name   = "License"
+	url    = "https://www.apache.org/licenses/LICENSE-2.0"
+	weight = 80
+
+
+[blackfriday]
+	smartypants	= true
+	fractions = true
+	smartDashes = true
+	plainIDAnchors = true

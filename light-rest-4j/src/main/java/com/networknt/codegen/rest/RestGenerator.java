@@ -51,6 +51,9 @@ public class RestGenerator implements Generator {
         String rootPackage = config.get("rootPackage").toString();
         String modelPackage = config.get("modelPackage").toString();
         String handlerPackage = config.get("handlerPackage").toString();
+        boolean overwriteHandler = config.toBoolean("overwriteHandler");
+        boolean overwriteHandlerTest = config.toBoolean("overwriteHandlerTest");
+        boolean overwriteModel = config.toBoolean("overwriteModel");
 
         transfer(targetPath, "", "pom.xml", templates.rest.pom.template(config));
         transfer(targetPath, "", "Dockerfile", templates.rest.dockerfile.template(config));
@@ -87,35 +90,41 @@ public class RestGenerator implements Generator {
 
 
         // model
-        Map<String, Any> definitions = ((Any)model).get("definitions").asMap();
-        for(Map.Entry<String, Any> entry : definitions.entrySet()) {
-            String key = entry.getKey();
-            Any value = entry.getValue();
-            transfer(targetPath, ("src.main.java." + modelPackage).replace(".", separator), key + ".java", templates.rest.model.template(modelPackage, key, value));
+        if(overwriteModel) {
+            Map<String, Any> definitions = ((Any)model).get("definitions").asMap();
+            for(Map.Entry<String, Any> entry : definitions.entrySet()) {
+                String key = entry.getKey();
+                Any value = entry.getValue();
+                transfer(targetPath, ("src.main.java." + modelPackage).replace(".", separator), key + ".java", templates.rest.model.template(modelPackage, key, value));
+            }
         }
 
+        // TODO implement model generation based on this object.
         List<Any> modelList = getPojoList(model);
 
         // handler
-
-        for(Map<String, Any> op : operationList){
-            String className = op.get("handlerName").toString();
-            String example = null;
-            if(op.get("example") != null) {
-                //example = mapper.writeValueAsString(op.get("example"));
-                example = JsonStream.serialize(op.get("example"));
+        if(overwriteHandler) {
+            for(Map<String, Any> op : operationList){
+                String className = op.get("handlerName").toString();
+                String example = null;
+                if(op.get("example") != null) {
+                    //example = mapper.writeValueAsString(op.get("example"));
+                    example = JsonStream.serialize(op.get("example"));
+                }
+                if("ServerInfoGetHandler".equals(className) || "HealthGetHandler".equals(className)) {
+                    // don't generate handler for server info and health as they are injected and the impls are in light-4j
+                    continue;
+                }
+                transfer(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), className + ".java", templates.rest.handler.template(handlerPackage, className, example));
             }
-            if("ServerInfoGetHandler".equals(className) || "HealthGetHandler".equals(className)) {
-                // don't generate handler for server info and health as they are injected and the impls are in light-4j
-                continue;
-            }
-            transfer(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), className + ".java", templates.rest.handler.template(handlerPackage, className, example));
         }
 
         // handler test cases
         transfer(targetPath, ("src.test.java." + handlerPackage + ".").replace(".", separator),  "TestServer.java", templates.rest.testServer.template(handlerPackage));
-        for(Map<String, Any> op : operationList){
-            transfer(targetPath, ("src.test.java." + handlerPackage).replace(".", separator), op.get("handlerName") + "Test.java", templates.rest.handlerTest.template(handlerPackage, op));
+        if(overwriteHandlerTest) {
+            for(Map<String, Any> op : operationList){
+                transfer(targetPath, ("src.test.java." + handlerPackage).replace(".", separator), op.get("handlerName") + "Test.java", templates.rest.handlerTest.template(handlerPackage, op));
+            }
         }
 
         // transfer binary files without touching them.
