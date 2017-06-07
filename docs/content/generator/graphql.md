@@ -21,7 +21,7 @@ We recommend using IDL. For more information about IDL, please check [here](http
 
 ## Config
 
-Here is an exmaple of config.json for light-rest-4j generator.
+Here is an exmaple of config.json for light-graphql-4j generator.
 
 ```
 {
