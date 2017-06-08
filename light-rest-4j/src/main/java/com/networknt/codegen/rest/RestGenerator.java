@@ -1,5 +1,6 @@
 package com.networknt.codegen.rest;
 
+import com.jsoniter.ValueType;
 import com.jsoniter.any.Any;
 import com.jsoniter.output.JsonStream;
 import com.networknt.codegen.Generator;
@@ -91,11 +92,13 @@ public class RestGenerator implements Generator {
 
         // model
         if(overwriteModel) {
-            Map<String, Any> definitions = ((Any)model).get("definitions").asMap();
-            for(Map.Entry<String, Any> entry : definitions.entrySet()) {
-                String key = entry.getKey();
-                Any value = entry.getValue();
-                transfer(targetPath, ("src.main.java." + modelPackage).replace(".", separator), key + ".java", templates.rest.model.template(modelPackage, key, value));
+            Any any = ((Any)model).get("definitions");
+            if(any.valueType() != ValueType.INVALID) {
+                for(Map.Entry<String, Any> entry : any.asMap().entrySet()) {
+                    String key = entry.getKey();
+                    Any value = entry.getValue();
+                    transfer(targetPath, ("src.main.java." + modelPackage).replace(".", separator), key + ".java", templates.rest.model.template(modelPackage, key, value));
+                }
             }
         }
 
@@ -241,7 +244,7 @@ public class RestGenerator implements Generator {
         List<Any> result = new ArrayList<>();
         Any anyModel = (Any)model;
         Any definitions = anyModel.get("definitions");
-        if(definitions != null) {
+        if(definitions.valueType() != ValueType.INVALID) {
             for(Map.Entry<String, Any> entryPath: definitions.asMap().entrySet()) {
                 String name = entryPath.getKey();
                 // TODO add more attributes to the result so that model class

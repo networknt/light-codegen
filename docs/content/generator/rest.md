@@ -35,9 +35,9 @@ Here is an exmaple of config.json for light-rest-4j generator.
   "groupId": "com.networknt",
   "name": "petstore",
   "version": "1.0.1",
-  "overwriteHandler": false,
-  "overwriteHandlerTest": false,
-  "overwriteModel": false
+  "overwriteHandler": true,
+  "overwriteHandlerTest": true,
+  "overwriteModel": true
 }
 ```
 
