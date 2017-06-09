@@ -17,5 +17,6 @@
   "supportOracle": false,
   "supportMysql": false,
   "supportPostgresql": false,
-  "supportH2ForTest": false
+  "supportH2ForTest": false,
+  "supportClient": false
 }
