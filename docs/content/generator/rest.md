@@ -28,29 +28,49 @@ Here is an exmaple of config.json for light-rest-4j generator.
 
 ```
 {
+  "name": "petstore",
+  "version": "1.0.1",
+  "groupId": "com.networknt",
+  "artifactId": "petstore",
   "rootPackage": "com.networknt.petstore",
   "handlerPackage":"com.networknt.petstore.handler",
   "modelPackage":"com.networknt.petstore.model",
-  "artifactId": "petstore",
-  "groupId": "com.networknt",
-  "name": "petstore",
-  "version": "1.0.1",
   "overwriteHandler": true,
   "overwriteHandlerTest": true,
-  "overwriteModel": true
+  "overwriteModel": true,
+  "httpPort": 8080,
+  "enableHttp": true,
+  "httpsPort": 8443,
+  "enableHttps": false,
+  "enableRegistry": false,
+  "supportOracle": false,
+  "supportMysql": false,
+  "supportPostgresql": false,
+  "supportH2ForTest": false,
+  "supportClient": false
 }
 ```
 
+- name is used in generated pom.xml for project name
+- version is used in generated pom.xml for project vesion
+- groupId is used in generated pom.xml for project groupId
+- artifactId is used in generated pom.xml for project artifactId
 - rootPackage is the root package name for your project and it will normally be your domain plug project name.
 - handlerPackage is the Java package for all generated handlers. 
 - modelPackage is the Java package for all generated models or POJOs.
-- artifactId is used in generated pom.xml for project artifactId
-- groupId is used in generated pom.xml for project groupId
-- name is used in generated pom.xml for project name
-- version is used in generated pom.xml for project vesion
 - overwriteHandler controls if you want to overwrite handler when regenerate the same project into the same folder. If you only want to upgrade the framework to another minor version and don't want to overwrite handlers, then set this property to false. 
 - overwriteHandlerTest controls if you want to overwrite handler test cases.
 - overwriteModel controls if you want to overwrite generated models.
+- httpPort is the port number of Http listener if enableHttp is true.
+- enableHttp to specify if the server listens to http port. Http should only be enabled in dev.
+- httpsPort is the port number of Https listener if enableHttps is true.
+- enableHttps to specify if the server listens to https port. Https should be used in any official environment for security reason.
+- enableRegistry to control if built-in service registry/discovery is used. Only necessary if running as standalone java -jar xxx.
+- supportOracle if true, add Oracle JDBC client in pom.xml dependencies and add service.yml to connect Oracle during server startup.
+- supportMysql if true, add Mysql JDBC client in pom.xml dependencies and add service.yml to connect Mysql during server startup.
+- supportPostgresql if true, add Postgresql JDBC client in pom.xml dependencies and add service.yml to connect to Postgresql during server startup.
+- supportH2ForTest if true, add H2 in pom.xml as test scope to support unit test with H2 database.
+- supportClient if true, add com.networknt.client module to pom.xml to support service to service call.
 
 In most of the cases, developers will only update handlers, handler tests and model in a project. 
 
