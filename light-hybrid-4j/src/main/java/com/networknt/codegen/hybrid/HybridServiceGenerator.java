@@ -105,6 +105,6 @@ public class HybridServiceGenerator implements Generator {
             Files.createDirectories(Paths.get(targetPath, ("src.main.resources.config").replace(".", separator)));
         }
         // write the generated schema into the config folder for schema validation.
-        JsonStream.serialize(services, new FileOutputStream(FileSystems.getDefault().getPath(targetPath, ("src.main.resources.config").replace(".", separator), "schema.json").toFile()));
+        JsonStream.serialize(services, new FileOutputStream(FileSystems.getDefault().getPath(targetPath, ("src.main.resources").replace(".", separator), "schema.json").toFile()));
     }
 }
