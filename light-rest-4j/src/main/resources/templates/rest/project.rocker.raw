@@ -1,6 +1,8 @@
+@import com.jsoniter.any.Any
+@args (Any config)
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>light-rest-4j</name>
+	<name>@config.get("name")</name>
 	<comment></comment>
 	<projects>
 	</projects>
