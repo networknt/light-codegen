@@ -55,6 +55,7 @@ public class RestGenerator implements Generator {
         boolean overwriteHandler = config.toBoolean("overwriteHandler");
         boolean overwriteHandlerTest = config.toBoolean("overwriteHandlerTest");
         boolean overwriteModel = config.toBoolean("overwriteModel");
+        boolean supportClient = config.toBoolean("supportClient");
 
         transfer(targetPath, "", "pom.xml", templates.rest.pom.template(config));
         transfer(targetPath, "", "Dockerfile", templates.rest.dockerfile.template(config));
@@ -68,7 +69,11 @@ public class RestGenerator implements Generator {
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "server.yml", templates.rest.server.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version")));
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "secret.yml", templates.rest.secret.template());
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "security.yml", templates.rest.security.template());
-
+        if(supportClient) {
+            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "client.yml", templates.rest.clientYml.template());
+        } else {
+            transfer(targetPath, ("src.test.resources.config").replace(".", separator), "client.yml", templates.rest.clientYml.template());
+        }
 
         transfer(targetPath, ("src.main.resources.config.oauth").replace(".", separator), "primary.crt", templates.rest.primaryCrt.template());
         transfer(targetPath, ("src.main.resources.config.oauth").replace(".", separator), "secondary.crt", templates.rest.secondaryCrt.template());
@@ -139,6 +144,24 @@ public class RestGenerator implements Generator {
         }
         try (InputStream is = RestGenerator.class.getResourceAsStream("/binaries/server.truststore")) {
             Files.copy(is, Paths.get(targetPath, ("src.main.resources.config.tls").replace(".", separator), "server.truststore"), StandardCopyOption.REPLACE_EXISTING);
+        }
+        if(supportClient) {
+            try (InputStream is = RestGenerator.class.getResourceAsStream("/binaries/client.keystore")) {
+                Files.copy(is, Paths.get(targetPath, ("src.main.resources.config.tls").replace(".", separator), "client.keystore"), StandardCopyOption.REPLACE_EXISTING);
+            }
+            try (InputStream is = RestGenerator.class.getResourceAsStream("/binaries/client.truststore")) {
+                Files.copy(is, Paths.get(targetPath, ("src.main.resources.config.tls").replace(".", separator), "client.truststore"), StandardCopyOption.REPLACE_EXISTING);
+            }
+        } else {
+            if(Files.notExists(Paths.get(targetPath, ("src.test.resources.config.tls").replace(".", separator)))) {
+                Files.createDirectories(Paths.get(targetPath, ("src.test.resources.config.tls").replace(".", separator)));
+            }
+            try (InputStream is = RestGenerator.class.getResourceAsStream("/binaries/client.keystore")) {
+                Files.copy(is, Paths.get(targetPath, ("src.test.resources.config.tls").replace(".", separator), "client.keystore"), StandardCopyOption.REPLACE_EXISTING);
+            }
+            try (InputStream is = RestGenerator.class.getResourceAsStream("/binaries/client.truststore")) {
+                Files.copy(is, Paths.get(targetPath, ("src.test.resources.config.tls").replace(".", separator), "client.truststore"), StandardCopyOption.REPLACE_EXISTING);
+            }
         }
 
         JsonStream.serialize(model, new FileOutputStream(FileSystems.getDefault().getPath(targetPath, ("src.main.resources.config").replace(".", separator), "swagger.json").toFile()));
