@@ -30,6 +30,7 @@ public class HybridServerGenerator implements Generator {
         String rootPackage = config.get("rootPackage").toString();
         String modelPackage = config.get("modelPackage").toString();
         String handlerPackage = config.get("handlerPackage").toString();
+        boolean supportClient = config.toBoolean("supportClient");
 
         transfer(targetPath, "", "pom.xml", templates.hybrid.server.pom.template(config));
         transfer(targetPath, "", "Dockerfile", templates.hybrid.server.dockerfile.template(config));
@@ -43,7 +44,11 @@ public class HybridServerGenerator implements Generator {
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "server.yml", templates.hybrid.serverYml.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version")));
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "secret.yml", templates.hybrid.secretYml.template());
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "security.yml", templates.hybrid.securityYml.template());
-
+        if(supportClient) {
+            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "client.yml", templates.hybrid.clientYml.template());
+        } else {
+            transfer(targetPath, ("src.test.resources.config").replace(".", separator), "client.yml", templates.hybrid.clientYml.template());
+        }
 
         transfer(targetPath, ("src.main.resources.config.oauth").replace(".", separator), "primary.crt", templates.hybrid.primaryCrt.template());
         transfer(targetPath, ("src.main.resources.config.oauth").replace(".", separator), "secondary.crt", templates.hybrid.secondaryCrt.template());
@@ -71,7 +76,24 @@ public class HybridServerGenerator implements Generator {
         try (InputStream is = HybridServerGenerator.class.getResourceAsStream("/binaries/server.truststore")) {
             Files.copy(is, Paths.get(targetPath, ("src.main.resources.config.tls").replace(".", separator), "server.truststore"), StandardCopyOption.REPLACE_EXISTING);
         }
-
+        if(supportClient) {
+            try (InputStream is = HybridServerGenerator.class.getResourceAsStream("/binaries/client.keystore")) {
+                Files.copy(is, Paths.get(targetPath, ("src.main.resources.config.tls").replace(".", separator), "client.keystore"), StandardCopyOption.REPLACE_EXISTING);
+            }
+            try (InputStream is = HybridServerGenerator.class.getResourceAsStream("/binaries/client.truststore")) {
+                Files.copy(is, Paths.get(targetPath, ("src.main.resources.config.tls").replace(".", separator), "client.truststore"), StandardCopyOption.REPLACE_EXISTING);
+            }
+        } else {
+            if(Files.notExists(Paths.get(targetPath, ("src.test.resources.config.tls").replace(".", separator)))) {
+                Files.createDirectories(Paths.get(targetPath, ("src.test.resources.config.tls").replace(".", separator)));
+            }
+            try (InputStream is = HybridServerGenerator.class.getResourceAsStream("/binaries/client.keystore")) {
+                Files.copy(is, Paths.get(targetPath, ("src.test.resources.config.tls").replace(".", separator), "client.keystore"), StandardCopyOption.REPLACE_EXISTING);
+            }
+            try (InputStream is = HybridServerGenerator.class.getResourceAsStream("/binaries/client.truststore")) {
+                Files.copy(is, Paths.get(targetPath, ("src.test.resources.config.tls").replace(".", separator), "client.truststore"), StandardCopyOption.REPLACE_EXISTING);
+            }
+        }
     }
 
 }
