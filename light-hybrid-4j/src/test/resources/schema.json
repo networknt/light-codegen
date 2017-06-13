@@ -24,7 +24,8 @@
           }
         },
         "required": ["firstName", "lastName"]
-      }
+      },
+      "example": {"message": "Hello World"}
     },
     {
       "name": "hello",
@@ -48,7 +49,8 @@
           }
         },
         "required": ["firstName", "lastName"]
-      }
+      },
+      "example": [{"message": "Hello World"}]
     },
     {
       "name": "hi",
@@ -72,7 +74,8 @@
           }
         },
         "required": ["firstName", "lastName"]
-      }
+      },
+      "example": [{"message": "Hello World"},{"message": "Hi World"}]
     },
     {
       "name": "welcome",

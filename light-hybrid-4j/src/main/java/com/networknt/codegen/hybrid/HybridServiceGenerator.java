@@ -1,10 +1,12 @@
 package com.networknt.codegen.hybrid;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jsoniter.ValueType;
 import com.jsoniter.any.Any;
 import com.jsoniter.output.JsonStream;
 import com.networknt.codegen.Generator;
 import com.networknt.utility.NioUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -67,13 +69,14 @@ public class HybridServiceGenerator implements Generator {
         // handler
         Map<String, Object> services = new HashMap<String, Object>();
         Any anyModel = (Any)model;
-        String host = anyModel.get("host").toString();
-        String service = anyModel.get("service").toString();
+        String host = anyModel.toString("host");
+        String service = anyModel.toString("service");
         List<Any> items = anyModel.get("action").asList();
         if(items != null && items.size() > 0) {
             for(Any item : items) {
-                if(overwriteHandler) transfer(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), item.get("handler") + ".java", templates.hybrid.handler.template(handlerPackage, host, service, item));
-
+                Any any = item.get("example");
+                String example = any.valueType() != ValueType.INVALID ? StringEscapeUtils.escapeJson(any.toString()).trim() : "";
+                if(overwriteHandler) transfer(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), item.get("handler") + ".java", templates.hybrid.handler.template(handlerPackage, host, service, item, example));
                 String serviceId  = host + "/" + service + "/" + item.get("name") + "/" + item.get("version");
                 Map<String, Object> map = new HashMap<>();
                 map.put("schema", item.get("schema"));
