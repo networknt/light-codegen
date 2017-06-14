@@ -63,7 +63,7 @@ public class RestGenerator implements Generator {
         transfer(targetPath, "", "README.md", templates.rest.README.template());
         transfer(targetPath, "", "LICENSE", templates.rest.LICENSE.template());
         transfer(targetPath, "", ".classpath", templates.rest.classpath.template());
-        transfer(targetPath, "", ".project", templates.rest.project.template());
+        transfer(targetPath, "", ".project", templates.rest.project.template(config));
 
         // config
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "server.yml", templates.rest.server.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version")));
