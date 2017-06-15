@@ -55,6 +55,14 @@ public class RestGenerator implements Generator {
         boolean overwriteHandler = config.toBoolean("overwriteHandler");
         boolean overwriteHandlerTest = config.toBoolean("overwriteHandlerTest");
         boolean overwriteModel = config.toBoolean("overwriteModel");
+        boolean enableHttp = config.toBoolean("enableHttp");
+        String httpPort = config.get("httpPort").toString();
+        boolean enableHttps = config.toBoolean("enableHttps");
+        String httpPorts = config.get("httpPort").toString();
+        boolean supportOracle = config.toBoolean("supportOracle");
+        boolean supportMysql  = config.toBoolean("supportMysql");
+        boolean supportPostgresql = config.toBoolean("supportPostgresql");
+        boolean supportH2ForTest  = config.toBoolean("supportH2ForTest");
         boolean supportClient = config.toBoolean("supportClient");
 
         transfer(targetPath, "", "pom.xml", templates.rest.pom.template(config));
@@ -66,7 +74,7 @@ public class RestGenerator implements Generator {
         transfer(targetPath, "", ".project", templates.rest.project.template(config));
 
         // config
-        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "server.yml", templates.rest.server.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version")));
+        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "server.yml", templates.rest.server.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, httpPort, enableHttps, httpPorts));
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "secret.yml", templates.rest.secret.template());
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "security.yml", templates.rest.security.template());
         if(supportClient) {
