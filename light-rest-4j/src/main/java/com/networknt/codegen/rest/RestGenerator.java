@@ -49,16 +49,16 @@ public class RestGenerator implements Generator {
     @Override
     public void generate(String targetPath, Object model, Any config) throws IOException {
         // whoever is calling this needs to make sure that model is converted to Map<String, Object>
-        String rootPackage = config.get("rootPackage").toString();
-        String modelPackage = config.get("modelPackage").toString();
-        String handlerPackage = config.get("handlerPackage").toString();
+        String rootPackage = config.toString("rootPackage");
+        String modelPackage = config.toString("modelPackage");
+        String handlerPackage = config.toString("handlerPackage");
         boolean overwriteHandler = config.toBoolean("overwriteHandler");
         boolean overwriteHandlerTest = config.toBoolean("overwriteHandlerTest");
         boolean overwriteModel = config.toBoolean("overwriteModel");
         boolean enableHttp = config.toBoolean("enableHttp");
-        String httpPort = config.get("httpPort").toString();
+        String httpPort = config.toString("httpPort");
         boolean enableHttps = config.toBoolean("enableHttps");
-        String httpPorts = config.get("httpPort").toString();
+        String httpsPort = config.toString("httpsPort");
         boolean supportOracle = config.toBoolean("supportOracle");
         boolean supportMysql  = config.toBoolean("supportMysql");
         boolean supportPostgresql = config.toBoolean("supportPostgresql");
@@ -74,7 +74,7 @@ public class RestGenerator implements Generator {
         transfer(targetPath, "", ".project", templates.rest.project.template(config));
 
         // config
-        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "server.yml", templates.rest.server.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, httpPort, enableHttps, httpPorts));
+        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "server.yml", templates.rest.server.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, httpPort, enableHttps, httpsPort));
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "secret.yml", templates.rest.secret.template());
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "security.yml", templates.rest.security.template());
         if(supportClient) {
