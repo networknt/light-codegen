@@ -73,6 +73,27 @@ public class RestGenerator implements Generator {
         transfer(targetPath, "", ".classpath", templates.rest.classpath.template());
         transfer(targetPath, "", ".project", templates.rest.project.template(config));
 
+        // database
+        // Oracle DB enabled
+        if(supportOracle){
+            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "service.yml", templates.rest.service.template("oracle.jdbc.pool.OracleDataSource", "jdbc:oracle:thin:@localhost:1521:XE", "SYSTEM", "oracle"));
+        }
+
+        // MySQL DB enabled
+        if(supportMysql){
+            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "service.yml", templates.rest.service.template("com.mysql.jdbc.Driver", "jdbc:mysql://mysqldb:3306/oauth2?useSSL=false", "root", "my-secret-pw"));
+        }
+
+        // Postgres DB enabled
+        if(supportPostgresql){
+            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "service.yml", templates.rest.service.template("org.postgresql.Driver", "jdbc:postgresql://postgresdb:5432/oauth2", "postgres", "my-secret-pw"));
+        }
+
+        // H2 support for testing
+        if(supportH2ForTest){
+            transfer(targetPath, ("src.test.resources.config").replace(".", separator), "service.yml", templates.rest.service.template("org.h2.jdbcx.JdbcDataSource", "jdbc:h2:~/test", "sa", "sa"));
+        }
+
         // config
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "server.yml", templates.rest.server.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, httpPort, enableHttps, httpsPort));
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "secret.yml", templates.rest.secret.template());
