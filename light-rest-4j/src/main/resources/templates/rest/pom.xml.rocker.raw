@@ -45,10 +45,10 @@
         <version.oracle>11.2.0.3</version.oracle>
         }
         @if(config.toBoolean("supportMysql")){
-        <version.mysql>6.0.4</version.mysql>
+        <version.mysql>6.0.5</version.mysql>
         }
         @if(config.toBoolean("supportPostgresql")){
-        <version.postgres>9.4.1211</version.postgres>        
+        <version.postgres>42.1.1</version.postgres>        
         }
         @if(config.toBoolean("supportH2ForTest")){
         <version.h2>1.3.176</version.h2>
