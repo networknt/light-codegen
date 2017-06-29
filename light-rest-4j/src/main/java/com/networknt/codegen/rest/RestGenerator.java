@@ -131,7 +131,8 @@ public class RestGenerator implements Generator {
                 for(Map.Entry<String, Any> entry : any.asMap().entrySet()) {
                     String key = entry.getKey();
                     Any value = entry.getValue();
-                    transfer(targetPath, ("src.main.java." + modelPackage).replace(".", separator), key + ".java", templates.rest.model.template(modelPackage, key, value));
+                    String modelFileName = key.substring(0, 1).toUpperCase() + key.substring(1);
+                    transfer(targetPath, ("src.main.java." + modelPackage).replace(".", separator), modelFileName + ".java", templates.rest.model.template(modelPackage, modelFileName, value));
                 }
             }
         }
