@@ -4,6 +4,7 @@
 
 import React, {Component} from 'react';
 import {Steps} from 'antd';
+import './AppSteps.less';
 
 const Step = Steps.Step;
 

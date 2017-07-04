@@ -245,7 +245,7 @@ module.exports = {
                                 "@body-background": "#E2E2E2",
                                 "@primary-color": "#E84E40",
 
-                                "@component-background": "@body-background",
+
                                 "@layout-body-background": "@body-background",
                                 "@layout-header-background": "@primary-color"
                             },
