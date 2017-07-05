@@ -5,7 +5,7 @@
 import React, {Component} from 'react';
 import {Layout} from 'antd';
 import AppSteps from "./app-steps/AppSteps";
-import SelectSchemaForm from "./select-schema-form/SelectSchemaForm";
+import SelectSchemaStep from "./select-schema-step/SelectSchemaStep";
 
 const {Content} = Layout;
 
@@ -25,9 +25,8 @@ class AppContent extends Component {
                 <Layout className="primary-paper">
                     <Content style={{ padding: '0 24px', minHeight: 280 }}>
                         {this.state.currentStep === 0 &&
-                            <SelectSchemaForm />
+                            <SelectSchemaStep />
                         }
-
                     </Content>
                 </Layout>
             </Content>

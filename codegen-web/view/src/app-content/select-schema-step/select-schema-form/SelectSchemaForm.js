@@ -18,17 +18,17 @@ class SelectSchemaForm extends Component {
         return e && e.fileList;
     };
 
-    handleChange(value) {
+    handleChange = (value) => {
         console.log(`selected ${value}`);
-    }
+    };
 
     render() {
         const {getFieldDecorator} = this.props.form;
 
         return (
-            <Form layout="inline" style={{textAlign: 'center'}}>
-                <FormItem>
-                    <Select style={{width: 200}} onChange={this.handleChange}>
+            <Form layout="vertical">
+                <FormItem label="Generator:">
+                    <Select onChange={this.handleChange} placeholder="Select generator...">
                         <OptGroup label="Client Side">
                             <Option value="angular">Angular</Option>
                             <Option value="react">React</Option>
@@ -38,8 +38,8 @@ class SelectSchemaForm extends Component {
                         </OptGroup>
                     </Select>
                 </FormItem>
-                <FormItem>
-                    <div className="dropbox" style={{width: '500px'}}>
+                <FormItem label="Schema:">
+                    <div className="dropbox">
                         {getFieldDecorator('dragger', {
                             valuePropName: 'fileList',
                             getValueFromEvent: this.normFile,
