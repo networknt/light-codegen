@@ -1,4 +1,5 @@
 @primary-color: #E84E40;
+@import "~highlight.js/styles/github.css";
 
 .logo {
   float: left;
@@ -25,4 +26,22 @@
   -webkit-box-shadow: 0 0 7px 0 rgba(0, 0, 0, 0.50);
   -moz-box-shadow: 0 0 7px 0 rgba(0, 0, 0, 0.50);
   box-shadow: 0 0 7px 0 rgba(0, 0, 0, 0.50);
+}
+
+.nav-button {
+  width: 50px !important;
+  height: 50px !important;
+  border: none !important;
+  -webkit-box-shadow: 0 0 12px 0 rgba(0, 0, 0, 0.12), -3px 5px 12px 0 rgba(0,0,0,0.24);
+  -moz-box-shadow: 0 0 12px 0 rgba(0, 0, 0, 0.12), -3px 5px 12px 0 rgba(0,0,0,0.24);
+  box-shadow: 0 0 12px 0 rgba(0, 0, 0, 0.12), -3px 5px 12px 0 rgba(0,0,0,0.24);
+
+  &.next {
+    background: #00BFA5 !important;
+  }
+
+  &.prev {
+    background: #FFFFFF !important;
+    color: rgba(99, 99, 99, 0.9);
+  }
 }
