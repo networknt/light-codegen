@@ -18,7 +18,7 @@ class AppContent extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            currentStep: 0
+            currentStep: 2
         };
     }
 
@@ -34,6 +34,12 @@ class AppContent extends Component {
         }));
     };
 
+    onAddAnother = () => {
+        this.setState({
+            currentStep: 0
+        });
+    };
+
     select_step = () => {
         switch (this.state.currentStep) {
             case 0:
@@ -41,7 +47,7 @@ class AppContent extends Component {
             case 1:
                 return <SelectConfigStep onNextClick={this.onNextClick} onPrevClick={this.onPrevClick}/>;
             case 2:
-                return <GenerateStep/>;
+                return <GenerateStep onAddAnother={this.onAddAnother}/>;
             default:
                 return <SelectSchemaStep onNextClick={this.onNextClick}/>;
         }

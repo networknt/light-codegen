@@ -244,6 +244,8 @@ module.exports = {
                             modifyVars: {
                                 "@body-background": "#E2E2E2",
                                 "@primary-color": "#E84E40",
+                                "@btn-primary-bg": "#00BFA5",
+                                "@btn-group-border": "#E2E2E2",
 
 
                                 "@layout-body-background": "@body-background",

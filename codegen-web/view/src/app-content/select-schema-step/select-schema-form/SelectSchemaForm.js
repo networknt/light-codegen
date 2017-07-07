@@ -29,12 +29,15 @@ class SelectSchemaForm extends Component {
             <Form layout="vertical">
                 <FormItem label="Generator:">
                     <Select onChange={this.handleChange} placeholder="Select generator...">
+                        <OptGroup label="Server Side">
+                            <Option value="light-4j-rest">Light-4J REST</Option>
+                            <Option value="light-4j-graphql">Light-4J GraphQL</Option>
+                            <Option value="light-4j-hybrid-service">Light-4J Hybrid Service</Option>
+                            <Option value="light-4j-hybrid-server">Light-4J Hybrid Server</Option>
+                        </OptGroup>
                         <OptGroup label="Client Side">
                             <Option value="angular">Angular</Option>
                             <Option value="react">React</Option>
-                        </OptGroup>
-                        <OptGroup label="Server Side">
-                            <Option value="light-4j-graphql">Light-4J GraphQL</Option>
                         </OptGroup>
                     </Select>
                 </FormItem>

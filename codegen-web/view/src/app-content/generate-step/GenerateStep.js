@@ -3,12 +3,29 @@
  */
 
 import React, {Component} from 'react';
-import {Row, Col, Button, Icon} from 'antd';
+import {Row, Col, Menu, Dropdown} from 'antd';
 import Highlight from 'react-highlight'
+
+import './GenerateStep.less';
 
 class GenerateStep extends Component {
 
+    onMenuItemClick = (e) => {
+        console.log('Menu item click: ', e);
+        if (e.key === 'add-another') {
+            this.props.onAddAnother();
+        }
+    };
 
+    onGenerateButtonClick = (e) => {
+        console.log('Generate button click: ', e);
+    };
+
+    generate_button_menu = (
+        <Menu onClick={this.onMenuItemClick}>
+            <Menu.Item key="add-another">Add Another</Menu.Item>
+        </Menu>
+    );
 
     render() {
         return (
@@ -48,11 +65,11 @@ class GenerateStep extends Component {
                         </Highlight>
                     </Col>
                 </Row>
-                <Row type="flex">
-                    <Col span={2} offset={20}>
-                        {/*<Button type="primary" shape="circle" className="nav-button next" onClick={this.props.onNextClick}>*/}
-                            {/*<Icon type="arrow-right" style={{fontSize: 20, paddingTop: '4px'}}/>*/}
-                        {/*</Button>*/}
+                <Row type="flex" justify="left">
+                    <Col span={2} offset={21}>
+                        <Dropdown.Button onClick={this.onGenerateButtonClick} overlay={this.generate_button_menu} className="generate-button" type="primary" size="large">
+                            Generate!
+                        </Dropdown.Button>
                     </Col>
                 </Row>
             </div>
