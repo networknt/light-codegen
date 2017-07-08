@@ -27,6 +27,11 @@ mvn clean install
 
 This repository currently provides the following generators that can each be used to scaffold different project types.
 
+### Utility Command Line
+
+You can clone the light-codegen repo and build the project locally on an environment that Java 8 JDK and Maven is installed.
+Once the project is built, you can call the codegen-cli.jar direct with parameters to generate project.
+
 #### light-rest-4j
 
 Given we have test swagger.json and config.json in light-rest-4j/src/test/resources folder,
@@ -65,10 +70,11 @@ The generated project is just a skeleton without any service. You have to genera
 (by using the below light-hybrid-4j service generator) and put these jar file(s) into the classpath and start this server.
 
 For more information about light-hybrid-4j, please refer to the [project](https://github.com/networknt/light-hybrid-4j) 
-and its [documentation]() (in progress).
+and its [documentation](https://networknt.github.io/light-hybrid-4j/) (working in progress).
 
 The following will generate a sample light-hybrid-4j **server** based on test configuration for a petstore.
 Working directory: _light-codegen_
+
 ```
 java -jar codegen-cli/target/codegen-cli.jar -f light-hybrid-4j-server -o /tmp/hybridserver -c light-hybrid-4j/src/test/resources/serverConfig.json
 ```
@@ -81,7 +87,7 @@ platform as a jar file. Multiple modules can be hosted on the same server if nee
 interact with each other through a module interface/contract defined by schema files. The generated
 project cannot run directly as it's only a small jar file without a main class. However its services are
 enabled by placing the jar file into the classpath of the server. For multiple jar files, we recommend
-creating a folder like /service or /lib within the class path of the server and having it contain all
+creating a folder like /service or /lib within the class path of the server and having it contained all
 necessary light-hybrid-4j services.
 
 The following will generate a sample light-hybrid-4j service which exposes a hello-world endpoint.
