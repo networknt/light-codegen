@@ -66,7 +66,15 @@ public class RestGenerator implements Generator {
         boolean supportClient = config.toBoolean("supportClient");
 
         transfer(targetPath, "", "pom.xml", templates.rest.pom.template(config));
-        transfer(targetPath, "", "Dockerfile", templates.rest.dockerfile.template(config));
+        // There is only one port that should be exposed in Dockerfile, otherwise, the service
+        // discovery will be so confused. If https is enabled, expose the https port. Otherwise http port.
+        String expose = "";
+        if(enableHttps) {
+            expose = httpsPort;
+        } else {
+            expose = httpPort;
+        }
+        transfer(targetPath, "", "Dockerfile", templates.rest.dockerfile.template(config, expose));
         transfer(targetPath, "", ".gitignore", templates.rest.gitignore.template());
         transfer(targetPath, "", "README.md", templates.rest.README.template());
         transfer(targetPath, "", "LICENSE", templates.rest.LICENSE.template());
