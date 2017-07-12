@@ -4,6 +4,7 @@
 
 import React, {Component} from 'react';
 import {Form, Upload, Icon, Select} from 'antd';
+import {AppActions} from "../../../AppActions";
 
 const FormItem = Form.Item;
 const {Option, OptGroup} = Select;
@@ -11,24 +12,24 @@ const {Option, OptGroup} = Select;
 class SelectSchemaForm extends Component {
 
     normFile = (e) => {
-        console.log('Upload event:', e);
         if (Array.isArray(e)) {
             return e;
         }
         return e && e.fileList;
     };
 
-    handleChange = (value) => {
-        console.log(`selected ${value}`);
-    };
-
     render() {
-        const {getFieldDecorator} = this.props.form;
+        const { getFieldDecorator } = this.props.form;
 
         return (
-            <Form layout="vertical">
+            <Form layout="vertical" >
                 <FormItem label="Generator:">
-                    <Select onChange={this.handleChange} placeholder="Select generator...">
+                    {getFieldDecorator('generator', {
+                        rules: [
+                            { required: true, message: 'Please select a generator!' },
+                        ],
+                    })(
+                    <Select placeholder="Select generator...">
                         <OptGroup label="Server Side">
                             <Option value="light-4j-rest">Light-4J REST</Option>
                             <Option value="light-4j-graphql">Light-4J GraphQL</Option>
@@ -40,20 +41,25 @@ class SelectSchemaForm extends Component {
                             <Option value="react">React</Option>
                         </OptGroup>
                     </Select>
+                    )}
                 </FormItem>
                 <FormItem label="Schema:">
                     <div className="dropbox">
-                        {getFieldDecorator('dragger', {
-                            valuePropName: 'fileList',
+                        {getFieldDecorator('schema', {
+                            valuePropName: 'schema',
                             getValueFromEvent: this.normFile,
+                            rules: [{
+                                    required: true, message: 'Please select a schema file!'
+                                }
+                            ]
                         })(
-                            <Upload.Dragger name="files" action="/upload.do">
-                                <p className="ant-upload-drag-icon">
-                                    <Icon type="inbox"/>
-                                </p>
-                                <p className="ant-upload-text">Click or drag the file to this area to upload</p>
-                                <p className="ant-upload-hint">The API configuration must be in JSON format.</p>
-                            </Upload.Dragger>
+                        <Upload.Dragger {...AppActions.validateUploadedSchemaRequest} >
+                            <p className="ant-upload-drag-icon">
+                                <Icon type="inbox"/>
+                            </p>
+                            <p className="ant-upload-text">Click or drag the file to this area to upload</p>
+                            <p className="ant-upload-hint">The API configuration must be in JSON format.</p>
+                        </Upload.Dragger>
                         )}
                     </div>
                 </FormItem>
@@ -62,4 +68,19 @@ class SelectSchemaForm extends Component {
     }
 }
 
-export default Form.create()(SelectSchemaForm);
+export default Form.create({
+    onValuesChange(props, changedFields) {
+        props.onChange(changedFields);
+    },
+    mapPropsToFields(props) {
+        console.log('map props', props);
+        return {
+            generator: {
+                value: props.initValues.generator
+            },
+            schema: {
+                value: props.initValues.schema
+            }
+        };
+    }
+})(SelectSchemaForm);
