@@ -5,11 +5,13 @@
 import React, {Component} from 'react';
 import {Row, Col, Button, Icon} from 'antd';
 import SelectConfigForm from "./select-config-form/SelectConfigForm";
-
+import PropTypes from 'prop-types';
 
 class SelectConfigStep extends Component {
 
-
+    onFormValuesChange = (e) => {
+        console.log('onFormValuesChange', e);
+    };
 
     render() {
         return (
@@ -25,7 +27,7 @@ class SelectConfigStep extends Component {
                 <div style={{height: '20px'}}/>
                 <Row type="flex" justify="center">
                     <Col xs={24} sm={18} md={14} lg={12} xl={6}>
-                        <SelectConfigForm />
+                        <SelectConfigForm onFormValuesChange={this.onFormValuesChange}/>
                     </Col>
                 </Row>
                 <Row type="flex">
@@ -44,5 +46,10 @@ class SelectConfigStep extends Component {
         )
     }
 }
+
+SelectConfigStep.PropTypes = {
+    onPrevClick: PropTypes.func.isRequired,
+    onNextClick: PropTypes.func.isRequired
+};
 
 export default SelectConfigStep;

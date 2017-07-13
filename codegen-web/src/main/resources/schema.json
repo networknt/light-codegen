@@ -17,6 +17,11 @@
     },
     "scope": "codegen.r"
   },
+  "lightapi.net/codegen/validateUploadFile/0.0.1" : {
+    "schema": {
+    },
+    "scope": "codegen.r"
+  },
   "lightapi.net/codegen/generate/0.0.1" : {
     "schema": {
       "title" : "Service",

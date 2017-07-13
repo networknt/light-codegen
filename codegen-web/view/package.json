@@ -5,6 +5,7 @@
   "dependencies": {
     "antd": "^2.11.2",
     "autoprefixer": "7.1.1",
+    "axios": "^0.16.2",
     "babel-core": "6.25.0",
     "babel-eslint": "7.2.3",
     "babel-jest": "20.0.3",
@@ -32,6 +33,7 @@
     "postcss-flexbugs-fixes": "3.0.0",
     "postcss-loader": "2.0.6",
     "promise": "7.1.1",
+    "prop-types": "^15.5.10",
     "react": "^15.6.1",
     "react-dev-utils": "^3.0.2",
     "react-dom": "^15.6.1",
@@ -94,5 +96,6 @@
     "babel-plugin-import": "^1.2.1",
     "less": "^2.7.2",
     "less-loader": "^4.0.4"
-  }
+  },
+  "proxy": "http://localhost:8080"
 }
