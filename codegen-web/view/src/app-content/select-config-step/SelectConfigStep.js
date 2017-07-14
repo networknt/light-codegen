@@ -9,8 +9,33 @@ import PropTypes from 'prop-types';
 
 class SelectConfigStep extends Component {
 
-    onFormValuesChange = (e) => {
-        console.log('onFormValuesChange', e);
+    onFormInit = (initForm) => {
+        if (initForm) {
+            this.setState({
+                configForm: initForm.props.form
+            });
+        }
+    };
+
+    /**
+     * When the next button is clicked, validate the fields, and if they're valid, move on.
+     * If they're not, the validateFields function will take care of triggering the messages.
+     */
+    onNextClick = () => {
+        this.state.configForm.validateFields((err, values) => {
+            if (!err) {
+                this.props.onNextClick();
+            }
+        });
+    };
+
+    /**
+     * When the form changes, dispatch event to the controller to maintain state.
+     *
+     * @param change
+     */
+    onChange = (change) => {
+        this.props.onChange(change);
     };
 
     render() {
@@ -27,7 +52,7 @@ class SelectConfigStep extends Component {
                 <div style={{height: '20px'}}/>
                 <Row type="flex" justify="center">
                     <Col xs={24} sm={18} md={14} lg={12} xl={6}>
-                        <SelectConfigForm onFormValuesChange={this.onFormValuesChange}/>
+                        <SelectConfigForm onChange={this.onChange} wrappedComponentRef={this.onFormInit} initValues={this.props.initValues} />
                     </Col>
                 </Row>
                 <Row type="flex">
@@ -37,7 +62,7 @@ class SelectConfigStep extends Component {
                         </Button>
                     </Col>
                     <Col span={2} offset={20}>
-                        <Button type="primary" shape="circle" className="nav-button next" onClick={this.props.onNextClick}>
+                        <Button type="primary" shape="circle" className="nav-button next" onClick={this.onNextClick}>
                             <Icon type="arrow-right" style={{fontSize: 20, paddingTop: '4px'}}/>
                         </Button>
                     </Col>

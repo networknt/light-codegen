@@ -4,17 +4,36 @@
 
 import React, {Component} from 'react';
 import {Form, Upload, Icon} from 'antd';
+import {AppActions} from "../../../AppActions";
 
 const FormItem = Form.Item;
 
 class SelectConfigForm extends Component {
 
+    constructor(props) {
+        super(props);
+        this.state = {
+            fileList: props.initValues.schema || []
+        }
+    }
+
     normFile = (e) => {
-        console.log('Upload event:', e);
         if (Array.isArray(e)) {
             return e;
         }
         return e && e.fileList;
+    };
+
+    /**
+     * Whenever we select a new file, make sure the file list can only have 1 item.
+     * Doing this since I don't think the Upload component has a file limit to it..
+     *
+     * @param fileListObj
+     */
+    onFileChange = (fileListObj) => {
+        this.setState({
+            fileList: fileListObj.fileList.length > 0 ? [fileListObj.fileList[fileListObj.fileList.length - 1]] : []
+        })
     };
 
     render() {
@@ -24,11 +43,16 @@ class SelectConfigForm extends Component {
             <Form layout="vertical">
                 <FormItem label="Config:">
                     <div className="dropbox">
-                        {getFieldDecorator('dragger', {
-                            valuePropName: 'fileList',
+                        {getFieldDecorator('config', {
+                            valuePropName: 'config',
                             getValueFromEvent: this.normFile,
+                            rules: [{
+                                required: true, message: 'Please select a config file!'
+                            }]
                         })(
-                            <Upload.Dragger name="files" action="/upload.do">
+                            <Upload.Dragger {...AppActions.validateUploadedSchemaRequest} onChange={this.onFileChange}
+                                            fileList={this.state.fileList}
+                                            defaultFileList={this.props.initValues.schema}>
                                 <p className="ant-upload-drag-icon">
                                     <Icon type="inbox"/>
                                 </p>
@@ -43,4 +67,9 @@ class SelectConfigForm extends Component {
     }
 }
 
-export default Form.create()(SelectConfigForm);
+export default Form.create({
+        onValuesChange(props, changedFields) {
+            props.onChange(changedFields);
+        }
+    }
+)(SelectConfigForm);
