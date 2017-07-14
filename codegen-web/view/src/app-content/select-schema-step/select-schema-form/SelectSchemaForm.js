@@ -11,6 +11,13 @@ const {Option, OptGroup} = Select;
 
 class SelectSchemaForm extends Component {
 
+    constructor(props) {
+        super(props);
+        this.state = {
+            fileList: props.initValues.schema || []
+        }
+    }
+
     normFile = (e) => {
         if (Array.isArray(e)) {
             return e;
@@ -18,9 +25,20 @@ class SelectSchemaForm extends Component {
         return e && e.fileList;
     };
 
+    /**
+     * Whenever we select a new file, make sure the file list can only have 1 item.
+     * Doing this since I don't think the Upload component has a file limit to it..
+     *
+     * @param fileListObj
+     */
+    onFileChange = (fileListObj) => {
+        this.setState({
+            fileList: fileListObj.fileList.length > 0 ? [fileListObj.fileList[fileListObj.fileList.length - 1]] : []
+        })
+    };
+
     render() {
         const { getFieldDecorator } = this.props.form;
-
         return (
             <Form layout="vertical" >
                 <FormItem label="Generator:">
@@ -53,7 +71,7 @@ class SelectSchemaForm extends Component {
                                 }
                             ]
                         })(
-                        <Upload.Dragger {...AppActions.validateUploadedSchemaRequest} >
+                        <Upload.Dragger {...AppActions.validateUploadedSchemaRequest} onChange={this.onFileChange} fileList={this.state.fileList} defaultFileList={this.props.initValues.schema}>
                             <p className="ant-upload-drag-icon">
                                 <Icon type="inbox"/>
                             </p>
@@ -73,13 +91,9 @@ export default Form.create({
         props.onChange(changedFields);
     },
     mapPropsToFields(props) {
-        console.log('map props', props);
         return {
             generator: {
                 value: props.initValues.generator
-            },
-            schema: {
-                value: props.initValues.schema
             }
         };
     }

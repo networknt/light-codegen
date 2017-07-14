@@ -48,7 +48,6 @@ class AppContent extends Component {
     };
 
     onSchemaChange = (change) => {
-        console.log('Change: ', change);
         this.setState((prevState, props) => {
             return {
                 schema: Object.assign({}, prevState.schema, change)
@@ -57,7 +56,11 @@ class AppContent extends Component {
     };
 
     onConfigChange = (change) => {
-
+        this.setState((prevState, props) => {
+            return {
+                schema: Object.assign({}, prevState.config, change)
+            }
+        })
     };
 
     select_step = () => {
@@ -65,7 +68,7 @@ class AppContent extends Component {
             case 0:
                 return <SelectSchemaStep onNextClick={this.onNextClick} onChange={this.onSchemaChange} initValues={this.state.schema} />;
             case 1:
-                return <SelectConfigStep onNextClick={this.onNextClick} onPrevClick={this.onPrevClick} onChange={this.onConfigChange} />;
+                return <SelectConfigStep onNextClick={this.onNextClick} onPrevClick={this.onPrevClick} onChange={this.onConfigChange} initValues={this.state.config} />;
             case 2:
                 return <GenerateStep onAddAnother={this.onAddAnother} />;
             default:

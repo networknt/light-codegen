@@ -17,6 +17,10 @@ class SelectSchemaStep extends Component {
         }
     };
 
+    /**
+     * When the next button is clicked, validate the fields, and if they're valid, move on.
+     * If they're not, the validateFields function will take care of triggering the messages.
+     */
     onNextClick = () => {
         this.state.schemaForm.validateFields((err, values) => {
             if (!err) {
@@ -25,6 +29,11 @@ class SelectSchemaStep extends Component {
         });
     };
 
+    /**
+     * When the form changes, dispatch event to the controller to maintain state.
+     *
+     * @param change
+     */
     onChange = (change) => {
         this.props.onChange(change);
     };
