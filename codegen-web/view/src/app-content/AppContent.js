@@ -20,7 +20,7 @@ class AppContent extends Component {
         this.state = {
             currentStep: 0,
             schema: {
-                generator: null,
+                framework: null,
                 schemaFiles: null,
                 schemaContent: ''
             },

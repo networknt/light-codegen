@@ -48,7 +48,7 @@ class SelectSchemaStep extends Component {
                     <Col xs={24} sm={18} md={14} lg={12} xl={6}>
                         <h2 style={{color: 'rgba(0, 0, 0, 0.5)'}}>Schema</h2>
                         <p>
-                            Select a generator and upload the corresponding API schema.
+                            Select a framework and upload the corresponding API schema.
                         </p>
                     </Col>
                 </Row>

@@ -6,6 +6,7 @@ import React, {Component} from 'react';
 import {Row, Col, Menu, Dropdown} from 'antd';
 import Highlight from 'react-highlight'
 
+import {AppServices} from '../../AppServices';
 import './GenerateStep.less';
 
 class GenerateStep extends Component {
@@ -17,7 +18,9 @@ class GenerateStep extends Component {
     };
 
     onGenerateButtonClick = (e) => {
-        console.log('Generate button click: ', e);
+        AppServices.generate(this.props.initValues.schema.framework, JSON.parse(this.props.initValues.schema.schemaContent), JSON.parse(this.props.initValues.config.configContent)).then((response) => {
+            console.log('Got zip file: ', response.data);
+        })
     };
 
     generate_button_menu = (

@@ -49,13 +49,13 @@ class SelectSchemaForm extends Component {
         const { getFieldDecorator } = this.props.form;
         return (
             <Form layout="vertical" >
-                <FormItem label="Generator:">
-                    {getFieldDecorator('generator', {
+                <FormItem label="Framework:">
+                    {getFieldDecorator('framework', {
                         rules: [
-                            { required: true, message: 'Please select a generator!' },
+                            { required: true, message: 'Please select a framework!' },
                         ],
                     })(
-                    <Select placeholder="Select generator...">
+                    <Select placeholder="Select framework...">
                         <OptGroup label="Server Side">
                             {this.state.frameworkList.map((framework) => {
                                 return <Option key={framework} value={framework}>{framework}</Option>
@@ -99,8 +99,8 @@ export default Form.create({
     },
     mapPropsToFields(props) {
         return {
-            generator: {
-                value: props.initValues.generator
+            framework: {
+                value: props.initValues.framework
             },
             schemaFiles: {
                 value: props.initValues.schemaFiles
