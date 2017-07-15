@@ -50,7 +50,7 @@ class SelectConfigForm extends Component {
                                 required: true, message: 'Please select a config file!'
                             }]
                         })(
-                            <Upload.Dragger {...AppActions.validateUploadedSchemaRequest} onChange={this.onFileChange}
+                            <Upload.Dragger {...AppActions.VALIDATE_JSON_UPLOAD_REQUEST} onChange={this.onFileChange}
                                             fileList={this.state.fileList}
                                             defaultFileList={this.props.initValues.configFiles}>
                                 <p className="ant-upload-drag-icon">

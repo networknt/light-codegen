@@ -11,7 +11,6 @@ import './GenerateStep.less';
 class GenerateStep extends Component {
 
     onMenuItemClick = (e) => {
-        console.log('Menu item click: ', e);
         if (e.key === 'add-another') {
             this.props.onAddAnother();
         }

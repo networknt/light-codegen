@@ -5,6 +5,7 @@
 import React, {Component} from 'react';
 import {Form, Upload, Icon, Select} from 'antd';
 import {AppActions} from "../../../AppActions";
+import {AppServices} from '../../../AppServices';
 
 const FormItem = Form.Item;
 const {Option, OptGroup} = Select;
@@ -13,10 +14,16 @@ class SelectSchemaForm extends Component {
 
     constructor(props) {
         super(props);
-        console.log('props.initValues.schemaFiles', props.initValues.schemaFiles);
         this.state = {
-            fileList: props.initValues.schemaFiles || []
-        }
+            fileList: props.initValues.schemaFiles || [],
+            frameworkList: []
+        };
+    }
+
+    componentWillMount() {
+        AppServices.get_frameworks().then((response) => {
+            this.setState({frameworkList: response.data})
+        })
     }
 
     normFile = (e) => {
@@ -50,15 +57,14 @@ class SelectSchemaForm extends Component {
                     })(
                     <Select placeholder="Select generator...">
                         <OptGroup label="Server Side">
-                            <Option value="light-4j-rest">Light-4J REST</Option>
-                            <Option value="light-4j-graphql">Light-4J GraphQL</Option>
-                            <Option value="light-4j-hybrid-service">Light-4J Hybrid Service</Option>
-                            <Option value="light-4j-hybrid-server">Light-4J Hybrid Server</Option>
+                            {this.state.frameworkList.map((framework) => {
+                                return <Option key={framework} value={framework}>{framework}</Option>
+                            })}
                         </OptGroup>
-                        <OptGroup label="Client Side">
-                            <Option value="angular">Angular</Option>
-                            <Option value="react">React</Option>
-                        </OptGroup>
+                        {/*<OptGroup label="Client Side">*/}
+                            {/*<Option value="angular">Angular</Option>*/}
+                            {/*<Option value="react">React</Option>*/}
+                        {/*</OptGroup>*/}
                     </Select>
                     )}
                 </FormItem>
@@ -72,7 +78,7 @@ class SelectSchemaForm extends Component {
                                 }
                             ]
                         })(
-                        <Upload.Dragger {...AppActions.validateUploadedSchemaRequest} onChange={this.onFileChange} fileList={this.state.fileList} defaultFileList={this.props.initValues.schemaFiles}>
+                        <Upload.Dragger {...AppActions.VALIDATE_JSON_UPLOAD_REQUEST} onChange={this.onFileChange} fileList={this.state.fileList} defaultFileList={this.props.initValues.schemaFiles}>
                             <p className="ant-upload-drag-icon">
                                 <Icon type="inbox"/>
                             </p>

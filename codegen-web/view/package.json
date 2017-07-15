@@ -29,6 +29,8 @@
     "graphql-relay": "^0.5.2",
     "html-webpack-plugin": "2.29.0",
     "jest": "20.0.4",
+    "node-fetch": "^1.7.1",
+    "node-fetch-npm": "^2.0.1",
     "object-assign": "4.1.1",
     "postcss-flexbugs-fixes": "3.0.0",
     "postcss-loader": "2.0.6",
