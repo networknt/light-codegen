@@ -13,8 +13,9 @@ class SelectSchemaForm extends Component {
 
     constructor(props) {
         super(props);
+        console.log('props.initValues.schemaFiles', props.initValues.schemaFiles);
         this.state = {
-            fileList: props.initValues.schema || []
+            fileList: props.initValues.schemaFiles || []
         }
     }
 
@@ -63,15 +64,15 @@ class SelectSchemaForm extends Component {
                 </FormItem>
                 <FormItem label="Schema:">
                     <div className="dropbox">
-                        {getFieldDecorator('schema', {
-                            valuePropName: 'schema',
+                        {getFieldDecorator('schemaFiles', {
+                            valuePropName: 'schemaFiles',
                             getValueFromEvent: this.normFile,
                             rules: [{
                                     required: true, message: 'Please select a schema file!'
                                 }
                             ]
                         })(
-                        <Upload.Dragger {...AppActions.validateUploadedSchemaRequest} onChange={this.onFileChange} fileList={this.state.fileList} defaultFileList={this.props.initValues.schema}>
+                        <Upload.Dragger {...AppActions.validateUploadedSchemaRequest} onChange={this.onFileChange} fileList={this.state.fileList} defaultFileList={this.props.initValues.schemaFiles}>
                             <p className="ant-upload-drag-icon">
                                 <Icon type="inbox"/>
                             </p>
@@ -94,6 +95,9 @@ export default Form.create({
         return {
             generator: {
                 value: props.initValues.generator
+            },
+            schemaFiles: {
+                value: props.initValues.schemaFiles
             }
         };
     }

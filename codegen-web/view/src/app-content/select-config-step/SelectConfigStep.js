@@ -35,6 +35,9 @@ class SelectConfigStep extends Component {
      * @param change
      */
     onChange = (change) => {
+        if (change.configFiles && change.configFiles.length > 0) {
+            change.configContent = JSON.stringify(change.configFiles[0].response, null, 2)
+        }
         this.props.onChange(change);
     };
 

@@ -41,28 +41,12 @@ class GenerateStep extends Component {
                 <div style={{height: '20px'}}/>
                 <Row type="flex" justify="center">
                     <Col span={10}>
-                        <Highlight className="prettyprint lang-json">{
-                            "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Beatae distinctio ducimus eaque \n" +
-                            "eos eum facere fugiat incidunt labore natus omnis quae quibusdam quo, quod recusandae \n" +
-                            "repellendus totam, vel veniam vitae.\n" +
-                            "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusantium adipisci animi \n" +
-                            "corporis cupiditate delectus et, eum ipsum itaque iusto laboriosam neque obcaecati optio \n" +
-                            "possimus quae saepe, sed sint temporibus tenetur."
-                        }
-                        </Highlight>
+                        <Highlight className="prettyprint lang-json">{this.props.initValues.schema.schemaContent}</Highlight>
                     </Col>
                     <Col span={2}>
                     </Col>
                     <Col span={10}>
-                        <Highlight className="prettyprint lang-json">{
-                            "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Beatae distinctio ducimus eaque \n" +
-                            "eos eum facere fugiat incidunt labore natus omnis quae quibusdam quo, quod recusandae \n" +
-                            "repellendus totam, vel veniam vitae.\n" +
-                            "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusantium adipisci animi \n" +
-                            "corporis cupiditate delectus et, eum ipsum itaque iusto laboriosam neque obcaecati optio \n" +
-                            "possimus quae saepe, sed sint temporibus tenetur."
-                        }
-                        </Highlight>
+                        <Highlight className="prettyprint lang-json">{this.props.initValues.config.configContent}</Highlight>
                     </Col>
                 </Row>
                 <Row type="flex" justify="left">

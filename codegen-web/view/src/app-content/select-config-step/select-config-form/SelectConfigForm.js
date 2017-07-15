@@ -13,7 +13,7 @@ class SelectConfigForm extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            fileList: props.initValues.schema || []
+            fileList: props.initValues.configFiles || []
         }
     }
 
@@ -43,8 +43,8 @@ class SelectConfigForm extends Component {
             <Form layout="vertical">
                 <FormItem label="Config:">
                     <div className="dropbox">
-                        {getFieldDecorator('config', {
-                            valuePropName: 'config',
+                        {getFieldDecorator('configFiles', {
+                            valuePropName: 'configFiles',
                             getValueFromEvent: this.normFile,
                             rules: [{
                                 required: true, message: 'Please select a config file!'
@@ -52,7 +52,7 @@ class SelectConfigForm extends Component {
                         })(
                             <Upload.Dragger {...AppActions.validateUploadedSchemaRequest} onChange={this.onFileChange}
                                             fileList={this.state.fileList}
-                                            defaultFileList={this.props.initValues.schema}>
+                                            defaultFileList={this.props.initValues.configFiles}>
                                 <p className="ant-upload-drag-icon">
                                     <Icon type="inbox"/>
                                 </p>
@@ -70,6 +70,13 @@ class SelectConfigForm extends Component {
 export default Form.create({
         onValuesChange(props, changedFields) {
             props.onChange(changedFields);
+        },
+        mapPropsToFields(props) {
+            return {
+                configFiles: {
+                    value: props.initValues.configFiles
+                }
+            };
         }
     }
 )(SelectConfigForm);

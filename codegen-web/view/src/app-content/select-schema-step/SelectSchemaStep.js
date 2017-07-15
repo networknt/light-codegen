@@ -35,6 +35,9 @@ class SelectSchemaStep extends Component {
      * @param change
      */
     onChange = (change) => {
+        if (change.schemaFiles && change.schemaFiles.length > 0) {
+            change.schemaContent = JSON.stringify(change.schemaFiles[0].response, null, 2)
+        }
         this.props.onChange(change);
     };
 
@@ -66,5 +69,7 @@ class SelectSchemaStep extends Component {
         )
     }
 }
+
+SelectSchemaStep.PropTypes = {};
 
 export default SelectSchemaStep;
