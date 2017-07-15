@@ -33,7 +33,7 @@
         <version.junit>4.12</version.junit>
         <version.mockito>2.7.21</version.mockito>
         <version.undertow>1.4.11.Final</version.undertow>
-        <version.jsoniter>0.9.15</version.jsoniter>
+        <version.jsonpath>2.2.0</version.jsonpath>
         <version.httpclient>4.5.2</version.httpclient>
         <version.httpasyncclient>4.1.2</version.httpasyncclient>
         <version.hazelcast>3.6.7</version.hazelcast>
@@ -141,7 +141,7 @@
             <artifactId>service</artifactId>
             <version>${version.light-4j}</version>
         </dependency>
-       <dependency>
+        <dependency>
             <groupId>com.networknt</groupId>
             <artifactId>registry</artifactId>
             <version>${version.light-4j}</version>
@@ -184,9 +184,15 @@
         </dependency>
 
         <dependency>
-            <groupId>com.jsoniter</groupId>
-            <artifactId>jsoniter</artifactId>
-            <version>${version.jsoniter}</version>
+            <groupId>com.jayway.jsonpath</groupId>
+            <artifactId>json-path</artifactId>
+            <version>${version.jsonpath}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>net.minidev</groupId>
+                    <artifactId>json-smart</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
