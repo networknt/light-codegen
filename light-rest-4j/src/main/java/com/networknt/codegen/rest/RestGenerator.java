@@ -37,13 +37,13 @@ public class RestGenerator implements Generator {
 
     public RestGenerator() {
         typeMapping.put("array", "java.util.List");
-        typeMapping.put("map", "Map");
-        typeMapping.put("List", "List");
+        typeMapping.put("map", "java.util.Map");
+        typeMapping.put("List", "java.util.List");
         typeMapping.put("boolean", "Boolean");
         typeMapping.put("string", "String");
         typeMapping.put("int", "Integer");
         typeMapping.put("float", "Float");
-        typeMapping.put("number", "BigDecimal");
+        typeMapping.put("number", "java.math.BigDecimal");
         typeMapping.put("DateTime", "Date");
         typeMapping.put("long", "Long");
         typeMapping.put("short", "Short");
