@@ -5,7 +5,6 @@ import com.jsoniter.any.Any;
 import com.jsoniter.output.JsonStream;
 import com.networknt.codegen.Generator;
 import com.networknt.codegen.Utils;
-import com.networknt.utility.NioUtils;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -33,6 +32,28 @@ import static java.io.File.separator;
  */
 public class RestGenerator implements Generator {
     //static ObjectMapper mapper = new ObjectMapper();
+
+    private Map<String, String> typeMapping = new HashMap<>();
+
+    public RestGenerator() {
+        typeMapping.put("array", "java.util.List");
+        typeMapping.put("map", "Map");
+        typeMapping.put("List", "List");
+        typeMapping.put("boolean", "Boolean");
+        typeMapping.put("string", "String");
+        typeMapping.put("int", "Integer");
+        typeMapping.put("float", "Float");
+        typeMapping.put("number", "BigDecimal");
+        typeMapping.put("DateTime", "Date");
+        typeMapping.put("long", "Long");
+        typeMapping.put("short", "Short");
+        typeMapping.put("char", "String");
+        typeMapping.put("double", "Double");
+        typeMapping.put("object", "Object");
+        typeMapping.put("integer", "Integer");
+        typeMapping.put("ByteArray", "byte[]");
+        typeMapping.put("binary", "byte[]");
+    }
 
     @Override
     public String getFramework() {
@@ -137,16 +158,100 @@ public class RestGenerator implements Generator {
             Any any = ((Any)model).get("definitions");
             if(any.valueType() != ValueType.INVALID) {
                 for(Map.Entry<String, Any> entry : any.asMap().entrySet()) {
+                    List<Map<String, Any>> props = new ArrayList<>();
                     String key = entry.getKey();
-                    Any value = entry.getValue();
+                    Map<String, Any> value = entry.getValue().asMap();
+                    String type = null;
+                    boolean isEnum = false;
+                    Map<String, Any> properties = null;
+                    List<Any> required = null;
+
+                    for(Map.Entry<String, Any> entrySchema: value.entrySet()) {
+                        if("type".equals(entrySchema.getKey())) {
+                            type = entrySchema.getValue().toString();
+                            if("enum".equals(type)) isEnum = true;
+                        }
+                        if("properties".equals(entrySchema.getKey())) {
+                            properties = entrySchema.getValue().asMap();
+                            // transform properties
+
+                            for(Map.Entry<String, Any> entryProp: properties.entrySet()) {
+                                //System.out.println("key = " + entryProp.getKey() + " value = " + entryProp.getValue());
+                                Map<String, Any> propMap = new HashMap<>();
+                                String name = entryProp.getKey();
+                                propMap.put("name", Any.wrap(name));
+                                propMap.put("getter", Any.wrap("get" + name.substring(0, 1).toUpperCase() + name.substring(1)));
+                                propMap.put("setter", Any.wrap("set" + name.substring(0, 1).toUpperCase() + name.substring(1)));
+                                // assume it is not enum unless it is overwritten
+                                propMap.put("isEnum", Any.wrap(false));
+
+                                boolean isArray = false;
+                                for(Map.Entry<String, Any> entryElement: entryProp.getValue().asMap().entrySet()) {
+                                    System.out.println("key = " + entryElement.getKey() + " value = " + entryElement.getValue());
+
+                                    if("type".equals(entryElement.getKey())) {
+                                        String t = typeMapping.get(entryElement.getValue().toString());
+                                        if("java.util.List".equals(t)) {
+                                            isArray = true;
+                                        } else {
+                                            propMap.put("type", Any.wrap(t));
+                                        }
+                                    }
+                                    if("items".equals(entryElement.getKey())) {
+                                        Any a = entryElement.getValue();
+                                        if(a.get("$ref").valueType() != ValueType.INVALID && isArray) {
+                                            String s = a.get("$ref").toString();
+                                            s = s.substring(s.lastIndexOf('/') + 1);
+                                            propMap.put("type", Any.wrap("java.util.List<" + s + ">"));
+                                        }
+                                        if(a.get("type").valueType() != ValueType.INVALID && isArray) {
+                                            propMap.put("type", Any.wrap("java.util.List<" + typeMapping.get(a.get("type").toString()) + ">"));
+                                        }
+                                    }
+                                    if("$ref".equals(entryElement.getKey())) {
+                                        String s = entryElement.getValue().toString();
+                                        s = s.substring(s.lastIndexOf('/') + 1);
+                                        propMap.put("type", Any.wrap(s));
+                                    }
+                                    if("default".equals(entryElement.getKey())) {
+                                        Any a = entryElement.getValue();
+                                        propMap.put("default", a);
+                                    }
+                                    if("enum".equals(entryElement.getKey())) {
+                                        propMap.put("isEnum", Any.wrap(true));
+                                        propMap.put("nameWithEnum", Any.wrap(name.substring(0, 1).toUpperCase() + name.substring(1) + "Enum"));
+                                        propMap.put("value", Any.wrap(entryElement.getValue()));
+                                    }
+                                    if("format".equals(entryElement.getKey())) {
+                                        String s = entryElement.getValue().toString();
+                                        if("date-time".equals(s)) {
+                                            propMap.put("type", Any.wrap("java.time.LocalDateTime"));
+                                        }
+                                        if("date".equals(s)) {
+                                            propMap.put("type", Any.wrap("java.time.LocalDate"));
+                                        }
+                                    }
+                                }
+                                props.add(propMap);
+                            }
+                        }
+                        if("required".equals(entrySchema.getKey())) {
+                            required = entrySchema.getValue().asList();
+                        }
+                    }
+                    String classVarName = key;
                     String modelFileName = key.substring(0, 1).toUpperCase() + key.substring(1);
-                    transfer(targetPath, ("src.main.java." + modelPackage).replace(".", separator), modelFileName + ".java", templates.rest.model.template(modelPackage, modelFileName, value));
+                    System.out.println("props = " + Any.wrap(props));
+                    transfer(targetPath, ("src.main.java." + modelPackage).replace(".", separator), modelFileName + ".java", templates.rest.pojo.template(modelPackage, modelFileName, classVarName,  props));
                 }
             }
         }
 
+
+
+
         // TODO implement model generation based on this object.
-        List<Any> modelList = getPojoList(model);
+        //List<Map<String, Any>> modelList = getPojoList(model);
 
         // handler
         if(overwriteHandler) {
@@ -301,18 +406,48 @@ public class RestGenerator implements Generator {
         return result;
     }
 
-    public List<Any> getPojoList(Object model) {
-        List<Any> result = new ArrayList<>();
-        Any anyModel = (Any)model;
-        Any definitions = anyModel.get("definitions");
-        if(definitions.valueType() != ValueType.INVALID) {
-            for(Map.Entry<String, Any> entryPath: definitions.asMap().entrySet()) {
-                String name = entryPath.getKey();
-                // TODO add more attributes to the result so that model class
-                // can be generated based on the info.
+    public List<Map<String, Any>> getPojoList(Object model) {
+        List<Map<String, Any>> result = new ArrayList<>();
+        Map<String, Any> definitions = ((Any)model).get("definitions").asMap();
+        for(Map.Entry<String, Any> definition: definitions.entrySet()) {
+            String name = definition.getKey(); // name of the class name
+            String type = null;
+            boolean isEnum = false;
+            Map<String, Any> properties = null;
+            List<Any> required = null;
+            Map<String, Any> schema = definition.getValue().asMap();
+            //System.out.println("name = " + name + " schema = " + schema.toString());
+            for(Map.Entry<String, Any> entrySchema: schema.entrySet()) {
+                //System.out.println("key = " + entrySchema.getKey() + " value = " + entrySchema.getValue());
+                if("type".equals(entrySchema.getKey())) {
+                    type = entrySchema.getValue().toString();
+                    if("enum".equals(type)) isEnum = true;
+                }
+                if("properties".equals(entrySchema.getKey())) {
+                    properties = entrySchema.getValue().asMap();
+                    /*
+                    // now let's flatten the properties
+                    for(Map.Entry<String, Any> entryProp: properties.entrySet()) {
+                        Map<String, Any> vars = new HashMap<>();
+                        if("id".equals(entryProp.getValue().toString())) {
+
+                        }
+                    }
+                    */
+                }
+                if("required".equals(entrySchema.getKey())) {
+                    required = entrySchema.getValue().asList();
+                }
             }
+            Map<String, Any> modelMap = new HashMap<>();
+            modelMap.put("type", Any.wrap(type));
+            modelMap.put("isEnum", Any.wrap(isEnum));
+            modelMap.put("name", Any.wrap(name));
+            modelMap.put("properties", Any.wrap(properties));
+            modelMap.put("required", Any.wrap(required));
+            result.add(modelMap);
         }
+        System.out.println("result = " + Any.wrap(result).toString());
         return result;
     }
-
 }

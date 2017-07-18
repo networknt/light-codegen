@@ -1,0 +1,34 @@
+@import com.jsoniter.any.Any
+@import java.util.Map
+@import java.util.List
+@args (Map<String, Any> prop)
+    @with (v = prop.get("nameWithEnum") + ".values()", value = prop.get("value").asList()) {
+    public enum @prop.get("nameWithEnum") {
+        @for((i, item) :  value) {
+        @with(u = item.toString().toUpperCase()) {@if (i.index() <  value.size() - 1) {@u ("@item"),}@if(i.index() == value.size() - 1) {@u ("@item");}}
+        }
+
+        private final @prop.get("type") value;
+
+        @prop.get("nameWithEnum")(@prop.get("type") value) {
+            this.value = value;
+        }
+
+        @@Override
+        public String toString() {
+            return String.valueOf(value);
+        }
+
+        public static @prop.get("nameWithEnum") fromValue(String text) {
+            for (@prop.get("nameWithEnum") b : @v) {
+                if (String.valueOf(b.value).equals(text)) {
+                return b;
+                }
+            }
+            return null;
+        }
+    }
+
+    private @prop.get("nameWithEnum") @prop.get("name");
+
+    }
