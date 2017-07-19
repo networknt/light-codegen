@@ -187,7 +187,7 @@ public class RestGenerator implements Generator {
 
                                 boolean isArray = false;
                                 for(Map.Entry<String, Any> entryElement: entryProp.getValue().asMap().entrySet()) {
-                                    System.out.println("key = " + entryElement.getKey() + " value = " + entryElement.getValue());
+                                    //System.out.println("key = " + entryElement.getKey() + " value = " + entryElement.getValue());
 
                                     if("type".equals(entryElement.getKey())) {
                                         String t = typeMapping.get(entryElement.getValue().toString());
@@ -230,6 +230,12 @@ public class RestGenerator implements Generator {
                                         if("date".equals(s)) {
                                             propMap.put("type", Any.wrap("java.time.LocalDate"));
                                         }
+                                        if("double".equals(s)) {
+                                            propMap.put("type", Any.wrap(s));
+                                        }
+                                        if("float".equals(s)) {
+                                            propMap.put("type", Any.wrap(s));
+                                        }
                                     }
                                 }
                                 props.add(propMap);
@@ -241,7 +247,7 @@ public class RestGenerator implements Generator {
                     }
                     String classVarName = key;
                     String modelFileName = key.substring(0, 1).toUpperCase() + key.substring(1);
-                    System.out.println("props = " + Any.wrap(props));
+                    //System.out.println("props = " + Any.wrap(props));
                     transfer(targetPath, ("src.main.java." + modelPackage).replace(".", separator), modelFileName + ".java", templates.rest.pojo.template(modelPackage, modelFileName, classVarName,  props));
                 }
             }
@@ -403,51 +409,6 @@ public class RestGenerator implements Generator {
                 result.add(flattened);
             }
         }
-        return result;
-    }
-
-    public List<Map<String, Any>> getPojoList(Object model) {
-        List<Map<String, Any>> result = new ArrayList<>();
-        Map<String, Any> definitions = ((Any)model).get("definitions").asMap();
-        for(Map.Entry<String, Any> definition: definitions.entrySet()) {
-            String name = definition.getKey(); // name of the class name
-            String type = null;
-            boolean isEnum = false;
-            Map<String, Any> properties = null;
-            List<Any> required = null;
-            Map<String, Any> schema = definition.getValue().asMap();
-            //System.out.println("name = " + name + " schema = " + schema.toString());
-            for(Map.Entry<String, Any> entrySchema: schema.entrySet()) {
-                //System.out.println("key = " + entrySchema.getKey() + " value = " + entrySchema.getValue());
-                if("type".equals(entrySchema.getKey())) {
-                    type = entrySchema.getValue().toString();
-                    if("enum".equals(type)) isEnum = true;
-                }
-                if("properties".equals(entrySchema.getKey())) {
-                    properties = entrySchema.getValue().asMap();
-                    /*
-                    // now let's flatten the properties
-                    for(Map.Entry<String, Any> entryProp: properties.entrySet()) {
-                        Map<String, Any> vars = new HashMap<>();
-                        if("id".equals(entryProp.getValue().toString())) {
-
-                        }
-                    }
-                    */
-                }
-                if("required".equals(entrySchema.getKey())) {
-                    required = entrySchema.getValue().asList();
-                }
-            }
-            Map<String, Any> modelMap = new HashMap<>();
-            modelMap.put("type", Any.wrap(type));
-            modelMap.put("isEnum", Any.wrap(isEnum));
-            modelMap.put("name", Any.wrap(name));
-            modelMap.put("properties", Any.wrap(properties));
-            modelMap.put("required", Any.wrap(required));
-            result.add(modelMap);
-        }
-        System.out.println("result = " + Any.wrap(result).toString());
         return result;
     }
 }
