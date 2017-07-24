@@ -179,6 +179,9 @@ public class RestGenerator implements Generator {
                                 //System.out.println("key = " + entryProp.getKey() + " value = " + entryProp.getValue());
                                 Map<String, Any> propMap = new HashMap<>();
                                 String name = entryProp.getKey();
+                                if(name.startsWith("@")) {
+                                    name = name.substring(1);
+                                }
                                 propMap.put("name", Any.wrap(name));
                                 propMap.put("getter", Any.wrap("get" + name.substring(0, 1).toUpperCase() + name.substring(1)));
                                 propMap.put("setter", Any.wrap("set" + name.substring(0, 1).toUpperCase() + name.substring(1)));
@@ -247,7 +250,7 @@ public class RestGenerator implements Generator {
                     }
                     String classVarName = key;
                     String modelFileName = key.substring(0, 1).toUpperCase() + key.substring(1);
-                    //System.out.println("props = " + Any.wrap(props));
+                    System.out.println("props = " + Any.wrap(props));
                     transfer(targetPath, ("src.main.java." + modelPackage).replace(".", separator), modelFileName + ".java", templates.rest.pojo.template(modelPackage, modelFileName, classVarName,  props));
                 }
             }
