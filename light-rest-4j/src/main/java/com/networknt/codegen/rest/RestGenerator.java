@@ -250,7 +250,7 @@ public class RestGenerator implements Generator {
                     }
                     String classVarName = key;
                     String modelFileName = key.substring(0, 1).toUpperCase() + key.substring(1);
-                    System.out.println("props = " + Any.wrap(props));
+                    //System.out.println("props = " + Any.wrap(props));
                     transfer(targetPath, ("src.main.java." + modelPackage).replace(".", separator), modelFileName + ".java", templates.rest.pojo.template(modelPackage, modelFileName, classVarName,  props));
                 }
             }
