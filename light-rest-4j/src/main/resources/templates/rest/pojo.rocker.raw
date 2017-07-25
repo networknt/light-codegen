@@ -5,6 +5,7 @@
 @args (String modelPackage, String className, String classVarName, List<Map<String, Any>> props)
 package @modelPackage;
 import java.util.Objects;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class @className {
 
@@ -17,6 +18,7 @@ public class @className {
 
     @for (prop: props) {
     @if(prop.get("isEnum").toBoolean()) {
+    @@JsonProperty("@prop.get("jsonProperty")")
     public @prop.get("nameWithEnum") @prop.get("getter")() {
         return @prop.get("name");
     }
@@ -25,6 +27,7 @@ public class @className {
         this.@prop.get("name") = @prop.get("name");
     }
     } else {
+    @@JsonProperty("@prop.get("jsonProperty")")
     public @prop.get("type") @prop.get("getter")() {
         return @prop.get("name");
     }

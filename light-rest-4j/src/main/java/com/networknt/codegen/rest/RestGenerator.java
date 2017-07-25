@@ -179,8 +179,10 @@ public class RestGenerator implements Generator {
                                 //System.out.println("key = " + entryProp.getKey() + " value = " + entryProp.getValue());
                                 Map<String, Any> propMap = new HashMap<>();
                                 String name = entryProp.getKey();
+                                propMap.put("jsonProperty", Any.wrap(name));
                                 if(name.startsWith("@")) {
                                     name = name.substring(1);
+
                                 }
                                 propMap.put("name", Any.wrap(name));
                                 propMap.put("getter", Any.wrap("get" + name.substring(0, 1).toUpperCase() + name.substring(1)));
