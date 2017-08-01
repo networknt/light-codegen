@@ -1,0 +1,17 @@
+@args (String driverClassName, String jdbcUrl, String username, String password)
+# Singleton service factory configuration
+
+singletons:
+- javax.sql.DataSource:
+  - com.zaxxer.hikari.HikariDataSource:
+      DriverClassName: @driverClassName
+      jdbcUrl: @jdbcUrl
+      username: @username
+      password: @password
+      maximumPoolSize: 10
+      useServerPrepStmts: true,
+      cachePrepStmts: true,
+      cacheCallableStmts: true,
+      prepStmtCacheSize: 10,
+      prepStmtCacheSqlLimit: 2048,
+      connectionTimeout: 2000

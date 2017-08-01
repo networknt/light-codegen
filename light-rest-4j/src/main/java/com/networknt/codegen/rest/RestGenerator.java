@@ -80,6 +80,7 @@ public class RestGenerator implements Generator {
         String httpPort = config.toString("httpPort");
         boolean enableHttps = config.toBoolean("enableHttps");
         String httpsPort = config.toString("httpsPort");
+        boolean enableRegistry = config.toBoolean("enableRegistry");
         boolean supportOracle = config.toBoolean("supportOracle");
         boolean supportMysql  = config.toBoolean("supportMysql");
         boolean supportPostgresql = config.toBoolean("supportPostgresql");
@@ -124,7 +125,7 @@ public class RestGenerator implements Generator {
         }
 
         // config
-        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "server.yml", templates.rest.server.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, httpPort, enableHttps, httpsPort));
+        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "server.yml", templates.rest.server.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, httpPort, enableHttps, httpsPort, enableRegistry));
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "secret.yml", templates.rest.secret.template());
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "security.yml", templates.rest.security.template());
         if(supportClient) {

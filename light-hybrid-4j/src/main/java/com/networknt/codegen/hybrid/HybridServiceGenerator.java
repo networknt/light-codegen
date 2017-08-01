@@ -39,6 +39,16 @@ public class HybridServiceGenerator implements Generator {
         String handlerPackage = config.get("handlerPackage").toString();
         boolean overwriteHandler = config.toBoolean("overwriteHandler");
         boolean overwriteHandlerTest = config.toBoolean("overwriteHandlerTest");
+        boolean enableHttp = config.toBoolean("enableHttp");
+        String httpPort = config.toString("httpPort");
+        boolean enableHttps = config.toBoolean("enableHttps");
+        String httpsPort = config.toString("httpsPort");
+        boolean enableRegistry = config.toBoolean("enableRegistry");
+        boolean supportOracle = config.toBoolean("supportOracle");
+        boolean supportMysql  = config.toBoolean("supportMysql");
+        boolean supportPostgresql = config.toBoolean("supportPostgresql");
+        boolean supportH2ForTest  = config.toBoolean("supportH2ForTest");
+        boolean supportClient = config.toBoolean("supportClient");
 
         transfer(targetPath, "", "pom.xml", templates.hybrid.service.pom.template(config));
         //transfer(targetPath, "", "Dockerfile", templates.dockerfile.template(config));
@@ -48,11 +58,37 @@ public class HybridServiceGenerator implements Generator {
         transfer(targetPath, "", ".classpath", templates.hybrid.classpath.template());
         transfer(targetPath, "", ".project", templates.hybrid.project.template());
 
+        // database
+        // Oracle DB enabled
+        if(supportOracle){
+            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "service.yml", templates.hybrid.serviceYml.template("oracle.jdbc.pool.OracleDataSource", "jdbc:oracle:thin:@localhost:1521:XE", "SYSTEM", "oracle"));
+        }
+
+        // MySQL DB enabled
+        if(supportMysql){
+            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "service.yml", templates.hybrid.serviceYml.template("com.mysql.jdbc.Driver", "jdbc:mysql://mysqldb:3306/oauth2?useSSL=false", "root", "my-secret-pw"));
+        }
+
+        // Postgres DB enabled
+        if(supportPostgresql){
+            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "service.yml", templates.hybrid.serviceYml.template("org.postgresql.Driver", "jdbc:postgresql://postgresdb:5432/oauth2", "postgres", "my-secret-pw"));
+        }
+
+        // H2 support for testing
+        if(supportH2ForTest){
+            transfer(targetPath, ("src.test.resources.config").replace(".", separator), "service.yml", templates.hybrid.serviceYml.template("org.h2.jdbcx.JdbcDataSource", "jdbc:h2:~/test", "sa", "sa"));
+        }
+
         // config
-        transfer(targetPath, ("src.test.resources.config").replace(".", separator), "server.yml", templates.hybrid.serverYml.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version")));
+        transfer(targetPath, ("src.test.resources.config").replace(".", separator), "server.yml", templates.hybrid.serverYml.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, httpPort, enableHttps, httpsPort, enableRegistry));
         transfer(targetPath, ("src.test.resources.config").replace(".", separator), "secret.yml", templates.hybrid.secretYml.template());
         transfer(targetPath, ("src.test.resources.config").replace(".", separator), "security.yml", templates.hybrid.securityYml.template());
 
+        if(supportClient) {
+            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "client.yml", templates.hybrid.clientYml.template());
+        } else {
+            transfer(targetPath, ("src.test.resources.config").replace(".", separator), "client.yml", templates.hybrid.clientYml.template());
+        }
 
         transfer(targetPath, ("src.test.resources.config.oauth").replace(".", separator), "primary.crt", templates.hybrid.primaryCrt.template());
         transfer(targetPath, ("src.test.resources.config.oauth").replace(".", separator), "secondary.crt", templates.hybrid.secondaryCrt.template());

@@ -35,18 +35,56 @@ public class GraphqlGenerator implements Generator {
         String schemaPackage = config.get("schemaPackage").toString();
         String schemaClass = config.get("schemaClass").toString();
         boolean overwriteSchemaClass = config.toBoolean("overwriteSchemaClass");
+        boolean enableHttp = config.toBoolean("enableHttp");
+        String httpPort = config.toString("httpPort");
+        boolean enableHttps = config.toBoolean("enableHttps");
+        String httpsPort = config.toString("httpsPort");
+        boolean enableRegistry = config.toBoolean("enableRegistry");
+        boolean supportOracle = config.toBoolean("supportOracle");
+        boolean supportMysql  = config.toBoolean("supportMysql");
+        boolean supportPostgresql = config.toBoolean("supportPostgresql");
+        boolean supportH2ForTest  = config.toBoolean("supportH2ForTest");
         boolean supportClient = config.toBoolean("supportClient");
 
         transfer(targetPath, "", "pom.xml", templates.graphql.pom.template(config));
-        transfer(targetPath, "", "Dockerfile", templates.graphql.dockerfile.template(config));
+        // There is only one port that should be exposed in Dockerfile, otherwise, the service
+        // discovery will be so confused. If https is enabled, expose the https port. Otherwise http port.
+        String expose = "";
+        if(enableHttps) {
+            expose = httpsPort;
+        } else {
+            expose = httpPort;
+        }
+        transfer(targetPath, "", "Dockerfile", templates.graphql.dockerfile.template(config, expose));
         transfer(targetPath, "", ".gitignore", templates.graphql.gitignore.template());
         transfer(targetPath, "", "README.md", templates.graphql.README.template());
         transfer(targetPath, "", "LICENSE", templates.graphql.LICENSE.template());
         transfer(targetPath, "", ".classpath", templates.graphql.classpath.template());
         transfer(targetPath, "", ".project", templates.graphql.project.template());
 
+        // database
+        // Oracle DB enabled
+        if(supportOracle){
+            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "service.yml", templates.graphql.serviceYml.template("oracle.jdbc.pool.OracleDataSource", "jdbc:oracle:thin:@localhost:1521:XE", "SYSTEM", "oracle"));
+        }
+
+        // MySQL DB enabled
+        if(supportMysql){
+            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "service.yml", templates.graphql.serviceYml.template("com.mysql.jdbc.Driver", "jdbc:mysql://mysqldb:3306/oauth2?useSSL=false", "root", "my-secret-pw"));
+        }
+
+        // Postgres DB enabled
+        if(supportPostgresql){
+            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "service.yml", templates.graphql.serviceYml.template("org.postgresql.Driver", "jdbc:postgresql://postgresdb:5432/oauth2", "postgres", "my-secret-pw"));
+        }
+
+        // H2 support for testing
+        if(supportH2ForTest){
+            transfer(targetPath, ("src.test.resources.config").replace(".", separator), "service.yml", templates.graphql.serviceYml.template("org.h2.jdbcx.JdbcDataSource", "jdbc:h2:~/test", "sa", "sa"));
+        }
+
         // config
-        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "server.yml", templates.graphql.serverYml.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version")));
+        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "server.yml", templates.graphql.serverYml.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, httpPort, enableHttps, httpsPort, enableRegistry));
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "secret.yml", templates.graphql.secretYml.template());
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "security.yml", templates.graphql.securityYml.template());
         if(supportClient) {

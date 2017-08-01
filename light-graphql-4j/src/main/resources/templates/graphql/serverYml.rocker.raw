@@ -1,20 +1,20 @@
-@args (String serviceId)
+@args (String serviceId, Boolean enableHttp, String httpPort, Boolean enableHttps, String httpsPort, Boolean enableRegistry)
 # Server configuration
 ---
 # This is the default binding address if the service is dockerized.
 ip: 0.0.0.0
 
 # Http port if enableHttp is true.
-httpPort: 8080
+httpPort: @httpPort
 
 # Enable HTTP should be false on official environment.
-enableHttp: true
+enableHttp: @enableHttp
 
 # Https port if enableHttps is true.
-httpsPort: 8443
+httpsPort: @httpsPort
 
 # Enable HTTPS should be true on official environment.
-enableHttps: true
+enableHttps: @enableHttps
 
 # Keystore file name in config folder. KeystorePass is in secret.yml to access it.
 keystoreName: tls/server.keystore
@@ -29,4 +29,4 @@ truststoreName: tls/server.truststore
 serviceId: @serviceId
 
 # Flag to enable service registration. Only be true if running as standalone Java jar.
-enableRegistry: false
+enableRegistry: @enableRegistry

@@ -1,4 +1,4 @@
-@args (String serviceId, Boolean enableHttp, String httpPort, Boolean enableHttps, String httpsPort)
+@args (String serviceId, Boolean enableHttp, String httpPort, Boolean enableHttps, String httpsPort, Boolean enableRegistry)
 # Server configuration
 ---
 # This is the default binding address if the service is dockerized.
@@ -29,4 +29,4 @@ truststoreName: tls/server.truststore
 serviceId: @serviceId
 
 # Flag to enable service registration. Only be true if running as standalone Java jar.
-enableRegistry: false
+enableRegistry: @enableRegistry
