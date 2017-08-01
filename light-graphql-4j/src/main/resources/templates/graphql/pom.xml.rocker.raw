@@ -33,7 +33,7 @@
         <version.junit>4.12</version.junit>
         <version.mockito>2.1.0-RC.1</version.mockito>
         <version.undertow>1.4.11.Final</version.undertow>
-        <version.jsoniter>0.9.15</version.jsoniter>
+        <version.json-schema-validator>0.1.7</version.json-schema-validator>
         <version.httpclient>4.5.2</version.httpclient>
         <version.httpasyncclient>4.1.2</version.httpasyncclient>
         <version.graphql>3.0.0</version.graphql>
@@ -182,6 +182,11 @@
             <artifactId>graphql-validator</artifactId>
             <version>${version.light-graphql-4j}</version>
         </dependency>
+        <dependency>
+            <groupId>com.networknt</groupId>
+            <artifactId>json-schema-validator</artifactId>
+            <version>${version.json-schema-validator}</version>
+        </dependency>
 
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -192,11 +197,6 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
             <version>${version.jackson}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.jsoniter</groupId>
-            <artifactId>jsoniter</artifactId>
-            <version>${version.jsoniter}</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
