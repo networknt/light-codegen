@@ -1,5 +1,10 @@
-# light-codegen
 A code generator based on [rocker](https://github.com/fizzed/rocker) that can be used as a command line utility or web service.
+
+[Developer Chat](https://gitter.im/networknt/light-codegen) |
+[Documentation](https://networknt.github.io/light-codegen) |
+[Contribution Guide](CONTRIBUTING.md) |
+
+[![Build Status](https://travis-ci.org/networknt/light-codegen.svg?branch=master)](https://travis-ci.org/networknt/light-codegen)
 
 ## Input
 * A list of files as template
