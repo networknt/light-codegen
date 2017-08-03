@@ -33,7 +33,7 @@ public class @className {
     @@Test
     public void test@method throws ClientException, ApiException {
         CloseableHttpClient client = Client.getInstance().getSyncClient();
-        Http@capMethod http@capMethod = new Http@capMethod ("http://localhost:49587@path");
+        Http@capMethod http@capMethod = new Http@capMethod ("http://localhost:" + server.getServerConfig().getHttpPort() + "@path");
         /*
         Client.getInstance().addAuthorization(http@capMethod);
         try {
