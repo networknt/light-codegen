@@ -27,7 +27,7 @@ import java.io.IOException;
     @@Test
     @with(s3 = item.get("handler") + "()") {public void test@s3} throws ClientException, ApiException {
         CloseableHttpClient client = Client.getInstance().getSyncClient();
-        HttpPost httpPost = new HttpPost("http://localhost:8080/api/json");
+        HttpPost httpPost = new HttpPost("http://localhost:49587/api/json");
         /*
         Client.getInstance().addAuthorization(httpPost);
         try {
