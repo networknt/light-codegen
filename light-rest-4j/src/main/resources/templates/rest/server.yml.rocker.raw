@@ -22,6 +22,9 @@ keystoreName: tls/server.keystore
 # Flag that indicate if two way TLS is enabled. Not recommended in docker container.
 enableTwoWayTls: false
 
+# Enable HTTP2 if you want server side http2 support.
+enableHttp2: true
+
 # Truststore file name in config folder. TruststorePass is in secret.yml to access it.
 truststoreName: tls/server.truststore
 
