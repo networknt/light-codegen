@@ -65,7 +65,7 @@ public class GeneratorServiceHandler implements Handler {
         }
         for(Map<String, Object> generatorMap: generators) {
             String framework = (String)generatorMap.get("framework");
-            Object model = generatorMap.get("model");  // should be a JSON of spec or IDL
+            Object model = Any.wrap(generatorMap.get("model"));  // should be a JSON of spec or IDL
             Map<String, Object> config = (Map<String, Object>)generatorMap.get("config"); // should be a json of config
             if(!FrameworkRegistry.getInstance().getFrameworks().contains(framework)) {
                 Status status = new Status(STATUS_INVALID_FRAMEWORK, framework);

@@ -54,7 +54,11 @@ public class @className {
         final AtomicReference<ClientResponse> reference = new AtomicReference<>();
         try {
             ClientRequest request = new ClientRequest().setPath("@path").setMethod(Methods.@httpMethod);
+            @if("POST".equals(map.get(method)) || "PUT".equals(map.get(method)) || "PATCH".equals(map.get(method))) {
+            connection.sendRequest(request, client.createClientCallback(reference, latch, "body to be replaced"));
+            } else {
             connection.sendRequest(request, client.createClientCallback(reference, latch));
+            }
             latch.await();
         } catch (Exception e) {
             logger.error("Exception: ", e);
