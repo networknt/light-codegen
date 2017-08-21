@@ -28,6 +28,7 @@ import java.io.IOException;
        method = map.get("handlerName") + "Test()",
        loggerName = map.get("handlerName") + "Test" + ".class",
        httpMethod = map.get("method"),
+       hasBody = ("POST".equals(map.get("method").toString()) || "PUT".equals(map.get("method").toString()) || "PATCH".equals(map.get("method").toString())),
        path = map.get("normalizedPath")) {
 public class @className {
     @@ClassRule
@@ -54,8 +55,8 @@ public class @className {
         final AtomicReference<ClientResponse> reference = new AtomicReference<>();
         try {
             ClientRequest request = new ClientRequest().setPath("@path").setMethod(Methods.@httpMethod);
-            @if("POST".equals(map.get(method)) || "PUT".equals(map.get(method)) || "PATCH".equals(map.get(method))) {
-            connection.sendRequest(request, client.createClientCallback(reference, latch, "body to be replaced"));
+            @if(hasBody) {
+            connection.sendRequest(request, client.createClientCallback(reference, latch, "request body to be replaced"));
             } else {
             connection.sendRequest(request, client.createClientCallback(reference, latch));
             }
