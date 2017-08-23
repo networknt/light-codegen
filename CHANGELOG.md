@@ -9,6 +9,21 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
+## 1.4.0 - 2017-08-22
+### Added
+
+### Changed
+- fixes #71 replace Client to Http2Client
+- fixes #69 Upgrade to Undertow 1.4.18.Final and remove jsonpath
+- fixes #68 disable http2 by default as it allows only https
+- fixes #67 Add server.yml into the generated src/test/resources/config
+- fixes #65 Add Jackson datatype jsr310 into dependencies
+- Upgrade to light-4j 1.4.0
+- Upgrade to light-rest-4j 1.4.0
+- Upgrade to light-graphql-4j 1.4.0
+- Upgrade to light-hybrid-4j 1.4.0
+
+
 ## 1.3.5 - 2017-08-02
 ### Added
 
