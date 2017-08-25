@@ -56,6 +56,7 @@ public class @className {
         try {
             ClientRequest request = new ClientRequest().setPath("@path").setMethod(Methods.@httpMethod);
             @if(hasBody) {
+            request.getRequestHeaders().put(Headers.TRANSFER_ENCODING, "chunked");
             connection.sendRequest(request, client.createClientCallback(reference, latch, "request body to be replaced"));
             } else {
             connection.sendRequest(request, client.createClientCallback(reference, latch));
