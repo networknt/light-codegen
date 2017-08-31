@@ -9,6 +9,23 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
+## 1.4.1 - 2017-08-30
+### Added
+
+### Changed
+- fixes #80 Upgrade to newer version of Undertow and Jackson
+- fixes #79 Add key section in client.yml template to enable key distribution
+- fixes #78 Update server.yml to enableHttp2 by default
+- fixes #77 Remove HTTP1.1 settings in client.yml in rest, graphql and
+- fixes #75 Add Headers in test case import for rest and hybrid
+- fixes #74 add content type header as body parser needs it
+- fixes #73 Change codegen-web testing httpPort and HttpsPort
+- fixes #72 Change test httpPort and httpsPort to something seldom used
+- Upgrade to light-4j 1.4.1
+- Upgrade to light-rest-4j 1.4.1
+- Upgrade to light-graphql-4j 1.4.1
+- Upgrade to light-hybrid-4j 1.4.1
+
 ## 1.4.0 - 2017-08-22
 ### Added
 
