@@ -40,7 +40,7 @@ public class SchemaGetHandlerTest {
 
     @Test
     public void testGetSchema() throws ClientException, ApiException, UnsupportedEncodingException {
-        String s = "{\"host\":\"lightapi.net\",\"service\":\"codegen\",\"action\":\"getSchema\",\"version\":\"0.0.1\",\"framework\":\"light-rest-4j\"}";
+        String s = "{\"host\":\"lightapi.net\",\"service\":\"codegen\",\"action\":\"getSchema\",\"version\":\"0.0.1\",\"data\":{\"framework\":\"light-rest-4j\"}}";
 
         final AtomicReference<ClientResponse> reference = new AtomicReference<>();
         final Http2Client client = Http2Client.getInstance();
@@ -73,6 +73,7 @@ public class SchemaGetHandlerTest {
         }
         int statusCode = reference.get().getResponseCode();
         String body = reference.get().getAttachment(Http2Client.RESPONSE_BODY);
+        System.out.println("body = " + body);
         Assert.assertEquals(200, statusCode);
         if(statusCode == 200) {
             Assert.assertTrue(body.contains("{"));

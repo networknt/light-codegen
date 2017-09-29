@@ -40,7 +40,7 @@ public class GeneratorServiceHandlerTest {
 
     @Test
     public void testMissingGeneratorItem() throws ClientException, ApiException, UnsupportedEncodingException {
-        String s = "{\"host\":\"lightapi.net\",\"service\":\"codegen\",\"action\":\"generate\",\"version\":\"0.0.1\",\"model\":{\"key\":\"value\"},\"config\":{\"key\":\"value\"},\"framework\":\"framework\"}";
+        String s = "{\"host\":\"lightapi.net\",\"service\":\"codegen\",\"action\":\"generate\",\"version\":\"0.0.1\",\"data\":{\"model\":{\"key\":\"value\"},\"config\":{\"key\":\"value\"},\"framework\":\"framework\"}}";
 
         final AtomicReference<ClientResponse> reference = new AtomicReference<>();
         final Http2Client client = Http2Client.getInstance();
@@ -81,7 +81,7 @@ public class GeneratorServiceHandlerTest {
 
     @Test
     public void testInvalidFramework() throws ClientException, ApiException, UnsupportedEncodingException {
-        String s = "{\"host\":\"lightapi.net\",\"service\":\"codegen\",\"action\":\"generate\",\"version\":\"0.0.1\",\"generators\":[{\"model\":{\"key\":\"value\"},\"config\":{\"key\":\"value\"},\"framework\":\"framework\"}]}";
+        String s = "{\"host\":\"lightapi.net\",\"service\":\"codegen\",\"action\":\"generate\",\"version\":\"0.0.1\",\"data\":{\"generators\":[{\"model\":{\"key\":\"value\"},\"config\":{\"key\":\"value\"},\"framework\":\"framework\"}]}}";
 
         final AtomicReference<ClientResponse> reference = new AtomicReference<>();
         final Http2Client client = Http2Client.getInstance();
@@ -128,6 +128,7 @@ public class GeneratorServiceHandlerTest {
                 "  \"service\": \"codegen\",\n" +
                 "  \"action\": \"generate\",\n" +
                 "  \"version\": \"0.0.1\",\n" +
+                "  \"data\": {\n" +
                 "  \"generators\": [\n" +
                 "    {\n" +
                 "      \"framework\": \"light-rest-4j\",\n" +
@@ -1199,7 +1200,7 @@ public class GeneratorServiceHandlerTest {
                 "      }\n" +
                 "    }\n" +
                 "  ]\n" +
-                "}";
+                "}}";
 
 
         final AtomicReference<ClientResponse> reference = new AtomicReference<>();
