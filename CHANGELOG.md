@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
+## 1.5.1 - 2017-11-08
+### Added
+
+### Changed
+- Upgrade to light-4j 1.5.1
+- Upgrade to light-rest-4j 1.5.1
+- Upgrade to light-graphql-4j 1.5.1
+- Upgrade to light-hybrid-4j 1.5.1
+
 ## 1.5.0 - 2017-10-21
 ### Added
 
