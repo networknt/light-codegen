@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 ### Changed
+- fixes #85 Update security.yml template for new properties
 - Upgrade to light-4j 1.5.1
 - Upgrade to light-rest-4j 1.5.1
 - Upgrade to light-graphql-4j 1.5.1
