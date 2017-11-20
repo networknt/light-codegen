@@ -65,7 +65,7 @@ public class RestGenerator implements Generator {
      * @param targetPath The output directory of the generated project
      * @param model The optional model data that trigger the generation, i.e. swagger specification, graphql IDL etc.
      * @param config A json object that controls how the generator behaves.
-     * @throws IOException
+     * @throws IOException IO Exception occurs during code generation
      */
     @Override
     public void generate(String targetPath, Object model, Any config) throws IOException {
@@ -103,28 +103,9 @@ public class RestGenerator implements Generator {
         transfer(targetPath, "", ".classpath", templates.rest.classpath.template());
         transfer(targetPath, "", ".project", templates.rest.project.template(config));
 
-        // database
-        // Oracle DB enabled
-        if(supportOracle){
-            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "service.yml", templates.rest.service.template("oracle.jdbc.pool.OracleDataSource", "jdbc:oracle:thin:@localhost:1521:XE", "SYSTEM", "oracle"));
-        }
-
-        // MySQL DB enabled
-        if(supportMysql){
-            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "service.yml", templates.rest.service.template("com.mysql.jdbc.Driver", "jdbc:mysql://mysqldb:3306/oauth2?useSSL=false", "root", "my-secret-pw"));
-        }
-
-        // Postgres DB enabled
-        if(supportPostgresql){
-            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "service.yml", templates.rest.service.template("org.postgresql.Driver", "jdbc:postgresql://postgresdb:5432/oauth2", "postgres", "my-secret-pw"));
-        }
-
-        // H2 support for testing
-        if(supportH2ForTest){
-            transfer(targetPath, ("src.test.resources.config").replace(".", separator), "service.yml", templates.rest.service.template("org.h2.jdbcx.JdbcDataSource", "jdbc:h2:~/test", "sa", "sa"));
-        }
-
         // config
+        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "service.yml", templates.rest.service.template(config));
+
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "server.yml", templates.rest.server.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, httpPort, enableHttps, httpsPort, enableRegistry));
         transfer(targetPath, ("src.test.resources.config").replace(".", separator), "server.yml", templates.rest.server.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, "49587", enableHttps, "49588", enableRegistry));
 
@@ -138,11 +119,6 @@ public class RestGenerator implements Generator {
 
         transfer(targetPath, ("src.main.resources.config.oauth").replace(".", separator), "primary.crt", templates.rest.primaryCrt.template());
         transfer(targetPath, ("src.main.resources.config.oauth").replace(".", separator), "secondary.crt", templates.rest.secondaryCrt.template());
-
-        transfer(targetPath, ("src.main.resources.META-INF.services").replace(".", separator), "com.networknt.server.HandlerProvider", templates.rest.routingService.template(rootPackage));
-        transfer(targetPath, ("src.main.resources.META-INF.services").replace(".", separator), "com.networknt.handler.MiddlewareHandler", templates.rest.middlewareService.template());
-        transfer(targetPath, ("src.main.resources.META-INF.services").replace(".", separator), "com.networknt.server.StartupHookProvider", templates.rest.startupHookProvider.template());
-        transfer(targetPath, ("src.main.resources.META-INF.services").replace(".", separator), "com.networknt.server.ShutdownHookProvider", templates.rest.shutdownHookProvider.template());
 
         // logging
         transfer(targetPath, ("src.main.resources").replace(".", separator), "logback.xml", templates.rest.logback.template());

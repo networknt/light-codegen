@@ -60,28 +60,9 @@ public class HybridServerGenerator implements Generator {
         transfer(targetPath, "", ".classpath", templates.hybrid.classpath.template());
         transfer(targetPath, "", ".project", templates.hybrid.project.template());
 
-        // database
-        // Oracle DB enabled
-        if(supportOracle){
-            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "service.yml", templates.hybrid.serviceYml.template("oracle.jdbc.pool.OracleDataSource", "jdbc:oracle:thin:@localhost:1521:XE", "SYSTEM", "oracle"));
-        }
-
-        // MySQL DB enabled
-        if(supportMysql){
-            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "service.yml", templates.hybrid.serviceYml.template("com.mysql.jdbc.Driver", "jdbc:mysql://mysqldb:3306/oauth2?useSSL=false", "root", "my-secret-pw"));
-        }
-
-        // Postgres DB enabled
-        if(supportPostgresql){
-            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "service.yml", templates.hybrid.serviceYml.template("org.postgresql.Driver", "jdbc:postgresql://postgresdb:5432/oauth2", "postgres", "my-secret-pw"));
-        }
-
-        // H2 support for testing
-        if(supportH2ForTest){
-            transfer(targetPath, ("src.test.resources.config").replace(".", separator), "service.yml", templates.hybrid.serviceYml.template("org.h2.jdbcx.JdbcDataSource", "jdbc:h2:~/test", "sa", "sa"));
-        }
-
         // config
+        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "service.yml", templates.hybrid.serviceYml.template(config));
+
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "server.yml", templates.hybrid.serverYml.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, httpPort, enableHttps, httpsPort, enableRegistry));
         transfer(targetPath, ("src.test.resources.config").replace(".", separator), "server.yml", templates.hybrid.serverYml.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, "49587", enableHttps, "49588", enableRegistry));
 
@@ -95,11 +76,6 @@ public class HybridServerGenerator implements Generator {
 
         transfer(targetPath, ("src.main.resources.config.oauth").replace(".", separator), "primary.crt", templates.hybrid.primaryCrt.template());
         transfer(targetPath, ("src.main.resources.config.oauth").replace(".", separator), "secondary.crt", templates.hybrid.secondaryCrt.template());
-
-        transfer(targetPath, ("src.main.resources.META-INF.services").replace(".", separator), "com.networknt.server.HandlerProvider", templates.hybrid.routingProvider.template());
-        transfer(targetPath, ("src.main.resources.META-INF.services").replace(".", separator), "com.networknt.handler.MiddlewareHandler", templates.hybrid.middlewareService.template());
-        transfer(targetPath, ("src.main.resources.META-INF.services").replace(".", separator), "com.networknt.server.StartupHookProvider", templates.hybrid.startupHookProvider.template());
-        transfer(targetPath, ("src.main.resources.META-INF.services").replace(".", separator), "com.networknt.server.ShutdownHookProvider", templates.hybrid.shutdownHookProvider.template());
 
         // logging
         transfer(targetPath, ("src.main.resources").replace(".", separator), "logback.xml", templates.hybrid.logback.template());

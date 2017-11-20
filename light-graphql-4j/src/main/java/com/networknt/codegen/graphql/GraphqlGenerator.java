@@ -62,28 +62,9 @@ public class GraphqlGenerator implements Generator {
         transfer(targetPath, "", ".classpath", templates.graphql.classpath.template());
         transfer(targetPath, "", ".project", templates.graphql.project.template());
 
-        // database
-        // Oracle DB enabled
-        if(supportOracle){
-            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "service.yml", templates.graphql.serviceYml.template("oracle.jdbc.pool.OracleDataSource", "jdbc:oracle:thin:@localhost:1521:XE", "SYSTEM", "oracle"));
-        }
-
-        // MySQL DB enabled
-        if(supportMysql){
-            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "service.yml", templates.graphql.serviceYml.template("com.mysql.jdbc.Driver", "jdbc:mysql://mysqldb:3306/oauth2?useSSL=false", "root", "my-secret-pw"));
-        }
-
-        // Postgres DB enabled
-        if(supportPostgresql){
-            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "service.yml", templates.graphql.serviceYml.template("org.postgresql.Driver", "jdbc:postgresql://postgresdb:5432/oauth2", "postgres", "my-secret-pw"));
-        }
-
-        // H2 support for testing
-        if(supportH2ForTest){
-            transfer(targetPath, ("src.test.resources.config").replace(".", separator), "service.yml", templates.graphql.serviceYml.template("org.h2.jdbcx.JdbcDataSource", "jdbc:h2:~/test", "sa", "sa"));
-        }
-
         // config
+        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "service.yml", templates.graphql.serviceYml.template(config));
+
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "server.yml", templates.graphql.serverYml.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, httpPort, enableHttps, httpsPort, enableRegistry));
         transfer(targetPath, ("src.test.resources.config").replace(".", separator), "server.yml", templates.graphql.serverYml.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, "49587", enableHttps, "49588", enableRegistry));
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "secret.yml", templates.graphql.secretYml.template());
@@ -98,12 +79,6 @@ public class GraphqlGenerator implements Generator {
 
         transfer(targetPath, ("src.main.resources.config.oauth").replace(".", separator), "primary.crt", templates.graphql.primaryCrt.template());
         transfer(targetPath, ("src.main.resources.config.oauth").replace(".", separator), "secondary.crt", templates.graphql.secondaryCrt.template());
-
-        transfer(targetPath, ("src.main.resources.META-INF.services").replace(".", separator), "com.networknt.handler.MiddlewareHandler", templates.graphql.middlewareService.template());
-        transfer(targetPath, ("src.main.resources.META-INF.services").replace(".", separator), "com.networknt.server.StartupHookProvider", templates.graphql.startupHookProvider.template());
-        transfer(targetPath, ("src.main.resources.META-INF.services").replace(".", separator), "com.networknt.server.ShutdownHookProvider", templates.graphql.shutdownHookProvider.template());
-        transfer(targetPath, ("src.main.resources.META-INF.services").replace(".", separator), "com.networknt.graphql.router.SchemaProvider", templates.graphql.schemaProvider.template(schemaPackage + "." + schemaClass));
-        transfer(targetPath, ("src.main.resources.META-INF.services").replace(".", separator), "com.networknt.server.HandlerProvider", templates.graphql.routingProvider.template());
 
         // logging
         transfer(targetPath, ("src.main.resources").replace(".", separator), "logback.xml", templates.graphql.logback.template());

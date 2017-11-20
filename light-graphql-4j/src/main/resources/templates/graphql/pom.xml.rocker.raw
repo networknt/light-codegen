@@ -30,17 +30,17 @@
         <version.junit>4.12</version.junit>
         <version.undertow>1.4.20.Final</version.undertow>
         <version.graphql>4.2</version.graphql>
-        @if(config.toBoolean("supportOracle") || config.toBoolean("supportMysql") || config.toBoolean("supportPostgresql") || config.toBoolean("supportH2ForTest")){
+        <version.fastscanner>2.7.0</version.fastscanner>
+        @if(config.toBoolean("supportDb") || config.toBoolean("supportH2ForTest")){
         <version.hikaricp>2.6.2</version.hikaricp>
-        <version.fastscanner>2.0.8</version.fastscanner>
         }
-        @if(config.toBoolean("supportOracle")){
+        @if(config.toBoolean("supportDb") && "oracle".equalsIgnoreCase(config.toString("dbInfo", "name"))){
         <version.oracle>11.2.0.3</version.oracle>
         }
-        @if(config.toBoolean("supportMysql")){
+        @if(config.toBoolean("supportDb") && "mysql".equalsIgnoreCase(config.toString("dbInfo", "name"))){
         <version.mysql>6.0.5</version.mysql>
         }
-        @if(config.toBoolean("supportPostgresql")){
+        @if(config.toBoolean("supportDb") && "postgres".equalsIgnoreCase(config.toString("dbInfo", "name"))){
         <version.postgres>42.1.1</version.postgres>
         }
         @if(config.toBoolean("supportH2ForTest")){
@@ -207,33 +207,33 @@
             <artifactId>graphql-java</artifactId>
             <version>${version.graphql}</version>
         </dependency>
-        @if(config.toBoolean("supportOracle") || config.toBoolean("supportMysql") || config.toBoolean("supportPostgresql") || config.toBoolean("supportH2ForTest")){
-        <dependency>
-            <groupId>com.zaxxer</groupId>
-            <artifactId>HikariCP</artifactId>
-            <version>${version.hikaricp}</version>
-        </dependency>
         <dependency>
             <groupId>io.github.lukehutch</groupId>
             <artifactId>fast-classpath-scanner</artifactId>
             <version>${version.fastscanner}</version>
         </dependency>
+        @if(config.toBoolean("supportDb") || config.toBoolean("supportH2ForTest")){
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>${version.hikaricp}</version>
+        </dependency>
         }
-        @if(config.toBoolean("supportOracle")){
+        @if(config.toBoolean("supportDb") && "oracle".equalsIgnoreCase(config.toString("dbInfo", "name"))){
         <dependency>
             <groupId>com.oracle</groupId>
             <artifactId>ojdbc6</artifactId>
             <version>${version.oracle}</version>
         </dependency>
         }
-        @if(config.toBoolean("supportMysql")){
+        @if(config.toBoolean("supportDb") && "mysql".equalsIgnoreCase(config.toString("dbInfo", "name"))){
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>${version.mysql}</version>
         </dependency>
         }
-        @if(config.toBoolean("supportPostgresql")){
+        @if(config.toBoolean("supportDb") && "postgres".equalsIgnoreCase(config.toString("dbInfo", "name"))){
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
