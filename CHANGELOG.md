@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
+## 1.5.4 - 2017-11-20
+### Added
+
+### Changed
+- fixes #87 Split RestGenerator to SwaggerGenerator and OpenApiGenerator
+- fixes #86 Update all generators to replace Java Service Provider with service.yml
+- Upgrade to light-4j 1.5.4
+- Upgrade to light-rest-4j 1.5.4
+- Upgrade to light-graphql-4j 1.5.4
+- Upgrade to openapi-parser 1.5.4
+- Upgrade to light-hybrid-4j 1.5.4
+
 ## 1.5.1 - 2017-11-08
 ### Added
 
