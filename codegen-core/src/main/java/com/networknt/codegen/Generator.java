@@ -51,7 +51,7 @@ public interface Generator {
      * Get the config schema for the generator.
      *
      * @return ByteBuffer of config schema for the generator. Used by codegen-web API.
-     * @throws IOException
+     * @throws IOException IO exception
      */
     default ByteBuffer getConfigSchema() throws IOException {
         byte [] schemaBuf = schemaMap.get(getFramework());

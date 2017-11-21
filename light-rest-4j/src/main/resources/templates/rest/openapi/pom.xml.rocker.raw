@@ -30,7 +30,7 @@
         <version.logback>1.2.3</version.logback>
         <version.junit>4.12</version.junit>
         <version.undertow>1.4.20.Final</version.undertow>
-        <version.swagger>1.0.32</version.swagger>
+        <version.openapi-parser>0.1.1</version.openapi-parser>
         <version.json-schema-validator>0.1.10</version.json-schema-validator>
         <version.fastscanner>2.7.0</version.fastscanner>
         @if(config.toBoolean("supportDb") || config.toBoolean("supportH2ForTest")){
@@ -168,23 +168,23 @@
             <version>${version.json-schema-validator}</version>
         </dependency>
         <dependency>
-            <groupId>io.swagger</groupId>
-            <artifactId>swagger-parser</artifactId>
-            <version>${version.swagger}</version>
+            <groupId>com.networknt</groupId>
+            <artifactId>openapi-parser</artifactId>
+            <version>${version.openapi-parser}</version>
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
-            <artifactId>swagger-meta</artifactId>
+            <artifactId>openapi-meta</artifactId>
             <version>${version.light-rest-4j}</version>
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
-            <artifactId>swagger-security</artifactId>
+            <artifactId>openapi-security</artifactId>
             <version>${version.light-rest-4j}</version>
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
-            <artifactId>swagger-validator</artifactId>
+            <artifactId>openapi-validator</artifactId>
             <version>${version.light-rest-4j}</version>
         </dependency>
 

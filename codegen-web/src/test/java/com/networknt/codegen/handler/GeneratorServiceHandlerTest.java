@@ -131,7 +131,7 @@ public class GeneratorServiceHandlerTest {
                 "  \"data\": {\n" +
                 "  \"generators\": [\n" +
                 "    {\n" +
-                "      \"framework\": \"light-rest-4j\",\n" +
+                "      \"framework\": \"swagger\",\n" +
                 "      \"model\": {\n" +
                 "        \"swagger\": \"2.0\",\n" +
                 "        \"info\": {\n" +

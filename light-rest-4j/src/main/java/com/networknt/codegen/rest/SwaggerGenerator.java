@@ -30,12 +30,12 @@ import static java.io.File.separator;
  *
  * Created by stevehu on 2017-04-23.
  */
-public class RestGenerator implements Generator {
+public class SwaggerGenerator implements Generator {
     //static ObjectMapper mapper = new ObjectMapper();
 
     private Map<String, String> typeMapping = new HashMap<>();
 
-    public RestGenerator() {
+    public SwaggerGenerator() {
         typeMapping.put("array", "java.util.List");
         typeMapping.put("map", "java.util.Map");
         typeMapping.put("List", "java.util.List");
@@ -57,7 +57,7 @@ public class RestGenerator implements Generator {
 
     @Override
     public String getFramework() {
-        return "light-rest-4j";
+        return "swagger";
     }
 
     /**
@@ -87,7 +87,7 @@ public class RestGenerator implements Generator {
         boolean supportH2ForTest  = config.toBoolean("supportH2ForTest");
         boolean supportClient = config.toBoolean("supportClient");
 
-        transfer(targetPath, "", "pom.xml", templates.rest.pom.template(config));
+        transfer(targetPath, "", "pom.xml", templates.rest.swagger.pom.template(config));
         // There is only one port that should be exposed in Dockerfile, otherwise, the service
         // discovery will be so confused. If https is enabled, expose the https port. Otherwise http port.
         String expose = "";
@@ -104,7 +104,7 @@ public class RestGenerator implements Generator {
         transfer(targetPath, "", ".project", templates.rest.project.template(config));
 
         // config
-        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "service.yml", templates.rest.service.template(config));
+        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "service.yml", templates.rest.swagger.service.template(config));
 
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "server.yml", templates.rest.server.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, httpPort, enableHttps, httpsPort, enableRegistry));
         transfer(targetPath, ("src.test.resources.config").replace(".", separator), "server.yml", templates.rest.server.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, "49587", enableHttps, "49588", enableRegistry));
@@ -129,7 +129,7 @@ public class RestGenerator implements Generator {
 
         List<Map<String, Any>> operationList = getOperationList(model);
         // routing
-        transfer(targetPath, ("src.main.java." + rootPackage).replace(".", separator), "PathHandlerProvider.java", templates.rest.handlerProvider.template(rootPackage, handlerPackage, operationList));
+        transfer(targetPath, ("src.main.java." + rootPackage).replace(".", separator), "PathHandlerProvider.java", templates.rest.swagger.handlerProvider.template(rootPackage, handlerPackage, operationList));
 
 
         // model
@@ -264,7 +264,7 @@ public class RestGenerator implements Generator {
         transfer(targetPath, ("src.test.java." + handlerPackage + ".").replace(".", separator),  "TestServer.java", templates.rest.testServer.template(handlerPackage));
         if(overwriteHandlerTest) {
             for(Map<String, Any> op : operationList){
-                transfer(targetPath, ("src.test.java." + handlerPackage).replace(".", separator), op.get("handlerName") + "Test.java", templates.rest.handlerTest.template(handlerPackage, op));
+                transfer(targetPath, ("src.test.java." + handlerPackage).replace(".", separator), op.get("handlerName") + "Test.java", templates.rest.swagger.handlerTest.template(handlerPackage, op));
             }
         }
 
@@ -272,27 +272,27 @@ public class RestGenerator implements Generator {
         if(Files.notExists(Paths.get(targetPath, ("src.main.resources.config.tls").replace(".", separator)))) {
             Files.createDirectories(Paths.get(targetPath, ("src.main.resources.config.tls").replace(".", separator)));
         }
-        try (InputStream is = RestGenerator.class.getResourceAsStream("/binaries/server.keystore")) {
+        try (InputStream is = SwaggerGenerator.class.getResourceAsStream("/binaries/server.keystore")) {
             Files.copy(is, Paths.get(targetPath, ("src.main.resources.config.tls").replace(".", separator), "server.keystore"), StandardCopyOption.REPLACE_EXISTING);
         }
-        try (InputStream is = RestGenerator.class.getResourceAsStream("/binaries/server.truststore")) {
+        try (InputStream is = SwaggerGenerator.class.getResourceAsStream("/binaries/server.truststore")) {
             Files.copy(is, Paths.get(targetPath, ("src.main.resources.config.tls").replace(".", separator), "server.truststore"), StandardCopyOption.REPLACE_EXISTING);
         }
         if(supportClient) {
-            try (InputStream is = RestGenerator.class.getResourceAsStream("/binaries/client.keystore")) {
+            try (InputStream is = SwaggerGenerator.class.getResourceAsStream("/binaries/client.keystore")) {
                 Files.copy(is, Paths.get(targetPath, ("src.main.resources.config.tls").replace(".", separator), "client.keystore"), StandardCopyOption.REPLACE_EXISTING);
             }
-            try (InputStream is = RestGenerator.class.getResourceAsStream("/binaries/client.truststore")) {
+            try (InputStream is = SwaggerGenerator.class.getResourceAsStream("/binaries/client.truststore")) {
                 Files.copy(is, Paths.get(targetPath, ("src.main.resources.config.tls").replace(".", separator), "client.truststore"), StandardCopyOption.REPLACE_EXISTING);
             }
         } else {
             if(Files.notExists(Paths.get(targetPath, ("src.test.resources.config.tls").replace(".", separator)))) {
                 Files.createDirectories(Paths.get(targetPath, ("src.test.resources.config.tls").replace(".", separator)));
             }
-            try (InputStream is = RestGenerator.class.getResourceAsStream("/binaries/client.keystore")) {
+            try (InputStream is = SwaggerGenerator.class.getResourceAsStream("/binaries/client.keystore")) {
                 Files.copy(is, Paths.get(targetPath, ("src.test.resources.config.tls").replace(".", separator), "client.keystore"), StandardCopyOption.REPLACE_EXISTING);
             }
-            try (InputStream is = RestGenerator.class.getResourceAsStream("/binaries/client.truststore")) {
+            try (InputStream is = SwaggerGenerator.class.getResourceAsStream("/binaries/client.truststore")) {
                 Files.copy(is, Paths.get(targetPath, ("src.test.resources.config.tls").replace(".", separator), "client.truststore"), StandardCopyOption.REPLACE_EXISTING);
             }
         }

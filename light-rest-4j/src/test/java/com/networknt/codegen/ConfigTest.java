@@ -15,7 +15,7 @@ public class ConfigTest {
     @BeforeClass
     public static void setUp() throws IOException {
         // load config file
-        anyConfig = JsonIterator.parse(RestGeneratorTest.class.getResourceAsStream(configName), 1024).readAny();
+        anyConfig = JsonIterator.parse(SwaggerGeneratorTest.class.getResourceAsStream(configName), 1024).readAny();
     }
 
     @Test

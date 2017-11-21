@@ -75,7 +75,7 @@ public class FrameworkListHandlerTest {
         String body = reference.get().getAttachment(Http2Client.RESPONSE_BODY);
         Assert.assertEquals(200, statusCode);
         if(statusCode == 200) {
-            Assert.assertTrue(body.contains("light-rest-4j"));
+            Assert.assertTrue(body.contains("swagger"));
         }
     }
 }
