@@ -1,0 +1,9 @@
+# Singleton service factory configuration/IoC injection
+singletons:
+# Generator interface implementations
+- com.networknt.codegen.Generator:
+  - com.networknt.codegen.rest.OpenApiGenerator
+  - com.networknt.codegen.rest.SwaggerGenerator
+  - com.networknt.codegen.hybrid.HybridServerGenerator
+  - com.networknt.codegen.hybrid.HybridServiceGenerator
+  - com.networknt.codegen.graphql.GraphqlGenerator
