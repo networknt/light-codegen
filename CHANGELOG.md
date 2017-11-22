@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 ### Changed
+- fixes #89 Switch to service IoC injection from Java SPI
+- fixes #88 Add OpenAPI generator to SPI config file
 - fixes #87 Split RestGenerator to SwaggerGenerator and OpenApiGenerator
 - fixes #86 Update all generators to replace Java Service Provider with service.yml
 - Upgrade to light-4j 1.5.4
