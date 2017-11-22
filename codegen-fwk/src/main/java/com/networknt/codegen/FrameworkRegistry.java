@@ -1,5 +1,7 @@
 package com.networknt.codegen;
 
+import com.networknt.service.SingletonServiceFactory;
+
 import java.util.*;
 
 /**
@@ -13,14 +15,10 @@ public class FrameworkRegistry {
     private static final FrameworkRegistry INSTANCE = new FrameworkRegistry();
 
     private FrameworkRegistry() {
-        ServiceLoader<Generator> generators = ServiceLoader.load(Generator.class);
+        Generator[] generators = SingletonServiceFactory.getBeans(Generator.class);
         final Map<String, Generator> map = new HashMap<>();
-        for (Generator generator : generators) {
-            String framework = generator.getFramework();
-            map.put(framework, generator);
-        }
+        if(generators != null) Arrays.stream(generators).forEach(s -> map.put(s.getFramework(), s));
         this.frameworks = Collections.unmodifiableMap(map);
-
     }
 
     public Set<String> getFrameworks() {

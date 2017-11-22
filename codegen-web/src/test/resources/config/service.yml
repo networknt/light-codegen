@@ -23,3 +23,10 @@ singletons:
   - com.networknt.correlation.CorrelationHandler
   # SimpleAudit Log important info about the request into audit log
   - com.networknt.audit.AuditHandler
+# Generator interface implementations
+- com.networknt.codegen.Generator:
+  - com.networknt.codegen.rest.OpenApiGenerator
+  - com.networknt.codegen.rest.SwaggerGenerator
+  - com.networknt.codegen.hybrid.HybridServerGenerator
+  - com.networknt.codegen.hybrid.HybridServiceGenerator
+  - com.networknt.codegen.graphql.GraphqlGenerator
