@@ -10,6 +10,7 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Set;
@@ -46,13 +47,22 @@ public class Cli {
         if(frameworks.contains(framework)) {
             Generator generator = registry.getGenerator(framework);
             try {
-                Any anyModel = null;
+                Object anyModel = null;
                 // model can be empty in some cases.
                 if(model != null) {
-                    if(isUrl(model)) {
-                        anyModel = JsonIterator.deserialize(urlToByteArray(new URL(model)));
+                    // check if model is json or not before loading.
+                    if(model.endsWith("json")) {
+                        if(isUrl(model)) {
+                            anyModel = JsonIterator.deserialize(urlToByteArray(new URL(model)));
+                        } else {
+                            anyModel = JsonIterator.deserialize(Files.readAllBytes(Paths.get(model)));
+                        }
                     } else {
-                        anyModel = JsonIterator.deserialize(Files.readAllBytes(Paths.get(model)));
+                        if(isUrl(model)) {
+                            anyModel = new String(urlToByteArray(new URL(model)), StandardCharsets.UTF_8);
+                        } else {
+                            anyModel = new String(Files.readAllBytes(Paths.get(model)), StandardCharsets.UTF_8);
+                        }
                     }
                 }
 
