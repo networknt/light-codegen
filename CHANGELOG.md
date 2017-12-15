@@ -9,6 +9,22 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
+## 1.5.5 - 2017-12-10
+### Added
+
+### Changed
+- fixes #96 remove prerequisites maven version
+- fixes #95 Update client.yml for client_id, client_secret and server_url
+- fixes #94 Add bootstrapFromKeyService to false as default in security
+- fixes #93 Add keyClientSecret in secret.yml for service to access key
+- fixes #92 The cli treat graphqls model file as JSON for light-graphql
+- fixes #90 OpenAPI validators are not loaded correctly on codegen-cli
+- Upgrade to light-4j 1.5.5
+- Upgrade to light-rest-4j 1.5.5
+- Upgrade to light-graphql-4j 1.5.5
+- Upgrade to openapi-parser 1.5.5
+- Upgrade to light-hybrid-4j 1.5.5
+
 ## 1.5.4 - 2017-11-20
 ### Added
 
