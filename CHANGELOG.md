@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.5.7](https://github.com/networknt/light-codegen/tree/1.5.7) (2018-01-10)
+[Full Changelog](https://github.com/networknt/light-codegen/compare/1.5.6...1.5.7)
+
+**Closed issues:**
+
+- Add dependency-reduced-pom.xml to .gitignore template [\#99](https://github.com/networknt/light-codegen/issues/99)
+
 ## [1.5.6](https://github.com/networknt/light-codegen/tree/1.5.6) (2017-12-31)
 [Full Changelog](https://github.com/networknt/light-codegen/compare/1.5.4...1.5.6)
 
