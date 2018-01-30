@@ -67,10 +67,12 @@ public class Cli {
                 }
 
                 Any anyConfig = null;
-                if(isUrl(config)) {
-                    anyConfig = JsonIterator.deserialize(urlToByteArray(new URL(config)));
-                } else {
-                    anyConfig = JsonIterator.deserialize(Files.readAllBytes(Paths.get(config)));
+                if(config != null) {
+                    if(isUrl(config)) {
+                        anyConfig = JsonIterator.deserialize(urlToByteArray(new URL(config)));
+                    } else {
+                        anyConfig = JsonIterator.deserialize(Files.readAllBytes(Paths.get(config)));
+                    }
                 }
                generator.generate(output, anyModel, anyConfig);
             } catch (Exception e) {
