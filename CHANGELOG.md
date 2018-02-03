@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.5.8](https://github.com/networknt/light-codegen/tree/1.5.8) (2018-02-03)
+[Full Changelog](https://github.com/networknt/light-codegen/compare/1.5.7...1.5.8)
+
+**Closed issues:**
+
+- config null check [\#100](https://github.com/networknt/light-codegen/issues/100)
+
 ## [1.5.7](https://github.com/networknt/light-codegen/tree/1.5.7) (2018-01-10)
 [Full Changelog](https://github.com/networknt/light-codegen/compare/1.5.6...1.5.7)
 
