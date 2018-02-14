@@ -19,29 +19,43 @@ import java.util.Set;
  * Created by steve on 24/04/17.
  */
 public class Cli {
-    public static ObjectMapper mapper = new ObjectMapper();
 
-    @Parameter(names={"--framework", "-f"})
+    @Parameter(names={"--framework", "-f"}, required = true,
+            description = "The framework template to be used as scaffolding to the generated code.")
     String framework;
-    @Parameter(names={"--model", "-m"})
+    @Parameter(names={"--model", "-m"},
+            description = "The model (aka spec, schema, etc..) provided will drive code generation to match given " +
+                    "interface functions, parameter types, scopes, etc... " +
+                    "This can be in differing expected formats, given the intended framework type to generate. " +
+                    "Please see the documentation for the most up to date usage.")
     String model;
-    @Parameter(names={"--config", "-c"})
+    @Parameter(names={"--config", "-c"},
+            description = "Configuration parameters in the form of a file to be passed into your service.")
     String config;
-    @Parameter(names={"--output", "-o"})
+    @Parameter(names={"--output", "-o"},
+            description = "The output location of the folder which contains the generated codebase.")
     String output;
 
+    @Parameter(names={"--help", "-h"}, help = true)
+    private boolean help;
 
     public static void main(String ... argv) {
         Cli cli = new Cli();
-        JCommander.newBuilder()
+        JCommander jCommander = JCommander.newBuilder()
                 .addObject(cli)
-                .build()
-                .parse(argv);
-        cli.run();
+                .build();
+        jCommander.parse(argv);
+        cli.run(jCommander);
     }
 
-    public void run() {
-        System.out.printf("%s %s %s %s", framework, model, config, output);
+    public void run(JCommander jCommander) {
+        if (help) {
+            jCommander.usage();
+            return;
+        }
+
+        System.out.printf("%s %s %s %s\n", framework, model, config, output);
+
         FrameworkRegistry registry = FrameworkRegistry.getInstance();
         Set<String> frameworks = registry.getFrameworks();
         if(frameworks.contains(framework)) {
