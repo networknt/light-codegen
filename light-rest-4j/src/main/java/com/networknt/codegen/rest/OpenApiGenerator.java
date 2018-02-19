@@ -94,7 +94,8 @@ public class OpenApiGenerator implements Generator {
         } else {
             expose = httpPort;
         }
-        transfer(targetPath, "", "Dockerfile", templates.rest.dockerfile.template(config, expose));
+        transfer(targetPath, "docker", "Dockerfile", templates.rest.dockerfile.template(config, expose));
+        transfer(targetPath, "docker", "Dockerfile-Redhat", templates.rest.dockerfileredhat.template(config, expose));
         transfer(targetPath, "", ".gitignore", templates.rest.gitignore.template());
         transfer(targetPath, "", "README.md", templates.rest.README.template());
         transfer(targetPath, "", "LICENSE", templates.rest.LICENSE.template());

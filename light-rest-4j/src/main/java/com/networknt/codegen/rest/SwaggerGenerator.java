@@ -81,10 +81,6 @@ public class SwaggerGenerator implements Generator {
         boolean enableHttps = config.toBoolean("enableHttps");
         String httpsPort = config.toString("httpsPort");
         boolean enableRegistry = config.toBoolean("enableRegistry");
-        boolean supportOracle = config.toBoolean("supportOracle");
-        boolean supportMysql  = config.toBoolean("supportMysql");
-        boolean supportPostgresql = config.toBoolean("supportPostgresql");
-        boolean supportH2ForTest  = config.toBoolean("supportH2ForTest");
         boolean supportClient = config.toBoolean("supportClient");
 
         transfer(targetPath, "", "pom.xml", templates.rest.swagger.pom.template(config));
@@ -96,7 +92,9 @@ public class SwaggerGenerator implements Generator {
         } else {
             expose = httpPort;
         }
-        transfer(targetPath, "", "Dockerfile", templates.rest.dockerfile.template(config, expose));
+
+        transfer(targetPath, "docker", "Dockerfile", templates.rest.dockerfile.template(config, expose));
+        transfer(targetPath, "docker", "Dockerfile-Redhat", templates.rest.dockerfileredhat.template(config, expose));
         transfer(targetPath, "", ".gitignore", templates.rest.gitignore.template());
         transfer(targetPath, "", "README.md", templates.rest.README.template());
         transfer(targetPath, "", "LICENSE", templates.rest.LICENSE.template());

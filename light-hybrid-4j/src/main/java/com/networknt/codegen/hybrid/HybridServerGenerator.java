@@ -53,7 +53,8 @@ public class HybridServerGenerator implements Generator {
         } else {
             expose = httpPort;
         }
-        transfer(targetPath, "", "Dockerfile", templates.hybrid.server.dockerfile.template(config, expose));
+        transfer(targetPath, "docker", "Dockerfile", templates.hybrid.server.dockerfile.template(config, expose));
+        transfer(targetPath, "docker", "Dockerfile-Redhat", templates.hybrid.server.dockerfileredhat.template(config, expose));
         transfer(targetPath, "", ".gitignore", templates.hybrid.gitignore.template());
         transfer(targetPath, "", "README.md", templates.hybrid.server.README.template());
         transfer(targetPath, "", "LICENSE", templates.hybrid.LICENSE.template());
