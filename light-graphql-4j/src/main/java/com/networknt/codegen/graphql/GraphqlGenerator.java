@@ -41,11 +41,9 @@ public class GraphqlGenerator implements Generator {
         boolean enableHttps = config.toBoolean("enableHttps");
         String httpsPort = config.toString("httpsPort");
         boolean enableRegistry = config.toBoolean("enableRegistry");
-        boolean supportOracle = config.toBoolean("supportOracle");
-        boolean supportMysql  = config.toBoolean("supportMysql");
-        boolean supportPostgresql = config.toBoolean("supportPostgresql");
-        boolean supportH2ForTest  = config.toBoolean("supportH2ForTest");
         boolean supportClient = config.toBoolean("supportClient");
+        String dockerOrganization = config.toString("dockerOrganization");
+        if(dockerOrganization == null || dockerOrganization.length() == 0) dockerOrganization = "networknt";
 
         transfer(targetPath, "", "pom.xml", templates.graphql.pom.template(config));
         // There is only one port that should be exposed in Dockerfile, otherwise, the service
@@ -58,6 +56,7 @@ public class GraphqlGenerator implements Generator {
         }
         transfer(targetPath, "docker", "Dockerfile", templates.graphql.dockerfile.template(config, expose));
         transfer(targetPath, "docker", "Dockerfile-Redhat", templates.graphql.dockerfileredhat.template(config, expose));
+        transfer(targetPath, "", "build.sh", templates.graphql.buildSh.template(dockerOrganization, config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version")));
         transfer(targetPath, "", ".gitignore", templates.graphql.gitignore.template());
         transfer(targetPath, "", "README.md", templates.graphql.README.template());
         transfer(targetPath, "", "LICENSE", templates.graphql.LICENSE.template());

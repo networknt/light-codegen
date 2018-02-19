@@ -82,6 +82,8 @@ public class SwaggerGenerator implements Generator {
         String httpsPort = config.toString("httpsPort");
         boolean enableRegistry = config.toBoolean("enableRegistry");
         boolean supportClient = config.toBoolean("supportClient");
+        String dockerOrganization = config.toString("dockerOrganization");
+        if(dockerOrganization == null || dockerOrganization.length() == 0) dockerOrganization = "networknt";
 
         transfer(targetPath, "", "pom.xml", templates.rest.swagger.pom.template(config));
         // There is only one port that should be exposed in Dockerfile, otherwise, the service
@@ -95,6 +97,7 @@ public class SwaggerGenerator implements Generator {
 
         transfer(targetPath, "docker", "Dockerfile", templates.rest.dockerfile.template(config, expose));
         transfer(targetPath, "docker", "Dockerfile-Redhat", templates.rest.dockerfileredhat.template(config, expose));
+        transfer(targetPath, "", "build.sh", templates.rest.buildSh.template(dockerOrganization, config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version")));
         transfer(targetPath, "", ".gitignore", templates.rest.gitignore.template());
         transfer(targetPath, "", "README.md", templates.rest.README.template());
         transfer(targetPath, "", "LICENSE", templates.rest.LICENSE.template());

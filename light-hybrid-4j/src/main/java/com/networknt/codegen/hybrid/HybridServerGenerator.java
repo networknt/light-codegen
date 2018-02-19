@@ -36,10 +36,8 @@ public class HybridServerGenerator implements Generator {
         boolean enableHttps = config.toBoolean("enableHttps");
         String httpsPort = config.toString("httpsPort");
         boolean enableRegistry = config.toBoolean("enableRegistry");
-        boolean supportOracle = config.toBoolean("supportOracle");
-        boolean supportMysql  = config.toBoolean("supportMysql");
-        boolean supportPostgresql = config.toBoolean("supportPostgresql");
-        boolean supportH2ForTest  = config.toBoolean("supportH2ForTest");
+        String dockerOrganization = config.toString("dockerOrganization");
+        if(dockerOrganization ==  null || dockerOrganization.length() == 0) dockerOrganization = "networknt";
 
         boolean supportClient = config.toBoolean("supportClient");
 
@@ -55,6 +53,7 @@ public class HybridServerGenerator implements Generator {
         }
         transfer(targetPath, "docker", "Dockerfile", templates.hybrid.server.dockerfile.template(config, expose));
         transfer(targetPath, "docker", "Dockerfile-Redhat", templates.hybrid.server.dockerfileredhat.template(config, expose));
+        transfer(targetPath, "", "build.sh", templates.hybrid.server.buildSh.template(dockerOrganization, config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version")));
         transfer(targetPath, "", ".gitignore", templates.hybrid.gitignore.template());
         transfer(targetPath, "", "README.md", templates.hybrid.server.README.template());
         transfer(targetPath, "", "LICENSE", templates.hybrid.LICENSE.template());

@@ -34,20 +34,12 @@ public class HybridServiceGenerator implements Generator {
     @Override
     public void generate(String targetPath, Object model, Any config) throws IOException {
         // whoever is calling this needs to make sure that model is converted to Map<String, Object>
-        String rootPackage = config.get("rootPackage").toString();
-        String modelPackage = config.get("modelPackage").toString();
         String handlerPackage = config.get("handlerPackage").toString();
         boolean overwriteHandler = config.toBoolean("overwriteHandler");
         boolean overwriteHandlerTest = config.toBoolean("overwriteHandlerTest");
         boolean enableHttp = config.toBoolean("enableHttp");
-        String httpPort = config.toString("httpPort");
         boolean enableHttps = config.toBoolean("enableHttps");
-        String httpsPort = config.toString("httpsPort");
         boolean enableRegistry = config.toBoolean("enableRegistry");
-        boolean supportOracle = config.toBoolean("supportOracle");
-        boolean supportMysql  = config.toBoolean("supportMysql");
-        boolean supportPostgresql = config.toBoolean("supportPostgresql");
-        boolean supportH2ForTest  = config.toBoolean("supportH2ForTest");
         boolean supportClient = config.toBoolean("supportClient");
 
         transfer(targetPath, "", "pom.xml", templates.hybrid.service.pom.template(config));
