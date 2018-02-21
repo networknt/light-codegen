@@ -1,5 +1,22 @@
 # Change Log
 
+## [1.5.9](https://github.com/networknt/light-codegen/tree/1.5.9) (2018-02-21)
+[Full Changelog](https://github.com/networknt/light-codegen/compare/1.5.8...1.5.9)
+
+**Closed issues:**
+
+- update server.yml to add dynamic port support [\#107](https://github.com/networknt/light-codegen/issues/107)
+- generate build.sh for easy docker build with version [\#106](https://github.com/networknt/light-codegen/issues/106)
+- move Dockerfile into docker folder [\#105](https://github.com/networknt/light-codegen/issues/105)
+- enable travis ci only on master branch [\#102](https://github.com/networknt/light-codegen/issues/102)
+- add rxjava 2.x dependency for light-graphql-4j template [\#101](https://github.com/networknt/light-codegen/issues/101)
+- Help options \(--help\) should be made available [\#83](https://github.com/networknt/light-codegen/issues/83)
+- Add build.sh template for docker build in generated project [\#70](https://github.com/networknt/light-codegen/issues/70)
+
+**Merged pull requests:**
+
+- Adding help option and descriptions to codegen-cli parameters. [\#104](https://github.com/networknt/light-codegen/pull/104) ([NicholasAzar](https://github.com/NicholasAzar))
+
 ## [1.5.8](https://github.com/networknt/light-codegen/tree/1.5.8) (2018-02-03)
 [Full Changelog](https://github.com/networknt/light-codegen/compare/1.5.7...1.5.8)
 
