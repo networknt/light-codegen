@@ -1,7 +1,7 @@
 @import java.util.Map
 @import java.util.List
 @import com.jsoniter.any.Any
-@args (String rootPackage, String handlerPackage, List<Map<String, Any>> items)
+@args (String rootPackage, String handlerPackage, List<Map<String, Any>> items, boolean prometheusMetrics)
 package @rootPackage;
 
 import com.networknt.config.Config;
@@ -12,6 +12,9 @@ import io.undertow.server.HttpServerExchange;
 import io.undertow.util.Methods;
 import com.networknt.info.ServerInfoGetHandler;
 import com.networknt.health.HealthGetHandler;
+@if(prometheusMetrics){
+import com.networknt.metrics.prometheus.PrometheusGetHandler;
+}
 import @with (p = handlerPackage + ".*;") {@p}
 
 public class PathHandlerProvider implements HandlerProvider {
