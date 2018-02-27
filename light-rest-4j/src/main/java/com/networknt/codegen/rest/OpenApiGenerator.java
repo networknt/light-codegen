@@ -36,7 +36,7 @@ import static java.io.File.separator;
  */
 public class OpenApiGenerator implements Generator {
     private Map<String, String> typeMapping = new HashMap<>();
-
+    boolean prometheusMetrics =false;
     public OpenApiGenerator() {
         typeMapping.put("array", "java.util.List");
         typeMapping.put("map", "java.util.Map");
@@ -85,6 +85,7 @@ public class OpenApiGenerator implements Generator {
         boolean enableRegistry = config.toBoolean("enableRegistry");
         boolean supportClient = config.toBoolean("supportClient");
         String dockerOrganization = config.toString("dockerOrganization");
+        prometheusMetrics = config.toBoolean("prometheusMetrics");
         if(dockerOrganization == null || dockerOrganization.length() == 0) dockerOrganization = "networknt";
 
         transfer(targetPath, "", "pom.xml", templates.rest.openapi.pom.template(config));
@@ -96,6 +97,7 @@ public class OpenApiGenerator implements Generator {
         } else {
             expose = httpPort;
         }
+
         transfer(targetPath, "docker", "Dockerfile", templates.rest.dockerfile.template(config, expose));
         transfer(targetPath, "docker", "Dockerfile-Redhat", templates.rest.dockerfileredhat.template(config, expose));
         transfer(targetPath, "", "build.sh", templates.rest.buildSh.template(dockerOrganization, config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version")));
@@ -131,7 +133,7 @@ public class OpenApiGenerator implements Generator {
 
         List<Map<String, Object>> operationList = getOperationList(model);
         // routing
-        transfer(targetPath, ("src.main.java." + rootPackage).replace(".", separator), "PathHandlerProvider.java", templates.rest.openapi.handlerProvider.template(rootPackage, handlerPackage, operationList));
+        transfer(targetPath, ("src.main.java." + rootPackage).replace(".", separator), "PathHandlerProvider.java", templates.rest.openapi.handlerProvider.template(rootPackage, handlerPackage, operationList, prometheusMetrics));
 
 
         // model
@@ -251,7 +253,7 @@ public class OpenApiGenerator implements Generator {
                     //example = mapper.writeValueAsString(op.get("example"));
                     example = JsonStream.serialize(op.get("example"));
                 }
-                if("ServerInfoGetHandler".equals(className) || "HealthGetHandler".equals(className)) {
+                if("ServerInfoGetHandler".equals(className) || "HealthGetHandler".equals(className) || "PrometheusGetHandler".equals(className)) {
                     // don't generate handler for server info and health as they are injected and the impls are in light-4j
                     continue;
                 }
@@ -354,6 +356,17 @@ public class OpenApiGenerator implements Generator {
         Map<String, Object> health = new HashMap<>();
         health.put("get", healthMap);
         paths.put("/health", Any.wrap(health));
+
+        if (prometheusMetrics) {
+            // inject prometheus metrics collect endpoint
+            Map<String, Object> prometheusMap = new HashMap<>();
+            prometheusMap.put("responses", codeMap);
+            prometheusMap.put("parameters", new ArrayList());
+
+            Map<String, Object> prometheus = new HashMap<>();
+            prometheus.put("get", prometheusMap);
+            paths.put("/prometheus", Any.wrap(prometheus));
+        }
 
     }
 

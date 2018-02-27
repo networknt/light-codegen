@@ -34,7 +34,7 @@ public class SwaggerGenerator implements Generator {
     //static ObjectMapper mapper = new ObjectMapper();
 
     private Map<String, String> typeMapping = new HashMap<>();
-
+    boolean prometheusMetrics =false;
     public SwaggerGenerator() {
         typeMapping.put("array", "java.util.List");
         typeMapping.put("map", "java.util.Map");
@@ -83,6 +83,7 @@ public class SwaggerGenerator implements Generator {
         boolean enableRegistry = config.toBoolean("enableRegistry");
         boolean supportClient = config.toBoolean("supportClient");
         String dockerOrganization = config.toString("dockerOrganization");
+        prometheusMetrics = config.toBoolean("prometheusMetrics");
         if(dockerOrganization == null || dockerOrganization.length() == 0) dockerOrganization = "networknt";
 
         transfer(targetPath, "", "pom.xml", templates.rest.swagger.pom.template(config));
@@ -130,7 +131,7 @@ public class SwaggerGenerator implements Generator {
 
         List<Map<String, Any>> operationList = getOperationList(model);
         // routing
-        transfer(targetPath, ("src.main.java." + rootPackage).replace(".", separator), "PathHandlerProvider.java", templates.rest.swagger.handlerProvider.template(rootPackage, handlerPackage, operationList));
+        transfer(targetPath, ("src.main.java." + rootPackage).replace(".", separator), "PathHandlerProvider.java", templates.rest.swagger.handlerProvider.template(rootPackage, handlerPackage, operationList, prometheusMetrics));
 
 
         // model
@@ -253,7 +254,7 @@ public class SwaggerGenerator implements Generator {
                     //example = mapper.writeValueAsString(op.get("example"));
                     example = JsonStream.serialize(op.get("example"));
                 }
-                if("ServerInfoGetHandler".equals(className) || "HealthGetHandler".equals(className)) {
+                if("ServerInfoGetHandler".equals(className) || "HealthGetHandler".equals(className) || "PrometheusGetHandler".equals(className)) {
                     // don't generate handler for server info and health as they are injected and the impls are in light-4j
                     continue;
                 }
@@ -357,6 +358,16 @@ public class SwaggerGenerator implements Generator {
         health.put("get", healthMap);
         paths.put("/health", Any.wrap(health));
 
+        if (prometheusMetrics) {
+            // inject prometheus metrics collect endpoint
+            Map<String, Object> prometheusMap = new HashMap<>();
+            prometheusMap.put("responses", codeMap);
+            prometheusMap.put("parameters", new ArrayList());
+
+            Map<String, Object> prometheus = new HashMap<>();
+            prometheus.put("get", prometheusMap);
+            paths.put("/prometheus", Any.wrap(prometheus));
+        }
     }
 
     public List<Map<String, Any>> getOperationList(Object model) {
