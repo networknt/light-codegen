@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.5.10](https://github.com/networknt/light-codegen/tree/1.5.10) (2018-03-02)
+[Full Changelog](https://github.com/networknt/light-codegen/compare/1.5.9...1.5.10)
+
+**Merged pull requests:**
+
+- Develop\_gc branch with prometheus metrics generation for light-rest-4j [\#108](https://github.com/networknt/light-codegen/pull/108) ([chenyan71](https://github.com/chenyan71))
+
 ## [1.5.9](https://github.com/networknt/light-codegen/tree/1.5.9) (2018-02-21)
 [Full Changelog](https://github.com/networknt/light-codegen/compare/1.5.8...1.5.9)
 
