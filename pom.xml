@@ -104,7 +104,6 @@
     <modules>
         <module>codegen-core</module>
         <module>light-rest-4j</module>
-        <module>light-eventuate-4j</module>
         <module>light-hybrid-4j</module>
         <module>light-graphql-4j</module>
         <module>codegen-fwk</module>
@@ -122,22 +121,17 @@
             </dependency>
             <dependency>
                 <groupId>com.networknt</groupId>
-                <artifactId>light-rest-4j</artifactId>
+                <artifactId>light-rest-4j-generator</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.networknt</groupId>
-                <artifactId>light-eventuate</artifactId>
+                <artifactId>light-hybrid-4j-generator</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.networknt</groupId>
-                <artifactId>light-hybrid-4j</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.networknt</groupId>
-                <artifactId>light-graphql-4j</artifactId>
+                <artifactId>light-graphql-4j-generator</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

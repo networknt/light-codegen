@@ -36,15 +36,15 @@
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
-            <artifactId>light-rest-4j</artifactId>
+            <artifactId>light-rest-4j-generator</artifactId>
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
-            <artifactId>light-hybrid-4j</artifactId>
+            <artifactId>light-hybrid-4j-generator</artifactId>
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
-            <artifactId>light-graphql-4j</artifactId>
+            <artifactId>light-graphql-4j-generator</artifactId>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
