@@ -38,13 +38,13 @@ class AppActions {
         service: AppActions.API_SERVICE,
         action: "generate",
         version: AppActions.API_VERSION,
-        generators: [
-            {
-                framework: framework,
-                model: model,
-                config: config
-            }
-        ]
+        data: {
+            generators: [{
+              framework: framework,
+              model: model,
+              config: config
+            }]
+        }
     }}
 }
 
