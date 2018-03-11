@@ -141,7 +141,7 @@ public class OpenApiGenerator implements Generator {
             Any anyComponents = ((Any)model).get("components");
             if(anyComponents.valueType() != ValueType.INVALID) {
                 Any schemas = anyComponents.asMap().get("schemas");
-                if(schemas.valueType() != ValueType.INVALID) {
+                if(schemas != null && schemas.valueType() != ValueType.INVALID) {
                     for(Map.Entry<String, Any> entry : schemas.asMap().entrySet()) {
                         List<Map<String, Any>> props = new ArrayList<>();
                         String key = entry.getKey();
@@ -317,12 +317,15 @@ public class OpenApiGenerator implements Generator {
                 if(def != null && "oauth2".equals(def.get("type").toString())) {
                     authName = name;
                     Map<String, Any> flows = def.get("flows").asMap();
-                    Map<String, Any> ccMap = flows.get("clientCredentials").asMap();
-                    Any scopes = ccMap.get("scopes");
-                    if(scopes != null) {
-                        scopes.asMap().put("server.info.r", Any.wrap("read server info"));
+                    for(Map.Entry<String, Any> entry: flows.entrySet()) {
+                        Map<String, Any> oauthMap = entry.getValue().asMap();
+                        if(oauthMap != null) {
+                            Any scopes = oauthMap.get("scopes");
+                            if(scopes != null) {
+                                scopes.asMap().put("server.info.r", Any.wrap("read server info"));
+                            }
+                        }
                     }
-                    break;
                 }
             }
         }
