@@ -403,9 +403,19 @@ public class OpenApiGenerator implements Generator {
                 if(response != null) {
                     MediaType mediaType = response.getContentMediaType("application/json");
                     if(mediaType != null) {
+                        // first check if there is a single example defined.
                         Object example = mediaType.getExample();
                         if(example != null) {
                             flattened.put("example", example);
+                        } else {
+                            // check if there are multiple examples
+                            Map<String, Example> exampleMap = mediaType.getExamples();
+                            // use the first example if there are multiple
+                            Map.Entry<String,Example> entry = exampleMap.entrySet().iterator().next();
+                            Example e = entry.getValue();
+                            if(e != null) {
+                                flattened.put("example", e.getValue());
+                            }
                         }
                     }
                 }
