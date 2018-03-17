@@ -56,6 +56,8 @@ public class Utils {
             word = m.replaceFirst("." + m.group(1)/*.toUpperCase()*/);
             m = p.matcher(word);
         }
+        // replace dash to dot. - > .
+        word = word.replaceAll("-", ".");
 
         // case out dots
         String[] parts = word.split("\\.");

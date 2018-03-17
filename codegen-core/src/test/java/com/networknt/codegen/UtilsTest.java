@@ -18,6 +18,7 @@ public class UtilsTest {
     Map<String, String> underscoreToLowerCamel_ = new HashMap<>();
     Map<String, String> underscoreToCamel_ = new HashMap<>();
     Map<String, String> slashToCamel_ = new HashMap<>();
+    Map<String, String> dashToCamel_ = new HashMap<>();
 
     @Before
     public void setUp() {
@@ -41,6 +42,7 @@ public class UtilsTest {
         slashToCamel_.put("product","Product");
         slashToCamel_.put("/pet/findByStatus","PetFindByStatus");
 
+        dashToCamel_.put("/money-requests/receive/referenceNumber", "MoneyRequestsReceiveReferenceNumber");
     }
 
 
@@ -74,4 +76,12 @@ public class UtilsTest {
             Assert.assertEquals(entry.getKey(), Utils.camelize(entry.getValue()));
         }
     }
+
+    @Test
+    public void testDashToCamel() {
+        for (Map.Entry<String, String> entry : dashToCamel_.entrySet()) {
+            Assert.assertEquals(entry.getValue(), Utils.camelize(entry.getKey()));
+        }
+    }
+
 }
