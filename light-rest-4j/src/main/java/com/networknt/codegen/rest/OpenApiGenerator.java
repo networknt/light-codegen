@@ -411,10 +411,12 @@ public class OpenApiGenerator implements Generator {
                             // check if there are multiple examples
                             Map<String, Example> exampleMap = mediaType.getExamples();
                             // use the first example if there are multiple
-                            Map.Entry<String,Example> entry = exampleMap.entrySet().iterator().next();
-                            Example e = entry.getValue();
-                            if(e != null) {
-                                flattened.put("example", e.getValue());
+                            if(exampleMap.size() > 0) {
+                                Map.Entry<String,Example> entry = exampleMap.entrySet().iterator().next();
+                                Example e = entry.getValue();
+                                if(e != null) {
+                                    flattened.put("example", e.getValue());
+                                }
                             }
                         }
                     }
