@@ -390,19 +390,23 @@ public class SwaggerGenerator implements Generator {
                 String normalizedPath = path.replace("{", "").replace("}", "");
                 flattened.put("normalizedPath", Any.wrap(basePath + normalizedPath));
                 flattened.put("handlerName", Any.wrap(Utils.camelize(normalizedPath) + Utils.camelize(entryOps.getKey()) + "Handler"));
-                Map<String, Any> values = entryOps.getValue().asMap();
-                Any responses = values.get("responses");
-                if(responses != null) {
-                    Any response = responses.asMap().get("200");
-                    if(response != null) {
-                        Any examples = response.asMap().get("examples");
-                        if(examples != null) {
-                            Any jsonRes = examples.asMap().get("application/json");
-                            flattened.put("example", jsonRes);
+                Any any = entryOps.getValue();
+                // need to skip parameters array under path item and only handle the method operation
+                if(any.valueType() == ValueType.OBJECT) {
+                    Map<String, Any> values = any.asMap();
+                    Any responses = values.get("responses");
+                    if(responses != null) {
+                        Any response = responses.asMap().get("200");
+                        if(response != null) {
+                            Any examples = response.asMap().get("examples");
+                            if(examples != null) {
+                                Any jsonRes = examples.asMap().get("application/json");
+                                flattened.put("example", jsonRes);
+                            }
                         }
                     }
+                    result.add(flattened);
                 }
-                result.add(flattened);
             }
         }
         return result;

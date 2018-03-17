@@ -1,1053 +1,4255 @@
 {
   "swagger": "2.0",
   "info": {
-    "description": "This is a sample server Petstore server.  You can find out more about Swagger at [http://swagger.io](http://swagger.io) or on [irc.freenode.net, #swagger](http://swagger.io/irc/).  For this sample, you can use the api key `special-key` to test the authorization filters.",
-    "version": "1.0.0",
-    "title": "Swagger Petstore",
-    "termsOfService": "http://swagger.io/terms/",
-    "contact": {
-      "email": "apiteam@swagger.io"
-    },
-    "license": {
-      "name": "Apache 2.0",
-      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
-    }
+    "version": "2.0.0",
+    "title": "e-Transfer Public API"
   },
-  "host": "petstore.swagger.io",
-  "basePath": "/v2",
-  "tags": [
-    {
-      "name": "pet",
-      "description": "Everything about your Pets",
-      "externalDocs": {
-        "description": "Find out more",
-        "url": "http://swagger.io"
-      }
-    },
-    {
-      "name": "store",
-      "description": "Access to Petstore orders"
-    },
-    {
-      "name": "user",
-      "description": "Operations about user",
-      "externalDocs": {
-        "description": "Find out more about our store",
-        "url": "http://swagger.io"
-      }
-    }
-  ],
   "schemes": [
-    "http"
+    "https"
+  ],
+  "basePath": "/publicapi/api/v2",
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
   ],
   "paths": {
-    "/pet": {
-      "post": {
-        "tags": [
-          "pet"
-        ],
-        "summary": "Add a new pet to the store",
-        "description": "",
-        "operationId": "addPet",
-        "consumes": [
-          "application/json",
-          "application/xml"
-        ],
-        "produces": [
-          "application/xml",
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "in": "body",
-            "name": "body",
-            "description": "Pet object that needs to be added to the store",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/Pet"
-            }
-          }
-        ],
-        "responses": {
-          "405": {
-            "description": "Invalid input"
-          }
+    "/oauth/access-tokens": {
+      "parameters": [
+        {
+          "$ref": "#/parameters/thirdPartyAccessId"
         },
-        "security": [
-          {
-            "petstore_auth": [
-              "write:pets",
-              "read:pets"
-            ]
-          }
-        ]
-      },
-      "put": {
-        "tags": [
-          "pet"
-        ],
-        "summary": "Update an existing pet",
-        "description": "",
-        "operationId": "updatePet",
-        "consumes": [
-          "application/json",
-          "application/xml"
-        ],
-        "produces": [
-          "application/xml",
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "in": "body",
-            "name": "body",
-            "description": "Pet object that needs to be added to the store",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/Pet"
-            }
-          }
-        ],
-        "responses": {
-          "400": {
-            "description": "Invalid ID supplied"
-          },
-          "404": {
-            "description": "Pet not found"
-          },
-          "405": {
-            "description": "Validation exception"
-          }
-        },
-        "security": [
-          {
-            "petstore_auth": [
-              "write:pets",
-              "read:pets"
-            ]
-          }
-        ]
-      }
-    },
-    "/pet/findByStatus": {
+        {
+          "$ref": "#/parameters/requestId"
+        }
+      ],
       "get": {
-        "tags": [
-          "pet"
-        ],
-        "summary": "Finds Pets by status",
-        "description": "Multiple status values can be provided with comma separated strings",
-        "operationId": "findPetsByStatus",
-        "produces": [
-          "application/xml",
-          "application/json"
-        ],
+        "description": "Get the access token\n",
         "parameters": [
           {
-            "name": "status",
-            "in": "query",
-            "description": "Status values that need to be considered for filter",
+            "name": "grantType",
+            "in": "header",
+            "type": "string",
             "required": true,
-            "type": "array",
-            "items": {
-              "type": "string",
-              "enum": [
-                "available",
-                "pending",
-                "sold"
-              ],
-              "default": "available"
-            },
-            "collectionFormat": "multi"
+            "description": "token grant type; 'client_credentials' or 'request_token'\n"
+          },
+          {
+            "name": "grantRequest",
+            "in": "header",
+            "type": "string",
+            "required": true,
+            "description": "for 'client_credentials' use the secret key generated during the partner registration; for 'request_token' use the JWT request token built according to the Public API Integration Guide\n"
           }
+        ],
+        "tags": [
+          "Authentication"
         ],
         "responses": {
           "200": {
-            "description": "successful operation",
+            "description": "Successful response",
             "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/Pet"
-              }
+              "$ref": "#/definitions/AccessToken"
             }
           },
           "400": {
-            "description": "Invalid status value"
-          }
-        },
-        "security": [
-          {
-            "petstore_auth": [
-              "write:pets",
-              "read:pets"
-            ]
-          }
-        ]
-      }
-    },
-    "/pet/findByTags": {
-      "get": {
-        "tags": [
-          "pet"
-        ],
-        "summary": "Finds Pets by tags",
-        "description": "Muliple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing.",
-        "operationId": "findPetsByTags",
-        "produces": [
-          "application/xml",
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "tags",
-            "in": "query",
-            "description": "Tags to filter by",
-            "required": true,
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "collectionFormat": "multi"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "successful operation",
+            "description": "Validation Errors",
             "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/Pet"
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid tag value"
-          }
-        },
-        "security": [
-          {
-            "petstore_auth": [
-              "write:pets",
-              "read:pets"
-            ]
-          }
-        ],
-        "deprecated": true
-      }
-    },
-    "/pet/{petId}": {
-      "get": {
-        "tags": [
-          "pet"
-        ],
-        "summary": "Find pet by ID",
-        "description": "Returns a single pet",
-        "operationId": "getPetById",
-        "produces": [
-          "application/xml",
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "petId",
-            "in": "path",
-            "description": "ID of pet to return",
-            "required": true,
-            "type": "integer",
-            "format": "int64"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "successful operation",
-            "schema": {
-              "$ref": "#/definitions/Pet"
+              "$ref": "#/definitions/errorModel"
             },
             "examples": {
-              "application/json": {
-                "photoUrls" : [ "aeiou" ],
-                "name" : "doggie",
-                "id" : 123456789,
-                "category" : {
-                  "name" : "aeiou",
-                  "id" : 123456789
-                },
-                "tags" : [
-                  {
-                    "name" : "aeiou",
-                    "id" : 123456789
-                  }
-                ],
-                "status" : "aeiou"
-              }
+              "application/json": [
+                {
+                  "code": 1000,
+                  "message": "Invalid request"
+                }
+              ]
             }
           },
-          "400": {
-            "description": "Invalid ID supplied"
-          },
-          "404": {
-            "description": "Pet not found"
-          }
-        },
-        "security": [
-          {
-            "api_key": []
-          }
-        ]
-      },
-      "post": {
-        "tags": [
-          "pet"
-        ],
-        "summary": "Updates a pet in the store with form data",
-        "description": "",
-        "operationId": "updatePetWithForm",
-        "consumes": [
-          "application/x-www-form-urlencoded"
-        ],
-        "produces": [
-          "application/xml",
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "petId",
-            "in": "path",
-            "description": "ID of pet that needs to be updated",
-            "required": true,
-            "type": "integer",
-            "format": "int64"
-          },
-          {
-            "name": "name",
-            "in": "formData",
-            "description": "Updated name of the pet",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "status",
-            "in": "formData",
-            "description": "Updated status of the pet",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "405": {
-            "description": "Invalid input"
-          }
-        },
-        "security": [
-          {
-            "petstore_auth": [
-              "write:pets",
-              "read:pets"
-            ]
-          }
-        ]
-      },
-      "delete": {
-        "tags": [
-          "pet"
-        ],
-        "summary": "Deletes a pet",
-        "description": "",
-        "operationId": "deletePet",
-        "produces": [
-          "application/xml",
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "api_key",
-            "in": "header",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "petId",
-            "in": "path",
-            "description": "Pet id to delete",
-            "required": true,
-            "type": "integer",
-            "format": "int64"
-          }
-        ],
-        "responses": {
-          "400": {
-            "description": "Invalid ID supplied"
-          },
-          "404": {
-            "description": "Pet not found"
-          }
-        },
-        "security": [
-          {
-            "petstore_auth": [
-              "write:pets",
-              "read:pets"
-            ]
-          }
-        ]
-      }
-    },
-    "/pet/{petId}/uploadImage": {
-      "post": {
-        "tags": [
-          "pet"
-        ],
-        "summary": "uploads an image",
-        "description": "",
-        "operationId": "uploadFile",
-        "consumes": [
-          "multipart/form-data"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "petId",
-            "in": "path",
-            "description": "ID of pet to update",
-            "required": true,
-            "type": "integer",
-            "format": "int64"
-          },
-          {
-            "name": "additionalMetadata",
-            "in": "formData",
-            "description": "Additional data to pass to server",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "file",
-            "in": "formData",
-            "description": "file to upload",
-            "required": false,
-            "type": "file"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "successful operation",
+          "401": {
+            "description": "Unauthorized",
             "schema": {
-              "$ref": "#/definitions/ApiResponse"
-            }
-          }
-        },
-        "security": [
-          {
-            "petstore_auth": [
-              "write:pets",
-              "read:pets"
-            ]
-          }
-        ]
-      }
-    },
-    "/store/inventory": {
-      "get": {
-        "tags": [
-          "store"
-        ],
-        "summary": "Returns pet inventories by status",
-        "description": "Returns a map of status codes to quantities",
-        "operationId": "getInventory",
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "successful operation",
-            "schema": {
-              "type": "object",
-              "additionalProperties": {
-                "type": "integer",
-                "format": "int32"
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "api_key": []
-          }
-        ]
-      }
-    },
-    "/store/order": {
-      "post": {
-        "tags": [
-          "store"
-        ],
-        "summary": "Place an order for a pet",
-        "description": "",
-        "operationId": "placeOrder",
-        "produces": [
-          "application/xml",
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "in": "body",
-            "name": "body",
-            "description": "order placed for purchasing the pet",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/Order"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "successful operation",
-            "schema": {
-              "$ref": "#/definitions/Order"
-            }
-          },
-          "400": {
-            "description": "Invalid Order"
-          }
-        }
-      }
-    },
-    "/store/order/{orderId}": {
-      "get": {
-        "tags": [
-          "store"
-        ],
-        "summary": "Find purchase order by ID",
-        "description": "For valid response try integer IDs with value >= 1 and <= 10. Other values will generated exceptions",
-        "operationId": "getOrderById",
-        "produces": [
-          "application/xml",
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "orderId",
-            "in": "path",
-            "description": "ID of pet that needs to be fetched",
-            "required": true,
-            "type": "integer",
-            "maximum": 10,
-            "minimum": 1,
-            "format": "int64"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "successful operation",
-            "schema": {
-              "$ref": "#/definitions/Order"
-            }
-          },
-          "400": {
-            "description": "Invalid ID supplied"
-          },
-          "404": {
-            "description": "Order not found"
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "store"
-        ],
-        "summary": "Delete purchase order by ID",
-        "description": "For valid response try integer IDs with positive integer value. Negative or non-integer values will generate API errors",
-        "operationId": "deleteOrder",
-        "produces": [
-          "application/xml",
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "orderId",
-            "in": "path",
-            "description": "ID of the order that needs to be deleted",
-            "required": true,
-            "type": "integer",
-            "minimum": 1,
-            "format": "int64"
-          }
-        ],
-        "responses": {
-          "400": {
-            "description": "Invalid ID supplied"
-          },
-          "404": {
-            "description": "Order not found"
-          }
-        }
-      }
-    },
-    "/user": {
-      "post": {
-        "tags": [
-          "user"
-        ],
-        "summary": "Create user",
-        "description": "This can only be done by the logged in user.",
-        "operationId": "createUser",
-        "produces": [
-          "application/xml",
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "in": "body",
-            "name": "body",
-            "description": "Created user object",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/User"
-            }
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": "successful operation"
-          }
-        }
-      }
-    },
-    "/user/createWithArray": {
-      "post": {
-        "tags": [
-          "user"
-        ],
-        "summary": "Creates list of users with given input array",
-        "description": "",
-        "operationId": "createUsersWithArrayInput",
-        "produces": [
-          "application/xml",
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "in": "body",
-            "name": "body",
-            "description": "List of user object",
-            "required": true,
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/User"
-              }
-            }
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": "successful operation"
-          }
-        }
-      }
-    },
-    "/user/createWithList": {
-      "post": {
-        "tags": [
-          "user"
-        ],
-        "summary": "Creates list of users with given input array",
-        "description": "",
-        "operationId": "createUsersWithListInput",
-        "produces": [
-          "application/xml",
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "in": "body",
-            "name": "body",
-            "description": "List of user object",
-            "required": true,
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/User"
-              }
-            }
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": "successful operation"
-          }
-        }
-      }
-    },
-    "/user/login": {
-      "get": {
-        "tags": [
-          "user"
-        ],
-        "summary": "Logs user into the system",
-        "description": "",
-        "operationId": "loginUser",
-        "produces": [
-          "application/xml",
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "username",
-            "in": "query",
-            "description": "The user name for login",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "password",
-            "in": "query",
-            "description": "The password for login in clear text",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "successful operation",
-            "schema": {
-              "type": "string"
+              "$ref": "#/definitions/errorModel"
             },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1001,
+                  "message": "Invalid access"
+                }
+              ]
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 9999,
+                  "message": "Unknown application error"
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "/user-registrations": {
+      "parameters": [
+        {
+          "$ref": "#/parameters/accessToken"
+        },
+        {
+          "$ref": "#/parameters/thirdPartyAccessId"
+        },
+        {
+          "$ref": "#/parameters/requestId"
+        },
+        {
+          "$ref": "#/parameters/deviceId"
+        },
+        {
+          "$ref": "#/parameters/applicationId"
+        },
+        {
+          "$ref": "#/parameters/participantAccessToken"
+        }
+      ],
+      "post": {
+        "description": "creates a public api user registration for an e-Transfer customer; the operation is asynchronous, a notification will be sent to the third party partner when the registration is created",
+        "operationId": "addUserRegistration",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UserRegistration"
+            }
+          }
+        ],
+        "tags": [
+          "User Registration management"
+        ],
+        "responses": {
+          "202": {
+            "description": "Successful response",
             "headers": {
-              "X-Rate-Limit": {
-                "type": "integer",
-                "format": "int32",
-                "description": "calls per hour allowed by the user"
-              },
-              "X-Expires-After": {
-                "type": "string",
-                "format": "date-time",
-                "description": "date in UTC when token expires"
+              "location": {
+                "description": "URL for accessing the newly created user registration",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "required": [
+                "apiRegistrationId"
+              ],
+              "properties": {
+                "apiRegistrationId": {
+                  "description": "id of the newly created user registration",
+                  "type": "string"
+                }
               }
             }
           },
           "400": {
-            "description": "Invalid username/password supplied"
-          }
-        }
-      }
-    },
-    "/user/logout": {
-      "get": {
-        "tags": [
-          "user"
-        ],
-        "summary": "Logs out current logged in user session",
-        "description": "",
-        "operationId": "logoutUser",
-        "produces": [
-          "application/xml",
-          "application/json"
-        ],
-        "parameters": [],
-        "responses": {
+            "description": "Validation Errors",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1000,
+                  "message": "Invalid request"
+                },
+                {
+                  "code": 1004,
+                  "message": "Duplicate User registration - Participant UserId"
+                },
+                {
+                  "code": 1008,
+                  "message": "Duplicate ThirdPartyUserId"
+                },
+                {
+                  "code": 1009,
+                  "message": "Invalid ParticipantId"
+                },
+                {
+                  "code": 1010,
+                  "message": "Invalid IndirectConnectorId of participant"
+                }
+              ]
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1001,
+                  "message": "Invalid access"
+                }
+              ]
+            }
+          },
+          "403": {
+            "description": "Forbidden - The server understood the request, but is refusing to fulfill it.",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1002,
+                  "message": "Allowed feature list not supported for user"
+                }
+              ]
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1003,
+                  "message": "Customer doesn't exist - ParticipantUserId doesn't exist"
+                }
+              ]
+            }
+          },
           "default": {
-            "description": "successful operation"
+            "description": "unexpected error",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            }
           }
         }
       }
     },
-    "/user/{username}": {
+    "/user-registrations/{apiRegistartionId}": {
+      "parameters": [
+        {
+          "$ref": "#/parameters/accessToken"
+        },
+        {
+          "$ref": "#/parameters/thirdPartyAccessId"
+        },
+        {
+          "$ref": "#/parameters/requestId"
+        },
+        {
+          "$ref": "#/parameters/deviceId"
+        },
+        {
+          "$ref": "#/parameters/applicationId"
+        },
+        {
+          "$ref": "#/parameters/participantAccessToken"
+        }
+      ],
       "get": {
-        "tags": [
-          "user"
-        ],
-        "summary": "Get user by user name",
-        "description": "",
-        "operationId": "getUserByName",
-        "produces": [
-          "application/xml",
-          "application/json"
-        ],
+        "description": "retrieves a public api user registration for an e-Transfer customer",
+        "operationId": "getUserRegistration",
         "parameters": [
           {
-            "name": "username",
+            "name": "apiRegistartionId",
             "in": "path",
-            "description": "The name that needs to be fetched. Use user1 for testing. ",
             "required": true,
+            "maximum": 50,
             "type": "string"
           }
+        ],
+        "tags": [
+          "User Registration management"
         ],
         "responses": {
           "200": {
-            "description": "successful operation",
+            "description": "Successful response",
             "schema": {
-              "$ref": "#/definitions/User"
+              "$ref": "#/definitions/UserRegistration"
             }
           },
           "400": {
-            "description": "Invalid username supplied"
-          },
-          "404": {
-            "description": "User not found"
-          }
-        }
-      },
-      "put": {
-        "tags": [
-          "user"
-        ],
-        "summary": "Updated user",
-        "description": "This can only be done by the logged in user.",
-        "operationId": "updateUser",
-        "produces": [
-          "application/xml",
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "username",
-            "in": "path",
-            "description": "name that need to be updated",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "in": "body",
-            "name": "body",
-            "description": "Updated user object",
-            "required": true,
+            "description": "Validation Errors",
             "schema": {
-              "$ref": "#/definitions/User"
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1000,
+                  "message": "Invalid request"
+                }
+              ]
             }
-          }
-        ],
-        "responses": {
-          "400": {
-            "description": "Invalid user supplied"
+          },
+          "401": {
+            "description": "Unauthorized / invalid credentials",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1001,
+                  "message": "Invalid access"
+                }
+              ]
+            }
           },
           "404": {
-            "description": "User not found"
+            "description": "Resource not found",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1005,
+                  "message": "ApiRegistartionId doesn't exist"
+                }
+              ]
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            }
           }
         }
       },
       "delete": {
-        "tags": [
-          "user"
-        ],
-        "summary": "Delete user",
-        "description": "This can only be done by the logged in user.",
-        "operationId": "deleteUser",
-        "produces": [
-          "application/xml",
-          "application/json"
-        ],
+        "description": "deletes a public api user registration for an e-Transfer customer",
+        "operationId": "deleteUserRegistration",
         "parameters": [
           {
-            "name": "username",
+            "name": "apiRegistartionId",
             "in": "path",
-            "description": "The name that needs to be deleted",
             "required": true,
             "type": "string"
           }
         ],
+        "tags": [
+          "User Registration management"
+        ],
         "responses": {
+          "204": {
+            "description": "Successful response"
+          },
           "400": {
-            "description": "Invalid username supplied"
+            "description": "Validation Errors",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1000,
+                  "message": "Invalid request"
+                }
+              ]
+            }
+          },
+          "401": {
+            "description": "Unauthorized / invalid credentials",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1001,
+                  "message": "Invalid access"
+                }
+              ]
+            }
           },
           "404": {
-            "description": "User not found"
+            "description": "Resource not found",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1005,
+                  "message": "ApiRegistartionId doesn't exist"
+                }
+              ]
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            }
+          }
+        }
+      },
+      "patch": {
+        "description": "updates a public api user registration for an e-Transfer customer",
+        "operationId": "updateUserRegistration",
+        "parameters": [
+          {
+            "name": "apiRegistartionId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UserRegistrationUpdate"
+            }
+          }
+        ],
+        "tags": [
+          "User Registration management"
+        ],
+        "responses": {
+          "202": {
+            "description": "Successful response"
+          },
+          "400": {
+            "description": "Validation Errors",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1000,
+                  "message": "Invalid request"
+                }
+              ]
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1001,
+                  "message": "Invalid access"
+                }
+              ]
+            }
+          },
+          "403": {
+            "description": "Forbidden - The server understood the request, but is refusing to fulfill it.",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1002,
+                  "message": "Allowed feature list not supported for user"
+                }
+              ]
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1005,
+                  "message": "ApiRegistartionId doesn't exist"
+                }
+              ]
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            }
           }
         }
       }
+    },
+    "/contacts": {
+      "parameters": [
+        {
+          "$ref": "#/parameters/accessToken"
+        },
+        {
+          "$ref": "#/parameters/thirdPartyAccessId"
+        },
+        {
+          "$ref": "#/parameters/requestId"
+        },
+        {
+          "$ref": "#/parameters/deviceId"
+        },
+        {
+          "$ref": "#/parameters/applicationId"
+        },
+        {
+          "$ref": "#/parameters/apiRegistrationId"
+        }
+      ],
+      "get": {
+        "operationId": "getContacts",
+        "description": "Retrieves all the contacts",
+        "parameters": [
+          {
+            "name": "maxResponseItems",
+            "in": "query",
+            "type": "integer",
+            "required": false
+          },
+          {
+            "name": "fromLastUpdatedDate",
+            "in": "query",
+            "type": "string",
+            "required": false,
+            "format": "datetime",
+            "description": "UTC datatime of contact used to retrieve only contacts updated from the specified dateTime; format is yyyy-MM-dd'T'HH:mm:ss.SSS'Z', e.g. '2016-09-11T16:12:12.000'"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "type": "integer",
+            "required": false,
+            "description": "offset is starting point of contacts filter; if offset is not provided it would be defaulted to zero; "
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "type": "string",
+            "enum": [
+              "contactName",
+              "contactUpdatedDate"
+            ],
+            "required": false,
+            "description": "contacts will be sorted based on sortBy column, \n - sortBy will be set to contactUpdatedDate if fromLastUpdatedDate.\n - sortBy will be defaulted to contactName if no filters are specified."
+          },
+          {
+            "name": "orderBy",
+            "in": "query",
+            "type": "string",
+            "enum": [
+              "desc",
+              "asc"
+            ],
+            "required": false,
+            "description": "order by is required if sort by is specified."
+          }
+        ],
+        "tags": [
+          "Contact management"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "schema": {
+              "type": "array",
+              "description": "List of contacts returned for customer",
+              "items": {
+                "$ref": "#/definitions/Contact"
+              }
+            }
+          },
+          "206": {
+            "description": "Partial content returned, use pagination filters",
+            "headers": {
+              "x-limit": {
+                "description": "contact range returned",
+                "type": "string"
+              },
+              "x-total-count": {
+                "description": "total number of contacts for provided filter.",
+                "type": "integer"
+              }
+            },
+            "schema": {
+              "type": "array",
+              "description": "List of partial contacts returned based on max item",
+              "items": {
+                "$ref": "#/definitions/Contact"
+              }
+            }
+          },
+          "400": {
+            "description": "Validation Errors",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1000,
+                  "message": "Invalid request."
+                },
+                {
+                  "code": 1011,
+                  "message": "Invalid apiRegistartionId."
+                },
+                {
+                  "code": 1048,
+                  "message": "Hard contact already exist for sender."
+                },
+                {
+                  "code": 1053,
+                  "message": "orderBy field is missing."
+                }
+              ]
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1001,
+                  "message": "Invalid access"
+                }
+              ]
+            }
+          },
+          "403": {
+            "description": "Forbidden - The server understood the request, but is refusing to fulfill it.",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1037,
+                  "message": "Feature is not supported for current user"
+                }
+              ]
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1005,
+                  "message": "ApiRegistartionId doesn't exist."
+                }
+              ]
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            }
+          }
+        }
+      },
+      "post": {
+        "description": "creates a public api user registration for an e-Transfer customer",
+        "operationId": "addContact",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Contact"
+            }
+          }
+        ],
+        "tags": [
+          "Contact management"
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful response",
+            "headers": {
+              "location": {
+                "description": "URL for accessing the newly created contact",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "required": [
+                "contactId",
+                "contactHash"
+              ],
+              "properties": {
+                "contactId": {
+                  "description": "Id of the newly created Contact.",
+                  "type": "string"
+                },
+                "contactHash": {
+                  "description": "unique hash value of newly created Contact.",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation Errors",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1000,
+                  "message": "Invalid request."
+                },
+                {
+                  "code": 1011,
+                  "message": "Invalid apiRegistartionId."
+                },
+                {
+                  "code": 1043,
+                  "message": "Duplicate contact name."
+                }
+              ]
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1001,
+                  "message": "Invalid access"
+                }
+              ]
+            }
+          },
+          "403": {
+            "description": "Forbidden - The server understood the request, but is refusing to fulfill it.",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1037,
+                  "message": "Feature is not supported for current user."
+                }
+              ]
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1005,
+                  "message": "ApiRegistartionId doesn't exist"
+                },
+                {
+                  "code": 1006,
+                  "message": "Hard contact doesn't exist."
+                }
+              ]
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            }
+          }
+        }
+      }
+    },
+    "/contacts/{contactId}": {
+      "parameters": [
+        {
+          "$ref": "#/parameters/accessToken"
+        },
+        {
+          "$ref": "#/parameters/thirdPartyAccessId"
+        },
+        {
+          "$ref": "#/parameters/requestId"
+        },
+        {
+          "$ref": "#/parameters/deviceId"
+        },
+        {
+          "$ref": "#/parameters/applicationId"
+        },
+        {
+          "$ref": "#/parameters/apiRegistrationId"
+        }
+      ],
+      "put": {
+        "description": "updates a contact for an e-Transfer customer",
+        "operationId": "updateContact",
+        "parameters": [
+          {
+            "name": "contactId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Contact"
+            }
+          }
+        ],
+        "tags": [
+          "Contact management"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "schema": {
+              "required": [
+                "contactHash"
+              ],
+              "properties": {
+                "contactHash": {
+                  "description": "unique hash value of newly created Contact.",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation Errors",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1000,
+                  "message": "Invalid request"
+                },
+                {
+                  "code": 1012,
+                  "message": "Invalid contact hash, get last updated contact details"
+                }
+              ]
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1001,
+                  "message": "Invalid access"
+                }
+              ]
+            }
+          },
+          "403": {
+            "description": "Forbidden - The server understood the request, but is refusing to fulfill it.",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1037,
+                  "message": "Feature is not supported for current user."
+                }
+              ]
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1005,
+                  "message": "ApiRegistartionId doesn't exist."
+                },
+                {
+                  "code": 1006,
+                  "message": "Hard contact doesn't exist."
+                },
+                {
+                  "code": 1007,
+                  "message": "contact doesn't exist."
+                }
+              ]
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "deletes a contact for an e-Transfer customer",
+        "operationId": "deleteContact",
+        "parameters": [
+          {
+            "name": "contactId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Contact management"
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful response"
+          },
+          "400": {
+            "description": "Validation Errors",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1000,
+                  "message": "Invalid request"
+                },
+                {
+                  "code": 1011,
+                  "message": "Invalid apiRegistartionId"
+                },
+                {
+                  "code": 1044,
+                  "message": "Contact can't be deleted; if in flight transfers exist."
+                }
+              ]
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1001,
+                  "message": "Invalid access"
+                }
+              ]
+            }
+          },
+          "403": {
+            "description": "Forbidden - The server understood the request, but is refusing to fulfill it.",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1037,
+                  "message": "Feature is not supported for current user."
+                }
+              ]
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1005,
+                  "message": "ApiRegistartionId doesn't exist."
+                },
+                {
+                  "code": 1006,
+                  "message": "Hard contact doesn't exist."
+                },
+                {
+                  "code": 1007,
+                  "message": "contact doesn't exist."
+                }
+              ]
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            }
+          }
+        }
+      },
+      "get": {
+        "description": "retrieves a contact of an e-Transfer customer that has a public api registartion and the associated auto-deposit registration details if the registration exists and is associated with one of contact's notification handles",
+        "operationId": "getContact",
+        "parameters": [
+          {
+            "name": "contactId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "minLength": 16,
+            "maxLength": 16
+          }
+        ],
+        "tags": [
+          "Contact management"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "schema": {
+              "$ref": "#/definitions/Contact"
+            }
+          },
+          "400": {
+            "description": "Validation Errors",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1000,
+                  "message": "Invalid request"
+                },
+                {
+                  "code": 1011,
+                  "message": "Invalid apiRegistartionId"
+                }
+              ]
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1001,
+                  "message": "Invalid access"
+                }
+              ]
+            }
+          },
+          "403": {
+            "description": "Forbidden - The server understood the request, but is refusing to fulfill it.",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1037,
+                  "message": "Feature is not supported for current user."
+                }
+              ]
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1005,
+                  "message": "ApiRegistartionId doesn't exist."
+                },
+                {
+                  "code": 1007,
+                  "message": "contact doesn't exist."
+                }
+              ]
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            }
+          }
+        }
+      }
+    },
+    "/transfers": {
+      "parameters": [
+        {
+          "$ref": "#/parameters/accessToken"
+        },
+        {
+          "$ref": "#/parameters/thirdPartyAccessId"
+        },
+        {
+          "$ref": "#/parameters/requestId"
+        },
+        {
+          "$ref": "#/parameters/deviceId"
+        },
+        {
+          "$ref": "#/parameters/applicationId"
+        },
+        {
+          "$ref": "#/parameters/apiRegistrationId"
+        }
+      ],
+      "get": {
+        "operationId": "getTransfers",
+        "description": "retrieves all transfers sent/received ( Bulk transfers are exluded )",
+        "parameters": [
+          {
+            "name": "fromDate",
+            "in": "query",
+            "type": "string",
+            "format": "dateTime",
+            "required": false,
+            "description": "UTC datatime format is yyyy-MM-dd'T'HH:mm:ss.SSS'Z', e.g. '2016-09-11T16:12:12.000'; this parameter is mandatory if\n sourceTransferId or referenceNumber is not given."
+          },
+          {
+            "name": "toDate",
+            "in": "query",
+            "type": "string",
+            "format": "dateTime",
+            "required": false,
+            "description": "UTC datatime format is yyyy-MM-dd'T'HH:mm:ss.SSS'Z', e.g. '2016-09-11T16:12:12.000'; this parameter is mandatory if\n sourceTransferId or referenceNumber is not given."
+          },
+          {
+            "name": "maxResponseItems",
+            "in": "query",
+            "type": "integer",
+            "required": false,
+            "description": "if offset is provided then maxResponse items is required; all items are returned if this field is absent"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "type": "integer",
+            "required": false,
+            "description": "offset is starting point of transfers filter; if offset is not provided it would be defaulted to zero; "
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "type": "string",
+            "enum": [
+              "creationDate"
+            ],
+            "required": false,
+            "description": "transfers will be sorted based on sortBy column."
+          },
+          {
+            "name": "orderBy",
+            "in": "query",
+            "type": "string",
+            "enum": [
+              "desc",
+              "asc"
+            ],
+            "required": false,
+            "description": "order by is required if sort by is specified."
+          },
+          {
+            "name": "sourceTransferId",
+            "in": "query",
+            "type": "string",
+            "required": false,
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "transferId generated by originating system, either source transfer id or reference number can be specified."
+          },
+          {
+            "name": "referenceNumber",
+            "in": "query",
+            "type": "string",
+            "required": false,
+            "maxLength": 14,
+            "description": "unique identifier of the transfer, either source transfer id or reference number can be specified. "
+          }
+        ],
+        "tags": [
+          "Send Transfer"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Transfer"
+              }
+            }
+          },
+          "206": {
+            "description": "Partial content returned, use pagination filters",
+            "headers": {
+              "x-limit": {
+                "description": "range of transfers",
+                "type": "string"
+              },
+              "x-total-count": {
+                "description": "total number of transfers.",
+                "type": "integer"
+              }
+            },
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Transfer"
+              }
+            }
+          },
+          "400": {
+            "description": "Validation Errors",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1000,
+                  "message": "Invalid request."
+                },
+                {
+                  "code": 1011,
+                  "message": "Invalid apiRegistartionId."
+                },
+                {
+                  "code": 1030,
+                  "message": "Invalid date range."
+                },
+                {
+                  "code": 1031,
+                  "message": "Mutually exclusive options are specified."
+                },
+                {
+                  "code": 1053,
+                  "message": "orderBy field is missing."
+                }
+              ]
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1001,
+                  "message": "Invalid access"
+                }
+              ]
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1005,
+                  "message": "ApiRegistartionId doesn't exist."
+                },
+                {
+                  "code": 1007,
+                  "message": "Contact doesn't exist."
+                },
+                {
+                  "code": 1029,
+                  "message": "Transfer doesn't exist."
+                }
+              ]
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            }
+          }
+        }
+      }
+    },
+    "/transfers/send": {
+      "parameters": [
+        {
+          "$ref": "#/parameters/accessToken"
+        },
+        {
+          "$ref": "#/parameters/thirdPartyAccessId"
+        },
+        {
+          "$ref": "#/parameters/requestId"
+        },
+        {
+          "$ref": "#/parameters/deviceId"
+        },
+        {
+          "$ref": "#/parameters/applicationId"
+        },
+        {
+          "$ref": "#/parameters/apiRegistrationId"
+        },
+        {
+          "$ref": "#/parameters/participantAccessToken"
+        }
+      ],
+      "post": {
+        "description": "creates a transfer for an e-Transfer customer; the operation is asynchronous, a notification will be sent to the third party partner when the transfer is created",
+        "operationId": "sendTransfer",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Transfer"
+            }
+          }
+        ],
+        "tags": [
+          "Send Transfer"
+        ],
+        "responses": {
+          "202": {
+            "description": "Successful response",
+            "headers": {
+              "location": {
+                "description": "URL for accessing the newly created transfer",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "required": [
+                "referenceNumber"
+              ],
+              "properties": {
+                "referenceNumber": {
+                  "description": "reference Number of the newly created transfer",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation Errors",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1000,
+                  "message": "Invalid request"
+                },
+                {
+                  "code": 1011,
+                  "message": "Invalid apiRegistartionId"
+                },
+                {
+                  "code": 1012,
+                  "message": "Invalid contact hash, get last updated contact details"
+                },
+                {
+                  "code": 1013,
+                  "message": "Contact has notification handle registered for direct deposit, regular transfer cannot be sent"
+                },
+                {
+                  "code": 1014,
+                  "message": "Sender and Recipient cannot be same customer"
+                },
+                {
+                  "code": 1015,
+                  "message": "Sender is disabled"
+                },
+                {
+                  "code": 1016,
+                  "message": "Transfer amount exceeds the individual outgoing transfer threshold"
+                },
+                {
+                  "code": 1017,
+                  "message": "Total cumulative transfers exceeds the daily outgoing transfer amount threshold"
+                },
+                {
+                  "code": 1018,
+                  "message": "Total cumulative transfers exceeds the first rolling limit outgoing transfer amount threshold"
+                },
+                {
+                  "code": 1019,
+                  "message": "Total cumulative transfers exceeds the second rolling limit outgoing transfer amount threshold"
+                },
+                {
+                  "code": 1020,
+                  "message": "Duplicate source system id"
+                },
+                {
+                  "code": 1021,
+                  "message": "Expiry Date is less than Creation Date"
+                },
+                {
+                  "code": 1022,
+                  "message": "Transfer creation date is too early or too late"
+                },
+                {
+                  "code": 1023,
+                  "message": "Expiry Date exceeds threshold limit"
+                },
+                {
+                  "code": 1024,
+                  "message": "Invalid Transfer authentication for the Transfer type."
+                },
+                {
+                  "code": 1027,
+                  "message": "Hash algorithm not supported by the system."
+                },
+                {
+                  "code": 1028,
+                  "message": "Fullfill amount should be same as requested amount."
+                },
+                {
+                  "code": 1045,
+                  "message": "Transfer can't be created, due to intrruption in previous transfer."
+                },
+                {
+                  "code": 1046,
+                  "message": "Currency code or product type is not supported."
+                },
+                {
+                  "code": 1047,
+                  "message": "Invalid Transfer type."
+                }
+              ]
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1001,
+                  "message": "Invalid access"
+                }
+              ]
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1005,
+                  "message": "ApiRegistartionId doesn't exist"
+                },
+                {
+                  "code": 1007,
+                  "message": "contact doesn't exist"
+                },
+                {
+                  "code": 1025,
+                  "message": "moneyRequestReferenceNumber doesn't exist."
+                },
+                {
+                  "code": 1026,
+                  "message": "directDepositRegistrationId doesn't exist."
+                }
+              ]
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            }
+          }
+        }
+      }
+    },
+    "/transfers/send/{referenceNumber}/notice": {
+      "parameters": [
+        {
+          "$ref": "#/parameters/accessToken"
+        },
+        {
+          "$ref": "#/parameters/thirdPartyAccessId"
+        },
+        {
+          "$ref": "#/parameters/requestId"
+        },
+        {
+          "$ref": "#/parameters/deviceId"
+        },
+        {
+          "$ref": "#/parameters/applicationId"
+        },
+        {
+          "$ref": "#/parameters/apiRegistrationId"
+        }
+      ],
+      "patch": {
+        "description": "the sender re-sends a transfer notice",
+        "operationId": "sendtransferNotice",
+        "parameters": [
+          {
+            "name": "referenceNumber",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "maxLength": 14
+          }
+        ],
+        "tags": [
+          "Send Transfer"
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful response"
+          },
+          "400": {
+            "description": "Validation Errors",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1000,
+                  "message": "Invalid request."
+                },
+                {
+                  "code": 1011,
+                  "message": "Invalid apiRegistartionId."
+                }
+              ]
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1001,
+                  "message": "Invalid access"
+                }
+              ]
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1005,
+                  "message": "ApiRegistartionId doesn't exist."
+                },
+                {
+                  "code": 1029,
+                  "message": "Transfer doesn't exist."
+                }
+              ]
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            }
+          }
+        }
+      }
+    },
+    "/transfers/send/{referenceNumber}/updateTransferAuthentication": {
+      "parameters": [
+        {
+          "$ref": "#/parameters/accessToken"
+        },
+        {
+          "$ref": "#/parameters/thirdPartyAccessId"
+        },
+        {
+          "$ref": "#/parameters/requestId"
+        },
+        {
+          "$ref": "#/parameters/deviceId"
+        },
+        {
+          "$ref": "#/parameters/applicationId"
+        },
+        {
+          "$ref": "#/parameters/apiRegistrationId"
+        }
+      ],
+      "patch": {
+        "description": "the sender updates the transfer authentication",
+        "operationId": "updateTransferAuthentication",
+        "parameters": [
+          {
+            "name": "referenceNumber",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "maxLength": 14
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/TransferAuthentication"
+            }
+          }
+        ],
+        "tags": [
+          "Send Transfer"
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful response"
+          },
+          "400": {
+            "description": "Validation Errors",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1000,
+                  "message": "Invalid request."
+                },
+                {
+                  "code": 1011,
+                  "message": "Invalid apiRegistartionId."
+                },
+                {
+                  "code": 1032,
+                  "message": "Hash Salt is required if hashtype is not MD5."
+                },
+                {
+                  "code": 1033,
+                  "message": "Request cannot be processed due to current status."
+                }
+              ]
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1001,
+                  "message": "Invalid access"
+                }
+              ]
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1005,
+                  "message": "ApiRegistartionId doesn't exist."
+                },
+                {
+                  "code": 1029,
+                  "message": "Transfer doesn't exist."
+                }
+              ]
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            }
+          }
+        }
+      }
+    },
+    "/transfers/send/{referenceNumber}/cancel": {
+      "parameters": [
+        {
+          "$ref": "#/parameters/accessToken"
+        },
+        {
+          "$ref": "#/parameters/thirdPartyAccessId"
+        },
+        {
+          "$ref": "#/parameters/requestId"
+        },
+        {
+          "$ref": "#/parameters/deviceId"
+        },
+        {
+          "$ref": "#/parameters/applicationId"
+        },
+        {
+          "$ref": "#/parameters/apiRegistrationId"
+        },
+        {
+          "$ref": "#/parameters/participantAccessToken"
+        }
+      ],
+      "patch": {
+        "description": "the sender cancels a transfer; the operation is asynchronous, a notification will be sent to the third party partner when the transfer is cancelled",
+        "operationId": "cancelTransfer",
+        "parameters": [
+          {
+            "name": "referenceNumber",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "maxLength": 14
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": false,
+            "schema": {
+              "$ref": "#/definitions/CancellationReason"
+            }
+          }
+        ],
+        "tags": [
+          "Send Transfer"
+        ],
+        "responses": {
+          "202": {
+            "description": "Successful response",
+            "headers": {
+              "location": {
+                "description": "URL for accessing the newly created transfer",
+                "type": "string"
+              }
+            }
+          },
+          "400": {
+            "description": "Validation Errors",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1000,
+                  "message": "Invalid request."
+                },
+                {
+                  "code": 1011,
+                  "message": "Invalid apiRegistartionId."
+                },
+                {
+                  "code": 1033,
+                  "message": "Request cannot be processed due to current status."
+                }
+              ]
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1001,
+                  "message": "Invalid access"
+                }
+              ]
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1005,
+                  "message": "ApiRegistartionId doesn't exist."
+                },
+                {
+                  "code": 1029,
+                  "message": "Transfer doesn't exist."
+                }
+              ]
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            }
+          }
+        }
+      }
+    },
+    "/transfers/receive/{referenceNumber}": {
+      "parameters": [
+        {
+          "$ref": "#/parameters/accessToken"
+        },
+        {
+          "$ref": "#/parameters/thirdPartyAccessId"
+        },
+        {
+          "$ref": "#/parameters/requestId"
+        },
+        {
+          "$ref": "#/parameters/deviceId"
+        },
+        {
+          "$ref": "#/parameters/applicationId"
+        },
+        {
+          "$ref": "#/parameters/apiRegistrationId"
+        }
+      ],
+      "get": {
+        "description": "the recipient retrieves an incoming transfer; details about sender are part of the response",
+        "operationId": "getIncomingTransfer",
+        "parameters": [
+          {
+            "name": "referenceNumber",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "maxLength": 14
+          }
+        ],
+        "tags": [
+          "Receive Transfer"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "schema": {
+              "$ref": "#/definitions/IncomingTransfer"
+            }
+          },
+          "400": {
+            "description": "Validation Errors",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1000,
+                  "message": "Invalid request."
+                },
+                {
+                  "code": 1011,
+                  "message": "Invalid apiRegistartionId."
+                }
+              ]
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1001,
+                  "message": "Invalid access"
+                }
+              ]
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1005,
+                  "message": "ApiRegistartionId doesn't exist."
+                },
+                {
+                  "code": 1029,
+                  "message": "Transfer doesn't exist."
+                }
+              ]
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            }
+          }
+        }
+      }
+    },
+    "/transfers/receive/{referenceNumber}/authenticate": {
+      "parameters": [
+        {
+          "$ref": "#/parameters/accessToken"
+        },
+        {
+          "$ref": "#/parameters/thirdPartyAccessId"
+        },
+        {
+          "$ref": "#/parameters/requestId"
+        },
+        {
+          "$ref": "#/parameters/deviceId"
+        },
+        {
+          "$ref": "#/parameters/applicationId"
+        },
+        {
+          "$ref": "#/parameters/apiRegistrationId"
+        }
+      ],
+      "patch": {
+        "description": "the recipient authenticates a transfer by providing the answer to the security question",
+        "operationId": "authenticateTransfer",
+        "parameters": [
+          {
+            "name": "referenceNumber",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "maxLength": 14
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/SecurityAnswer"
+            }
+          }
+        ],
+        "tags": [
+          "Receive Transfer"
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful response"
+          },
+          "400": {
+            "description": "Validation Errors",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1000,
+                  "message": "Invalid request."
+                },
+                {
+                  "code": 1011,
+                  "message": "Invalid apiRegistartionId."
+                },
+                {
+                  "code": 1033,
+                  "message": "Request cannot be processed due to current status."
+                },
+                {
+                  "code": 1034,
+                  "message": "Authentication failed, try again later."
+                },
+                {
+                  "code": 1035,
+                  "message": "Authentication failed, can't try again."
+                }
+              ]
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1001,
+                  "message": "Invalid access"
+                }
+              ]
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1005,
+                  "message": "ApiRegistartionId doesn't exist."
+                },
+                {
+                  "code": 1029,
+                  "message": "Transfer doesn't exist."
+                }
+              ]
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            }
+          }
+        }
+      }
+    },
+    "/transfers/receive/{referenceNumber}/complete": {
+      "parameters": [
+        {
+          "$ref": "#/parameters/accessToken"
+        },
+        {
+          "$ref": "#/parameters/thirdPartyAccessId"
+        },
+        {
+          "$ref": "#/parameters/requestId"
+        },
+        {
+          "$ref": "#/parameters/deviceId"
+        },
+        {
+          "$ref": "#/parameters/applicationId"
+        },
+        {
+          "$ref": "#/parameters/apiRegistrationId"
+        },
+        {
+          "$ref": "#/parameters/participantAccessToken"
+        }
+      ],
+      "patch": {
+        "description": "the recipient completes the receive of a transfer; the operation is asynchronous, a notification will be sent to the third party partner when the transfer is completed",
+        "operationId": "completeTransfer",
+        "parameters": [
+          {
+            "name": "referenceNumber",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "maxLength": 14
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": false,
+            "schema": {
+              "$ref": "#/definitions/RecipientMemo"
+            }
+          }
+        ],
+        "tags": [
+          "Receive Transfer"
+        ],
+        "responses": {
+          "202": {
+            "description": "Successful response"
+          },
+          "400": {
+            "description": "Validation Errors",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1000,
+                  "message": "Invalid request."
+                },
+                {
+                  "code": 1011,
+                  "message": "Invalid apiRegistartionId."
+                },
+                {
+                  "code": 1033,
+                  "message": "Request cannot be processed due to current status."
+                },
+                {
+                  "code": 1036,
+                  "message": "Transfer was authenticated by a different customer."
+                }
+              ]
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1001,
+                  "message": "Invalid access"
+                }
+              ]
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1005,
+                  "message": "ApiRegistartionId doesn't exist."
+                },
+                {
+                  "code": 1029,
+                  "message": "Transfer doesn't exist."
+                }
+              ]
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            }
+          }
+        }
+      }
+    },
+    "/transfers/receive/{referenceNumber}/decline": {
+      "parameters": [
+        {
+          "$ref": "#/parameters/accessToken"
+        },
+        {
+          "$ref": "#/parameters/thirdPartyAccessId"
+        },
+        {
+          "$ref": "#/parameters/requestId"
+        },
+        {
+          "$ref": "#/parameters/deviceId"
+        },
+        {
+          "$ref": "#/parameters/applicationId"
+        },
+        {
+          "$ref": "#/parameters/apiRegistrationId"
+        }
+      ],
+      "patch": {
+        "description": "the recipient declines a transfer",
+        "operationId": "declineTransfer",
+        "parameters": [
+          {
+            "name": "referenceNumber",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "maxLength": 14
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": false,
+            "schema": {
+              "$ref": "#/definitions/DeclineReason"
+            }
+          }
+        ],
+        "tags": [
+          "Receive Transfer"
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful response"
+          },
+          "400": {
+            "description": "Validation Errors",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1000,
+                  "message": "Invalid request."
+                },
+                {
+                  "code": 1011,
+                  "message": "Invalid apiRegistartionId."
+                },
+                {
+                  "code": 1033,
+                  "message": "Request cannot be processed due to current status."
+                }
+              ]
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1001,
+                  "message": "Invalid access"
+                }
+              ]
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1005,
+                  "message": "ApiRegistartionId doesn't exist."
+                },
+                {
+                  "code": 1029,
+                  "message": "Transfer doesn't exist."
+                }
+              ]
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            }
+          }
+        }
+      }
+    },
+    "/money-requests/send": {
+      "parameters": [
+        {
+          "$ref": "#/parameters/accessToken"
+        },
+        {
+          "$ref": "#/parameters/thirdPartyAccessId"
+        },
+        {
+          "$ref": "#/parameters/requestId"
+        },
+        {
+          "$ref": "#/parameters/deviceId"
+        },
+        {
+          "$ref": "#/parameters/applicationId"
+        },
+        {
+          "$ref": "#/parameters/apiRegistrationId"
+        }
+      ],
+      "get": {
+        "operationId": "getMoneyRequests",
+        "description": "retrieves all money requests",
+        "parameters": [
+          {
+            "name": "fromDate",
+            "in": "query",
+            "type": "string",
+            "format": "dateTime",
+            "required": false,
+            "description": "UTC datatime format is yyyy-MM-dd'T'HH:mm:ss.SSS'Z', e.g. '2016-09-11T16:12:12.000'; this parameter is mandatory if sourceMoneyRequestId or referenceNumber is not given."
+          },
+          {
+            "name": "toDate",
+            "in": "query",
+            "type": "string",
+            "format": "dateTime",
+            "required": false,
+            "description": "UTC datatime format is yyyy-MM-dd'T'HH:mm:ss.SSS'Z', e.g. '2016-09-11T16:12:12.000'; this parameter is mandatory if sourceMoneyRequestId or referenceNumber is not given."
+          },
+          {
+            "name": "maxResponseItems",
+            "in": "query",
+            "type": "integer",
+            "required": false,
+            "description": "if offset is provided then maxResponse items is required; all ( OR maximum set by interac system ) items are returned if this field is absent"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "type": "integer",
+            "required": false,
+            "description": "offset is starting point of money-requests filter; if offset is not provided it would be defaulted  to zero; "
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "type": "string",
+            "enum": [
+              "creationDate"
+            ],
+            "required": false,
+            "description": "money-requests will be sorted based on sortBy column. "
+          },
+          {
+            "name": "orderBy",
+            "in": "query",
+            "type": "string",
+            "enum": [
+              "desc",
+              "asc"
+            ],
+            "required": false,
+            "description": "order by is required if sort by is specified."
+          },
+          {
+            "name": "sourceMoneyRequestId",
+            "in": "query",
+            "type": "string",
+            "required": false,
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "id created at originating system"
+          },
+          {
+            "name": "referenceNumber",
+            "in": "query",
+            "type": "string",
+            "required": false,
+            "maxLength": 16,
+            "description": "unique money request reference Number  "
+          }
+        ],
+        "tags": [
+          "Send Money Request"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/MoneyRequest"
+              }
+            }
+          },
+          "206": {
+            "description": "Partial content returned",
+            "headers": {
+              "x-limit": {
+                "description": "range of money request",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/MoneyRequest"
+              }
+            }
+          },
+          "400": {
+            "description": "Validation Errors",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1000,
+                  "message": "Invalid request."
+                },
+                {
+                  "code": 1011,
+                  "message": "Invalid apiRegistartionId."
+                },
+                {
+                  "code": 1030,
+                  "message": "Invalid date range."
+                },
+                {
+                  "code": 1031,
+                  "message": "Mutually exclusive options are specified."
+                }
+              ]
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1001,
+                  "message": "Invalid access"
+                }
+              ]
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1005,
+                  "message": "ApiRegistartionId doesn't exist."
+                },
+                {
+                  "code": 1007,
+                  "message": "Contact doesn't exist."
+                },
+                {
+                  "code": 1025,
+                  "message": "Money request doesn't exist."
+                },
+                {
+                  "code": 1053,
+                  "message": "orderBy field is missing."
+                }
+              ]
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            }
+          }
+        }
+      },
+      "post": {
+        "description": "creates a money request for an e-Transfer customer",
+        "operationId": "sendMoneyRequest",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/MoneyRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Send Money Request"
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful response",
+            "headers": {
+              "location": {
+                "description": "URL for accessing the newly created money request",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "required": [
+                "referenceNumber"
+              ],
+              "properties": {
+                "referenceNumber": {
+                  "description": "reference Number of the newly created money request",
+                  "type": "string"
+                },
+                "paymentGatewayUrl": {
+                  "description": "the payment gateway url for money request fullfilment",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation Errors",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1000,
+                  "message": "Invalid request."
+                },
+                {
+                  "code": 1011,
+                  "message": "Invalid apiRegistartionId."
+                },
+                {
+                  "code": 1012,
+                  "message": "Invalid contact hash, get last updated contact details."
+                },
+                {
+                  "code": 1020,
+                  "message": "Duplicate source system id."
+                },
+                {
+                  "code": 1021,
+                  "message": "Expiry Date is less than Creation Date."
+                },
+                {
+                  "code": 1023,
+                  "message": "Expiry Date exceeds threshold limit."
+                },
+                {
+                  "code": 1038,
+                  "message": "Outgoing money request amount threshold exceeded."
+                },
+                {
+                  "code": 1039,
+                  "message": "Maximum number of outgoing money requests threshold exceeded."
+                },
+                {
+                  "code": 1040,
+                  "message": "Customer can't send money request to Recipient/Contact."
+                },
+                {
+                  "code": 1041,
+                  "message": "Invoice due date exceeds the money request expiry date."
+                },
+                {
+                  "code": 1049,
+                  "message": "Customer blocked to send money request notifications to Recipient/Contact."
+                },
+                {
+                  "code": 1050,
+                  "message": "Editable fulfill amount is not supported for requesting customer."
+                },
+                {
+                  "code": 1052,
+                  "message": "Notice cannot be sent. Notifications are supressed for this Money Request."
+                },
+                {
+                  "code": 1053,
+                  "message": "Invalid Direct deposit registration handle."
+                },
+                {
+                  "code": 1054,
+                  "message": "1054 supressResponderNotifications has to be true when RequestedFrom is not specified."
+                }
+              ]
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1001,
+                  "message": "Invalid access"
+                }
+              ]
+            }
+          },
+          "403": {
+            "description": "Forbidden - The server understood the request, but is refusing to fulfill it.",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1037,
+                  "message": "Feature is not supported for current user"
+                }
+              ]
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1005,
+                  "message": "ApiRegistartionId doesn't exist."
+                },
+                {
+                  "code": 1006,
+                  "message": "Hard contact doesn't exist."
+                },
+                {
+                  "code": 1007,
+                  "message": "contact doesn't exist."
+                }
+              ]
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            }
+          }
+        }
+      }
+    },
+    "/money-requests/send/{referenceNumber}": {
+      "parameters": [
+        {
+          "$ref": "#/parameters/accessToken"
+        },
+        {
+          "$ref": "#/parameters/thirdPartyAccessId"
+        },
+        {
+          "$ref": "#/parameters/requestId"
+        },
+        {
+          "$ref": "#/parameters/deviceId"
+        },
+        {
+          "$ref": "#/parameters/applicationId"
+        },
+        {
+          "$ref": "#/parameters/apiRegistrationId"
+        }
+      ],
+      "put": {
+        "description": "updates a money request for an e-Transfer customer",
+        "operationId": "updateMoneyRequest",
+        "parameters": [
+          {
+            "name": "referenceNumber",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "maxLength": 16
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/MoneyRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Send Money Request"
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful response"
+          },
+          "400": {
+            "description": "Validation Errors",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1000,
+                  "message": "Invalid request."
+                },
+                {
+                  "code": 1011,
+                  "message": "Invalid apiRegistartionId."
+                },
+                {
+                  "code": 1012,
+                  "message": "Invalid contact hash, get last updated contact details."
+                },
+                {
+                  "code": 1020,
+                  "message": "Duplicate source system id."
+                },
+                {
+                  "code": 1021,
+                  "message": "Expiry Date is less than Creation Date."
+                },
+                {
+                  "code": 1023,
+                  "message": "Expiry Date exceeds threshold limit."
+                },
+                {
+                  "code": 1038,
+                  "message": "Outgoing money request amount threshold exceeded."
+                },
+                {
+                  "code": 1039,
+                  "message": "Maximum number of outgoing money requests threshold exceeded."
+                },
+                {
+                  "code": 1040,
+                  "message": "Customer can't send money request to Recipient/Contact."
+                },
+                {
+                  "code": 1041,
+                  "message": "Invoice due date exceeds the money request expiry date."
+                }
+              ]
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1001,
+                  "message": "Invalid access"
+                }
+              ]
+            }
+          },
+          "403": {
+            "description": "Forbidden - The server understood the request, but is refusing to fulfill it.",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1037,
+                  "message": "Feature is not supported for current user"
+                }
+              ]
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1005,
+                  "message": "ApiRegistartionId doesn't exist."
+                },
+                {
+                  "code": 1006,
+                  "message": "Hard contact doesn't exist."
+                },
+                {
+                  "code": 1007,
+                  "message": "contact doesn't exist."
+                },
+                {
+                  "code": 1025,
+                  "message": "Money request doesn't exist."
+                }
+              ]
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            }
+          }
+        }
+      }
+    },
+    "/money-requests/send/{referenceNumber}/notice": {
+      "parameters": [
+        {
+          "$ref": "#/parameters/accessToken"
+        },
+        {
+          "$ref": "#/parameters/thirdPartyAccessId"
+        },
+        {
+          "$ref": "#/parameters/requestId"
+        },
+        {
+          "$ref": "#/parameters/deviceId"
+        },
+        {
+          "$ref": "#/parameters/applicationId"
+        },
+        {
+          "$ref": "#/parameters/apiRegistrationId"
+        }
+      ],
+      "patch": {
+        "description": "re-send a money request notice",
+        "operationId": "sendMoneyRequestNotice",
+        "parameters": [
+          {
+            "name": "referenceNumber",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "maxLength": 16
+          }
+        ],
+        "tags": [
+          "Send Money Request"
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful response"
+          },
+          "400": {
+            "description": "Validation Errors",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1000,
+                  "message": "Invalid request."
+                },
+                {
+                  "code": 1011,
+                  "message": "Invalid apiRegistartionId."
+                },
+                {
+                  "code": 1033,
+                  "message": "Request cannot be processed due to current status."
+                },
+                {
+                  "code": 1042,
+                  "message": "Exceeded max number of notifications for the Money Request."
+                }
+              ]
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1001,
+                  "message": "Invalid access"
+                }
+              ]
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1005,
+                  "message": "ApiRegistartionId doesn't exist."
+                },
+                {
+                  "code": 1025,
+                  "message": "Money request doesn't exist."
+                }
+              ]
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            }
+          }
+        }
+      }
+    },
+    "/money-requests/send/{referenceNumber}/cancel": {
+      "parameters": [
+        {
+          "$ref": "#/parameters/accessToken"
+        },
+        {
+          "$ref": "#/parameters/thirdPartyAccessId"
+        },
+        {
+          "$ref": "#/parameters/requestId"
+        },
+        {
+          "$ref": "#/parameters/deviceId"
+        },
+        {
+          "$ref": "#/parameters/applicationId"
+        },
+        {
+          "$ref": "#/parameters/apiRegistrationId"
+        }
+      ],
+      "patch": {
+        "description": "cancels a money request",
+        "operationId": "cancelMoneyRequest",
+        "parameters": [
+          {
+            "name": "referenceNumber",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "maxLength": 16
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": false,
+            "schema": {
+              "$ref": "#/definitions/CancellationReason"
+            }
+          }
+        ],
+        "tags": [
+          "Send Money Request"
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful response"
+          },
+          "400": {
+            "description": "Validation Errors",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1000,
+                  "message": "Invalid request."
+                },
+                {
+                  "code": 1011,
+                  "message": "Invalid apiRegistartionId."
+                },
+                {
+                  "code": 1033,
+                  "message": "Request cannot be processed due to current status."
+                }
+              ]
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1001,
+                  "message": "Invalid access"
+                }
+              ]
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1005,
+                  "message": "ApiRegistartionId doesn't exist."
+                },
+                {
+                  "code": 1025,
+                  "message": "Money request doesn't exist."
+                }
+              ]
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            }
+          }
+        }
+      }
+    },
+    "/money-requests/receive/{referenceNumber}": {
+      "parameters": [
+        {
+          "$ref": "#/parameters/accessToken"
+        },
+        {
+          "$ref": "#/parameters/thirdPartyAccessId"
+        },
+        {
+          "$ref": "#/parameters/requestId"
+        },
+        {
+          "$ref": "#/parameters/deviceId"
+        },
+        {
+          "$ref": "#/parameters/applicationId"
+        },
+        {
+          "$ref": "#/parameters/apiRegistrationId"
+        }
+      ],
+      "get": {
+        "description": "retrieves an incoming money request; details about requester are part of the response",
+        "operationId": "getMoneyRequest",
+        "parameters": [
+          {
+            "name": "referenceNumber",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Fulfill Money Request"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "schema": {
+              "$ref": "#/definitions/IncomingMoneyRequest"
+            }
+          },
+          "400": {
+            "description": "Validation Errors",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1000,
+                  "message": "Invalid request."
+                },
+                {
+                  "code": 1011,
+                  "message": "Invalid apiRegistartionId."
+                },
+                {
+                  "code": 1014,
+                  "message": "Sender and Recipient cannot be same customer."
+                },
+                {
+                  "code": 1033,
+                  "message": "Request cannot be processed due to current status."
+                }
+              ]
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1001,
+                  "message": "Invalid access"
+                }
+              ]
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1005,
+                  "message": "ApiRegistartionId doesn't exist."
+                },
+                {
+                  "code": 1007,
+                  "message": "Contact doesn't exist."
+                },
+                {
+                  "code": 1025,
+                  "message": "Money request doesn't exist."
+                }
+              ]
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            }
+          }
+        }
+      }
+    },
+    "/money-requests/receive/{referenceNumber}/decline": {
+      "parameters": [
+        {
+          "$ref": "#/parameters/accessToken"
+        },
+        {
+          "$ref": "#/parameters/thirdPartyAccessId"
+        },
+        {
+          "$ref": "#/parameters/requestId"
+        },
+        {
+          "$ref": "#/parameters/deviceId"
+        },
+        {
+          "$ref": "#/parameters/applicationId"
+        },
+        {
+          "$ref": "#/parameters/apiRegistrationId"
+        }
+      ],
+      "patch": {
+        "description": "decline a money request",
+        "operationId": "declineMoneyRequest",
+        "parameters": [
+          {
+            "name": "referenceNumber",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "maxLength": 16
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": false,
+            "schema": {
+              "$ref": "#/definitions/DeclineReason"
+            }
+          }
+        ],
+        "tags": [
+          "Fulfill Money Request"
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful response"
+          },
+          "400": {
+            "description": "Validation Errors",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1000,
+                  "message": "Invalid request."
+                },
+                {
+                  "code": 1011,
+                  "message": "Invalid apiRegistartionId."
+                },
+                {
+                  "code": 1014,
+                  "message": "Sender and Recipient cannot be same customer."
+                },
+                {
+                  "code": 1033,
+                  "message": "Request cannot be processed due to current status."
+                }
+              ]
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1001,
+                  "message": "Invalid access"
+                }
+              ]
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "code": 1005,
+                  "message": "ApiRegistartionId doesn't exist."
+                },
+                {
+                  "code": 1007,
+                  "message": "Contact doesn't exist."
+                },
+                {
+                  "code": 1025,
+                  "message": "Money request doesn't exist."
+                }
+              ]
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "schema": {
+              "$ref": "#/definitions/errorModel"
+            }
+          }
+        }
+      }
+    }
+  },
+  "parameters": {
+    "thirdPartyAccessId": {
+      "name": "thirdPartyAccessId",
+      "in": "header",
+      "description": "unique id that identifies a third party partner",
+      "type": "string",
+      "maximum": 50,
+      "required": true
+    },
+    "requestId": {
+      "name": "requestId",
+      "in": "header",
+      "description": "partner generated unique id for each request used for message tracking purposes",
+      "type": "string",
+      "minimum": 1,
+      "maximum": 64,
+      "required": true
+    },
+    "deviceId": {
+      "name": "deviceId",
+      "in": "header",
+      "description": "user device unique identifier",
+      "type": "string",
+      "minimum": 1,
+      "maximum": 64,
+      "required": true
+    },
+    "applicationId": {
+      "name": "applicationId",
+      "in": "header",
+      "description": "user application unique identifier",
+      "type": "string",
+      "minimum": 1,
+      "maximum": 64,
+      "required": false
+    },
+    "accessToken": {
+      "name": "accessToken",
+      "in": "header",
+      "type": "string",
+      "required": true,
+      "maximum": 64,
+      "description": "OAuth2 access token, the format is 'Bearer AccessToken'.\n"
+    },
+    "apiRegistrationId": {
+      "name": "apiRegistrationId",
+      "in": "header",
+      "description": "unique identifier for the user api registration",
+      "type": "string",
+      "maximum": 50,
+      "required": true
+    },
+    "participantAccessToken": {
+      "name": "participantAccessToken",
+      "in": "header",
+      "description": "access token provided by participant.",
+      "type": "string",
+      "maximum": 64,
+      "required": false
     }
   },
   "securityDefinitions": {
-    "petstore_auth": {
+    "etransfer_auth": {
       "type": "oauth2",
-      "authorizationUrl": "http://petstore.swagger.io/oauth/dialog",
+      "authorizationUrl": "http://code.lightapi.net/oauth/authorize",
       "flow": "implicit",
       "scopes": {
-        "write:pets": "modify pets in your account",
-        "read:pets": "read your pets"
+        "etransfer.w": "write permission",
+        "etransfer.r": "read permission"
       }
-    },
-    "api_key": {
-      "type": "apiKey",
-      "name": "api_key",
-      "in": "header"
     }
   },
   "definitions": {
-    "Order": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "petId": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "quantity": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "shipDate": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "status": {
-          "type": "string",
-          "description": "Order Status",
-          "enum": [
-            "placed",
-            "approved",
-            "delivered"
-          ]
-        },
-        "complete": {
-          "type": "boolean",
-          "default": false
-        }
-      },
-      "xml": {
-        "name": "Order"
-      }
-    },
-    "Category": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "name": {
-          "type": "string"
-        }
-      },
-      "xml": {
-        "name": "Category"
-      }
-    },
-    "User": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "username": {
-          "type": "string"
-        },
-        "firstName": {
-          "type": "string"
-        },
-        "lastName": {
-          "type": "string"
-        },
-        "email": {
-          "type": "string"
-        },
-        "password": {
-          "type": "string"
-        },
-        "phone": {
-          "type": "string"
-        },
-        "userStatus": {
-          "type": "integer",
-          "format": "int32",
-          "description": "User Status"
-        }
-      },
-      "xml": {
-        "name": "User"
-      }
-    },
-    "Tag": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "name": {
-          "type": "string"
-        }
-      },
-      "xml": {
-        "name": "Tag"
-      }
-    },
-    "Pet": {
+    "AccessToken": {
       "type": "object",
       "required": [
-        "name",
-        "photoUrls"
+        "accessToken",
+        "expiresIn"
       ],
       "properties": {
-        "id": {
-          "type": "integer",
-          "format": "int64"
+        "accessToken": {
+          "type": "string"
         },
-        "category": {
-          "$ref": "#/definitions/Category"
+        "tokenType": {
+          "type": "string",
+          "description": "example value is 'bearer'"
+        },
+        "expiresIn": {
+          "type": "integer",
+          "description": "how many seconds the token will expire"
+        },
+        "scope": {
+          "type": "string",
+          "description": "example value is 'read trust write'"
+        }
+      }
+    },
+    "UserRegistration": {
+      "type": "object",
+      "required": [
+        "thirdPartyUserId",
+        "allowedFeatures"
+      ],
+      "properties": {
+        "apiRegistrationId": {
+          "type": "string",
+          "maxLength": 50,
+          "description": "unique identifier for the user api registration; not required in POST request"
+        },
+        "participantId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 8,
+          "description": "participant id in e-Transfer system; required if api registration is created through the public api and directDepositRegistration is not specified."
+        },
+        "indirectConnectorId": {
+          "type": "string",
+          "minLength": 9,
+          "maxLength": 9,
+          "description": "indirect connector id in e-Transfer system"
+        },
+        "participantUserId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32,
+          "description": "participant defined user id in e-Transfer system; required if api registration is created through the public api and directDepositRegistration is not specified."
+        },
+        "participantApiRegistrationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32,
+          "description": "participant defined identifier for this Api registration; required if api registration is created through the public api"
+        },
+        "fiAccountId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 50,
+          "description": "unique identifier set by financial institution corresponding to the user's bank account; required if api registration is created through the public api and directDepositRegistration is not specified."
+        },
+        "registrationStatus": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "active",
+            "inactive",
+            "failed",
+            "in-review"
+          ],
+          "description": "status of the user registration request 'pending','active','inactive','failed','in-review'"
+        },
+        "allowedFeatures": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "contact_mgmnt",
+              "money_request_mgmt",
+              "transfer_mgmt",
+              "send_money_requests",
+              "fulfill_money_requests",
+              "send_transfers",
+              "receive_transfers",
+              "user_registration_mgmnt",
+              "contact_mgmnt_ext_api",
+              "money_request_mgmt_ext_api",
+              "transfer_mgmt_ext_api"
+            ],
+            "description": "functionality allowed to be used through this API; 'contact_mgmnt', 'send_money_requests', 'fulfill_money_requests', 'send_transfers', 'receive_transfers', 'user_registration_mgmnt' The below feature's are only for external app's, which doesn't need to be synchronized with online banking transfers, contacts and money requests  'contact_mgmnt_ext_api', 'money_request_mgmt_ext_api,'transfer_mgmt_ext_api'"
+          }
+        },
+        "thirdPartyUserId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 50,
+          "description": "unique third party partner defined user id in e-Transfer system"
+        },
+        "directDepositRegistration": {
+          "$ref": "#/definitions/DirectDepositRegistration"
+        },
+        "customerDetails": {
+          "$ref": "#/definitions/CustomerDetails"
         },
         "name": {
           "type": "string",
-          "example": "doggie"
+          "minLength": 1,
+          "maxLength": 64
         },
-        "photoUrls": {
-          "type": "array",
-          "xml": {
-            "name": "photoUrl",
-            "wrapped": true
-          },
-          "items": {
-            "type": "string"
-          }
-        },
-        "tags": {
-          "type": "array",
-          "xml": {
-            "name": "tag",
-            "wrapped": true
-          },
-          "items": {
-            "$ref": "#/definitions/Tag"
-          }
-        },
-        "status": {
+        "logoUrl": {
           "type": "string",
-          "description": "pet status in the store",
-          "enum": [
-            "available",
-            "pending",
-            "sold"
-          ]
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "websiteUrl": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
         }
-      },
-      "xml": {
-        "name": "Pet"
       }
     },
-    "ApiResponse": {
+    "UserRegistrationUpdate": {
       "type": "object",
+      "properties": {
+        "allowedFeatures": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "contact_mgmnt",
+              "money_request_mgmt",
+              "transfer_mgmt",
+              "send_money_requests",
+              "fulfill_money_requests",
+              "send_transfers",
+              "receive_transfers",
+              "user_registration_mgmnt",
+              "contact_mgmnt_ext_api",
+              "money_request_mgmt_ext_api",
+              "transfer_mgmt_ext_api"
+            ]
+          },
+          "description": "functionality allowed to be used through this API; 'contact_mgmnt',\n 'send_money_requests', 'fulfill_money_requests', 'send_transfers',\n 'receive_transfers', 'user_registration_mgmnt'\n The below feature's are only for external app's, which doesn't need to be synchronized with online banking transfers, contacts and money requests \n 'contact_mgmnt_ext_api', 'money_request_mgmt_ext_api,'transfer_mgmt_ext_api'"
+        },
+        "fiAccountId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 50,
+          "description": "updated fi account id; unique identifier set by financial institution corresponding to the user's bank account"
+        },
+        "directDepositRegistration": {
+          "$ref": "#/definitions/DirectDepositRegistration"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "logoUrl": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "websiteUrl": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        }
+      }
+    },
+    "CustomerDetails": {
+      "description": "auto deposit registration details associated with a notification handle or hard contact customer details.",
+      "type": "object",
+      "required": [
+        "customerType",
+        "registrationName",
+        "legalName"
+      ],
+      "properties": {
+        "customerType": {
+          "type": "string",
+          "enum": [
+            "retail",
+            "small_business",
+            "corporate"
+          ]
+        },
+        "registrationName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "description": "name used by the customer to register in e-Transfer system"
+        },
+        "legalName": {
+          "type": "object",
+          "properties": {
+            "retailName": {
+              "type": "object",
+              "required": [
+                "firstName",
+                "lastName"
+              ],
+              "properties": {
+                "firstName": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 100,
+                  "description": "customer's first name"
+                },
+                "middleName": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 100,
+                  "description": "customer's middle name"
+                },
+                "lastName": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 100,
+                  "description": "customer's last name"
+                }
+              }
+            },
+            "businessName": {
+              "type": "object",
+              "required": [
+                "companyName"
+              ],
+              "properties": {
+                "companyName": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 100,
+                  "description": "customer's corporate name"
+                },
+                "tradeName": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 100,
+                  "description": "customer's trade name"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "DirectDepositRegistration": {
+      "description": "auto deposit registration details associated with a notification handle",
+      "type": "object",
+      "required": [
+        "directDepositHandle"
+      ],
+      "properties": {
+        "directDepositRegistrationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 16,
+          "description": "unique identifier of the direct depost registration in e-Transfer system"
+        },
+        "directDepositHandle": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240,
+          "description": "email address, phone number or unique user identifier"
+        },
+        "directDepositHandleType": {
+          "type": "string",
+          "enum": [
+            "email",
+            "uuid",
+            "sms"
+          ]
+        }
+      }
+    },
+    "NotificationPreference": {
+      "type": "object",
+      "required": [
+        "handle",
+        "handleType",
+        "active"
+      ],
+      "properties": {
+        "handle": {
+          "type": "string",
+          "minLength": 6,
+          "maxLength": 64,
+          "description": "Email address (format a@b.ca) or mobile phone number ( format 123-222-7777 )"
+        },
+        "handleType": {
+          "type": "string",
+          "enum": [
+            "email",
+            "sms"
+          ]
+        },
+        "active": {
+          "type": "boolean",
+          "description": "specifies if notifications will not be sent"
+        }
+      }
+    },
+    "Contact": {
+      "type": "object",
+      "required": [
+        "contactName",
+        "language"
+      ],
+      "properties": {
+        "contactId": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 16,
+          "description": "unique identifier for the contact; not required in POST request"
+        },
+        "contactName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "description": "unique contact name to be provided for each contacts."
+        },
+        "contactHash": {
+          "type": "string",
+          "description": "unique hash value to identify version of contact, not required in POST request"
+        },
+        "language": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 2,
+          "enum": [
+            "en",
+            "fr"
+          ],
+          "description": "language used to notify this contact"
+        },
+        "notificationPreferences": {
+          "type": "array",
+          "description": "notification preferences for the contact",
+          "items": {
+            "$ref": "#/definitions/NotificationPreference"
+          }
+        },
+        "hardContactUser": {
+          "type": "object",
+          "required": [
+            "thirdPartyUserId"
+          ],
+          "properties": {
+            "thirdPartyUserId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 50,
+              "description": "unique third party partner defined user id in e-Transfer system"
+            },
+            "hardContactStatus": {
+              "type": "string",
+              "enum": [
+                "active",
+                "not active"
+              ],
+              "description": "status of hard contact, if customer is disabled or de reg"
+            }
+          }
+        },
+        "directDepositRegistration": {
+          "$ref": "#/definitions/DirectDepositRegistration",
+          "description": "direct deposit registration associated with a contact notification handle"
+        },
+        "customerDetails": {
+          "$ref": "#/definitions/CustomerDetails",
+          "description": "customer details associated the hard contract or the auto deposit registration associated with one of the contact notification handles"
+        },
+        "onUs": {
+          "type": "boolean",
+          "description": "the registered user and the coustomer associated with the direct deposit registration have the same financial institution"
+        }
+      }
+    },
+    "TransferAuthentication": {
+      "type": "object",
+      "required": [
+        "securityQuestion",
+        "securityAnswer"
+      ],
+      "properties": {
+        "securityQuestion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40,
+          "description": "the security question"
+        },
+        "securityAnswer": {
+          "type": "string",
+          "description": "answer to the security question (as provided by the customer) with leading and trailing whitespace trimmed, uppercased, postfixed with hashSalt if present, hashed using the alghoritm identified by hashType and then Base64 encoded. ISO-8859-1 encoding to be used when the hash is generated, values not returned in GET requests for security reasons."
+        },
+        "hashType": {
+          "type": "string",
+          "enum": [
+            "MD5",
+            "SHA2"
+          ],
+          "description": "alghorithm used to hash the security answer; it has to be one of values supported by the system"
+        },
+        "hashSalt": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 44,
+          "description": "required if hashType is not MD5, values not returned in GET requests for security reasons."
+        }
+      }
+    },
+    "CancellationReason": {
+      "type": "object",
+      "required": [
+        "cancellationReason"
+      ],
+      "properties": {
+        "cancellationReason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 400,
+          "description": "cancellation reason"
+        }
+      }
+    },
+    "SecurityAnswer": {
+      "type": "object",
+      "required": [
+        "securityAnswer"
+      ],
+      "properties": {
+        "securityAnswer": {
+          "type": "string",
+          "description": "answer to the security question (as provided by the customer) with leading and trailing whitespace trimmed, uppercased, postfixed with hashSalt if present, hashed using the alghoritm identified by hashType and then Base64 encoded. ISO-8859-1 encoding to be used when the hash is generated"
+        }
+      }
+    },
+    "DeclineReason": {
+      "type": "object",
+      "required": [
+        "declineReason"
+      ],
+      "properties": {
+        "declineReason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 400,
+          "description": "decline reason"
+        }
+      }
+    },
+    "RecipientMemo": {
+      "type": "object",
+      "minLength": 1,
+      "maxLength": 400,
+      "required": [
+        "recipientMemo"
+      ],
+      "properties": {
+        "recipientMemo": {
+          "type": "string",
+          "description": "recipient memo"
+        }
+      }
+    },
+    "Invoice": {
+      "type": "object",
+      "properties": {
+        "invoiceNumber": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "description": "number of the invoice to be paid"
+        },
+        "dueDate": {
+          "type": "string",
+          "format": "dateTime",
+          "description": "UTC date  of  the invoice is to be paid by; format is yyyy-MM-dd'T'HH:mm:ss.SSS'Z', e.g. '2016-09-11T16:12:12.000'"
+        }
+      }
+    },
+    "MoneyRequest": {
+      "type": "object",
+      "required": [
+        "sourceMoneyRequestId",
+        "requestedFrom",
+        "amount",
+        "currency",
+        "editableFulfillAmount",
+        "expiryDate",
+        "supressResponderNotifications"
+      ],
+      "properties": {
+        "referenceNumber": {
+          "type": "string",
+          "maxLength": 16,
+          "description": "unique identifier for the money request; this field should not be specified in the POST request"
+        },
+        "sourceMoneyRequestId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "description": "unique identifier of the money request in the originating system"
+        },
+        "requestedFrom": {
+          "type": "object",
+          "description": "Responder details of the money request, required for get money request.     ",
+          "properties": {
+            "contactId": {
+              "type": "string",
+              "description": "Unique identifier for the contact; required for permanent contact."
+            },
+            "contactHash": {
+              "type": "string",
+              "description": "unique hash value to identify version of contact;required for permanent contact."
+            },
+            "contactName": {
+              "type": "string",
+              "description": "contact name, required for onetime contact."
+            },
+            "language": {
+              "type": "string",
+              "enum": [
+                "en",
+                "fr"
+              ],
+              "description": "language used to notify this contact, required for onetime contact."
+            },
+            "notificationPreferences": {
+              "type": "array",
+              "description": "notification preferences for the contact, required for onetime contact.",
+              "items": {
+                "$ref": "#/definitions/NotificationPreference"
+              }
+            }
+          }
+        },
+        "amount": {
+          "type": "number",
+          "format": "double",
+          "description": "the requested amount"
+        },
+        "currency": {
+          "type": "string",
+          "description": "the currency of the requested amount; only CAD is supported for now"
+        },
+        "editableFulfillAmount": {
+          "type": "boolean",
+          "description": "flag indicating if the transfer amount can be different from the requested amount"
+        },
+        "requesterMessage": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 400,
+          "description": "message from the requester"
+        },
+        "invoice": {
+          "$ref": "#/definitions/Invoice"
+        },
+        "expiryDate": {
+          "type": "string",
+          "format": "datetime",
+          "description": "UTC datatime this money request is valid until; format is yyyy-MM-dd'T'HH:mm:ss.SSS'Z', e.g. '2016-09-11T16:12:12.000'"
+        },
+        "supressResponderNotifications": {
+          "type": "boolean",
+          "description": "if flag is on, Interac will not send notifications to the intended responder; the requester is expected to handle the notification part themselves. If requestedFrom is not specified, supressResponderNotifications has to be true."
+        },
+        "returnURL": {
+          "type": "string",
+          "description": "return URL to redirect the Responder after the Money Request fulfillment"
+        },
+        "creationDate": {
+          "type": "string",
+          "format": "datetime",
+          "description": "UTC datatime of creation for this request; this field should not be specified in POST or PUT requests; format is yyyy-MM-dd'T'HH:mm:ss.SSS'Z', e.g. '2016-09-11T16:12:12.000'"
+        },
+        "status": {
+          "type": "integer",
+          "description": "Does not need to be provided at request creation time; this field should not be specified in POST or PUT requests | \n - REQUEST_INITIATED(1)\n - AVAILABLE_TO_BE_FULFILLED(2)\n - REQUEST_FULFILLED(3)\n - DECLINED(4)\n - CANCELLED(5)\n - EXPIRED(6)\n - DEPOSIT_FAILED(7)\n - REQUEST_COMPLETED(8)\n"
+        },
+        "fulfillAmount": {
+          "type": "number",
+          "format": "double",
+          "description": "the fulfilled amount; to not be specified in POST or PUT requests; present if status is completed"
+        },
+        "responderMessage": {
+          "type": "string",
+          "description": "message from the responder; this field should not be specified in POST or PUT requests"
+        },
+        "notificationStatus": {
+          "type": "integer",
+          "description": "indicates the status of the notifications sent to the recipient; this field should not be specified in POST or PUT requests | \n  SENT(0)\n  PENDING(1)\n  PENDING_SEND_FAILURE(2)\n  DELIVERY_FAILURE(3)\n  \n"
+        }
+      }
+    },
+    "IncomingMoneyRequest": {
+      "type": "object",
+      "required": [
+        "moneyRequest",
+        "requesterDetails"
+      ],
+      "properties": {
+        "moneyRequest": {
+          "$ref": "#/definitions/MoneyRequest",
+          "description": "base money request data"
+        },
+        "requesterDetails": {
+          "$ref": "#/definitions/CustomerDetails",
+          "description": "customer details associated with the requester of the money request"
+        },
+        "requesterNotifications": {
+          "type": "array",
+          "description": "notifications associated with the requester",
+          "items": {
+            "type": "object",
+            "required": [
+              "handle",
+              "handleType"
+            ],
+            "properties": {
+              "handle": {
+                "type": "string",
+                "minLength": 6,
+                "maxLength": 64,
+                "description": "Email address or mobile phone number"
+              },
+              "handleType": {
+                "type": "string",
+                "enum": [
+                  "email",
+                  "sms"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "Transfer": {
+      "type": "object",
+      "required": [
+        "transferType",
+        "sourceTransferId",
+        "amount",
+        "currency",
+        "expiryDate",
+        "supplementaryInfo"
+      ],
+      "properties": {
+        "referenceNumber": {
+          "type": "string",
+          "maxLength": 14,
+          "description": "unique identifier for the transfer; this field should not be specified in the POST request"
+        },
+        "transferType": {
+          "type": "string",
+          "enum": [
+            "REGULAR_TRANSFER",
+            "MONEY_REQUEST_FULFILLMENT",
+            "DIRECT_DEPOSIT"
+          ]
+        },
+        "sourceTransferId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "description": "unique identifier of the transfer in the originating system"
+        },
+        "sentTo": {
+          "type": "object",
+          "description": "Receipient details of the transfers, required for outgoing or get transfers      ",
+          "properties": {
+            "contactId": {
+              "type": "string",
+              "description": "Unique identifier for the contact; required for permanent contact transfers."
+            },
+            "contactHash": {
+              "type": "string",
+              "description": "unique hash value to identify version of contact;required for permanent contact transfers."
+            },
+            "contactName": {
+              "type": "string",
+              "description": "contact name, required for onetime contact."
+            },
+            "language": {
+              "type": "string",
+              "enum": [
+                "en",
+                "fr"
+              ],
+              "description": "language used to notify this contact, required for onetime contact."
+            },
+            "notificationPreferences": {
+              "type": "array",
+              "description": "notification preferences for the contact, required for onetime contact.",
+              "items": {
+                "$ref": "#/definitions/NotificationPreference"
+              }
+            }
+          }
+        },
+        "amount": {
+          "type": "number",
+          "format": "double",
+          "description": "the sent amount"
+        },
+        "currency": {
+          "type": "string",
+          "description": "the currency of the sent amount; only CAD is supported for now"
+        },
+        "transferAuthentication": {
+          "$ref": "#/definitions/TransferAuthentication",
+          "description": "transfer authentication required for regular transfers"
+        },
+        "senderMessage": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 400,
+          "description": "message from the sender"
+        },
+        "requestReferenceNumber": {
+          "type": "string",
+          "maxLength": 16,
+          "description": "reference number of the money request to be fufilled; required for money request fulfillment      "
+        },
+        "expiryDate": {
+          "type": "string",
+          "format": "datetime",
+          "description": "UTC datatime this transfer is valid until; format is yyyy-MM-dd'T'HH:mm:ss.SSS'Z', e.g. '2016-09-11T16:12:12.000'"
+        },
+        "supplementaryInfo": {
+          "type": "object",
+          "description": "supplementaryInfo is required for POST request, as we have to capture where the request came from.",
+          "required": [
+            "ipAddress"
+          ],
+          "properties": {
+            "ipAddress": {
+              "type": "string",
+              "description": "IP address used by the user"
+            },
+            "deviceFingerprint": {
+              "type": "string",
+              "description": "device fingerprint"
+            }
+          }
+        },
+        "creationDate": {
+          "type": "string",
+          "format": "datetime",
+          "description": "UTC datatime of creation for this transfer; this field should not be specified in POST or PUT requests; format is yyyy-MM-dd'T'HH:mm:ss.SSS'Z', e.g. '2016-09-11T16:12:12.000'"
+        },
+        "senderRegistrationName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "description": "name used by the sender to register in e-Transfer system; this field should not be specified in POST, PUT  or PATCH requests    "
+        },
+        "receivedDate": {
+          "type": "string",
+          "format": "datetime",
+          "description": "UTC datatime when this transfer was completed/received; this field should not be specified in POST or PUT requests; format is yyyy-MM-dd'T'HH:mm:ss.SSS'Z', e.g. '2016-09-11T16:12:12.000'"
+        },
+        "status": {
+          "type": "integer",
+          "description": "Does not need to be provided at request creation time; this field should not be specified in POST or PUT requests |\n - TRANSFER_CREATION_INITIATED(21)\n - TRANSFER_CREATION_IN_PROCESS(22)\n - TRANSFER_CREATION_FAILED(23)\n - TRANSFER_CREATED(1)\n - TRANSFER_AVAILABLE(3)\n - AUTHENTICATION_FAILURE(5)\n - AUTHENTICATION_SUCCESSFUL(6)\n - DECLINED(7)\n - CANCELLED(8)\n - EXPIRED(9)\n - DIRECT_DEPOSIT_PENDING(17)\n - DIRECT_DEPOSIT_FAILED(18)\n - COMPLETED(10)\n"
+        },
+        "recipientMessage": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 400,
+          "description": "message from the recipient; this field should not be specified in POST or PUT requests"
+        },
+        "transactionType": {
+          "type": "string",
+          "enum": [
+            "incoming",
+            "outgoing"
+          ],
+          "description": "type of the transactions sent or received."
+        },
+        "notificationStatus": {
+          "type": "integer",
+          "description": "indicates the status of the notifications sent to the recipient; this field should not be specified in POST or PUT requests | \n  SENT(0)\n  PENDING(1)\n  PENDING_SEND_FAILURE(2)\n  DELIVERY_FAILURE(3)\n              \n"
+        }
+      }
+    },
+    "IncomingTransfer": {
+      "type": "object",
+      "required": [
+        "referenceNumber",
+        "transferType",
+        "amount",
+        "currency",
+        "expiryDate",
+        "senderRegistrationName",
+        "status",
+        "recipientLanguage",
+        "authenticationRequired"
+      ],
+      "properties": {
+        "referenceNumber": {
+          "type": "string",
+          "maxLength": 16,
+          "description": "unique identifier for the transfer"
+        },
+        "transferType": {
+          "type": "string",
+          "enum": [
+            "REGULAR_TRANSFER",
+            "MONEY_REQUEST_FULFILLMENT",
+            "DIRECT_DEPOSIT"
+          ]
+        },
+        "amount": {
+          "type": "number",
+          "format": "double",
+          "description": "the sent amount"
+        },
+        "currency": {
+          "type": "string",
+          "description": "the currency of the sent amount; only CAD is supported for now"
+        },
+        "senderMessage": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 400,
+          "description": "message from the sender"
+        },
+        "expiryDate": {
+          "type": "string",
+          "format": "datetime",
+          "description": "UTC datatime this transfer is valid until; format is yyyy-MM-dd'T'HH:mm:ss.SSS'Z', e.g. '2016-09-11T16:12:12.000'"
+        },
+        "senderRegistrationName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "description": "name used by the sender to register in e-Transfer system; this field should not be specified in POST or PUT requests"
+        },
+        "recipientLanguage": {
+          "type": "string",
+          "enum": [
+            "en",
+            "fr"
+          ],
+          "description": "recipient's preferred language as defined by the sender"
+        },
+        "status": {
+          "type": "integer",
+          "description": "Incoming Transfer statuses | TRANSFER_AVAILABLE(3) AUTHENTICATION_FAILURE(5) AUTHENTICATION_SUCCESSFUL(6) DECLINED(7) CANCELLED(8) EXPIRED(9) DIRECT_DEPOSIT_PENDING(17) DIRECT_DEPOSIT_FAILED(18) COMPLETED(10)"
+        },
+        "authenticationRequired": {
+          "type": "boolean",
+          "description": "true if recipient authentication is required"
+        },
+        "securityQuestion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40,
+          "description": "the security question"
+        },
+        "hashType": {
+          "type": "string",
+          "enum": [
+            "MD5",
+            "SHA2"
+          ],
+          "description": "alghorithm used to hash the security answer by the sending party"
+        },
+        "hashSalt": {
+          "type": "string",
+          "maxLength": 44,
+          "description": "salt used to hash the security answer by the sending party"
+        }
+      }
+    },
+    "errorModel": {
+      "type": "object",
+      "required": [
+        "code",
+        "message"
+      ],
       "properties": {
         "code": {
           "type": "integer",
+          "description": "Error list for all the API's, please refer example tag for api specific error code.\n1000 Invalid request. \n1001 Invalid access.\n1002 Allowed feature list not supported for user.\n1003 Customer doesn't exist - ParticipantUserId doesn't exist.\n1004 Duplicate User registration.\n1005 ApiRegistartionId doesn't exist.\n1006 Hard contact doesn't exist.\n1007 Contact doesn't exist. \n1008 Duplicate ThirdPartyUserId. \n1009 Invalid ParticipantId. \n1010 Invalid IndirectConnectorId of participant.\n1011 Invalid apiRegistartionId.\n1012 Retrive last updated contact details, contact hash invalid.\n1013 Contact has notification handle registered for direct deposit, regular transfer cannot be sent.\n1014 Sender and Recipient cannot be same customer.   \n1015 Sender is disabled.\n1016 Transfer amount exceeds the individual outgoing transfer threshold.\n1017 Total cumulative transfers exceeds the daily outgoing transfer amount threshold.\n1018 Total cumulative transfers exceeds the first rolling limit outgoing transfer amount threshold.\n1019 Total cumulative transfers exceeds the second rolling limit outgoing transfer amount threshold.\n1020 Duplicate source system id.\n1021 Expiry Date is less than Creation Date.\n1022 Contact is not registered for direct deposit, direct deposit cannot be sent.\n1023 Expiry Date exceeds threshold limit. \n1024 Invalid Transfer authentication for the Transfer type.\n1025 Money request doesn't exist.\n1026 Direct deposit registration doesn't exist. \n1027 Hash algorithm not supported by the system.\n1028 Fullfill amount should be same as requested amount.\n1029 Transfer doesn't exist.      \n1030 Invalid date range.\n1031 Mutually exclusive options are specified.\n1032 Hash Salt is required if hashtype is not MD5.\n1033 Request cannot be processed due to current status.\n1034 Authentication failed, try again later.\n1035 Authentication failed, can't try later.\n1036 Transfer was authenticated by a different customer.\n1037 Feature is not supported for current user.\n1038 Outgoing money request amount threshold exceeded.\n1039 Maximum number of outgoing money requests threshold exceeded.\n1040 Customer can't send money request to Recipient/Contact.\n1041 Invoice due date exceeds the money request expiry date.\n1042 Exceeded max number of notifications for the Money Request.\n1043 Duplicate contact name.  \n1044 Contact can't be deleted if there are in flight transfers.\n1045 Transfer can't be created, due to intrruption in previous transfer.\n1046 Currency code or product type is not supported.\n1047 Invalid Transfer type.\n1048 Hard contact already exist for sender. \n1049 Customer blocked to send money request notifications to Recipient/Contact \n1050 Editable fulfill amount is not supported for requesting customer. \n1051 Recipient  / Responder is disabled.\n1052 Notice cannot be sent. Notifications are supressed for this Money Request.  \n1053 Invalid Direct deposit registration handle.\n1054 supressResponderNotifications has to be true when RequestedFrom is not specified.\n",
           "format": "int32"
-        },
-        "type": {
-          "type": "string"
         },
         "message": {
           "type": "string"
         }
       }
     }
-  },
-  "externalDocs": {
-    "description": "Find out more about Swagger",
-    "url": "http://swagger.io"
   }
 }
