@@ -1,5 +1,6 @@
 package com.networknt.codegen.handler;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jsoniter.any.Any;
 import com.networknt.codegen.CodegenWebConfig;
 import com.networknt.codegen.FrameworkRegistry;
@@ -10,16 +11,23 @@ import com.networknt.rpc.router.ServiceHandler;
 import com.networknt.status.Status;
 import com.networknt.utility.HashUtil;
 import com.networknt.utility.NioUtils;
+import io.undertow.server.handlers.form.FormData;
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.InvalidParameterException;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -52,16 +60,23 @@ public class GeneratorServiceHandler implements Handler {
         String zipFile = output + ".zip";
         String projectFolder = codegenWebConfig.getTmpFolder() + separator + output;
 
-        Map<String, Object> map = (Map<String, Object>)input;
-        List<Map<String, Object>> generators = (List<Map<String, Object>>)map.get("generators");
+        List<Map<String, Object>> generators = getGeneratorListFromFormData((FormData)input);
+
         if(generators == null || generators.size() == 0) {
+            logger.error("Did not receive any generators in the request.");
             Status status = new Status(STATUS_MISSING_GENERATOR_ITEM);
             return NioUtils.toByteBuffer(status.toString());
         }
         for(Map<String, Object> generatorMap: generators) {
             String framework = (String)generatorMap.get("framework");
             Object model = Any.wrap(generatorMap.get("model"));  // should be a JSON of spec or IDL
-            Map<String, Object> config = (Map<String, Object>)generatorMap.get("config"); // should be a json of config
+            Map<String, Object> config; // should be a json of config
+            try {
+                config = new ObjectMapper().readValue((String)generatorMap.get("config"), Map.class);
+            } catch (IOException e) {
+                logger.error("Failed to convert the given object to a map representation: " + e.getMessage());
+                return null;
+            }
             if(!FrameworkRegistry.getInstance().getFrameworks().contains(framework)) {
                 Status status = new Status(STATUS_INVALID_FRAMEWORK, framework);
                 return NioUtils.toByteBuffer(status.toString());
@@ -92,7 +107,46 @@ public class GeneratorServiceHandler implements Handler {
             logger.error("Exception:", e);
         }
 
-        // return the location of the zip file
-        return NioUtils.toByteBuffer(zipFile);
+        // return the zip file
+        File file = new File(codegenWebConfig.getZipFolder() + separator + zipFile);
+        return NioUtils.toByteBuffer(file);
+    }
+
+    /**
+     * Will return a list of generator maps, each of which contain a framework, model, and config.
+     * This is a bit of a pain since undertow doesn't do the most perfect job in returning a map structured
+     * data set when matching a form field's name. But rather 3 distinct arrays. May be normal, not sure.
+     * @param formData
+     * @return
+     */
+    private List<Map<String, Object>> getGeneratorListFromFormData(FormData formData) {
+        List<Map<String, Object>> generatorsList = new ArrayList<>();
+
+        // Get each array of items.
+        Deque<FormData.FormValue> frameworks = formData.get("generator.framework");
+        Deque<FormData.FormValue> models = formData.get("generator.model");
+        Deque<FormData.FormValue> configs = formData.get("generator.config");
+
+        // If any are smaller or bigger then the others, fail.
+        if (frameworks == null || models == null || configs == null) {
+            return null;
+        } else if (frameworks.size() != models.size() && models.size() != configs.size()) {
+            throw new InvalidParameterException("Received un-matching form fields in request: " + frameworks.size() + ":" + models.size() + ":" + configs.size());
+        }
+
+        Iterator<FormData.FormValue> frameworksIterator = frameworks.iterator();
+        Iterator<FormData.FormValue> modelsIterator = models.iterator();
+        Iterator<FormData.FormValue> configsIterator = configs.iterator();
+
+        // Add each generator to the list.
+        for (int i = 0; i < frameworks.size(); i++) {
+            Map<String, Object> generator = new HashMap<>();
+            generator.put("framework", frameworksIterator.next().getValue());
+            generator.put("model", modelsIterator.next().getValue());
+            generator.put("config", configsIterator.next().getValue());
+            generatorsList.add(generator);
+        }
+
+        return generatorsList;
     }
 }
