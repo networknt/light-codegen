@@ -13,12 +13,6 @@ class AppServices {
             headers: {'Authorization': AppActions.TEST_AUTH_KEY}
         });
     }
-
-    static generate(framework, model, config) {
-        return axios.post(AppServices.JSON_API, AppActions.GENERATE_REQUEST(framework, model, config), {
-            headers: {'Authorization': AppActions.TEST_AUTH_KEY}
-        });
-    }
 }
 
 export {AppServices}
