@@ -95,6 +95,7 @@ public class Cli {
         } else {
             System.out.printf("Invalid framework %s", framework);
         }
+        System.out.println("A project has been generated successfully in " + output + " folder. Have fun!!!");
     }
 
     private boolean isUrl(String location) {
