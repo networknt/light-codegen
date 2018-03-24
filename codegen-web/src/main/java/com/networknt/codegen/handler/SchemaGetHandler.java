@@ -7,6 +7,7 @@ import com.networknt.config.Config;
 import com.networknt.rpc.Handler;
 import com.networknt.rpc.router.ServiceHandler;
 import com.networknt.utility.NioUtils;
+import io.undertow.server.HttpServerExchange;
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
 
@@ -23,7 +24,7 @@ public class SchemaGetHandler implements Handler {
     static private final XLogger logger = XLoggerFactory.getXLogger(SchemaGetHandler.class);
 
     @Override
-    public ByteBuffer handle(Object input)  {
+    public ByteBuffer handle(HttpServerExchange exchange, Object input)  {
         logger.entry(input);
         Map<String, Object> map = (Map<String, Object>)input;
         String framework = (String)map.get("framework");

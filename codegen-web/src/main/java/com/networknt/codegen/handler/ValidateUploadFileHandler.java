@@ -3,6 +3,7 @@ package com.networknt.codegen.handler;
 import com.networknt.rpc.Handler;
 import com.networknt.rpc.router.ServiceHandler;
 import com.networknt.utility.NioUtils;
+import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.form.FormData;
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
@@ -29,7 +30,7 @@ public class ValidateUploadFileHandler implements Handler {
      * @return The contents of the file if valid, null otherwise. TODO to provide error messages.
      */
     @Override
-    public ByteBuffer handle(Object o) {
+    public ByteBuffer handle(HttpServerExchange exchange, Object o) {
         logger.entry(o);
         if (o instanceof FormData) {
             File file = this.getFileFromForm((FormData)o);

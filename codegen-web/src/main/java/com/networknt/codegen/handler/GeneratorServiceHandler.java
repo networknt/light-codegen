@@ -11,6 +11,7 @@ import com.networknt.rpc.router.ServiceHandler;
 import com.networknt.status.Status;
 import com.networknt.utility.HashUtil;
 import com.networknt.utility.NioUtils;
+import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.form.FormData;
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
@@ -52,7 +53,7 @@ public class GeneratorServiceHandler implements Handler {
 
 
     @Override
-    public ByteBuffer handle(Object input)  {
+    public ByteBuffer handle(HttpServerExchange exchange, Object input)  {
         logger.entry(input);
 
         // generate a destination folder name.
