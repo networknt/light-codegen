@@ -2,7 +2,7 @@
   "openapi": "3.0.0",
   "servers": [
     {
-      "url": "/publicapi/api/v2"
+      "url": "https://api.interac.ca/publicapi/api/v2"
     }
   ],
   "info": {
@@ -44,6 +44,14 @@
         "tags": [
           "Authentication"
         ],
+        "security": [
+          {
+            "etransfer_auth": [
+              "etransfer.r",
+              "etransfer.w"
+            ]
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful response",
@@ -51,6 +59,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/AccessToken"
+                },
+                "examples": {
+                  "response": {
+                    "value": {
+                      "accessToken": "4863dc7c-2a00-11e8-b467-0ed5f89f718b",
+                      "tokenType": "bearer",
+                      "expiresIn": 600,
+                      "scope": "etransfer.r etransfer.w"
+                    }
+                  }
                 }
               }
             }
