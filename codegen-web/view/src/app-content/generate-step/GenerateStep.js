@@ -3,12 +3,11 @@
  */
 
 import React, {Component} from 'react';
-import {Row, Col} from 'antd';
+import {Row, Col, Button} from 'antd';
 import Highlight from 'react-highlight'
 
 import './GenerateStep.less';
-import {API_SERVER} from "../../AppConstants";
-import {AppActions} from "../../AppActions";
+import {AppServices} from "../../AppServices";
 
 class GenerateStep extends Component {
 
@@ -17,6 +16,24 @@ class GenerateStep extends Component {
     //         this.props.onAddAnother();
     //     }
     // };
+
+    onGenerateButtonClick = () => {
+        AppServices.generate(this.props.initValues.schema.framework, JSON.parse(this.props.initValues.schema.schemaContent), JSON.parse(this.props.initValues.config.configContent)).then((response) => {
+            const blob = new Blob([response.data]);
+            const filename = this.props.initValues.schema.framework + '.zip';
+
+            if (typeof window.navigator.msSaveBlob !== 'undefined') {
+                window.navigator.msSaveBlob(blob, filename);
+            } else {
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', filename);
+                document.body.appendChild(link);
+                link.click();
+            }
+        });
+    };
 
     // generate_button_menu = (
     //     <Menu onClick={this.onMenuItemClick}>
@@ -49,20 +66,8 @@ class GenerateStep extends Component {
                 </Row>
                 <Row type="flex" justify="left">
                     <Col span={2} offset={21}>
-                        {/*Empty Iframe target used to prevent a page refresh when submitting the form.*/}
-                        <iframe name="nothing" style={{display: "none"}} title="nothing"></iframe>
-                        <form method="post" action={API_SERVER + "/api/zip"} target="nothing">
-                            <input type="hidden" name="host" value={AppActions.API_HOST}/>
-                            <input type="hidden" name="service" value={AppActions.API_SERVICE}/>
-                            <input type="hidden" name="action" value="generate"/>
-                            <input type="hidden" name="version" value={AppActions.API_VERSION}/>
 
-                            {/*These can be programmatically added in the future when the ui supports multiple generators. Server side already does.*/}
-                            <input type="hidden" name="generator.model" value={this.props.initValues.schema.schemaContent}/>
-                            <input type="hidden" name="generator.config" value={this.props.initValues.config.configContent} />
-                            <input type="hidden" name="generator.framework" value={this.props.initValues.schema.framework} />
-                            <button type="submit" className="ant-btn ant-btn-primary generate-button">Download!</button>
-                        </form>
+                        <Button onClick={this.onGenerateButtonClick} className="generate-button" type="primary">Generate</Button>
 
                         {/*<Dropdown.Button onClick={this.onGenerateButtonClick} overlay={this.generate_button_menu} className="generate-button" type="primary" size="large">*/}
                             {/*Generate!*/}
