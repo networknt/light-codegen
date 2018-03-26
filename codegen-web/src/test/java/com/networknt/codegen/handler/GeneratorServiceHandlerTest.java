@@ -1,5 +1,7 @@
 package com.networknt.codegen.handler;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.networknt.client.Http2Client;
 import com.networknt.exception.ApiException;
 import com.networknt.exception.ClientException;
@@ -17,9 +19,11 @@ import org.slf4j.LoggerFactory;
 import org.xnio.IoUtils;
 import org.xnio.OptionMap;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -61,14 +65,14 @@ public class GeneratorServiceHandlerTest {
         }
         try {
             connection.getIoThread().execute(() -> {
-                final ClientRequest request = new ClientRequest().setMethod(Methods.POST).setPath("/api/zip");
+                final ClientRequest request = new ClientRequest().setMethod(Methods.POST).setPath("/api/json");
 
                 request.getRequestHeaders().put(Headers.HOST, "localhost");
                 request.getRequestHeaders().put(Headers.AUTHORIZATION, auth);
-                request.getRequestHeaders().put(Headers.CONTENT_TYPE, "application/x-www-form-urlencoded");
+                request.getRequestHeaders().put(Headers.CONTENT_TYPE, "application/json");
                 request.getRequestHeaders().put(Headers.TRANSFER_ENCODING, "chunked");
                 try {
-                    connection.sendRequest(request, client.createClientCallback(reference, latch, Http2Client.getFormDataString(params)));
+                    connection.sendRequest(request, client.createClientCallback(reference, latch, new ObjectMapper().writeValueAsString(params)));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -90,15 +94,13 @@ public class GeneratorServiceHandlerTest {
     }
 
     @Test
-    public void testInvalidFramework() throws ClientException {
-        Map<String, String> params = new HashMap<>();
+    public void testInvalidFramework() throws ClientException, IOException {
+        Map<String, Object> params = new HashMap<>();
         params.put("host", "lightapi.net");
         params.put("service", "codegen");
         params.put("action", "generate");
         params.put("version", "0.0.1");
-        params.put("generator.framework", "invalid");
-        params.put("generator.model", "{\"key\":\"value\"}");
-        params.put("generator.config", "{\"key\":\"value\"}");
+        params.put("data", new ObjectMapper().readValue("[{\"framework\": \"invalid\", \"model\": {\"key\":\"value\"}, \"config\": {\"key\":\"value\"}}]", List.class));
 
         final AtomicReference<ClientResponse> reference = new AtomicReference<>();
         final Http2Client client = Http2Client.getInstance();
@@ -111,14 +113,14 @@ public class GeneratorServiceHandlerTest {
         }
         try {
             connection.getIoThread().execute(() -> {
-                final ClientRequest request = new ClientRequest().setMethod(Methods.POST).setPath("/api/zip");
+                final ClientRequest request = new ClientRequest().setMethod(Methods.POST).setPath("/api/json");
                 request.getRequestHeaders().put(Headers.HOST, "localhost");
                 request.getRequestHeaders().put(Headers.AUTHORIZATION, auth);
-                request.getRequestHeaders().put(Headers.CONTENT_TYPE, "application/x-www-form-urlencoded");
+                request.getRequestHeaders().put(Headers.CONTENT_TYPE, "application/json");
                 request.getRequestHeaders().put(Headers.TRANSFER_ENCODING, "chunked");
                 try {
-                    connection.sendRequest(request, client.createClientCallback(reference, latch, Http2Client.getFormDataString(params)));
-                } catch (UnsupportedEncodingException e) {
+                    connection.sendRequest(request, client.createClientCallback(reference, latch, new ObjectMapper().writeValueAsString(params)));
+                } catch (JsonProcessingException e) {
                     e.printStackTrace();
                 }
             });
@@ -140,14 +142,14 @@ public class GeneratorServiceHandlerTest {
 
 
     @Test
-    public void testGenerator() throws ClientException, ApiException, UnsupportedEncodingException {
-        Map<String, String> params = new HashMap<>();
+    public void testGenerator() throws ClientException, ApiException, IOException {
+        Map<String, Object> params = new HashMap<>();
         params.put("host", "lightapi.net");
         params.put("service", "codegen");
         params.put("action", "generate");
         params.put("version", "0.0.1");
-        params.put("generator.framework", "swagger");
-        params.put("generator.model",  "{\n" +
+
+        String model = "{\n" +
                 "        \"swagger\": \"2.0\",\n" +
                 "        \"info\": {\n" +
                 "          \"description\": \"This is a sample server Petstore server.  You can find out more about Swagger at [http://swagger.io](http://swagger.io) or on [irc.freenode.net, #swagger](http://swagger.io/irc/).  For this sample, you can use the api key `special-key` to test the authorization filters.\",\n" +
@@ -1201,8 +1203,8 @@ public class GeneratorServiceHandlerTest {
                 "          \"description\": \"Find out more about Swagger\",\n" +
                 "          \"url\": \"http://swagger.io\"\n" +
                 "        }\n" +
-                "      }");
-        params.put("generator.config",  "{\n" +
+                "      }";
+        String config = "{\n" +
                 "        \"rootPackage\": \"com.networknt.petstore\",\n" +
                 "        \"handlerPackage\": \"com.networknt.petstore.handler\",\n" +
                 "        \"modelPackage\": \"com.networknt.petstore.model\",\n" +
@@ -1212,7 +1214,9 @@ public class GeneratorServiceHandlerTest {
                 "        \"version\": \"1.0.1\",\n" +
                 "        \"overwriteHandler\": false,\n" +
                 "        \"overwriteHandlerTest\": false\n" +
-                "      }");
+                "      }";
+
+        params.put("data", new ObjectMapper().readValue("[{\"framework\": \"swagger\", \"model\": " + model + ", \"config\": "+ config + "}]", List.class));
 
         final AtomicReference<ClientResponse> reference = new AtomicReference<>();
         final Http2Client client = Http2Client.getInstance();
@@ -1227,14 +1231,14 @@ public class GeneratorServiceHandlerTest {
             connection.getIoThread().execute(new Runnable() {
                 @Override
                 public void run() {
-                    final ClientRequest request = new ClientRequest().setMethod(Methods.POST).setPath("/api/zip");
+                    final ClientRequest request = new ClientRequest().setMethod(Methods.POST).setPath("/api/json");
                     request.getRequestHeaders().put(Headers.HOST, "localhost");
                     request.getRequestHeaders().put(Headers.AUTHORIZATION, auth);
-                    request.getRequestHeaders().put(Headers.CONTENT_TYPE, "application/x-www-form-urlencoded");
+                    request.getRequestHeaders().put(Headers.CONTENT_TYPE, "application/json");
                     request.getRequestHeaders().put(Headers.TRANSFER_ENCODING, "chunked");
                     try {
-                        connection.sendRequest(request, client.createClientCallback(reference, latch, Http2Client.getFormDataString(params)));
-                    } catch (UnsupportedEncodingException e) {
+                        connection.sendRequest(request, client.createClientCallback(reference, latch, new ObjectMapper().writeValueAsString(params)));
+                    } catch (JsonProcessingException e) {
                         e.printStackTrace();
                     }
                 }
