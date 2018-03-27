@@ -7,6 +7,7 @@ import com.networknt.rpc.Handler;
 import com.networknt.rpc.router.ServiceHandler;
 import com.networknt.utility.NioUtils;
 import io.undertow.server.HttpServerExchange;
+import io.undertow.util.HttpString;
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
 
@@ -21,10 +22,15 @@ public class FrameworkListHandler implements Handler {
     static private final XLogger logger = XLoggerFactory.getXLogger(FrameworkListHandler.class);
     static private Set<String> frameworks = FrameworkRegistry.getInstance().getFrameworks();
 
+    /**
+     * Returns a JSON list of all available frameworks defined in the service.yml of codegen-cli.
+     * If any issues occur with converting the result to JSON, an empty string is returned (not an empty json list).
+     */
     @Override
     public ByteBuffer handle(HttpServerExchange exchange, Object input)  {
         logger.entry(input);
         String result = "";
+        exchange.getResponseHeaders().add(new HttpString("Content-Type"), "application/json");
         try {
             result = Config.getInstance().getMapper().writeValueAsString(frameworks);
         } catch (JsonProcessingException e) {

@@ -5,6 +5,7 @@ import com.networknt.rpc.router.ServiceHandler;
 import com.networknt.utility.NioUtils;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.form.FormData;
+import io.undertow.util.HttpString;
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
 
@@ -15,7 +16,8 @@ import java.nio.file.Files;
 import java.util.stream.Stream;
 
 /**
- * Created by nicho on 2017-07-08.
+ * @author Nicholas Azar
+ * Created on July 8, 2017.
  */
 @ServiceHandler(id="lightapi.net/codegen/validateUploadFile/0.0.1")
 public class ValidateUploadFileHandler implements Handler {
@@ -31,6 +33,7 @@ public class ValidateUploadFileHandler implements Handler {
      */
     @Override
     public ByteBuffer handle(HttpServerExchange exchange, Object o) {
+        exchange.getResponseHeaders().add(new HttpString("Content-Type"), "application/json");
         logger.entry(o);
         if (o instanceof FormData) {
             File file = this.getFileFromForm((FormData)o);

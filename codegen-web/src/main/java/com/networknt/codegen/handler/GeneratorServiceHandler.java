@@ -1,5 +1,7 @@
 package com.networknt.codegen.handler;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jsoniter.any.Any;
 import com.networknt.codegen.CodegenWebConfig;
@@ -7,12 +9,17 @@ import com.networknt.codegen.FrameworkRegistry;
 import com.networknt.codegen.Generator;
 import com.networknt.config.Config;
 import com.networknt.rpc.Handler;
+import com.networknt.rpc.router.JsonHandler;
 import com.networknt.rpc.router.ServiceHandler;
+import com.networknt.schema.JsonSchema;
+import com.networknt.schema.JsonSchemaFactory;
+import com.networknt.schema.ValidationMessage;
 import com.networknt.status.Status;
 import com.networknt.utility.HashUtil;
 import com.networknt.utility.NioUtils;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.form.FormData;
+import io.undertow.util.HttpString;
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
 
@@ -31,6 +38,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static java.io.File.separator;
 
@@ -61,23 +69,18 @@ public class GeneratorServiceHandler implements Handler {
         String zipFile = output + ".zip";
         String projectFolder = codegenWebConfig.getTmpFolder() + separator + output;
 
-        List<Map<String, Object>> generators = getGeneratorListFromFormData((FormData)input);
+        List<Map<String, Object>> generators = (List<Map<String, Object>>)input;
 
         if(generators == null || generators.size() == 0) {
             logger.error("Did not receive any generators in the request.");
             Status status = new Status(STATUS_MISSING_GENERATOR_ITEM);
+            exchange.getResponseHeaders().add(new HttpString("Content-Type"), "application/json");
             return NioUtils.toByteBuffer(status.toString());
         }
         for(Map<String, Object> generatorMap: generators) {
             String framework = (String)generatorMap.get("framework");
             Object model = Any.wrap(generatorMap.get("model"));  // should be a JSON of spec or IDL
-            Map<String, Object> config; // should be a json of config
-            try {
-                config = new ObjectMapper().readValue((String)generatorMap.get("config"), Map.class);
-            } catch (IOException e) {
-                logger.error("Failed to convert the given object to a map representation: " + e.getMessage());
-                return null;
-            }
+            Map<String, Object> config = (Map<String, Object>) generatorMap.get("config");
             if(!FrameworkRegistry.getInstance().getFrameworks().contains(framework)) {
                 Status status = new Status(STATUS_INVALID_FRAMEWORK, framework);
                 return NioUtils.toByteBuffer(status.toString());
@@ -107,6 +110,10 @@ public class GeneratorServiceHandler implements Handler {
             e.printStackTrace();
             logger.error("Exception:", e);
         }
+
+        exchange.getResponseHeaders()
+                .add(new HttpString("Content-Type"), "application/zip")
+                .add(new HttpString("Content-Disposition"), "attachment");
 
         // return the zip file
         File file = new File(codegenWebConfig.getZipFolder() + separator + zipFile);
@@ -149,5 +156,21 @@ public class GeneratorServiceHandler implements Handler {
         }
 
         return generatorsList;
+    }
+
+    @Override
+    public ByteBuffer validate(String serviceId, Object object) {
+        // get schema from serviceId, remember that the schema is for the data object only.
+        // the input object is the data attribute of the request body.
+        Map<String, Object> serviceMap = (Map<String, Object>) JsonHandler.schema.get(serviceId);
+        if(logger.isDebugEnabled()) {
+            try {
+                logger.debug("serviceId = " + serviceId  + " serviceMap = " + Config.getInstance().getMapper().writeValueAsString(serviceMap));
+            } catch (Exception e) {
+                logger.error("Exception:", e);
+            }
+        }
+        logger.debug("Skipping validation on generator request for now.");
+        return null;
     }
 }
