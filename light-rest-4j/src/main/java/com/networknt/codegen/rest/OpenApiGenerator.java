@@ -227,6 +227,45 @@ public class OpenApiGenerator implements Generator {
                                                 propMap.put("type", Any.wrap(s));
                                             }
                                         }
+                                        if("oneOf".equals(entryElement.getKey())) {
+                                            List<Any> list = entryElement.getValue().asList();
+                                            String t = list.get(0).asMap().get("type").toString();
+                                            if(t != null) {
+                                                propMap.put("type", Any.wrap(typeMapping.get(t)));
+                                            } else {
+                                                // maybe reference? default type to object.
+                                                propMap.put("type", Any.wrap("Object"));
+                                            }
+                                        }
+                                        if("anyOf".equals(entryElement.getKey())) {
+                                            List<Any> list = entryElement.getValue().asList();
+                                            String t = list.get(0).asMap().get("type").toString();
+                                            if(t != null) {
+                                                propMap.put("type", Any.wrap(typeMapping.get(t)));
+                                            } else {
+                                                // maybe reference? default type to object.
+                                                propMap.put("type", Any.wrap("Object"));
+                                            }
+                                        }
+                                        if("allOf".equals(entryElement.getKey())) {
+                                            List<Any> list = entryElement.getValue().asList();
+                                            String t = list.get(0).asMap().get("type").toString();
+                                            if(t != null) {
+                                                propMap.put("type", Any.wrap(typeMapping.get(t)));
+                                            } else {
+                                                // maybe reference? default type to object.
+                                                propMap.put("type", Any.wrap("Object"));
+                                            }
+                                        }
+                                        if("not".equals(entryElement.getKey())) {
+                                            Map<String, Any> m = entryElement.getValue().asMap();
+                                            Any t = m.get("type");
+                                            if(t != null) {
+                                                propMap.put("type", t);
+                                            } else {
+                                                propMap.put("type", Any.wrap("Object"));
+                                            }
+                                        }
                                     }
                                     props.add(propMap);
                                 }
