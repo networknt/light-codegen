@@ -8,6 +8,7 @@ import com.networknt.rpc.Handler;
 import com.networknt.rpc.router.ServiceHandler;
 import com.networknt.utility.NioUtils;
 import io.undertow.server.HttpServerExchange;
+import io.undertow.util.HttpString;
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
 
@@ -25,6 +26,7 @@ public class SchemaGetHandler implements Handler {
 
     @Override
     public ByteBuffer handle(HttpServerExchange exchange, Object input)  {
+        exchange.getResponseHeaders().add(new HttpString("Content-Type"), "application/json");
         logger.entry(input);
         Map<String, Object> map = (Map<String, Object>)input;
         String framework = (String)map.get("framework");
@@ -35,7 +37,6 @@ public class SchemaGetHandler implements Handler {
             bf = generator.getConfigSchema();
         } catch (IOException e) {
             // return empty back in this case.
-
         }
         return bf;
     }
