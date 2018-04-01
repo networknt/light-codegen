@@ -1,5 +1,42 @@
 # Change Log
 
+## [1.5.11](https://github.com/networknt/light-codegen/tree/1.5.11) (2018-04-01)
+[Full Changelog](https://github.com/networknt/light-codegen/compare/1.5.10...1.5.11)
+
+**Implemented enhancements:**
+
+- change the interface for handler with light-hybrid-4j [\#124](https://github.com/networknt/light-codegen/issues/124)
+
+**Fixed bugs:**
+
+- Codegen-Web generate code does not return anything to the UI [\#122](https://github.com/networknt/light-codegen/issues/122)
+- fix request schema for generate request [\#111](https://github.com/networknt/light-codegen/pull/111) ([auahmed](https://github.com/auahmed))
+
+**Closed issues:**
+
+- gracefully handle oneOf, anyOf and allOf in model generation [\#131](https://github.com/networknt/light-codegen/issues/131)
+- replace jackson data type jsr310 with jdk8 [\#129](https://github.com/networknt/light-codegen/issues/129)
+- update hybrid handler interface to add exchange as parameter [\#128](https://github.com/networknt/light-codegen/issues/128)
+- remove parent section in pom.xml for all generators [\#127](https://github.com/networknt/light-codegen/issues/127)
+- replace test openapi.json for openapi generator [\#125](https://github.com/networknt/light-codegen/issues/125)
+- console output successful message after code generation [\#123](https://github.com/networknt/light-codegen/issues/123)
+- skip path item parameters array in swagger generator [\#120](https://github.com/networknt/light-codegen/issues/120)
+- handle dash in the path and dash in enum for openapi generator [\#119](https://github.com/networknt/light-codegen/issues/119)
+- openapi generator check if examples map is not empty [\#118](https://github.com/networknt/light-codegen/issues/118)
+- upgrade light-rest-4j openapi generator openapi-parser version to 1.5.11 [\#117](https://github.com/networknt/light-codegen/issues/117)
+- handle OpenAPI 3.0 multiple examples in response [\#116](https://github.com/networknt/light-codegen/issues/116)
+- server info scope injection only works with clientCredentials grant flow [\#114](https://github.com/networknt/light-codegen/issues/114)
+- github scanner found a potential vulnerability in moment.js [\#113](https://github.com/networknt/light-codegen/issues/113)
+- update codegen web service.yml to remove openapi-parser injection [\#110](https://github.com/networknt/light-codegen/issues/110)
+- codegen-web cannot be published to maven central [\#109](https://github.com/networknt/light-codegen/issues/109)
+- codegen-web will be compiled as a thin jar not a fat jar [\#56](https://github.com/networknt/light-codegen/issues/56)
+
+**Merged pull requests:**
+
+- Feature/refactor exchange responses [\#130](https://github.com/networknt/light-codegen/pull/130) ([NicholasAzar](https://github.com/NicholasAzar))
+- feat\(zip\): Returning zip file for download from codegen-web generator [\#121](https://github.com/networknt/light-codegen/pull/121) ([NicholasAzar](https://github.com/NicholasAzar))
+- Fix: Bump version of moment dependency [\#115](https://github.com/networknt/light-codegen/pull/115) ([gonzalovazquez](https://github.com/gonzalovazquez))
+
 ## [1.5.10](https://github.com/networknt/light-codegen/tree/1.5.10) (2018-03-02)
 [Full Changelog](https://github.com/networknt/light-codegen/compare/1.5.9...1.5.10)
 
