@@ -13,6 +13,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <version.light-4j>1.5.12</version.light-4j>
         <version.light-hybrid-4j>1.5.12</version.light-hybrid-4j>
+        @if(config.toBoolean("eventuateQuerySupport") || config.toBoolean("eventuateCommandSupport")){
+        <version.light-eventuate-4j>1.5.12</version.light-eventuate-4j>
+        }
         <version.jackson>2.9.4</version.jackson>
         <version.slf4j>1.7.25</version.slf4j>
         <version.jose4j>0.6.1</version.jose4j>

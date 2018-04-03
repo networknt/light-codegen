@@ -58,6 +58,10 @@ singletons:
 # - com.networknt.server.StartupHookProvider:
   # - com.networknt.server.Test1StartupHook
   # - com.networknt.server.Test2StartupHook
+@if(config.toBoolean("eventuateQuerySupport") ){
+- com.networknt.server.StartupHookProvider:
+  - com.networknt.eventuate.client.EventuateClientStartupHookProvider
+}
 # ShutdownHookProvider implementations, there are one to many and they are called in the same sequence defined.
 # - com.networknt.server.ShutdownHookProvider:
   # - com.networknt.server.Test1ShutdownHook
@@ -99,4 +103,33 @@ singletons:
       prepStmtCacheSqlLimit: 2048,
       connectionTimeout: 2000
 }
+}
+
+@if(config.toBoolean("eventuateQuerySupport") || config.toBoolean("eventuateCommandSupport")){
+- com.networknt.eventuate.jdbc.EventuateJdbcAccess:
+  - com.networknt.eventuate.jdbc.EventuateJdbcAccessImpl
+- com.networknt.eventuate.common.impl.sync.AggregateCrud:
+  - com.networknt.eventuate.server.jdbckafkastore.EventuateLocalAggregateCrud
+- com.networknt.eventuate.common.impl.sync.AggregateEvents:
+    - com.networknt.eventuate.client.EventuateLocalAggregatesEvents
+- com.networknt.eventuate.common.impl.AggregateCrud:
+  - com.networknt.eventuate.common.impl.adapters.SyncToAsyncAggregateCrudAdapter
+- com.networknt.eventuate.common.impl.AggregateEvents:
+  - com.networknt.eventuate.common.impl.adapters.SyncToAsyncAggregateEventsAdapter
+- com.networknt.eventuate.common.SnapshotManager:
+  - com.networknt.eventuate.common.SnapshotManagerImpl
+- com.networknt.eventuate.common.MissingApplyEventMethodStrategy:
+  - com.networknt.eventuate.common.DefaultMissingApplyEventMethodStrategy
+- com.networknt.eventuate.common.EventuateAggregateStore:
+  - com.networknt.eventuate.common.impl.EventuateAggregateStoreImpl
+- com.networknt.eventuate.common.sync.EventuateAggregateStore:
+  - com.networknt.eventuate.common.impl.sync.EventuateAggregateStoreImpl
+}
+@if(config.toBoolean("eventuateQuerySupport") ){
+- com.networknt.eventuate.event.EventHandlerProcessor:
+  - com.networknt.eventuate.event.EventHandlerProcessorDispatchedEventReturningVoid
+  - com.networknt.eventuate.event.EventHandlerProcessorDispatchedEventReturningCompletableFuture
+  - com.networknt.eventuate.event.EventHandlerProcessorEventHandlerContextReturningCompletableFuture
+  - com.networknt.eventuate.event.EventHandlerProcessorEventHandlerContextReturningVoid
+- com.networknt.eventuate.client.SubscriptionsRegistry: com.networknt.eventuate.client.EventuateClientServiceInitializer::subscriptionsRegistry
 }
