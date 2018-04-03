@@ -86,6 +86,10 @@ public class OpenApiGenerator implements Generator {
         boolean supportClient = config.toBoolean("supportClient");
         String dockerOrganization = config.toString("dockerOrganization");
         prometheusMetrics = config.toBoolean("prometheusMetrics");
+
+        boolean eventuateQuerySupport = config.toBoolean("eventuateQuerySupport");
+        boolean eventuateCommandSupport = config.toBoolean("eventuateCommandSupport");
+
         if(dockerOrganization == null || dockerOrganization.length() == 0) dockerOrganization = "networknt";
 
         transfer(targetPath, "", "pom.xml", templates.rest.openapi.pom.template(config));
@@ -119,6 +123,11 @@ public class OpenApiGenerator implements Generator {
             transfer(targetPath, ("src.main.resources.config").replace(".", separator), "client.yml", templates.rest.clientYml.template());
         } else {
             transfer(targetPath, ("src.test.resources.config").replace(".", separator), "client.yml", templates.rest.clientYml.template());
+        }
+
+        if(eventuateQuerySupport) {
+            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "kafka.yml", templates.rest.kafka.template());
+            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "eventuate-client.yml", templates.rest.eventuateClient.template());
         }
 
         transfer(targetPath, ("src.main.resources.config.oauth").replace(".", separator), "primary.crt", templates.rest.primaryCrt.template());

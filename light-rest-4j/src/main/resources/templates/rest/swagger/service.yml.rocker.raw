@@ -34,7 +34,7 @@ singletons:
   - com.networknt.sanitizer.SanitizerHandler
   # Validator Validate request based on swagger specification (depending on Swagger and Body)
   - com.networknt.validator.ValidatorHandler
-@if(config.toBoolean("supportDb")){
+@if(config.toBoolean("supportDb") || config.toBoolean("eventuateQuerySupport") || config.toBoolean("eventuateCommandSupport")){
 @with (driverClassName = config.toString("dbInfo", "driverClassName"), jdbcUrl=config.toString("dbInfo", "jdbcUrl"), username=config.toString("dbInfo", "username"), password=config.toString("dbInfo", "password")) {
 - javax.sql.DataSource:
   - com.zaxxer.hikari.HikariDataSource:
