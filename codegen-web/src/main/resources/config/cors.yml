@@ -7,7 +7,7 @@ enabled: true
 allowedOrigins:
 - http://localhost
 # Support for react dev server.
-- http://localhost:3000
+- http://localhost:3001
 # Allowed methods list.
 allowedMethods:
 - GET
