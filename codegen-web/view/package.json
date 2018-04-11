@@ -95,5 +95,5 @@
     "less": "^2.7.2",
     "less-loader": "^4.0.4"
   },
-  "proxy": "http://localhost:8080"
+  "proxy": "http://codegen-server:8080"
 }
