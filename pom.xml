@@ -95,7 +95,7 @@
         <version.snakeyaml>1.20</version.snakeyaml>
         <version.rocker>0.22.0</version.rocker>
         <version.jcommander>1.72</version.jcommander>
-        <version.fastscanner>2.7.0</version.fastscanner>
+        <version.fastscanner>2.18.1</version.fastscanner>
         <version.graphql>8.0</version.graphql>
         <versions.maven-version>2.4</versions.maven-version>
         <argLine>-Xmx512m -XX:MaxPermSize=256m</argLine>
