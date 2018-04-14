@@ -1,4 +1,4 @@
-FROM node:8
+FROM node:9-alpine
 
 MAINTAINER "Nicholas Azar <nicholas@nicholasazar.com>"
 
@@ -7,7 +7,8 @@ ADD package.json /package.json
 
 ENV NODE_PATH=/node_modules
 ENV PATH=$PATH:/node_modules/.bin
-RUN yarn
+
+RUN yarn install
 
 WORKDIR /app
 ADD . /app
@@ -15,6 +16,10 @@ ADD . /app
 EXPOSE 3000
 EXPOSE 35729
 
-ENTRYPOINT ["/bin/bash", "/app/run.sh"]
+RUN npm run setDockerProxy
+
+ENTRYPOINT ["/bin/sh", "/app/run.sh"]
 CMD ["start"]
 
+# Considering using a build like this
+# https://medium.com/@detrohutt/thanks-for-the-article-it-was-a-big-help-8d517cf69982

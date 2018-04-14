@@ -170,6 +170,11 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <createDependencyReducedPom>false</createDependencyReducedPom>
+                    <createSourcesJar>false</createSourcesJar>
+                    <finalName>codegen-web-shaded</finalName>
+                </configuration>
             </plugin>
         </plugins>
     </build>

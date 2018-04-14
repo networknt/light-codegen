@@ -48,7 +48,8 @@
   "scripts": {
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
-    "test": "node scripts/test.js --env=jsdom"
+    "test": "node scripts/test.js --env=jsdom",
+    "setDockerProxy": "json -I -f package.json -e this.proxy=\"'http://codegen-web-server:8080'\""
   },
   "jest": {
     "collectCoverageFrom": [
@@ -92,8 +93,8 @@
   },
   "devDependencies": {
     "babel-plugin-import": "^1.2.1",
+    "json": "^9.0.6",
     "less": "^2.7.2",
     "less-loader": "^4.0.4"
-  },
-  "proxy": "http://codegen-server:8080"
+  }
 }
