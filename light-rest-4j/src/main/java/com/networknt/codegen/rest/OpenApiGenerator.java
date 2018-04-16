@@ -87,8 +87,6 @@ public class OpenApiGenerator implements Generator {
         String dockerOrganization = config.toString("dockerOrganization");
         prometheusMetrics = config.toBoolean("prometheusMetrics");
 
-        boolean eventuateQuerySupport = config.toBoolean("eventuateQuerySupport");
-        boolean eventuateCommandSupport = config.toBoolean("eventuateCommandSupport");
 
         if(dockerOrganization == null || dockerOrganization.length() == 0) dockerOrganization = "networknt";
 
@@ -123,11 +121,6 @@ public class OpenApiGenerator implements Generator {
             transfer(targetPath, ("src.main.resources.config").replace(".", separator), "client.yml", templates.rest.clientYml.template());
         } else {
             transfer(targetPath, ("src.test.resources.config").replace(".", separator), "client.yml", templates.rest.clientYml.template());
-        }
-
-        if(eventuateQuerySupport) {
-            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "kafka.yml", templates.rest.kafka.template());
-            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "eventuate-client.yml", templates.rest.eventuateClient.template());
         }
 
         transfer(targetPath, ("src.main.resources.config.oauth").replace(".", separator), "primary.crt", templates.rest.primaryCrt.template());
@@ -321,27 +314,27 @@ public class OpenApiGenerator implements Generator {
         if(Files.notExists(Paths.get(targetPath, ("src.main.resources.config.tls").replace(".", separator)))) {
             Files.createDirectories(Paths.get(targetPath, ("src.main.resources.config.tls").replace(".", separator)));
         }
-        try (InputStream is = SwaggerGenerator.class.getResourceAsStream("/binaries/server.keystore")) {
+        try (InputStream is = OpenApiGenerator.class.getResourceAsStream("/binaries/server.keystore")) {
             Files.copy(is, Paths.get(targetPath, ("src.main.resources.config.tls").replace(".", separator), "server.keystore"), StandardCopyOption.REPLACE_EXISTING);
         }
-        try (InputStream is = SwaggerGenerator.class.getResourceAsStream("/binaries/server.truststore")) {
+        try (InputStream is = OpenApiGenerator.class.getResourceAsStream("/binaries/server.truststore")) {
             Files.copy(is, Paths.get(targetPath, ("src.main.resources.config.tls").replace(".", separator), "server.truststore"), StandardCopyOption.REPLACE_EXISTING);
         }
         if(supportClient) {
-            try (InputStream is = SwaggerGenerator.class.getResourceAsStream("/binaries/client.keystore")) {
+            try (InputStream is = OpenApiGenerator.class.getResourceAsStream("/binaries/client.keystore")) {
                 Files.copy(is, Paths.get(targetPath, ("src.main.resources.config.tls").replace(".", separator), "client.keystore"), StandardCopyOption.REPLACE_EXISTING);
             }
-            try (InputStream is = SwaggerGenerator.class.getResourceAsStream("/binaries/client.truststore")) {
+            try (InputStream is = OpenApiGenerator.class.getResourceAsStream("/binaries/client.truststore")) {
                 Files.copy(is, Paths.get(targetPath, ("src.main.resources.config.tls").replace(".", separator), "client.truststore"), StandardCopyOption.REPLACE_EXISTING);
             }
         } else {
             if(Files.notExists(Paths.get(targetPath, ("src.test.resources.config.tls").replace(".", separator)))) {
                 Files.createDirectories(Paths.get(targetPath, ("src.test.resources.config.tls").replace(".", separator)));
             }
-            try (InputStream is = SwaggerGenerator.class.getResourceAsStream("/binaries/client.keystore")) {
+            try (InputStream is = OpenApiGenerator.class.getResourceAsStream("/binaries/client.keystore")) {
                 Files.copy(is, Paths.get(targetPath, ("src.test.resources.config.tls").replace(".", separator), "client.keystore"), StandardCopyOption.REPLACE_EXISTING);
             }
-            try (InputStream is = SwaggerGenerator.class.getResourceAsStream("/binaries/client.truststore")) {
+            try (InputStream is = OpenApiGenerator.class.getResourceAsStream("/binaries/client.truststore")) {
                 Files.copy(is, Paths.get(targetPath, ("src.test.resources.config.tls").replace(".", separator), "client.truststore"), StandardCopyOption.REPLACE_EXISTING);
             }
         }

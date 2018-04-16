@@ -1,0 +1,80 @@
+@import com.jsoniter.any.Any
+@import java.util.Map
+@import java.util.List
+
+@args (String modelPackage, String className, String classVarName, List<Map<String, Any>> props)
+package @modelPackage;
+import java.util.Objects;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public class @className {
+
+    @for (prop: props) {
+    @if(prop.get("isEnum").toBoolean()) {@templates.eventuate.rest.enumClass.template(prop)} else {private @prop.get("type") @prop.get("name");}
+    }
+
+    public @className () {
+    }
+
+    @for (prop: props) {
+    @if(prop.get("isEnum").toBoolean()) {
+    @@JsonProperty("@prop.get("jsonProperty")")
+    public @prop.get("nameWithEnum") @prop.get("getter")() {
+        return @prop.get("name");
+    }
+
+    public void @prop.get("setter")(@prop.get("nameWithEnum") @prop.get("name")) {
+        this.@prop.get("name") = @prop.get("name");
+    }
+    } else {
+    @@JsonProperty("@prop.get("jsonProperty")")
+    public @prop.get("type") @prop.get("getter")() {
+        return @prop.get("name");
+    }
+
+    public void @prop.get("setter")(@prop.get("type") @prop.get("name")) {
+        this.@prop.get("name") = @prop.get("name");
+    }
+    }
+    }
+
+    @@Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        @className @classVarName = (@className) o;
+
+        return @for ((i, prop): props) {@if (i.index() <  props.size() - 1) {Objects.equals(@prop.get("name"), @classVarName.@prop.get("name")) &&}
+        @if(i.index() == props.size() - 1){Objects.equals(@prop.get("name"), @classVarName.@prop.get("name"))}};
+    }
+
+    @@Override
+    public int hashCode() {
+        return Objects.hash(@for((i, prop): props) {@if(i.index() < props.size() - 1) {@prop.get("name"),} @if(i.index() == props.size() - 1) {@prop.get("name"));}}
+    }
+
+    @@Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("class @className {\n");
+        @for(prop: props) {
+        sb.append("    @prop.get("name"): ").append(toIndentedString(@prop.get("name"))).append("\n");}
+        sb.append("}");
+        return sb.toString();
+    }
+
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
+}

@@ -1,0 +1,17 @@
+@import com.jsoniter.any.Any
+@args (String handlerPackage, String host, String service, Any item, String example)
+package @handlerPackage;
+
+import com.networknt.utility.NioUtils;
+import com.networknt.rpc.Handler;
+import com.networknt.rpc.router.ServiceHandler;
+import java.nio.ByteBuffer;
+import io.undertow.server.HttpServerExchange;
+
+@@ServiceHandler(id="@host/@service/@item.get("name")/@item.get("version")")
+public class @item.get("handler") implements Handler {
+    @@Override
+    public ByteBuffer handle(HttpServerExchange exchange, Object input)  {
+        return NioUtils.toByteBuffer("@example");
+    }
+}

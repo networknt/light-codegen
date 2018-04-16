@@ -40,8 +40,7 @@ public class HybridServerGenerator implements Generator {
         if(dockerOrganization ==  null || dockerOrganization.length() == 0) dockerOrganization = "networknt";
 
         boolean supportClient = config.toBoolean("supportClient");
-        boolean eventuateQuerySupport = config.toBoolean("eventuateQuerySupport");
-        boolean eventuateCommandSupport = config.toBoolean("eventuateCommandSupport");
+
         transfer(targetPath, "", "pom.xml", templates.hybrid.server.pom.template(config));
 
         // There is only one port that should be exposed in Dockerfile, otherwise, the service
@@ -74,10 +73,7 @@ public class HybridServerGenerator implements Generator {
         } else {
             transfer(targetPath, ("src.test.resources.config").replace(".", separator), "client.yml", templates.hybrid.clientYml.template());
         }
-        if(eventuateQuerySupport) {
-            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "kafka.yml", templates.hybrid.kafka.template());
-            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "eventuate-client.yml", templates.hybrid.eventuateClient.template());
-        }
+
         transfer(targetPath, ("src.main.resources.config.oauth").replace(".", separator), "primary.crt", templates.hybrid.primaryCrt.template());
         transfer(targetPath, ("src.main.resources.config.oauth").replace(".", separator), "secondary.crt", templates.hybrid.secondaryCrt.template());
 

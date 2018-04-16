@@ -1,0 +1,21 @@
+@import org.apache.commons.text.StringEscapeUtils
+@args (String handlerPackage, String className, String example)
+package @handlerPackage;
+
+import io.undertow.server.HttpHandler;
+import io.undertow.server.HttpServerExchange;
+import io.undertow.util.HttpString;
+import java.util.HashMap;
+import java.util.Map;
+
+public class @className implements HttpHandler {
+    @@Override
+    public void handleRequest(HttpServerExchange exchange) throws Exception {
+        @if(example != null) {
+            exchange.getResponseHeaders().add(new HttpString("Content-Type"), "application/json");
+            @with (e = StringEscapeUtils.escapeJson(example)) { exchange.getResponseSender().send("@e");}
+        } else {
+            exchange.endExchange();
+        }
+    }
+}

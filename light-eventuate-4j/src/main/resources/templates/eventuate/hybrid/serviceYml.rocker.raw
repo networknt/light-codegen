@@ -1,0 +1,77 @@
+@import com.jsoniter.any.Any
+@args (Any config)
+# Singleton service factory configuration/IoC injection
+singletons:
+# HandlerProvider implementation
+- com.networknt.server.HandlerProvider:
+  - com.networknt.rpc.router.RpcRouter
+# StartupHookProvider implementations, there are one to many and they are called in the same sequence defined.
+- com.networknt.server.StartupHookProvider:
+  # registry all service handlers by from annotations
+  - com.networknt.rpc.router.RpcStartupHookProvider
+@if(config.toBoolean("eventuateQueryModule") ){
+  - com.networknt.eventuate.client.EventuateClientStartupHookProvider
+}
+# ShutdownHookProvider implementations, there are one to many and they are called in the same sequence defined.
+# - com.networknt.server.ShutdownHookProvider:
+  # - com.networknt.server.Test1ShutdownHook
+# MiddlewareHandler implementations, the calling sequence is as defined in the request/response chain.
+- com.networknt.handler.MiddlewareHandler:
+  # Exception Global exception handler that needs to be called first to wrap all middleware handlers and business handlers
+  - com.networknt.exception.ExceptionHandler
+  # Metrics handler to calculate response time accurately, this needs to be the second handler in the chain.
+  - com.networknt.metrics.MetricsHandler
+  # Traceability Put traceabilityId into response header from request header if it exists
+  - com.networknt.traceability.TraceabilityHandler
+  # Correlation Create correlationId if it doesn't exist in the request header and put it into the request header
+  - com.networknt.correlation.CorrelationHandler
+  # Jwt Token Verification for signature and expiration
+  - com.networknt.rpc.security.JwtVerifyHandler
+  # SimpleAudit Log important info about the request into audit log
+  - com.networknt.audit.AuditHandler
+@if(config.toBoolean("supportDb") || config.toBoolean("eventuateCommandModule")){
+@with (driverClassName = config.toString("dbInfo", "driverClassName"), jdbcUrl=config.toString("dbInfo", "jdbcUrl"), username=config.toString("dbInfo", "username"), password=config.toString("dbInfo", "password")) {
+- javax.sql.DataSource:
+  - com.zaxxer.hikari.HikariDataSource:
+      DriverClassName: @driverClassName
+      jdbcUrl: @jdbcUrl
+      username: @username
+      password: @password
+      maximumPoolSize: 10
+      useServerPrepStmts: true,
+      cachePrepStmts: true,
+      cacheCallableStmts: true,
+      prepStmtCacheSize: 10,
+      prepStmtCacheSqlLimit: 2048,
+      connectionTimeout: 2000
+}
+}
+
+@if(config.toBoolean("eventuateQueryModule") || config.toBoolean("eventuateCommandModule")){
+- com.networknt.eventuate.jdbc.EventuateJdbcAccess:
+  - com.networknt.eventuate.jdbc.EventuateJdbcAccessImpl
+- com.networknt.eventuate.common.impl.sync.AggregateCrud:
+  - com.networknt.eventuate.server.jdbckafkastore.EventuateLocalAggregateCrud
+- com.networknt.eventuate.common.impl.sync.AggregateEvents:
+    - com.networknt.eventuate.client.EventuateLocalAggregatesEvents
+- com.networknt.eventuate.common.impl.AggregateCrud:
+  - com.networknt.eventuate.common.impl.adapters.SyncToAsyncAggregateCrudAdapter
+- com.networknt.eventuate.common.impl.AggregateEvents:
+  - com.networknt.eventuate.common.impl.adapters.SyncToAsyncAggregateEventsAdapter
+- com.networknt.eventuate.common.SnapshotManager:
+  - com.networknt.eventuate.common.SnapshotManagerImpl
+- com.networknt.eventuate.common.MissingApplyEventMethodStrategy:
+  - com.networknt.eventuate.common.DefaultMissingApplyEventMethodStrategy
+- com.networknt.eventuate.common.EventuateAggregateStore:
+  - com.networknt.eventuate.common.impl.EventuateAggregateStoreImpl
+- com.networknt.eventuate.common.sync.EventuateAggregateStore:
+  - com.networknt.eventuate.common.impl.sync.EventuateAggregateStoreImpl
+}
+@if(config.toBoolean("eventuateQuerySupport") ){
+- com.networknt.eventuate.event.EventHandlerProcessor:
+  - com.networknt.eventuate.event.EventHandlerProcessorDispatchedEventReturningVoid
+  - com.networknt.eventuate.event.EventHandlerProcessorDispatchedEventReturningCompletableFuture
+  - com.networknt.eventuate.event.EventHandlerProcessorEventHandlerContextReturningCompletableFuture
+  - com.networknt.eventuate.event.EventHandlerProcessorEventHandlerContextReturningVoid
+- com.networknt.eventuate.client.SubscriptionsRegistry: com.networknt.eventuate.client.EventuateClientServiceInitializer::subscriptionsRegistry
+}

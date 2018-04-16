@@ -1,0 +1,105 @@
+{
+  "host": "lightapi.net",
+  "service": "world",
+  "action": [
+    {
+      "name": "hello",
+      "version": "0.1.0",
+      "handler": "HelloWorld1",
+      "scope" : "world.r",
+      "schema": {
+        "title": "Service",
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "age": {
+            "description": "Age in years",
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": ["firstName", "lastName"]
+      },
+      "example": {"message": "Hello World"}
+    },
+    {
+      "name": "hello",
+      "version": "0.1.1",
+      "handler": "HelloWorld2",
+      "scope" : "world.r",
+      "schema": {
+        "title": "Service",
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "age": {
+            "description": "Age in years",
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": ["firstName", "lastName"]
+      },
+      "example": [{"message": "Hello World"}]
+    },
+    {
+      "name": "hi",
+      "version": "0.0.1",
+      "handler": "HiWorld",
+      "scope" : "world.r",
+      "schema": {
+        "title": "Service",
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "age": {
+            "description": "Age in years",
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": ["firstName", "lastName"]
+      },
+      "example": [{"message": "Hello World"},{"message": "Hi World"}]
+    },
+    {
+      "name": "welcome",
+      "version": "0.0.1",
+      "handler": "WelcomeWorld",
+      "scope" : "world.w",
+      "schema": {
+        "title": "Service",
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "age": {
+            "description": "Age in years",
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": ["firstName", "lastName"]
+      }
+    }
+  ]
+}
