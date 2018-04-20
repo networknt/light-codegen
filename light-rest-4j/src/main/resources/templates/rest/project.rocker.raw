@@ -1,3 +1,4 @@
+@option discardLogicWhitespace=true
 @import com.jsoniter.any.Any
 @args (Any config)
 <?xml version="1.0" encoding="UTF-8"?>
