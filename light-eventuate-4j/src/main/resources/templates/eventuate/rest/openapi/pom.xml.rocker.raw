@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>@config.get("groupId")</groupId>
     <artifactId>@config.get("artifactId")</artifactId>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
     <name>@config.get("name")</name>
     <version>@config.get("version")</version>
 
@@ -41,7 +41,43 @@
         <versions.maven-version>2.4</versions.maven-version>
     </properties>
 
+
+    <modules>
+        <module>common</module>
+        <module>command</module>
+        <module>query</module>
+        <module>command-rest-service</module>
+        <module>query-rest-service</module>
+    </modules>
+
+
     <dependencies>
+        <dependency>
+            <groupId>@config.get("groupId")</groupId>
+            <artifactId>@config.get("artifactId")-common</artifactId>
+            <version>${project.version}</version>
+       </dependency>
+        <dependency>
+            <groupId>@config.get("groupId")</groupId>
+            <artifactId>@config.get("artifactId")-command</artifactId>
+            <version>${project.version}</version>
+       </dependency>
+        <dependency>
+            <groupId>@config.get("groupId")</groupId>
+            <artifactId>@config.get("artifactId")-query</artifactId>
+            <version>${project.version}</version>
+       </dependency>
+        <dependency>
+            <groupId>@config.get("groupId")</groupId>
+            <artifactId>@config.get("artifactId")-command-rest-service</artifactId>
+            <version>${project.version}</version>
+       </dependency>
+        <dependency>
+            <groupId>@config.get("groupId")</groupId>
+            <artifactId>@config.get("artifactId")-query-rest-service</artifactId>
+            <version>${project.version}</version>
+       </dependency>
+
         <dependency>
             <groupId>com.networknt</groupId>
             <artifactId>config</artifactId>
