@@ -50,7 +50,7 @@ public class EventuateOpenApiGenerator implements Generator {
 
     @Override
     public String getFramework() {
-        return "openapi";
+        return "eventuate-rest";
     }
 
     /**
@@ -62,30 +62,20 @@ public class EventuateOpenApiGenerator implements Generator {
      */
     @Override
     public void generate(String targetPath, Object model, Any config) throws IOException {
-        // whoever is calling this needs to make sure that model is converted to Map<String, Object>
-        String rootPackage = config.toString("rootPackage");
-        String modelPackage = config.toString("modelPackage");
-        String handlerPackage = config.toString("handlerPackage");
-        boolean overwriteHandler = config.toBoolean("overwriteHandler");
-        boolean overwriteHandlerTest = config.toBoolean("overwriteHandlerTest");
-        boolean overwriteModel = config.toBoolean("overwriteModel");
-        boolean enableHttp = config.toBoolean("enableHttp");
+        // whoever is calling this needs to make sure that model is converted to Map
+        String projectName = config.toString("name");
+        String projectPath = targetPath + "/" + projectName;
+
+        String eventuateEventPackage = config.toString("eventuateEventPackage");
+        String eventuateCommandPackage = config.toString("eventuateCommandPackage");
+        String eventuateQueryPackage = config.toString("eventuateQueryPackage");
+        boolean overwriteEventuateModule = config.toBoolean("overwriteEventuateModule");
         String httpPort = config.toString("httpPort");
         boolean enableHttps = config.toBoolean("enableHttps");
         String httpsPort = config.toString("httpsPort");
-        boolean enableRegistry = config.toBoolean("enableRegistry");
-        boolean supportClient = config.toBoolean("supportClient");
         String dockerOrganization = config.toString("dockerOrganization");
         prometheusMetrics = config.toBoolean("prometheusMetrics");
 
-        boolean eventuateQueryModule = config.toBoolean("eventuateQueryModule");
-        boolean eventuateCommandModule = config.toBoolean("eventuateCommandModule");
-
-        if(dockerOrganization == null || dockerOrganization.length() == 0) dockerOrganization = "networknt";
-
-        transfer(targetPath, "", "pom.xml", templates.eventuate.rest.openapi.pom.template(config));
-        // There is only one port that should be exposed in Dockerfile, otherwise, the service
-        // discovery will be so confused. If https is enabled, expose the https port. Otherwise http port.
         String expose = "";
         if(enableHttps) {
             expose = httpsPort;
@@ -93,195 +83,117 @@ public class EventuateOpenApiGenerator implements Generator {
             expose = httpPort;
         }
 
-        transfer(targetPath, "docker", "Dockerfile", templates.eventuate.rest.dockerfile.template(config, expose));
-        transfer(targetPath, "docker", "Dockerfile-Redhat", templates.eventuate.rest.dockerfileredhat.template(config, expose));
-        transfer(targetPath, "", "build.sh", templates.eventuate.rest.buildSh.template(dockerOrganization, config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version")));
-        transfer(targetPath, "", ".gitignore", templates.eventuate.rest.gitignore.template());
-        transfer(targetPath, "", "README.md", templates.eventuate.rest.README.template());
-        transfer(targetPath, "", "LICENSE", templates.eventuate.rest.LICENSE.template());
-        transfer(targetPath, "", ".classpath", templates.eventuate.rest.classpath.template());
-        transfer(targetPath, "", ".project", templates.eventuate.rest.project.template(config));
+        if(dockerOrganization == null || dockerOrganization.length() == 0) dockerOrganization = "networknt";
+
+        // files for root project
+        transfer(projectPath, "", "pom.xml", templates.eventuate.rest.openapi.pom.template(config));
+        transfer(projectPath, "", "build.sh", templates.eventuate.rest.buildSh.template(dockerOrganization, config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version")));
+        transfer(projectPath, "", ".gitignore", templates.eventuate.rest.gitignore.template());
+        transfer(projectPath, "", "README.md", templates.eventuate.rest.README.template());
+        transfer(projectPath, "", "LICENSE", templates.eventuate.rest.LICENSE.template());
+        transfer(projectPath, "", ".classpath", templates.eventuate.rest.classpath.template());
+        transfer(projectPath, "", ".project", templates.eventuate.rest.project.template(config));
+
+        // files for common module
+        transfer(projectPath, "common", "pom.xml", templates.eventuate.rest.openapi.common.pom.template(config));
+
+        // files for command module
+        transfer(projectPath, "command", "pom.xml", templates.eventuate.rest.openapi.command.pom.template(config));
+
+        // files for query module
+        transfer(projectPath, "query", "pom.xml", templates.eventuate.rest.openapi.query.pom.template(config));
+
+        // event & command & query modules
+        if(overwriteEventuateModule) {
+            String basedEventInterface = config.toString("basedEventInterface");
+            if (basedEventInterface!=null)  {
+                transfer(projectPath + "/common", ("src.main.java." + eventuateEventPackage).replace(".", separator), basedEventInterface + ".java", templates.eventuate.rest.openapi.common.event.template(eventuateEventPackage, basedEventInterface));
+            } else {
+                transfer(projectPath + "/common", ("src.main.java." + eventuateEventPackage).replace(".", separator), "BaseEvent" + ".java", templates.eventuate.rest.openapi.common.event.template(eventuateEventPackage, "BaseEvent"));
+            }
+            String basedCommandInterface = config.toString("basedCommandInterface");
+            if (basedCommandInterface!=null)  {
+                transfer(projectPath + "/command", ("src.main.java." + eventuateCommandPackage).replace(".", separator), basedCommandInterface + ".java", templates.eventuate.rest.openapi.command.command.template(eventuateCommandPackage, basedCommandInterface));
+            } else {
+                transfer(projectPath + "/command", ("src.main.java." + eventuateCommandPackage).replace(".", separator), "BaseCommand" + ".java", templates.eventuate.rest.openapi.command.command.template(eventuateCommandPackage, "BaseCommand"));
+            }
+            transfer(projectPath + "/command", ("src.main.java." + eventuateCommandPackage + ".domain").replace(".", separator), "SampleAggregate.java", templates.eventuate.rest.openapi.command.aggregate.template(eventuateCommandPackage + ".domain", "SampleAggregate"));
+            transfer(projectPath + "/query", ("src.main.java." + eventuateQueryPackage).replace(".", separator), "package-info.java", templates.eventuate.rest.openapi.query.packageInfo.template(eventuateQueryPackage));
+
+        }
+
+       // eventuate framework follow CQRS pattern design, command side service:
+        String commandService = projectPath + "/command-rest-service";
+
+        // eventuate framework follow CQRS pattern design, query side service:
+        String queryService = projectPath + "/query-rest-service";
+
+        Any anyModel = (Any)model;
+        Any commandModel = anyModel.get("command");
+        Any queryModel = anyModel.get("query");
+
+        if (commandModel!=null) {
+            processCommandService(commandService, commandModel, config, expose);
+        }
+        if (queryModel!=null) {
+            processQueryService(queryService, queryModel, config, expose);
+        }
+    }
+
+    public void processCommandService(String commandService, Object model, Any config, String expose) throws IOException {
+        boolean enableHttp = config.toBoolean("enableHttp");
+        boolean enableHttps = config.toBoolean("enableHttps");
+        boolean enableRegistry = config.toBoolean("enableRegistry");
+        boolean supportClient = config.toBoolean("supportClient");
+        String dockerOrganization = config.toString("dockerOrganization");
+        boolean overwriteHandler = config.toBoolean("overwriteHandler");
+        boolean overwriteHandlerTest = config.toBoolean("overwriteHandlerTest");
+        boolean overwriteModel = config.toBoolean("overwriteModel");
+        String rootPackage = config.toString("rootPackage");
+        String handlerPackage = config.toString("handlerPackage");
+
+        if(dockerOrganization == null || dockerOrganization.length() == 0) dockerOrganization = "networknt";
+
+        transfer(commandService, "docker", "Dockerfile", templates.eventuate.rest.dockerfile.template(config, expose));
+        transfer(commandService, "docker", "Dockerfile-Redhat", templates.eventuate.rest.dockerfileredhat.template(config, expose));
+        transfer(commandService, "", "build.sh", templates.eventuate.rest.buildSh.template(dockerOrganization, config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version")));
+        transfer(commandService, "", ".gitignore", templates.eventuate.rest.gitignore.template());
+        transfer(commandService, "", "README.md", templates.eventuate.rest.README.template());
+        transfer(commandService, "", "LICENSE", templates.eventuate.rest.LICENSE.template());
+        transfer(commandService, "", ".classpath", templates.eventuate.rest.classpath.template());
+        transfer(commandService, "", ".project", templates.eventuate.rest.project.template(config));
+
+        transfer(commandService, "", "pom.xml", templates.eventuate.rest.openapi.commandservice.pom.template(config));
 
         // config
-        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "service.yml", templates.eventuate.rest.openapi.service.template(config));
+        transfer(commandService, ("src.main.resources.config").replace(".", separator), "service.yml", templates.eventuate.rest.openapi.commandservice.service.template(config));
 
-        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "server.yml", templates.eventuate.rest.server.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, httpPort, enableHttps, httpsPort, enableRegistry));
-        transfer(targetPath, ("src.test.resources.config").replace(".", separator), "server.yml", templates.eventuate.rest.server.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, "49587", enableHttps, "49588", enableRegistry));
+        transfer(commandService, ("src.main.resources.config").replace(".", separator), "server.yml", templates.eventuate.rest.server.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, "8081", enableHttps, "8441", enableRegistry));
+        transfer(commandService, ("src.test.resources.config").replace(".", separator), "server.yml", templates.eventuate.rest.server.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, "49587", enableHttps, "49588", enableRegistry));
 
-        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "secret.yml", templates.eventuate.rest.secret.template());
-        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "security.yml", templates.eventuate.rest.security.template());
+        transfer(commandService, ("src.main.resources.config").replace(".", separator), "secret.yml", templates.eventuate.rest.secret.template());
+        transfer(commandService, ("src.main.resources.config").replace(".", separator), "security.yml", templates.eventuate.rest.security.template());
         if(supportClient) {
-            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "client.yml", templates.eventuate.rest.clientYml.template());
+            transfer(commandService, ("src.main.resources.config").replace(".", separator), "client.yml", templates.eventuate.rest.clientYml.template());
         } else {
-            transfer(targetPath, ("src.test.resources.config").replace(".", separator), "client.yml", templates.eventuate.rest.clientYml.template());
+            transfer(commandService, ("src.test.resources.config").replace(".", separator), "client.yml", templates.eventuate.rest.clientYml.template());
         }
-
-        if(eventuateQueryModule) {
-            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "kafka.yml", templates.eventuate.rest.kafka.template());
-            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "eventuate-client.yml", templates.eventuate.rest.eventuateClient.template());
-        }
-
-        transfer(targetPath, ("src.main.resources.config.oauth").replace(".", separator), "primary.crt", templates.eventuate.rest.primaryCrt.template());
-        transfer(targetPath, ("src.main.resources.config.oauth").replace(".", separator), "secondary.crt", templates.eventuate.rest.secondaryCrt.template());
+        transfer(commandService, ("src.main.resources.config.oauth").replace(".", separator), "primary.crt", templates.eventuate.rest.primaryCrt.template());
+        transfer(commandService, ("src.main.resources.config.oauth").replace(".", separator), "secondary.crt", templates.eventuate.rest.secondaryCrt.template());
 
         // logging
-        transfer(targetPath, ("src.main.resources").replace(".", separator), "logback.xml", templates.eventuate.rest.logback.template());
-        transfer(targetPath, ("src.test.resources").replace(".", separator), "logback-test.xml", templates.eventuate.rest.logback.template());
+        transfer(commandService, ("src.main.resources").replace(".", separator), "logback.xml", templates.eventuate.rest.logback.template());
+        transfer(commandService, ("src.test.resources").replace(".", separator), "logback-test.xml", templates.eventuate.rest.logback.template());
 
-        // preprocess the openapi.yaml to inject health check and server info endpoints
+        if(overwriteModel) {
+            generateModule(commandService, model, config);
+        }
+
         injectEndpoints(model);
 
         List<Map<String, Object>> operationList = getOperationList(model);
         // routing
-        transfer(targetPath, ("src.main.java." + rootPackage).replace(".", separator), "PathHandlerProvider.java", templates.eventuate.rest.openapi.handlerProvider.template(rootPackage, handlerPackage, operationList, prometheusMetrics));
-
-
-        // model
-        if(overwriteModel) {
-            Any anyComponents = ((Any)model).get("components");
-            if(anyComponents.valueType() != ValueType.INVALID) {
-                Any schemas = anyComponents.asMap().get("schemas");
-                if(schemas != null && schemas.valueType() != ValueType.INVALID) {
-                    for(Map.Entry<String, Any> entry : schemas.asMap().entrySet()) {
-                        List<Map<String, Any>> props = new ArrayList<>();
-                        String key = entry.getKey();
-                        Map<String, Any> value = entry.getValue().asMap();
-                        String type = null;
-                        boolean isEnum = false;
-                        Map<String, Any> properties = null;
-                        List<Any> required = null;
-
-                        for(Map.Entry<String, Any> entrySchema: value.entrySet()) {
-                            if("type".equals(entrySchema.getKey())) {
-                                type = entrySchema.getValue().toString();
-                                if("enum".equals(type)) isEnum = true;
-                            }
-                            if("properties".equals(entrySchema.getKey())) {
-                                properties = entrySchema.getValue().asMap();
-                                // transform properties
-
-                                for(Map.Entry<String, Any> entryProp: properties.entrySet()) {
-                                    //System.out.println("key = " + entryProp.getKey() + " value = " + entryProp.getValue());
-                                    Map<String, Any> propMap = new HashMap<>();
-                                    String name = entryProp.getKey();
-                                    propMap.put("jsonProperty", Any.wrap(name));
-                                    if(name.startsWith("@")) {
-                                        name = name.substring(1);
-
-                                    }
-                                    propMap.put("name", Any.wrap(name));
-                                    propMap.put("getter", Any.wrap("get" + name.substring(0, 1).toUpperCase() + name.substring(1)));
-                                    propMap.put("setter", Any.wrap("set" + name.substring(0, 1).toUpperCase() + name.substring(1)));
-                                    // assume it is not enum unless it is overwritten
-                                    propMap.put("isEnum", Any.wrap(false));
-
-                                    boolean isArray = false;
-                                    for(Map.Entry<String, Any> entryElement: entryProp.getValue().asMap().entrySet()) {
-                                        //System.out.println("key = " + entryElement.getKey() + " value = " + entryElement.getValue());
-
-                                        if("type".equals(entryElement.getKey())) {
-                                            String t = typeMapping.get(entryElement.getValue().toString());
-                                            if("java.util.List".equals(t)) {
-                                                isArray = true;
-                                            } else {
-                                                propMap.put("type", Any.wrap(t));
-                                            }
-                                        }
-                                        if("items".equals(entryElement.getKey())) {
-                                            Any a = entryElement.getValue();
-                                            if(a.get("$ref").valueType() != ValueType.INVALID && isArray) {
-                                                String s = a.get("$ref").toString();
-                                                s = s.substring(s.lastIndexOf('/') + 1);
-                                                propMap.put("type", Any.wrap("java.util.List<" + s + ">"));
-                                            }
-                                            if(a.get("type").valueType() != ValueType.INVALID && isArray) {
-                                                propMap.put("type", Any.wrap("java.util.List<" + typeMapping.get(a.get("type").toString()) + ">"));
-                                            }
-                                        }
-                                        if("$ref".equals(entryElement.getKey())) {
-                                            String s = entryElement.getValue().toString();
-                                            s = s.substring(s.lastIndexOf('/') + 1);
-                                            propMap.put("type", Any.wrap(s));
-                                        }
-                                        if("default".equals(entryElement.getKey())) {
-                                            Any a = entryElement.getValue();
-                                            propMap.put("default", a);
-                                        }
-                                        if("enum".equals(entryElement.getKey())) {
-                                            propMap.put("isEnum", Any.wrap(true));
-                                            propMap.put("nameWithEnum", Any.wrap(name.substring(0, 1).toUpperCase() + name.substring(1) + "Enum"));
-                                            propMap.put("value", Any.wrap(entryElement.getValue()));
-                                        }
-                                        if("format".equals(entryElement.getKey())) {
-                                            String s = entryElement.getValue().toString();
-                                            if("date-time".equals(s)) {
-                                                propMap.put("type", Any.wrap("java.time.LocalDateTime"));
-                                            }
-                                            if("date".equals(s)) {
-                                                propMap.put("type", Any.wrap("java.time.LocalDate"));
-                                            }
-                                            if("double".equals(s)) {
-                                                propMap.put("type", Any.wrap(s));
-                                            }
-                                            if("float".equals(s)) {
-                                                propMap.put("type", Any.wrap(s));
-                                            }
-                                        }
-                                        if("oneOf".equals(entryElement.getKey())) {
-                                            List<Any> list = entryElement.getValue().asList();
-                                            String t = list.get(0).asMap().get("type").toString();
-                                            if(t != null) {
-                                                propMap.put("type", Any.wrap(typeMapping.get(t)));
-                                            } else {
-                                                // maybe reference? default type to object.
-                                                propMap.put("type", Any.wrap("Object"));
-                                            }
-                                        }
-                                        if("anyOf".equals(entryElement.getKey())) {
-                                            List<Any> list = entryElement.getValue().asList();
-                                            String t = list.get(0).asMap().get("type").toString();
-                                            if(t != null) {
-                                                propMap.put("type", Any.wrap(typeMapping.get(t)));
-                                            } else {
-                                                // maybe reference? default type to object.
-                                                propMap.put("type", Any.wrap("Object"));
-                                            }
-                                        }
-                                        if("allOf".equals(entryElement.getKey())) {
-                                            List<Any> list = entryElement.getValue().asList();
-                                            String t = list.get(0).asMap().get("type").toString();
-                                            if(t != null) {
-                                                propMap.put("type", Any.wrap(typeMapping.get(t)));
-                                            } else {
-                                                // maybe reference? default type to object.
-                                                propMap.put("type", Any.wrap("Object"));
-                                            }
-                                        }
-                                        if("not".equals(entryElement.getKey())) {
-                                            Map<String, Any> m = entryElement.getValue().asMap();
-                                            Any t = m.get("type");
-                                            if(t != null) {
-                                                propMap.put("type", t);
-                                            } else {
-                                                propMap.put("type", Any.wrap("Object"));
-                                            }
-                                        }
-                                    }
-                                    props.add(propMap);
-                                }
-                            }
-                            if("required".equals(entrySchema.getKey())) {
-                                required = entrySchema.getValue().asList();
-                            }
-                        }
-                        String classVarName = key;
-                        String modelFileName = key.substring(0, 1).toUpperCase() + key.substring(1);
-                        //System.out.println("props = " + Any.wrap(props));
-                        transfer(targetPath, ("src.main.java." + modelPackage).replace(".", separator), modelFileName + ".java", templates.eventuate.rest.pojo.template(modelPackage, modelFileName, classVarName,  props));
-                    }
-                }
-            }
-        }
+        transfer(commandService, ("src.main.java." + rootPackage).replace(".", separator), "PathHandlerProvider.java", templates.eventuate.rest.openapi.handlerProvider.template(rootPackage, handlerPackage, operationList, prometheusMetrics));
 
         // handler
         if(overwriteHandler) {
@@ -296,49 +208,318 @@ public class EventuateOpenApiGenerator implements Generator {
                     // don't generate handler for server info and health as they are injected and the impls are in light-4j
                     continue;
                 }
-                transfer(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), className + ".java", templates.eventuate.rest.handler.template(handlerPackage, className, example));
+                transfer(commandService, ("src.main.java." + handlerPackage).replace(".", separator), className + ".java", templates.eventuate.rest.handler.template(handlerPackage, className, example));
             }
         }
 
         // handler test cases
-        transfer(targetPath, ("src.test.java." + handlerPackage + ".").replace(".", separator),  "TestServer.java", templates.eventuate.rest.testServer.template(handlerPackage));
+        transfer(commandService, ("src.test.java." + handlerPackage + ".").replace(".", separator),  "TestServer.java", templates.eventuate.rest.testServer.template(handlerPackage));
         if(overwriteHandlerTest) {
             for(Map<String, Object> op : operationList){
-                transfer(targetPath, ("src.test.java." + handlerPackage).replace(".", separator), op.get("handlerName") + "Test.java", templates.eventuate.rest.openapi.handlerTest.template(handlerPackage, op));
+                transfer(commandService, ("src.test.java." + handlerPackage).replace(".", separator), op.get("handlerName") + "Test.java", templates.eventuate.rest.openapi.handlerTest.template(handlerPackage, op));
             }
         }
 
         // transfer binary files without touching them.
-        if(Files.notExists(Paths.get(targetPath, ("src.main.resources.config.tls").replace(".", separator)))) {
-            Files.createDirectories(Paths.get(targetPath, ("src.main.resources.config.tls").replace(".", separator)));
+        if(Files.notExists(Paths.get(commandService, ("src.main.resources.config.tls").replace(".", separator)))) {
+            Files.createDirectories(Paths.get(commandService, ("src.main.resources.config.tls").replace(".", separator)));
         }
         try (InputStream is = EventuateOpenApiGenerator.class.getResourceAsStream("/binaries/server.keystore")) {
-            Files.copy(is, Paths.get(targetPath, ("src.main.resources.config.tls").replace(".", separator), "server.keystore"), StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(is, Paths.get(commandService, ("src.main.resources.config.tls").replace(".", separator), "server.keystore"), StandardCopyOption.REPLACE_EXISTING);
         }
         try (InputStream is = EventuateOpenApiGenerator.class.getResourceAsStream("/binaries/server.truststore")) {
-            Files.copy(is, Paths.get(targetPath, ("src.main.resources.config.tls").replace(".", separator), "server.truststore"), StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(is, Paths.get(commandService, ("src.main.resources.config.tls").replace(".", separator), "server.truststore"), StandardCopyOption.REPLACE_EXISTING);
         }
         if(supportClient) {
             try (InputStream is = EventuateOpenApiGenerator.class.getResourceAsStream("/binaries/client.keystore")) {
-                Files.copy(is, Paths.get(targetPath, ("src.main.resources.config.tls").replace(".", separator), "client.keystore"), StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(is, Paths.get(commandService, ("src.main.resources.config.tls").replace(".", separator), "client.keystore"), StandardCopyOption.REPLACE_EXISTING);
             }
             try (InputStream is = EventuateOpenApiGenerator.class.getResourceAsStream("/binaries/client.truststore")) {
-                Files.copy(is, Paths.get(targetPath, ("src.main.resources.config.tls").replace(".", separator), "client.truststore"), StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(is, Paths.get(commandService, ("src.main.resources.config.tls").replace(".", separator), "client.truststore"), StandardCopyOption.REPLACE_EXISTING);
             }
         } else {
-            if(Files.notExists(Paths.get(targetPath, ("src.test.resources.config.tls").replace(".", separator)))) {
-                Files.createDirectories(Paths.get(targetPath, ("src.test.resources.config.tls").replace(".", separator)));
+            if(Files.notExists(Paths.get(commandService, ("src.test.resources.config.tls").replace(".", separator)))) {
+                Files.createDirectories(Paths.get(commandService, ("src.test.resources.config.tls").replace(".", separator)));
             }
             try (InputStream is = EventuateOpenApiGenerator.class.getResourceAsStream("/binaries/client.keystore")) {
-                Files.copy(is, Paths.get(targetPath, ("src.test.resources.config.tls").replace(".", separator), "client.keystore"), StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(is, Paths.get(commandService, ("src.test.resources.config.tls").replace(".", separator), "client.keystore"), StandardCopyOption.REPLACE_EXISTING);
             }
             try (InputStream is = EventuateOpenApiGenerator.class.getResourceAsStream("/binaries/client.truststore")) {
-                Files.copy(is, Paths.get(targetPath, ("src.test.resources.config.tls").replace(".", separator), "client.truststore"), StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(is, Paths.get(commandService, ("src.test.resources.config.tls").replace(".", separator), "client.truststore"), StandardCopyOption.REPLACE_EXISTING);
             }
         }
 
-        JsonStream.serialize(model, new FileOutputStream(FileSystems.getDefault().getPath(targetPath, ("src.main.resources.config").replace(".", separator), "openapi.json").toFile()));
+        JsonStream.serialize(model, new FileOutputStream(FileSystems.getDefault().getPath(commandService, ("src.main.resources.config").replace(".", separator), "openapi.json").toFile()));
+
     }
+
+    public void processQueryService(String queryService, Object model, Any config, String expose) throws IOException {
+        boolean enableHttp = config.toBoolean("enableHttp");
+        boolean enableHttps = config.toBoolean("enableHttps");
+        boolean enableRegistry = config.toBoolean("enableRegistry");
+        boolean supportClient = config.toBoolean("supportClient");
+        String dockerOrganization = config.toString("dockerOrganization");
+        boolean overwriteHandler = config.toBoolean("overwriteHandler");
+        boolean overwriteHandlerTest = config.toBoolean("overwriteHandlerTest");
+        boolean overwriteModel = config.toBoolean("overwriteModel");
+        String rootPackage = config.toString("rootPackage");
+        String handlerPackage = config.toString("handlerPackage");
+
+        if(dockerOrganization == null || dockerOrganization.length() == 0) dockerOrganization = "networknt";
+
+        transfer(queryService, "docker", "Dockerfile", templates.eventuate.rest.dockerfile.template(config, expose));
+        transfer(queryService, "docker", "Dockerfile-Redhat", templates.eventuate.rest.dockerfileredhat.template(config, expose));
+        transfer(queryService, "", "build.sh", templates.eventuate.rest.buildSh.template(dockerOrganization, config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version")));
+        transfer(queryService, "", ".gitignore", templates.eventuate.rest.gitignore.template());
+        transfer(queryService, "", "README.md", templates.eventuate.rest.README.template());
+        transfer(queryService, "", "LICENSE", templates.eventuate.rest.LICENSE.template());
+        transfer(queryService, "", ".classpath", templates.eventuate.rest.classpath.template());
+        transfer(queryService, "", ".project", templates.eventuate.rest.project.template(config));
+
+        transfer(queryService, "", "pom.xml", templates.eventuate.rest.openapi.queryservice.pom.template(config));
+
+        // config
+        transfer(queryService, ("src.main.resources.config").replace(".", separator), "service.yml", templates.eventuate.rest.openapi.queryservice.service.template(config));
+
+        transfer(queryService, ("src.main.resources.config").replace(".", separator), "server.yml", templates.eventuate.rest.server.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, "8082", enableHttps, "8442", enableRegistry));
+        transfer(queryService, ("src.test.resources.config").replace(".", separator), "server.yml", templates.eventuate.rest.server.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, "49587", enableHttps, "49588", enableRegistry));
+
+        transfer(queryService, ("src.main.resources.config").replace(".", separator), "secret.yml", templates.eventuate.rest.secret.template());
+        transfer(queryService, ("src.main.resources.config").replace(".", separator), "security.yml", templates.eventuate.rest.security.template());
+        if(supportClient) {
+            transfer(queryService, ("src.main.resources.config").replace(".", separator), "client.yml", templates.eventuate.rest.clientYml.template());
+        } else {
+            transfer(queryService, ("src.test.resources.config").replace(".", separator), "client.yml", templates.eventuate.rest.clientYml.template());
+        }
+        transfer(queryService, ("src.main.resources.config.oauth").replace(".", separator), "primary.crt", templates.eventuate.rest.primaryCrt.template());
+        transfer(queryService, ("src.main.resources.config.oauth").replace(".", separator), "secondary.crt", templates.eventuate.rest.secondaryCrt.template());
+
+        // logging
+        transfer(queryService, ("src.main.resources").replace(".", separator), "logback.xml", templates.eventuate.rest.logback.template());
+        transfer(queryService, ("src.test.resources").replace(".", separator), "logback-test.xml", templates.eventuate.rest.logback.template());
+        // query side event store connection config
+        transfer(queryService, ("src.main.resources.config").replace(".", separator), "kafka.yml", templates.eventuate.rest.openapi.queryservice.kafka.template());
+        transfer(queryService, ("src.main.resources.config").replace(".", separator), "eventuate-client.yml", templates.eventuate.rest.openapi.queryservice.eventuateClient.template());
+
+        if(overwriteModel) {
+            generateModule(queryService, model, config);
+        }
+
+        injectEndpoints(model);
+
+        List<Map<String, Object>> operationList = getOperationList(model);
+        // routing
+        transfer(queryService, ("src.main.java." + rootPackage).replace(".", separator), "PathHandlerProvider.java", templates.eventuate.rest.openapi.handlerProvider.template(rootPackage, handlerPackage, operationList, prometheusMetrics));
+
+        // handler
+        if(overwriteHandler) {
+            for(Map<String, Object> op : operationList){
+                String className = op.get("handlerName").toString();
+                String example = null;
+                if(op.get("example") != null) {
+                    //example = mapper.writeValueAsString(op.get("example"));
+                    example = JsonStream.serialize(op.get("example"));
+                }
+                if("ServerInfoGetHandler".equals(className) || "HealthGetHandler".equals(className) || "PrometheusGetHandler".equals(className)) {
+                    // don't generate handler for server info and health as they are injected and the impls are in light-4j
+                    continue;
+                }
+                transfer(queryService, ("src.main.java." + handlerPackage).replace(".", separator), className + ".java", templates.eventuate.rest.handler.template(handlerPackage, className, example));
+            }
+        }
+
+        // handler test cases
+        transfer(queryService, ("src.test.java." + handlerPackage + ".").replace(".", separator),  "TestServer.java", templates.eventuate.rest.testServer.template(handlerPackage));
+        if(overwriteHandlerTest) {
+            for(Map<String, Object> op : operationList){
+                transfer(queryService, ("src.test.java." + handlerPackage).replace(".", separator), op.get("handlerName") + "Test.java", templates.eventuate.rest.openapi.handlerTest.template(handlerPackage, op));
+            }
+        }
+
+        // transfer binary files without touching them.
+        if(Files.notExists(Paths.get(queryService, ("src.main.resources.config.tls").replace(".", separator)))) {
+            Files.createDirectories(Paths.get(queryService, ("src.main.resources.config.tls").replace(".", separator)));
+        }
+        try (InputStream is = EventuateOpenApiGenerator.class.getResourceAsStream("/binaries/server.keystore")) {
+            Files.copy(is, Paths.get(queryService, ("src.main.resources.config.tls").replace(".", separator), "server.keystore"), StandardCopyOption.REPLACE_EXISTING);
+        }
+        try (InputStream is = EventuateOpenApiGenerator.class.getResourceAsStream("/binaries/server.truststore")) {
+            Files.copy(is, Paths.get(queryService, ("src.main.resources.config.tls").replace(".", separator), "server.truststore"), StandardCopyOption.REPLACE_EXISTING);
+        }
+        if(supportClient) {
+            try (InputStream is = EventuateOpenApiGenerator.class.getResourceAsStream("/binaries/client.keystore")) {
+                Files.copy(is, Paths.get(queryService, ("src.main.resources.config.tls").replace(".", separator), "client.keystore"), StandardCopyOption.REPLACE_EXISTING);
+            }
+            try (InputStream is = EventuateOpenApiGenerator.class.getResourceAsStream("/binaries/client.truststore")) {
+                Files.copy(is, Paths.get(queryService, ("src.main.resources.config.tls").replace(".", separator), "client.truststore"), StandardCopyOption.REPLACE_EXISTING);
+            }
+        } else {
+            if(Files.notExists(Paths.get(queryService, ("src.test.resources.config.tls").replace(".", separator)))) {
+                Files.createDirectories(Paths.get(queryService, ("src.test.resources.config.tls").replace(".", separator)));
+            }
+            try (InputStream is = EventuateOpenApiGenerator.class.getResourceAsStream("/binaries/client.keystore")) {
+                Files.copy(is, Paths.get(queryService, ("src.test.resources.config.tls").replace(".", separator), "client.keystore"), StandardCopyOption.REPLACE_EXISTING);
+            }
+            try (InputStream is = EventuateOpenApiGenerator.class.getResourceAsStream("/binaries/client.truststore")) {
+                Files.copy(is, Paths.get(queryService, ("src.test.resources.config.tls").replace(".", separator), "client.truststore"), StandardCopyOption.REPLACE_EXISTING);
+            }
+        }
+
+        JsonStream.serialize(model, new FileOutputStream(FileSystems.getDefault().getPath(queryService, ("src.main.resources.config").replace(".", separator), "openapi.json").toFile()));
+
+    }
+
+    public void generateModule (String path, Object model, Any config) throws IOException{
+
+        String modelPackage = config.toString("modelPackage");
+
+        Any anyComponents = ((Any)model).get("components");
+        if(anyComponents.valueType() != ValueType.INVALID) {
+            Any schemas = anyComponents.asMap().get("schemas");
+            if(schemas != null && schemas.valueType() != ValueType.INVALID) {
+                for(Map.Entry<String, Any> entry : schemas.asMap().entrySet()) {
+                    List<Map<String, Any>> props = new ArrayList<>();
+                    String key = entry.getKey();
+                    Map<String, Any> value = entry.getValue().asMap();
+                    String type = null;
+                    boolean isEnum = false;
+                    Map<String, Any> properties = null;
+                    List<Any> required = null;
+
+                    for(Map.Entry<String, Any> entrySchema: value.entrySet()) {
+                        if("type".equals(entrySchema.getKey())) {
+                            type = entrySchema.getValue().toString();
+                            if("enum".equals(type)) isEnum = true;
+                        }
+                        if("properties".equals(entrySchema.getKey())) {
+                            properties = entrySchema.getValue().asMap();
+                            // transform properties
+
+                            for(Map.Entry<String, Any> entryProp: properties.entrySet()) {
+                                //System.out.println("key = " + entryProp.getKey() + " value = " + entryProp.getValue());
+                                Map<String, Any> propMap = new HashMap<>();
+                                String name = entryProp.getKey();
+                                propMap.put("jsonProperty", Any.wrap(name));
+                                if(name.startsWith("@")) {
+                                    name = name.substring(1);
+
+                                }
+                                propMap.put("name", Any.wrap(name));
+                                propMap.put("getter", Any.wrap("get" + name.substring(0, 1).toUpperCase() + name.substring(1)));
+                                propMap.put("setter", Any.wrap("set" + name.substring(0, 1).toUpperCase() + name.substring(1)));
+                                // assume it is not enum unless it is overwritten
+                                propMap.put("isEnum", Any.wrap(false));
+
+                                boolean isArray = false;
+                                for(Map.Entry<String, Any> entryElement: entryProp.getValue().asMap().entrySet()) {
+                                    //System.out.println("key = " + entryElement.getKey() + " value = " + entryElement.getValue());
+
+                                    if("type".equals(entryElement.getKey())) {
+                                        String t = typeMapping.get(entryElement.getValue().toString());
+                                        if("java.util.List".equals(t)) {
+                                            isArray = true;
+                                        } else {
+                                            propMap.put("type", Any.wrap(t));
+                                        }
+                                    }
+                                    if("items".equals(entryElement.getKey())) {
+                                        Any a = entryElement.getValue();
+                                        if(a.get("$ref").valueType() != ValueType.INVALID && isArray) {
+                                            String s = a.get("$ref").toString();
+                                            s = s.substring(s.lastIndexOf('/') + 1);
+                                            propMap.put("type", Any.wrap("java.util.List<" + s + ">"));
+                                        }
+                                        if(a.get("type").valueType() != ValueType.INVALID && isArray) {
+                                            propMap.put("type", Any.wrap("java.util.List<" + typeMapping.get(a.get("type").toString()) + ">"));
+                                        }
+                                    }
+                                    if("$ref".equals(entryElement.getKey())) {
+                                        String s = entryElement.getValue().toString();
+                                        s = s.substring(s.lastIndexOf('/') + 1);
+                                        propMap.put("type", Any.wrap(s));
+                                    }
+                                    if("default".equals(entryElement.getKey())) {
+                                        Any a = entryElement.getValue();
+                                        propMap.put("default", a);
+                                    }
+                                    if("enum".equals(entryElement.getKey())) {
+                                        propMap.put("isEnum", Any.wrap(true));
+                                        propMap.put("nameWithEnum", Any.wrap(name.substring(0, 1).toUpperCase() + name.substring(1) + "Enum"));
+                                        propMap.put("value", Any.wrap(entryElement.getValue()));
+                                    }
+                                    if("format".equals(entryElement.getKey())) {
+                                        String s = entryElement.getValue().toString();
+                                        if("date-time".equals(s)) {
+                                            propMap.put("type", Any.wrap("java.time.LocalDateTime"));
+                                        }
+                                        if("date".equals(s)) {
+                                            propMap.put("type", Any.wrap("java.time.LocalDate"));
+                                        }
+                                        if("double".equals(s)) {
+                                            propMap.put("type", Any.wrap(s));
+                                        }
+                                        if("float".equals(s)) {
+                                            propMap.put("type", Any.wrap(s));
+                                        }
+                                    }
+                                    if("oneOf".equals(entryElement.getKey())) {
+                                        List<Any> list = entryElement.getValue().asList();
+                                        String t = list.get(0).asMap().get("type").toString();
+                                        if(t != null) {
+                                            propMap.put("type", Any.wrap(typeMapping.get(t)));
+                                        } else {
+                                            // maybe reference? default type to object.
+                                            propMap.put("type", Any.wrap("Object"));
+                                        }
+                                    }
+                                    if("anyOf".equals(entryElement.getKey())) {
+                                        List<Any> list = entryElement.getValue().asList();
+                                        String t = list.get(0).asMap().get("type").toString();
+                                        if(t != null) {
+                                            propMap.put("type", Any.wrap(typeMapping.get(t)));
+                                        } else {
+                                            // maybe reference? default type to object.
+                                            propMap.put("type", Any.wrap("Object"));
+                                        }
+                                    }
+                                    if("allOf".equals(entryElement.getKey())) {
+                                        List<Any> list = entryElement.getValue().asList();
+                                        String t = list.get(0).asMap().get("type").toString();
+                                        if(t != null) {
+                                            propMap.put("type", Any.wrap(typeMapping.get(t)));
+                                        } else {
+                                            // maybe reference? default type to object.
+                                            propMap.put("type", Any.wrap("Object"));
+                                        }
+                                    }
+                                    if("not".equals(entryElement.getKey())) {
+                                        Map<String, Any> m = entryElement.getValue().asMap();
+                                        Any t = m.get("type");
+                                        if(t != null) {
+                                            propMap.put("type", t);
+                                        } else {
+                                            propMap.put("type", Any.wrap("Object"));
+                                        }
+                                    }
+                                }
+                                props.add(propMap);
+                            }
+                        }
+                        if("required".equals(entrySchema.getKey())) {
+                            required = entrySchema.getValue().asList();
+                        }
+                    }
+                    String classVarName = key;
+                    String modelFileName = key.substring(0, 1).toUpperCase() + key.substring(1);
+                    //System.out.println("props = " + Any.wrap(props));
+                    transfer(path, ("src.main.java." + modelPackage).replace(".", separator), modelFileName + ".java", templates.eventuate.rest.pojo.template(modelPackage, modelFileName, classVarName,  props));
+                }
+            }
+        }
+
+    }
+
+
 
     public void injectEndpoints(Object model) {
         Any anyModel = (Any)model;

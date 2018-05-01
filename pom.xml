@@ -137,6 +137,11 @@
             </dependency>
             <dependency>
                 <groupId>com.networknt</groupId>
+                <artifactId>light-eventuate-4j-generator</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.networknt</groupId>
                 <artifactId>codegen-fwk</artifactId>
                 <version>${project.version}</version>
             </dependency>

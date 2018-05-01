@@ -16,7 +16,7 @@ import java.util.List;
 public class EventuateOpenApiGeneratorTest {
     public static String targetPath = "/tmp/openapi";
     public static String configName = "/rest/config.json";
-    public static String openapiName = "/rest/openapi.json";
+    public static String openapiName = "/rest/eventuate-rest.json";
 
     @BeforeClass
     public static void setUp() throws IOException {
@@ -42,7 +42,11 @@ public class EventuateOpenApiGeneratorTest {
     public void testGetOperationList() throws IOException {
         Any anyModel = JsonIterator.parse(EventuateOpenApiGeneratorTest.class.getResourceAsStream(openapiName), 1024).readAny();
         EventuateOpenApiGenerator generator = new EventuateOpenApiGenerator();
-        List list = generator.getOperationList(anyModel);
+        Any queryModel = anyModel.get("query");
+
+        generator.injectEndpoints(queryModel);
+
+        List list = generator.getOperationList(queryModel);
         System.out.println(list);
     }
 
@@ -50,14 +54,16 @@ public class EventuateOpenApiGeneratorTest {
     public void testInjectEndpoints() throws IOException {
         Any anyModel = JsonIterator.parse(EventuateOpenApiGeneratorTest.class.getResourceAsStream(openapiName), 1024).readAny();
         EventuateOpenApiGenerator generator = new EventuateOpenApiGenerator();
-        generator.injectEndpoints(anyModel);
+        Any commandModel = anyModel.get("command");
+
+        generator.injectEndpoints(commandModel);
         System.out.println(anyModel.toString());
     }
 
     @Test
     public void testGetFramework() {
         EventuateOpenApiGenerator generator = new EventuateOpenApiGenerator();
-        Assert.assertEquals("openapi", generator.getFramework());
+        Assert.assertEquals("eventuate-rest", generator.getFramework());
     }
 
     @Test

@@ -1,0 +1,11 @@
+@import org.apache.commons.text.StringEscapeUtils
+@args (String eventuateCommandPackage, String className)
+package @eventuateCommandPackage;
+
+import com.networknt.eventuate.common.Command;
+
+
+
+public interface @className extends Command {
+}
+

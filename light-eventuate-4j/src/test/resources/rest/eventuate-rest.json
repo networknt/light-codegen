@@ -1,0 +1,402 @@
+{
+  "command":
+{
+  "openapi": "3.0.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Eventuate todo-list sample command side service API",
+    "license": {
+      "name": "MIT"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://light-eventuate.swagger.io/v1"
+    }
+  ],
+  "paths": {
+    "/todos": {
+      "post": {
+        "summary": "create todo task",
+        "operationId": "addNewTodo",
+        "requestBody": {
+          "description": "todo object",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Todo"
+              }
+            }
+          }
+        },
+        "tags": [
+          "todos"
+        ],
+        "security": [
+          {
+            "todo_auth": [
+              "read:todo",
+              "write:todo"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Todo"
+                  }
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Null response"
+          },
+          "default": {
+            "description": "unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "update todo task",
+        "operationId": "updateTodo",
+        "requestBody": {
+          "description": "todo object",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Todo"
+              }
+            }
+          }
+        },
+        "tags": [
+          "todos"
+        ],
+        "security": [
+          {
+            "todo_auth": [
+              "read:todo",
+              "write:todo"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Todo"
+                  }
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Null response"
+          },
+          "default": {
+            "description": "unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/todos/{id}": {
+      "delete": {
+        "summary": "Delete a todo by Id",
+        "operationId": "deleteTodosById",
+        "tags": [
+          "todos"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of todo",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "todo_auth": [
+              "write:todo"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Expected response to a valid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Todo"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "todo_auth": {
+        "type": "oauth2",
+        "description": "This API uses OAuth 2 with the client credential grant flow.",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "https://localhost:6882/token",
+            "scopes": {
+              "write:todo": "modify todo",
+              "read:todo": "read todo"
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "Todo": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "a UUID generated"
+          },
+          "title": {
+            "type": "string",
+            "description": "title of todo"
+          },
+          "complete": {
+            "type": "boolean",
+            "default": false
+          },
+          "order": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "Error": {
+        "required": [
+          "code",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+
+    }
+  }
+},
+"query":
+{
+"openapi": "3.0.0",
+"info": {
+"version": "1.0.0",
+"title": "Eventuate todo-list sample command and query side service API",
+"license": {
+"name": "MIT"
+}
+},
+"servers": [
+{
+"url": "http://light-eventuate.swagger.io/v1"
+}
+],
+"paths": {
+"/todos": {
+"get": {
+"summary": "Return list of todo tasks",
+"operationId": "getAll",
+"tags": [
+"todos"
+],
+"security": [
+{
+"todo_auth": [
+"read:todo"
+]
+}
+],
+"responses": {
+"200": {
+"description": "Successful response",
+"content": {
+"application/json": {
+"schema": {
+"type": "array",
+"items": {
+"$ref": "#/components/schemas/Todo"
+}
+}
+}
+}
+},
+"201": {
+"description": "Null response"
+},
+"default": {
+"description": "unexpected error",
+"content": {
+"application/json": {
+"schema": {
+"$ref": "#/components/schemas/Error"
+}
+}
+}
+}
+}
+}
+},
+"/todos/{id}": {
+"get": {
+"summary": "Return a todo by Id",
+"operationId": "getTodosById",
+"tags": [
+"todos"
+],
+"parameters": [
+{
+"name": "id",
+"in": "path",
+"description": "ID of todo",
+"required": true,
+"schema": {
+"type": "string"
+}
+}
+],
+"security": [
+{
+"account_auth": [
+"read:account"
+]
+}
+],
+"responses": {
+"200": {
+"description": "Expected response to a valid request",
+"content": {
+"application/json": {
+"schema": {
+"$ref": "#/components/schemas/Todo"
+}
+}
+}
+},
+"default": {
+"description": "unexpected error",
+"content": {
+"application/json": {
+"schema": {
+"$ref": "#/components/schemas/Error"
+}
+}
+}
+}
+}
+}
+}
+},
+"components": {
+"securitySchemes": {
+"account_auth": {
+"type": "oauth2",
+"description": "This API uses OAuth 2 with the client credential grant flow.",
+"flows": {
+"clientCredentials": {
+"tokenUrl": "https://localhost:6882/token",
+"scopes": {
+"write:todo": "modify todo",
+"read:todo": "read todo"
+}
+}
+}
+}
+},
+"schemas": {
+"Todo": {
+"type": "object",
+"properties": {
+"id": {
+"type": "string",
+"description": "a UUID generated"
+},
+"title": {
+"type": "string",
+"description": "title of todo"
+},
+"complete": {
+"type": "boolean",
+"default": false
+},
+"order": {
+"type": "integer",
+"format": "int32"
+}
+}
+},
+"Error": {
+"required": [
+"code",
+"message"
+],
+"properties": {
+"code": {
+"type": "integer",
+"format": "int32"
+},
+"message": {
+"type": "string"
+}
+}
+}
+
+}
+}
+}
+}
