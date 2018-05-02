@@ -1,0 +1,6 @@
+@import com.jsoniter.any.Any
+@args (Any config)
+FROM registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift
+#EXPOSE 8481
+@with (name = config.get("artifactId") + "-command-rest-service-" + config.get("version") + ".jar") {ADD ../target/@name server.jar}
+CMD ["/bin/sh","-c","java -Dlight-4j-config-dir=/config -Dlogback.configurationFile=/config/logback.xml -jar server.jar"]
