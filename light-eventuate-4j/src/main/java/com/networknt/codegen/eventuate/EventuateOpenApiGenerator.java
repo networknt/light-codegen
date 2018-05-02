@@ -159,7 +159,7 @@ public class EventuateOpenApiGenerator implements Generator {
         transfer(commandService, "docker", "Dockerfile-Redhat", templates.eventuate.rest.dockerfileredhat.template(config, expose));
         transfer(commandService, "", "build.sh", templates.eventuate.rest.buildSh.template(dockerOrganization, config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version")));
         transfer(commandService, "", ".gitignore", templates.eventuate.rest.gitignore.template());
-        transfer(commandService, "", "README.md", templates.eventuate.rest.README.template());
+        transfer(commandService, "", "README.md", templates.eventuate.rest.openapi.commandservice.README.template());
         transfer(commandService, "", "LICENSE", templates.eventuate.rest.LICENSE.template());
         transfer(commandService, "", ".classpath", templates.eventuate.rest.classpath.template());
         transfer(commandService, "", ".project", templates.eventuate.rest.project.template(config));
@@ -272,7 +272,7 @@ public class EventuateOpenApiGenerator implements Generator {
         transfer(queryService, "docker", "Dockerfile-Redhat", templates.eventuate.rest.dockerfileredhat.template(config, expose));
         transfer(queryService, "", "build.sh", templates.eventuate.rest.buildSh.template(dockerOrganization, config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version")));
         transfer(queryService, "", ".gitignore", templates.eventuate.rest.gitignore.template());
-        transfer(queryService, "", "README.md", templates.eventuate.rest.README.template());
+        transfer(queryService, "", "README.md", templates.eventuate.rest.openapi.queryservice.README.template());
         transfer(queryService, "", "LICENSE", templates.eventuate.rest.LICENSE.template());
         transfer(queryService, "", ".classpath", templates.eventuate.rest.classpath.template());
         transfer(queryService, "", ".project", templates.eventuate.rest.project.template(config));
