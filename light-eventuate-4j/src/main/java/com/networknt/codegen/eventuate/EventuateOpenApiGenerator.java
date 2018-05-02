@@ -106,19 +106,20 @@ public class EventuateOpenApiGenerator implements Generator {
         // event & command & query modules
         if(overwriteEventuateModule) {
             String basedEventInterface = config.toString("basedEventInterface");
-            if (basedEventInterface!=null)  {
+            if (basedEventInterface!=null && basedEventInterface.length()>0)  {
                 transfer(projectPath + "/common", ("src.main.java." + eventuateEventPackage).replace(".", separator), basedEventInterface + ".java", templates.eventuate.rest.openapi.common.event.template(eventuateEventPackage, basedEventInterface));
             } else {
                 transfer(projectPath + "/common", ("src.main.java." + eventuateEventPackage).replace(".", separator), "BaseEvent" + ".java", templates.eventuate.rest.openapi.common.event.template(eventuateEventPackage, "BaseEvent"));
             }
             String basedCommandInterface = config.toString("basedCommandInterface");
-            if (basedCommandInterface!=null)  {
+            if (basedCommandInterface!=null && basedCommandInterface.length()>0)  {
                 transfer(projectPath + "/command", ("src.main.java." + eventuateCommandPackage).replace(".", separator), basedCommandInterface + ".java", templates.eventuate.rest.openapi.command.command.template(eventuateCommandPackage, basedCommandInterface));
             } else {
                 transfer(projectPath + "/command", ("src.main.java." + eventuateCommandPackage).replace(".", separator), "BaseCommand" + ".java", templates.eventuate.rest.openapi.command.command.template(eventuateCommandPackage, "BaseCommand"));
             }
             transfer(projectPath + "/command", ("src.main.java." + eventuateCommandPackage + ".domain").replace(".", separator), "SampleAggregate.java", templates.eventuate.rest.openapi.command.aggregate.template(eventuateCommandPackage + ".domain", "SampleAggregate"));
             transfer(projectPath + "/query", ("src.main.java." + eventuateQueryPackage).replace(".", separator), "package-info.java", templates.eventuate.rest.openapi.query.packageInfo.template(eventuateQueryPackage));
+            transfer(projectPath + "/query", ("src.main.java." + eventuateQueryPackage).replace(".", separator), "BaseQueryService.java", templates.eventuate.rest.openapi.query.queryService.template(eventuateQueryPackage, "BaseQueryService"));
 
         }
 

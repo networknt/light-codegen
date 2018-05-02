@@ -6,8 +6,7 @@
    <parent>
       <groupId>@config.get("groupId")</groupId>
       <artifactId>@config.get("artifactId")</artifactId>
-      <name>@config.get("name")</name>
-      <version>@config.get("version")</version>
+     <version>@config.get("version")</version>
       <relativePath>..</relativePath>
     </parent>
 

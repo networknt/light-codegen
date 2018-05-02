@@ -11,16 +11,17 @@
     <properties>
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <version.light-4j>1.5.13</version.light-4j>
-        <version.light-rest-4j>1.5.13</version.light-rest-4j>
-        <version.light-eventuate-4j>1.5.13</version.light-eventuate-4j>
-        <version.openapi-parser>1.5.13</version.openapi-parser>
+        <version.light-4j>1.5.14</version.light-4j>
+        <version.light-rest-4j>1.5.14</version.light-rest-4j>
+        <version.light-eventuate-4j>1.5.14</version.light-eventuate-4j>
+        <version.openapi-parser>1.5.14</version.openapi-parser>
         <version.jackson>2.9.5</version.jackson>
         <version.slf4j>1.7.25</version.slf4j>
         <version.jose4j>0.6.3</version.jose4j>
         <version.logback>1.2.3</version.logback>
         <version.junit>4.12</version.junit>
         <version.undertow>1.4.23.Final</version.undertow>
+        <version.mockito>2.10.0</version.mockito>
         <version.json-schema-validator>0.1.18</version.json-schema-validator>
         <version.fastscanner>2.18.1</version.fastscanner>
         @if(config.toBoolean("supportDb") || config.toBoolean("supportH2ForTest")){
@@ -50,7 +51,7 @@
         <module>query-rest-service</module>
     </modules>
 
-
+    <dependencyManagement>
     <dependencies>
         <dependency>
             <groupId>@config.get("groupId")</groupId>
@@ -251,7 +252,16 @@
             <artifactId>eventuate-server-jdbc</artifactId>
             <version>${version.light-eventuate-4j}</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${version.slf4j}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-ext</artifactId>
+            <version>${version.slf4j}</version>
+        </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
@@ -317,6 +327,11 @@
             <version>${version.junit}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>${version.mockito}</version>
+        </dependency>
         @if(config.toBoolean("supportH2ForTest")){
         <dependency>
             <groupId>com.h2database</groupId>
@@ -326,6 +341,7 @@
         </dependency>
         }
     </dependencies>
+    </dependencyManagement>
 
 
     <build>
