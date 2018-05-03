@@ -6,7 +6,7 @@ import React, {Component} from 'react';
 import {Row, Col, Button} from 'antd';
 import Highlight from 'react-highlight'
 
-import './GenerateStep.less';
+import './GenerateStep.css';
 import {AppServices} from "../../AppServices";
 
 class GenerateStep extends Component {

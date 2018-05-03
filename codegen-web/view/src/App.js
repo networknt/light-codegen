@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {Layout, LocaleProvider} from 'antd';
-import './App.less';
+import './App.css';
 import enUs from 'antd/lib/locale-provider/en_US'
 import AppHeader from "./app-header/AppHeader";
 import AppContent from "./app-content/AppContent";

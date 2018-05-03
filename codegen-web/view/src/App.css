@@ -1,0 +1,36 @@
+@import "~highlight.js/styles/github.css";
+.logo {
+  float: left;
+  width: 120px;
+  height: 31px;
+  line-height: 31px;
+  margin: 16px 28px 16px 0;
+  border-radius: 6px;
+  text-align: center;
+  color: #fff;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+.root-content {
+  padding: 0 70px;
+}
+.primary-paper {
+  border-radius: 15px;
+  padding: 24px 0;
+  background: #fff;
+  -webkit-box-shadow: 0 0 7px 0 rgba(0, 0, 0, 0.5);
+  -moz-box-shadow: 0 0 7px 0 rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 7px 0 rgba(0, 0, 0, 0.5);
+}
+.nav-button {
+  width: 50px !important;
+  height: 50px !important;
+  border: none !important;
+  -webkit-box-shadow: 0 0 12px 0 rgba(0, 0, 0, 0.12), -3px 5px 12px 0 rgba(0, 0, 0, 0.24);
+  -moz-box-shadow: 0 0 12px 0 rgba(0, 0, 0, 0.12), -3px 5px 12px 0 rgba(0, 0, 0, 0.24);
+  box-shadow: 0 0 12px 0 rgba(0, 0, 0, 0.12), -3px 5px 12px 0 rgba(0, 0, 0, 0.24);
+}
+.nav-button.prev {
+  background: #FFFFFF !important;
+  color: rgba(99, 99, 99, 0.9);
+}

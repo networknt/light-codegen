@@ -5,7 +5,6 @@
 import React, {Component} from 'react';
 import {Row, Col, Button, Icon} from 'antd';
 import SelectConfigForm from "./select-config-form/SelectConfigForm";
-import PropTypes from 'prop-types';
 
 class SelectConfigStep extends Component {
 
@@ -74,10 +73,5 @@ class SelectConfigStep extends Component {
         )
     }
 }
-
-SelectConfigStep.PropTypes = {
-    onPrevClick: PropTypes.func.isRequired,
-    onNextClick: PropTypes.func.isRequired
-};
 
 export default SelectConfigStep;
