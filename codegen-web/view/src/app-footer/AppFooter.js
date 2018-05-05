@@ -10,7 +10,7 @@ const {Footer} = Layout;
 class AppFooter extends Component {
     render() {
         return (
-            <Footer style={{ textAlign: 'center' }}>
+            <Footer style={{ textAlign: 'center', marginTop: '20px'}}>
                 NetworkNT
             </Footer>
         )

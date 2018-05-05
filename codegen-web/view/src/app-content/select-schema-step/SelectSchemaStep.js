@@ -70,6 +70,4 @@ class SelectSchemaStep extends Component {
     }
 }
 
-SelectSchemaStep.PropTypes = {};
-
 export default SelectSchemaStep;

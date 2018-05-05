@@ -50,6 +50,7 @@ class AppContent extends Component {
     };
 
     onSchemaChange = (change) => {
+        console.log("app content schema change", change)
         this.setState((prevState, props) => {
             return {
                 schema: Object.assign({}, prevState.schema, change)
