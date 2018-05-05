@@ -2,6 +2,7 @@ package com.networknt.codegen;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
+import com.beust.jcommander.ParameterException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jsoniter.JsonIterator;
 import com.jsoniter.any.Any;
@@ -29,23 +30,29 @@ public class Cli {
                     "This can be in differing expected formats, given the intended framework type to generate. " +
                     "Please see the documentation for the most up to date usage.")
     String model;
-    @Parameter(names={"--config", "-c"},
+    @Parameter(names={"--config", "-c"}, required = true,
             description = "Configuration parameters in the form of a file to be passed into your service.")
     String config;
     @Parameter(names={"--output", "-o"},
             description = "The output location of the folder which contains the generated codebase.")
-    String output;
+    String output = ".";
 
     @Parameter(names={"--help", "-h"}, help = true)
     private boolean help;
 
     public static void main(String ... argv) {
-        Cli cli = new Cli();
-        JCommander jCommander = JCommander.newBuilder()
-                .addObject(cli)
-                .build();
-        jCommander.parse(argv);
-        cli.run(jCommander);
+        try {
+            Cli cli = new Cli();
+            JCommander jCommander = JCommander.newBuilder()
+                    .addObject(cli)
+                    .build();
+            jCommander.parse(argv);
+            cli.run(jCommander);
+        } catch (ParameterException e)
+        {
+            System.out.println("Command line parameter error: " + e.getLocalizedMessage());
+            e.usage();
+        }
     }
 
     public void run(JCommander jCommander) {
@@ -88,14 +95,17 @@ public class Cli {
                         anyConfig = JsonIterator.deserialize(Files.readAllBytes(Paths.get(config)));
                     }
                 }
-               generator.generate(output, anyModel, anyConfig);
+                generator.generate(output, anyModel, anyConfig);
+                System.out.println("A project has been generated successfully in " + output + " folder. Have fun!!!");
             } catch (Exception e) {
                 e.printStackTrace();
             }
         } else {
-            System.out.printf("Invalid framework %s", framework);
+            System.out.printf("Invalid framework: %s\navaliable frameworks:\n", framework);
+            for(String frm : frameworks) {
+                System.out.println("\t"+frm);
+            }
         }
-        System.out.println("A project has been generated successfully in " + output + " folder. Have fun!!!");
     }
 
     private boolean isUrl(String location) {

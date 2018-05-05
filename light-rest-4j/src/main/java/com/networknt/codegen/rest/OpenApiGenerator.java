@@ -137,7 +137,6 @@ public class OpenApiGenerator implements Generator {
         // routing
         transfer(targetPath, ("src.main.java." + rootPackage).replace(".", separator), "PathHandlerProvider.java", templates.rest.openapi.handlerProvider.template(rootPackage, handlerPackage, operationList, prometheusMetrics));
 
-
         // model
         if(overwriteModel) {
             Any anyComponents = ((Any)model).get("components");
@@ -352,18 +351,21 @@ public class OpenApiGenerator implements Generator {
         String authName = null;
         if(components != null) {
             Map<String, Any> cpMap = components.asMap();
-            Map<String, Any> ssMap = cpMap.get("securitySchemes").asMap();
-            for(String name : ssMap.keySet()) {
-                Map<String, Any> def = ssMap.get(name).asMap();
-                if(def != null && "oauth2".equals(def.get("type").toString())) {
-                    authName = name;
-                    Map<String, Any> flows = def.get("flows").asMap();
-                    for(Map.Entry<String, Any> entry: flows.entrySet()) {
-                        Map<String, Any> oauthMap = entry.getValue().asMap();
-                        if(oauthMap != null) {
-                            Any scopes = oauthMap.get("scopes");
-                            if(scopes != null) {
-                                scopes.asMap().put("server.info.r", Any.wrap("read server info"));
+            Any secSchemes = cpMap.get("securitySchemes");
+            if(null != secSchemes ) {
+                Map<String, Any> ssMap = secSchemes.asMap();
+                for(String name : ssMap.keySet()) {
+                    Map<String, Any> def = ssMap.get(name).asMap();
+                    if(def != null && "oauth2".equals(def.get("type").toString())) {
+                        authName = name;
+                        Map<String, Any> flows = def.get("flows").asMap();
+                        for(Map.Entry<String, Any> entry: flows.entrySet()) {
+                            Map<String, Any> oauthMap = entry.getValue().asMap();
+                            if(oauthMap != null) {
+                                Any scopes = oauthMap.get("scopes");
+                                if(scopes != null) {
+                                    scopes.asMap().put("server.info.r", Any.wrap("read server info"));
+                                }
                             }
                         }
                     }
