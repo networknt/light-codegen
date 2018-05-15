@@ -24,7 +24,7 @@
         <version.json-schema-validator>0.1.18</version.json-schema-validator>
         <version.fastscanner>2.18.1</version.fastscanner>
         @if(config.toBoolean("supportDb") || config.toBoolean("supportH2ForTest")){
-        <version.hikaricp>3.0.0</version.hikaricp>
+        <version.hikaricp>3.1.0</version.hikaricp>
         }
         @if(config.toBoolean("supportDb") && "oracle".equalsIgnoreCase(config.toString("dbInfo", "name"))){
         <version.oracle>11.2.0.3</version.oracle>
