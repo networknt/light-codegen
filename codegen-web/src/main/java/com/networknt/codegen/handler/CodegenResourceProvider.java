@@ -1,6 +1,6 @@
 package com.networknt.codegen.handler;
 
-import com.networknt.resources.PathResourceProvider;
+import com.networknt.resource.PathResourceProvider;
 import io.undertow.server.handlers.resource.PathResourceManager;
 import io.undertow.server.handlers.resource.ResourceManager;
 
