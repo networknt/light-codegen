@@ -1,8 +1,5 @@
 package com.networknt.codegen.handler;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jsoniter.any.Any;
 import com.networknt.codegen.CodegenWebConfig;
 import com.networknt.codegen.FrameworkRegistry;
@@ -11,9 +8,6 @@ import com.networknt.config.Config;
 import com.networknt.rpc.Handler;
 import com.networknt.rpc.router.JsonHandler;
 import com.networknt.rpc.router.ServiceHandler;
-import com.networknt.schema.JsonSchema;
-import com.networknt.schema.JsonSchemaFactory;
-import com.networknt.schema.ValidationMessage;
 import com.networknt.status.Status;
 import com.networknt.utility.HashUtil;
 import com.networknt.utility.NioUtils;
@@ -24,7 +18,6 @@ import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
@@ -38,7 +31,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static java.io.File.separator;
 

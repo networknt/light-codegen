@@ -80,7 +80,7 @@
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
-            <artifactId>resources</artifactId>
+            <artifactId>resource</artifactId>
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>

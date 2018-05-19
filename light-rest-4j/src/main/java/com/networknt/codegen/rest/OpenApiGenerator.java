@@ -227,6 +227,9 @@ public class OpenApiGenerator implements Generator {
                                             if("float".equals(s)) {
                                                 propMap.put("type", Any.wrap(s));
                                             }
+                                            if("int64".equals(s)){
+                                                propMap.put("type", Any.wrap("java.lang.Long"));
+                                            }                                            
                                         }
                                         if("oneOf".equals(entryElement.getKey())) {
                                             List<Any> list = entryElement.getValue().asList();

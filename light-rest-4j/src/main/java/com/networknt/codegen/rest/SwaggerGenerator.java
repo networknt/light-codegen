@@ -223,6 +223,9 @@ public class SwaggerGenerator implements Generator {
                                         if("float".equals(s)) {
                                             propMap.put("type", Any.wrap(s));
                                         }
+                                        if("int64".equals(s)){
+                                            propMap.put("type", Any.wrap("java.lang.Long"));
+                                        }
                                     }
                                 }
                                 props.add(propMap);
