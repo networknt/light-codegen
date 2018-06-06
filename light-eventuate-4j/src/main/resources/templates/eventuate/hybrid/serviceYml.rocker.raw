@@ -38,11 +38,11 @@ singletons:
       username: @username
       password: @password
       maximumPoolSize: 10
-      useServerPrepStmts: true,
-      cachePrepStmts: true,
-      cacheCallableStmts: true,
-      prepStmtCacheSize: 10,
-      prepStmtCacheSqlLimit: 2048,
+      useServerPrepStmts: true
+      cachePrepStmts: true
+      cacheCallableStmts: true
+      prepStmtCacheSize: 10
+      prepStmtCacheSqlLimit: 2048
       connectionTimeout: 2000
 }
 }
