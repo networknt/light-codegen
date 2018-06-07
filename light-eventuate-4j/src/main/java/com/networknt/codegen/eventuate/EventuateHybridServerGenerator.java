@@ -34,6 +34,8 @@ public class EventuateHybridServerGenerator implements Generator {
         String httpsPort = config.toString("httpsPort");
         boolean enableRegistry = config.toBoolean("enableRegistry");
         String dockerOrganization = config.toString("dockerOrganization");
+        String version = config.toString("version");
+        
         if(dockerOrganization ==  null || dockerOrganization.length() == 0) dockerOrganization = "networknt";
 
         boolean supportClient = config.toBoolean("supportClient");
@@ -61,8 +63,8 @@ public class EventuateHybridServerGenerator implements Generator {
         // config
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "service.yml", templates.eventuate.hybrid.serviceYml.template(config));
 
-        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "server.yml", templates.eventuate.hybrid.serverYml.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, httpPort, enableHttps, httpsPort, enableRegistry));
-        transfer(targetPath, ("src.test.resources.config").replace(".", separator), "server.yml", templates.eventuate.hybrid.serverYml.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, "49587", enableHttps, "49588", enableRegistry));
+        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "server.yml", templates.eventuate.hybrid.serverYml.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, httpPort, enableHttps, httpsPort, enableRegistry, version));
+        transfer(targetPath, ("src.test.resources.config").replace(".", separator), "server.yml", templates.eventuate.hybrid.serverYml.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, "49587", enableHttps, "49588", enableRegistry, version));
 
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "secret.yml", templates.eventuate.hybrid.secretYml.template());
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "security.yml", templates.eventuate.hybrid.securityYml.template());

@@ -43,6 +43,8 @@ public class GraphqlGenerator implements Generator {
         boolean enableRegistry = config.toBoolean("enableRegistry");
         boolean supportClient = config.toBoolean("supportClient");
         String dockerOrganization = config.toString("dockerOrganization");
+        String version = config.toString("version");
+        
         if(dockerOrganization == null || dockerOrganization.length() == 0) dockerOrganization = "networknt";
 
         transfer(targetPath, "", "pom.xml", templates.graphql.pom.template(config));
@@ -66,8 +68,8 @@ public class GraphqlGenerator implements Generator {
         // config
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "service.yml", templates.graphql.serviceYml.template(config));
 
-        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "server.yml", templates.graphql.serverYml.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, httpPort, enableHttps, httpsPort, enableRegistry));
-        transfer(targetPath, ("src.test.resources.config").replace(".", separator), "server.yml", templates.graphql.serverYml.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, "49587", enableHttps, "49588", enableRegistry));
+        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "server.yml", templates.graphql.serverYml.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, httpPort, enableHttps, httpsPort, enableRegistry, version));
+        transfer(targetPath, ("src.test.resources.config").replace(".", separator), "server.yml", templates.graphql.serverYml.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, "49587", enableHttps, "49588", enableRegistry, version));
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "secret.yml", templates.graphql.secretYml.template());
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "security.yml", templates.graphql.securityYml.template());
         if(supportClient) {

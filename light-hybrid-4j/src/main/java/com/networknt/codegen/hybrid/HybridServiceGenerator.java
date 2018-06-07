@@ -41,6 +41,7 @@ public class HybridServiceGenerator implements Generator {
         boolean enableHttps = config.toBoolean("enableHttps");
         boolean enableRegistry = config.toBoolean("enableRegistry");
         boolean supportClient = config.toBoolean("supportClient");
+        String version = config.toString("version");
 
         transfer(targetPath, "", "pom.xml", templates.hybrid.service.pom.template(config));
         //transfer(targetPath, "", "Dockerfile", templates.dockerfile.template(config));
@@ -54,7 +55,7 @@ public class HybridServiceGenerator implements Generator {
         // config
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "service.yml", templates.hybrid.serviceYml.template(config));
 
-        transfer(targetPath, ("src.test.resources.config").replace(".", separator), "server.yml", templates.hybrid.serverYml.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, "49587", enableHttps, "49588", enableRegistry));
+        transfer(targetPath, ("src.test.resources.config").replace(".", separator), "server.yml", templates.hybrid.serverYml.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, "49587", enableHttps, "49588", enableRegistry, version));
         transfer(targetPath, ("src.test.resources.config").replace(".", separator), "secret.yml", templates.hybrid.secretYml.template());
         transfer(targetPath, ("src.test.resources.config").replace(".", separator), "security.yml", templates.hybrid.securityYml.template());
 

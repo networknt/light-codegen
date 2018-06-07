@@ -152,6 +152,7 @@ public class EventuateOpenApiGenerator implements Generator {
         boolean overwriteModel = config.toBoolean("overwriteModel");
         String rootPackage = config.toString("rootPackage");
         String handlerPackage = config.toString("handlerPackage");
+        String version = config.toString("version");
 
         if(dockerOrganization == null || dockerOrganization.length() == 0) dockerOrganization = "networknt";
 
@@ -169,8 +170,8 @@ public class EventuateOpenApiGenerator implements Generator {
         // config
         transfer(commandService, ("src.main.resources.config").replace(".", separator), "service.yml", templates.eventuate.rest.openapi.commandservice.service.template(config));
 
-        transfer(commandService, ("src.main.resources.config").replace(".", separator), "server.yml", templates.eventuate.rest.server.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, "8081", enableHttps, "8441", enableRegistry));
-        transfer(commandService, ("src.test.resources.config").replace(".", separator), "server.yml", templates.eventuate.rest.server.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, "49587", enableHttps, "49588", enableRegistry));
+        transfer(commandService, ("src.main.resources.config").replace(".", separator), "server.yml", templates.eventuate.rest.server.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, "8081", enableHttps, "8441", enableRegistry, version));
+        transfer(commandService, ("src.test.resources.config").replace(".", separator), "server.yml", templates.eventuate.rest.server.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, "49587", enableHttps, "49588", enableRegistry, version));
 
         transfer(commandService, ("src.main.resources.config").replace(".", separator), "secret.yml", templates.eventuate.rest.secret.template());
         transfer(commandService, ("src.main.resources.config").replace(".", separator), "security.yml", templates.eventuate.rest.security.template());
@@ -265,7 +266,8 @@ public class EventuateOpenApiGenerator implements Generator {
         boolean overwriteModel = config.toBoolean("overwriteModel");
         String rootPackage = config.toString("rootPackage");
         String handlerPackage = config.toString("handlerPackage");
-
+        String version = config.toString("version");
+        
         if(dockerOrganization == null || dockerOrganization.length() == 0) dockerOrganization = "networknt";
 
         transfer(queryService, "docker", "Dockerfile", templates.eventuate.rest.openapi.queryservice.dockerfile.template(config));
@@ -282,8 +284,8 @@ public class EventuateOpenApiGenerator implements Generator {
         // config
         transfer(queryService, ("src.main.resources.config").replace(".", separator), "service.yml", templates.eventuate.rest.openapi.queryservice.service.template(config));
 
-        transfer(queryService, ("src.main.resources.config").replace(".", separator), "server.yml", templates.eventuate.rest.server.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, "8082", enableHttps, "8442", enableRegistry));
-        transfer(queryService, ("src.test.resources.config").replace(".", separator), "server.yml", templates.eventuate.rest.server.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, "49587", enableHttps, "49588", enableRegistry));
+        transfer(queryService, ("src.main.resources.config").replace(".", separator), "server.yml", templates.eventuate.rest.server.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, "8082", enableHttps, "8442", enableRegistry, version));
+        transfer(queryService, ("src.test.resources.config").replace(".", separator), "server.yml", templates.eventuate.rest.server.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, "49587", enableHttps, "49588", enableRegistry, version));
 
         transfer(queryService, ("src.main.resources.config").replace(".", separator), "secret.yml", templates.eventuate.rest.secret.template());
         transfer(queryService, ("src.main.resources.config").replace(".", separator), "security.yml", templates.eventuate.rest.security.template());
