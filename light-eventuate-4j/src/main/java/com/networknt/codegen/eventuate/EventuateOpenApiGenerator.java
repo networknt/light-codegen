@@ -180,8 +180,8 @@ public class EventuateOpenApiGenerator implements Generator {
         } else {
             transfer(commandService, ("src.test.resources.config").replace(".", separator), "client.yml", templates.eventuate.rest.clientYml.template());
         }
-        transfer(commandService, ("src.main.resources.config.oauth").replace(".", separator), "primary.crt", templates.eventuate.rest.primaryCrt.template());
-        transfer(commandService, ("src.main.resources.config.oauth").replace(".", separator), "secondary.crt", templates.eventuate.rest.secondaryCrt.template());
+        transfer(commandService, ("src.main.resources.config").replace(".", separator), "primary.crt", templates.eventuate.rest.primaryCrt.template());
+        transfer(commandService, ("src.main.resources.config").replace(".", separator), "secondary.crt", templates.eventuate.rest.secondaryCrt.template());
 
         // logging
         transfer(commandService, ("src.main.resources").replace(".", separator), "logback.xml", templates.eventuate.rest.logback.template());
@@ -223,31 +223,25 @@ public class EventuateOpenApiGenerator implements Generator {
         }
 
         // transfer binary files without touching them.
-        if(Files.notExists(Paths.get(commandService, ("src.main.resources.config.tls").replace(".", separator)))) {
-            Files.createDirectories(Paths.get(commandService, ("src.main.resources.config.tls").replace(".", separator)));
-        }
         try (InputStream is = EventuateOpenApiGenerator.class.getResourceAsStream("/binaries/server.keystore")) {
-            Files.copy(is, Paths.get(commandService, ("src.main.resources.config.tls").replace(".", separator), "server.keystore"), StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(is, Paths.get(commandService, ("src.main.resources.config").replace(".", separator), "server.keystore"), StandardCopyOption.REPLACE_EXISTING);
         }
         try (InputStream is = EventuateOpenApiGenerator.class.getResourceAsStream("/binaries/server.truststore")) {
-            Files.copy(is, Paths.get(commandService, ("src.main.resources.config.tls").replace(".", separator), "server.truststore"), StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(is, Paths.get(commandService, ("src.main.resources.config").replace(".", separator), "server.truststore"), StandardCopyOption.REPLACE_EXISTING);
         }
         if(supportClient) {
             try (InputStream is = EventuateOpenApiGenerator.class.getResourceAsStream("/binaries/client.keystore")) {
-                Files.copy(is, Paths.get(commandService, ("src.main.resources.config.tls").replace(".", separator), "client.keystore"), StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(is, Paths.get(commandService, ("src.main.resources.config").replace(".", separator), "client.keystore"), StandardCopyOption.REPLACE_EXISTING);
             }
             try (InputStream is = EventuateOpenApiGenerator.class.getResourceAsStream("/binaries/client.truststore")) {
-                Files.copy(is, Paths.get(commandService, ("src.main.resources.config.tls").replace(".", separator), "client.truststore"), StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(is, Paths.get(commandService, ("src.main.resources.config").replace(".", separator), "client.truststore"), StandardCopyOption.REPLACE_EXISTING);
             }
         } else {
-            if(Files.notExists(Paths.get(commandService, ("src.test.resources.config.tls").replace(".", separator)))) {
-                Files.createDirectories(Paths.get(commandService, ("src.test.resources.config.tls").replace(".", separator)));
-            }
             try (InputStream is = EventuateOpenApiGenerator.class.getResourceAsStream("/binaries/client.keystore")) {
-                Files.copy(is, Paths.get(commandService, ("src.test.resources.config.tls").replace(".", separator), "client.keystore"), StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(is, Paths.get(commandService, ("src.test.resources.config").replace(".", separator), "client.keystore"), StandardCopyOption.REPLACE_EXISTING);
             }
             try (InputStream is = EventuateOpenApiGenerator.class.getResourceAsStream("/binaries/client.truststore")) {
-                Files.copy(is, Paths.get(commandService, ("src.test.resources.config.tls").replace(".", separator), "client.truststore"), StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(is, Paths.get(commandService, ("src.test.resources.config").replace(".", separator), "client.truststore"), StandardCopyOption.REPLACE_EXISTING);
             }
         }
 
@@ -294,8 +288,8 @@ public class EventuateOpenApiGenerator implements Generator {
         } else {
             transfer(queryService, ("src.test.resources.config").replace(".", separator), "client.yml", templates.eventuate.rest.clientYml.template());
         }
-        transfer(queryService, ("src.main.resources.config.oauth").replace(".", separator), "primary.crt", templates.eventuate.rest.primaryCrt.template());
-        transfer(queryService, ("src.main.resources.config.oauth").replace(".", separator), "secondary.crt", templates.eventuate.rest.secondaryCrt.template());
+        transfer(queryService, ("src.main.resources.config").replace(".", separator), "primary.crt", templates.eventuate.rest.primaryCrt.template());
+        transfer(queryService, ("src.main.resources.config").replace(".", separator), "secondary.crt", templates.eventuate.rest.secondaryCrt.template());
 
         // logging
         transfer(queryService, ("src.main.resources").replace(".", separator), "logback.xml", templates.eventuate.rest.logback.template());
@@ -340,31 +334,25 @@ public class EventuateOpenApiGenerator implements Generator {
         }
 
         // transfer binary files without touching them.
-        if(Files.notExists(Paths.get(queryService, ("src.main.resources.config.tls").replace(".", separator)))) {
-            Files.createDirectories(Paths.get(queryService, ("src.main.resources.config.tls").replace(".", separator)));
-        }
         try (InputStream is = EventuateOpenApiGenerator.class.getResourceAsStream("/binaries/server.keystore")) {
-            Files.copy(is, Paths.get(queryService, ("src.main.resources.config.tls").replace(".", separator), "server.keystore"), StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(is, Paths.get(queryService, ("src.main.resources.config").replace(".", separator), "server.keystore"), StandardCopyOption.REPLACE_EXISTING);
         }
         try (InputStream is = EventuateOpenApiGenerator.class.getResourceAsStream("/binaries/server.truststore")) {
-            Files.copy(is, Paths.get(queryService, ("src.main.resources.config.tls").replace(".", separator), "server.truststore"), StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(is, Paths.get(queryService, ("src.main.resources.config").replace(".", separator), "server.truststore"), StandardCopyOption.REPLACE_EXISTING);
         }
         if(supportClient) {
             try (InputStream is = EventuateOpenApiGenerator.class.getResourceAsStream("/binaries/client.keystore")) {
-                Files.copy(is, Paths.get(queryService, ("src.main.resources.config.tls").replace(".", separator), "client.keystore"), StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(is, Paths.get(queryService, ("src.main.resources.config").replace(".", separator), "client.keystore"), StandardCopyOption.REPLACE_EXISTING);
             }
             try (InputStream is = EventuateOpenApiGenerator.class.getResourceAsStream("/binaries/client.truststore")) {
-                Files.copy(is, Paths.get(queryService, ("src.main.resources.config.tls").replace(".", separator), "client.truststore"), StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(is, Paths.get(queryService, ("src.main.resources.config").replace(".", separator), "client.truststore"), StandardCopyOption.REPLACE_EXISTING);
             }
         } else {
-            if(Files.notExists(Paths.get(queryService, ("src.test.resources.config.tls").replace(".", separator)))) {
-                Files.createDirectories(Paths.get(queryService, ("src.test.resources.config.tls").replace(".", separator)));
-            }
             try (InputStream is = EventuateOpenApiGenerator.class.getResourceAsStream("/binaries/client.keystore")) {
-                Files.copy(is, Paths.get(queryService, ("src.test.resources.config.tls").replace(".", separator), "client.keystore"), StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(is, Paths.get(queryService, ("src.test.resources.config").replace(".", separator), "client.keystore"), StandardCopyOption.REPLACE_EXISTING);
             }
             try (InputStream is = EventuateOpenApiGenerator.class.getResourceAsStream("/binaries/client.truststore")) {
-                Files.copy(is, Paths.get(queryService, ("src.test.resources.config.tls").replace(".", separator), "client.truststore"), StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(is, Paths.get(queryService, ("src.test.resources.config").replace(".", separator), "client.truststore"), StandardCopyOption.REPLACE_EXISTING);
             }
         }
 

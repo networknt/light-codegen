@@ -77,8 +77,8 @@ public class EventuateHybridServerGenerator implements Generator {
             transfer(targetPath, ("src.main.resources.config").replace(".", separator), "kafka.yml", templates.eventuate.hybrid.kafka.template());
             transfer(targetPath, ("src.main.resources.config").replace(".", separator), "eventuate-client.yml", templates.eventuate.hybrid.eventuateClient.template());
         }
-        transfer(targetPath, ("src.main.resources.config.oauth").replace(".", separator), "primary.crt", templates.eventuate.hybrid.primaryCrt.template());
-        transfer(targetPath, ("src.main.resources.config.oauth").replace(".", separator), "secondary.crt", templates.eventuate.hybrid.secondaryCrt.template());
+        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "primary.crt", templates.eventuate.hybrid.primaryCrt.template());
+        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "secondary.crt", templates.eventuate.hybrid.secondaryCrt.template());
 
         // logging
         transfer(targetPath, ("src.main.resources").replace(".", separator), "logback.xml", templates.eventuate.hybrid.logback.template());
@@ -89,31 +89,25 @@ public class EventuateHybridServerGenerator implements Generator {
         // no handler test case as this is a server platform which supports other handlers to be deployed.
 
         // transfer binary files without touching them.
-        if(Files.notExists(Paths.get(targetPath, ("src.main.resources.config.tls").replace(".", separator)))) {
-            Files.createDirectories(Paths.get(targetPath, ("src.main.resources.config.tls").replace(".", separator)));
-        }
         try (InputStream is = EventuateHybridServerGenerator.class.getResourceAsStream("/binaries/server.keystore")) {
-            Files.copy(is, Paths.get(targetPath, ("src.main.resources.config.tls").replace(".", separator), "server.keystore"), StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(is, Paths.get(targetPath, ("src.main.resources.config").replace(".", separator), "server.keystore"), StandardCopyOption.REPLACE_EXISTING);
         }
         try (InputStream is = EventuateHybridServerGenerator.class.getResourceAsStream("/binaries/server.truststore")) {
-            Files.copy(is, Paths.get(targetPath, ("src.main.resources.config.tls").replace(".", separator), "server.truststore"), StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(is, Paths.get(targetPath, ("src.main.resources.config").replace(".", separator), "server.truststore"), StandardCopyOption.REPLACE_EXISTING);
         }
         if(supportClient) {
             try (InputStream is = EventuateHybridServerGenerator.class.getResourceAsStream("/binaries/client.keystore")) {
-                Files.copy(is, Paths.get(targetPath, ("src.main.resources.config.tls").replace(".", separator), "client.keystore"), StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(is, Paths.get(targetPath, ("src.main.resources.config").replace(".", separator), "client.keystore"), StandardCopyOption.REPLACE_EXISTING);
             }
             try (InputStream is = EventuateHybridServerGenerator.class.getResourceAsStream("/binaries/client.truststore")) {
-                Files.copy(is, Paths.get(targetPath, ("src.main.resources.config.tls").replace(".", separator), "client.truststore"), StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(is, Paths.get(targetPath, ("src.main.resources.config").replace(".", separator), "client.truststore"), StandardCopyOption.REPLACE_EXISTING);
             }
         } else {
-            if(Files.notExists(Paths.get(targetPath, ("src.test.resources.config.tls").replace(".", separator)))) {
-                Files.createDirectories(Paths.get(targetPath, ("src.test.resources.config.tls").replace(".", separator)));
-            }
             try (InputStream is = EventuateHybridServerGenerator.class.getResourceAsStream("/binaries/client.keystore")) {
-                Files.copy(is, Paths.get(targetPath, ("src.test.resources.config.tls").replace(".", separator), "client.keystore"), StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(is, Paths.get(targetPath, ("src.test.resources.config").replace(".", separator), "client.keystore"), StandardCopyOption.REPLACE_EXISTING);
             }
             try (InputStream is = EventuateHybridServerGenerator.class.getResourceAsStream("/binaries/client.truststore")) {
-                Files.copy(is, Paths.get(targetPath, ("src.test.resources.config.tls").replace(".", separator), "client.truststore"), StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(is, Paths.get(targetPath, ("src.test.resources.config").replace(".", separator), "client.truststore"), StandardCopyOption.REPLACE_EXISTING);
             }
         }
     }
