@@ -67,7 +67,7 @@ public class EventuateHybridServerGenerator implements Generator {
         transfer(targetPath, ("src.test.resources.config").replace(".", separator), "server.yml", templates.eventuate.hybrid.serverYml.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, "49587", enableHttps, "49588", enableRegistry, version));
 
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "secret.yml", templates.eventuate.hybrid.secretYml.template());
-        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "security.yml", templates.eventuate.hybrid.securityYml.template());
+        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "hybrid-security.yml", templates.eventuate.hybrid.securityYml.template());
         if(supportClient) {
             transfer(targetPath, ("src.main.resources.config").replace(".", separator), "client.yml", templates.eventuate.hybrid.clientYml.template());
         } else {

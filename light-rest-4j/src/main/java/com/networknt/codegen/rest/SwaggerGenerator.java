@@ -114,7 +114,8 @@ public class SwaggerGenerator implements Generator {
         transfer(targetPath, ("src.test.resources.config").replace(".", separator), "server.yml", templates.rest.server.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, "49587", enableHttps, "49588", enableRegistry, version));
 
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "secret.yml", templates.rest.secret.template());
-        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "security.yml", templates.rest.security.template());
+        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "swagger-security.yml", templates.rest.swaggerSecurity.template());
+        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "swagger-validator.yml", templates.rest.swaggerValidator.template());
         if(supportClient) {
             transfer(targetPath, ("src.main.resources.config").replace(".", separator), "client.yml", templates.rest.clientYml.template());
         } else {

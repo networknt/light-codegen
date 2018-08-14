@@ -174,7 +174,8 @@ public class EventuateOpenApiGenerator implements Generator {
         transfer(commandService, ("src.test.resources.config").replace(".", separator), "server.yml", templates.eventuate.rest.server.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, "49587", enableHttps, "49588", enableRegistry, version));
 
         transfer(commandService, ("src.main.resources.config").replace(".", separator), "secret.yml", templates.eventuate.rest.secret.template());
-        transfer(commandService, ("src.main.resources.config").replace(".", separator), "security.yml", templates.eventuate.rest.security.template());
+        transfer(commandService, ("src.main.resources.config").replace(".", separator), "openapi-security.yml", templates.eventuate.rest.security.template());
+        transfer(commandService, ("src.main.resources.config").replace(".", separator), "openapi-validator.yml", templates.eventuate.rest.validatorYml.template());
         if(supportClient) {
             transfer(commandService, ("src.main.resources.config").replace(".", separator), "client.yml", templates.eventuate.rest.clientYml.template());
         } else {
@@ -282,7 +283,7 @@ public class EventuateOpenApiGenerator implements Generator {
         transfer(queryService, ("src.test.resources.config").replace(".", separator), "server.yml", templates.eventuate.rest.server.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, "49587", enableHttps, "49588", enableRegistry, version));
 
         transfer(queryService, ("src.main.resources.config").replace(".", separator), "secret.yml", templates.eventuate.rest.secret.template());
-        transfer(queryService, ("src.main.resources.config").replace(".", separator), "security.yml", templates.eventuate.rest.security.template());
+        transfer(queryService, ("src.main.resources.config").replace(".", separator), "openapi-security.yml", templates.eventuate.rest.security.template());
         if(supportClient) {
             transfer(queryService, ("src.main.resources.config").replace(".", separator), "client.yml", templates.eventuate.rest.clientYml.template());
         } else {
