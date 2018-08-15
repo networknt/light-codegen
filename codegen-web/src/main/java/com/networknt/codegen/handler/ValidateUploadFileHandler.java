@@ -6,14 +6,13 @@ import com.networknt.utility.NioUtils;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.form.FormData;
 import io.undertow.util.HttpString;
-import org.slf4j.ext.XLogger;
-import org.slf4j.ext.XLoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.stream.Stream;
 
 /**
  * @author Nicholas Azar
@@ -21,7 +20,7 @@ import java.util.stream.Stream;
  */
 @ServiceHandler(id="lightapi.net/codegen/validateUploadFile/0.0.1")
 public class ValidateUploadFileHandler implements Handler {
-    static private final XLogger logger = XLoggerFactory.getXLogger(ValidateUploadFileHandler.class);
+    static private final Logger logger = LoggerFactory.getLogger(ValidateUploadFileHandler.class);
 
     /**
      * Retrieve the file from the request and validate the json contents against a schema.
@@ -34,7 +33,6 @@ public class ValidateUploadFileHandler implements Handler {
     @Override
     public ByteBuffer handle(HttpServerExchange exchange, Object o) {
         exchange.getResponseHeaders().add(new HttpString("Content-Type"), "application/json");
-        logger.entry(o);
         if (o instanceof FormData) {
             File file = this.getFileFromForm((FormData)o);
             try {

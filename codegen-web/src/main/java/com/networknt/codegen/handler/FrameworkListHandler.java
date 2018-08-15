@@ -8,8 +8,8 @@ import com.networknt.rpc.router.ServiceHandler;
 import com.networknt.utility.NioUtils;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.HttpString;
-import org.slf4j.ext.XLogger;
-import org.slf4j.ext.XLoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
 import java.util.Set;
@@ -19,7 +19,7 @@ import java.util.Set;
  */
 @ServiceHandler(id="lightapi.net/codegen/listFramework/0.0.1")
 public class FrameworkListHandler implements Handler {
-    static private final XLogger logger = XLoggerFactory.getXLogger(FrameworkListHandler.class);
+    static private final Logger logger = LoggerFactory.getLogger(FrameworkListHandler.class);
     static private Set<String> frameworks = FrameworkRegistry.getInstance().getFrameworks();
 
     /**
@@ -28,7 +28,6 @@ public class FrameworkListHandler implements Handler {
      */
     @Override
     public ByteBuffer handle(HttpServerExchange exchange, Object input)  {
-        logger.entry(input);
         String result = "";
         exchange.getResponseHeaders().add(new HttpString("Content-Type"), "application/json");
         try {

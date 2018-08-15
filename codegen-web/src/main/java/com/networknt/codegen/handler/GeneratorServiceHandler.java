@@ -14,8 +14,8 @@ import com.networknt.utility.NioUtils;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.form.FormData;
 import io.undertow.util.HttpString;
-import org.slf4j.ext.XLogger;
-import org.slf4j.ext.XLoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.nio.ByteBuffer;
@@ -24,13 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.InvalidParameterException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static java.io.File.separator;
 
@@ -47,15 +41,13 @@ public class GeneratorServiceHandler implements Handler {
     static private final String STATUS_INVALID_FRAMEWORK = "ERR11100";
     static private final String STATUS_MISSING_GENERATOR_ITEM = "ERR11101";
 
-    static private final XLogger logger = XLoggerFactory.getXLogger(GeneratorServiceHandler.class);
+    static private final Logger logger = LoggerFactory.getLogger(GeneratorServiceHandler.class);
 
     static private CodegenWebConfig codegenWebConfig = (CodegenWebConfig) Config.getInstance().getJsonObjectConfig(CONFIG_NAME, CodegenWebConfig.class);
 
 
     @Override
     public ByteBuffer handle(HttpServerExchange exchange, Object input)  {
-        logger.entry(input);
-
         // generate a destination folder name.
         String output = HashUtil.generateUUID();
         String zipFile = output + ".zip";
