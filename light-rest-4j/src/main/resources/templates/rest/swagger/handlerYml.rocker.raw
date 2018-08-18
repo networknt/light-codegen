@@ -1,7 +1,7 @@
 @import java.util.Map
 @import java.util.List
 @import com.jsoniter.any.Any
-@args (String handlerPackage, List<Map<String, Any>> items, boolean prometheusMetrics)
+@args (String serviceId, String handlerPackage, List<Map<String, Any>> items, boolean prometheusMetrics)
 
 # Handler middleware chain configuration
 ---
@@ -75,7 +75,7 @@ paths:
       - default
       - @with (p = handlerPackage + ".") {@p}@item.get("handlerName")
 }
-  - path: '/health'
+  - path: '/health/@serviceId'
     method: 'get'
     exec:
       - health

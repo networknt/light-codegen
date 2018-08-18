@@ -85,6 +85,7 @@ public class SwaggerGenerator implements Generator {
         String dockerOrganization = config.toString("dockerOrganization");
         prometheusMetrics = config.toBoolean("prometheusMetrics");
         String version = config.toString("version");
+        String serviceId = config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version");
 
         if(dockerOrganization == null || dockerOrganization.length() == 0) dockerOrganization = "networknt";
 
@@ -100,7 +101,7 @@ public class SwaggerGenerator implements Generator {
 
         transfer(targetPath, "docker", "Dockerfile", templates.rest.dockerfile.template(config, expose));
         transfer(targetPath, "docker", "Dockerfile-Redhat", templates.rest.dockerfileredhat.template(config, expose));
-        transfer(targetPath, "", "build.sh", templates.rest.buildSh.template(dockerOrganization, config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version")));
+        transfer(targetPath, "", "build.sh", templates.rest.buildSh.template(dockerOrganization, serviceId));
         transfer(targetPath, "", ".gitignore", templates.rest.gitignore.template());
         transfer(targetPath, "", "README.md", templates.rest.README.template());
         transfer(targetPath, "", "LICENSE", templates.rest.LICENSE.template());
@@ -110,8 +111,8 @@ public class SwaggerGenerator implements Generator {
         // config
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "service.yml", templates.rest.swagger.service.template(config));
 
-        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "server.yml", templates.rest.server.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, httpPort, enableHttps, httpsPort, enableRegistry, version));
-        transfer(targetPath, ("src.test.resources.config").replace(".", separator), "server.yml", templates.rest.server.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, "49587", enableHttps, "49588", enableRegistry, version));
+        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "server.yml", templates.rest.server.template(serviceId, enableHttp, httpPort, enableHttps, httpsPort, enableRegistry, version));
+        transfer(targetPath, ("src.test.resources.config").replace(".", separator), "server.yml", templates.rest.server.template(serviceId, enableHttp, "49587", enableHttps, "49588", enableRegistry, version));
 
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "secret.yml", templates.rest.secret.template());
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "swagger-security.yml", templates.rest.swaggerSecurity.template());
@@ -131,7 +132,7 @@ public class SwaggerGenerator implements Generator {
 
         List<Map<String, Any>> operationList = getOperationList(model);
         // routing
-        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "handler.yml", templates.rest.swagger.handlerYml.template(handlerPackage, operationList, prometheusMetrics));
+        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "handler.yml", templates.rest.swagger.handlerYml.template(serviceId, handlerPackage, operationList, prometheusMetrics));
 
 
         // model
