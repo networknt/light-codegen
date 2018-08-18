@@ -129,9 +129,6 @@ public class SwaggerGenerator implements Generator {
         transfer(targetPath, ("src.main.resources").replace(".", separator), "logback.xml", templates.rest.logback.template());
         transfer(targetPath, ("src.test.resources").replace(".", separator), "logback-test.xml", templates.rest.logback.template());
 
-        // preprocess the swagger.json to inject health check and server info endpoints
-        // injectEndpoints(model);
-
         List<Map<String, Any>> operationList = getOperationList(model);
         // routing
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "handler.yml", templates.rest.swagger.handlerYml.template(handlerPackage, operationList, prometheusMetrics));
@@ -260,10 +257,6 @@ public class SwaggerGenerator implements Generator {
                     //example = mapper.writeValueAsString(op.get("example"));
                     example = JsonStream.serialize(op.get("example"));
                 }
-                if("ServerInfoGetHandler".equals(className) || "HealthGetHandler".equals(className) || "PrometheusGetHandler".equals(className)) {
-                    // don't generate handler for server info and health as they are injected and the impls are in light-4j
-                    continue;
-                }
                 transfer(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), className + ".java", templates.rest.handler.template(handlerPackage, className, example));
             }
         }
@@ -300,74 +293,6 @@ public class SwaggerGenerator implements Generator {
         }
 
         JsonStream.serialize(model, new FileOutputStream(FileSystems.getDefault().getPath(targetPath, ("src.main.resources.config").replace(".", separator), "swagger.json").toFile()));
-    }
-
-    public void injectHealthCheck(Map<String, Any> paths) {
-
-    }
-
-    public void injectEndpoints(Object model) {
-        Any anyModel = (Any)model;
-        Map<String, Any> paths = anyModel.get("paths").asMap();
-        Any securityDefinitions = anyModel.get("securityDefinitions");
-
-        // inject scope server.info.r
-        String authName = null;
-        if(securityDefinitions != null) {
-            Map<String, Any> sdMap = securityDefinitions.asMap();
-            for(String name : sdMap.keySet()) {
-                Map<String, Any> def = sdMap.get(name).asMap();
-                if(def != null && "oauth2".equals(def.get("type").toString())) {
-                    authName = name;
-                    Any scopes = def.get("scopes");
-                    if(scopes != null) {
-                        scopes.asMap().put("server.info.r", Any.wrap("read server info"));
-                    }
-                    break;
-                }
-            }
-        }
-        // inject server info endpoint
-        Map<String, Object> serverInfoMap = new HashMap<>();
-
-        List<String> scopes = new ArrayList<>();
-        scopes.add("server.info.r");
-        Map<String, List> authMap = new HashMap<>();
-        authMap.put(authName, scopes);
-        List<Map<String, List>> authList = new ArrayList<>();
-        authList.add(authMap);
-        serverInfoMap.put("security", authList);
-
-        Map<String, Object> descMap = new HashMap<>();
-        descMap.put("description", "successful operation");
-        Map<String, Object> codeMap = new HashMap<>();
-        codeMap.put("200", descMap);
-        serverInfoMap.put("responses", codeMap);
-        serverInfoMap.put("parameters", new ArrayList());
-
-        Map<String, Object> serverInfo = new HashMap<>();
-        serverInfo.put("get", serverInfoMap);
-        paths.put("/server/info", Any.wrap(serverInfo));
-
-        // inject health check endpoint
-        Map<String, Object> healthMap = new HashMap<>();
-        healthMap.put("responses", codeMap);
-        healthMap.put("parameters", new ArrayList());
-
-        Map<String, Object> health = new HashMap<>();
-        health.put("get", healthMap);
-        paths.put("/health", Any.wrap(health));
-
-        if (prometheusMetrics) {
-            // inject prometheus metrics collect endpoint
-            Map<String, Object> prometheusMap = new HashMap<>();
-            prometheusMap.put("responses", codeMap);
-            prometheusMap.put("parameters", new ArrayList());
-
-            Map<String, Object> prometheus = new HashMap<>();
-            prometheus.put("get", prometheusMap);
-            paths.put("/prometheus", Any.wrap(prometheus));
-        }
     }
 
     public List<Map<String, Any>> getOperationList(Object model) {

@@ -1,6 +1,6 @@
 package com.networknt.codegen.rest;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.jsoniter.JsonIterator;
 import com.jsoniter.ValueType;
 import com.jsoniter.any.Any;
 import com.jsoniter.output.JsonStream;
@@ -9,11 +9,13 @@ import com.networknt.codegen.Utils;
 import com.networknt.oas.OpenApiParser;
 import com.networknt.oas.model.*;
 
+import java.io.ByteArrayInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -131,16 +133,27 @@ public class OpenApiGenerator implements Generator {
         transfer(targetPath, ("src.main.resources").replace(".", separator), "logback.xml", templates.rest.logback.template());
         transfer(targetPath, ("src.test.resources").replace(".", separator), "logback-test.xml", templates.rest.logback.template());
 
-        // preprocess the openapi.yaml to inject health check and server info endpoints
-        // injectEndpoints(model);
-
         List<Map<String, Object>> operationList = getOperationList(model);
         // routing
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "handler.yml", templates.rest.openapi.handlerYml.template(handlerPackage, operationList, prometheusMetrics));
 
         // model
         if(overwriteModel) {
-            Any anyComponents = ((Any)model).get("components");
+            Any anyComponents;
+            if(model instanceof Any) {
+                anyComponents = ((Any)model).get("components");
+            } else if(model instanceof String){
+                // this must be yaml format and we need to convert to json for JsonIterator.
+                OpenApi3 openApi3 = null;
+                try {
+                    openApi3 = (OpenApi3) new OpenApiParser().parse((String)model, new URL("https://oas.lightapi.net/"));
+                } catch (MalformedURLException e) {
+                    throw new RuntimeException("Failed to parse the model", e);
+                }
+                anyComponents = JsonIterator.deserialize(openApi3.toJson().toString()).get("components");
+            } else {
+                throw new RuntimeException("Invalid Model Class: " + model.getClass());
+            }
             if(anyComponents.valueType() != ValueType.INVALID) {
                 Any schemas = anyComponents.asMap().get("schemas");
                 if(schemas != null && schemas.valueType() != ValueType.INVALID) {
@@ -297,10 +310,6 @@ public class OpenApiGenerator implements Generator {
                     //example = mapper.writeValueAsString(op.get("example"));
                     example = JsonStream.serialize(op.get("example"));
                 }
-                if("ServerInfoGetHandler".equals(className) || "HealthGetHandler".equals(className) || "PrometheusGetHandler".equals(className)) {
-                    // don't generate handler for server info and health as they are injected and the impls are in light-4j
-                    continue;
-                }
                 transfer(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), className + ".java", templates.rest.handler.template(handlerPackage, className, example));
             }
         }
@@ -336,87 +345,27 @@ public class OpenApiGenerator implements Generator {
             }
         }
 
-        JsonStream.serialize(model, new FileOutputStream(FileSystems.getDefault().getPath(targetPath, ("src.main.resources.config").replace(".", separator), "openapi.json").toFile()));
-    }
-
-    public void injectEndpoints(Object model) {
-        Any anyModel = (Any)model;
-
-        Map<String, Any> paths = anyModel.get("paths").asMap();
-        Any components = anyModel.get("components");
-
-        // inject scope server.info.r
-        String authName = null;
-        if(components != null) {
-            Map<String, Any> cpMap = components.asMap();
-            Any secSchemes = cpMap.get("securitySchemes");
-            if(null != secSchemes ) {
-                Map<String, Any> ssMap = secSchemes.asMap();
-                for(String name : ssMap.keySet()) {
-                    Map<String, Any> def = ssMap.get(name).asMap();
-                    if(def != null && "oauth2".equals(def.get("type").toString())) {
-                        authName = name;
-                        Map<String, Any> flows = def.get("flows").asMap();
-                        for(Map.Entry<String, Any> entry: flows.entrySet()) {
-                            Map<String, Any> oauthMap = entry.getValue().asMap();
-                            if(oauthMap != null) {
-                                Any scopes = oauthMap.get("scopes");
-                                if(scopes != null) {
-                                    scopes.asMap().put("server.info.r", Any.wrap("read server info"));
-                                }
-                            }
-                        }
-                    }
-                }
+        if(model instanceof Any) {
+            try (InputStream is = new ByteArrayInputStream(model.toString().getBytes(StandardCharsets.UTF_8))) {
+                Files.copy(is, Paths.get(targetPath, ("src.main.resources.config").replace(".", separator), "openapi.json"), StandardCopyOption.REPLACE_EXISTING);
+            }
+        } else if(model instanceof String){
+            try (InputStream is = new ByteArrayInputStream(((String)model).getBytes(StandardCharsets.UTF_8))) {
+                Files.copy(is, Paths.get(targetPath, ("src.main.resources.config").replace(".", separator), "openapi.yaml"), StandardCopyOption.REPLACE_EXISTING);
             }
         }
-        // inject server info endpoint
-        Map<String, Object> serverInfoMap = new HashMap<>();
-
-        List<String> scopes = new ArrayList<>();
-        scopes.add("server.info.r");
-        Map<String, List> authMap = new HashMap<>();
-        authMap.put(authName, scopes);
-        List<Map<String, List>> authList = new ArrayList<>();
-        authList.add(authMap);
-        serverInfoMap.put("security", authList);
-
-        Map<String, Object> descMap = new HashMap<>();
-        descMap.put("description", "successful operation");
-        Map<String, Object> codeMap = new HashMap<>();
-        codeMap.put("200", descMap);
-        serverInfoMap.put("responses", codeMap);
-        serverInfoMap.put("parameters", new ArrayList());
-
-        Map<String, Object> serverInfo = new HashMap<>();
-        serverInfo.put("get", serverInfoMap);
-        paths.put("/server/info", Any.wrap(serverInfo));
-
-        // inject health check endpoint
-        Map<String, Object> healthMap = new HashMap<>();
-        healthMap.put("responses", codeMap);
-        healthMap.put("parameters", new ArrayList());
-
-        Map<String, Object> health = new HashMap<>();
-        health.put("get", healthMap);
-        paths.put("/health", Any.wrap(health));
-
-        if (prometheusMetrics) {
-            // inject prometheus metrics collect endpoint
-            Map<String, Object> prometheusMap = new HashMap<>();
-            prometheusMap.put("responses", codeMap);
-            prometheusMap.put("parameters", new ArrayList());
-
-            Map<String, Object> prometheus = new HashMap<>();
-            prometheus.put("get", prometheusMap);
-            paths.put("/prometheus", Any.wrap(prometheus));
-        }
-
     }
 
     public List<Map<String, Object>> getOperationList(Object model) {
         List<Map<String, Object>> result = new ArrayList<>();
-        String s = ((Any)model).toString();
+        String s;
+        if(model instanceof Any) {
+            s = ((Any)model).toString();
+        } else if(model instanceof String){
+            s = (String)model;
+        } else {
+            throw new RuntimeException("Invalid Model Class: " + model.getClass());
+        }
         OpenApi3 openApi3 = null;
         try {
             openApi3 = (OpenApi3) new OpenApiParser().parse(s, new URL("https://oas.lightapi.net/"));
@@ -482,5 +431,4 @@ public class OpenApiGenerator implements Generator {
         }
         return basePath;
     }
-
 }
