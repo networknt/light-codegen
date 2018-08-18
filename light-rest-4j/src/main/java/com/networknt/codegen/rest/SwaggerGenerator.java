@@ -130,11 +130,11 @@ public class SwaggerGenerator implements Generator {
         transfer(targetPath, ("src.test.resources").replace(".", separator), "logback-test.xml", templates.rest.logback.template());
 
         // preprocess the swagger.json to inject health check and server info endpoints
-        injectEndpoints(model);
+        // injectEndpoints(model);
 
         List<Map<String, Any>> operationList = getOperationList(model);
         // routing
-        transfer(targetPath, ("src.main.java." + rootPackage).replace(".", separator), "PathHandlerProvider.java", templates.rest.swagger.handlerProvider.template(rootPackage, handlerPackage, operationList, prometheusMetrics));
+        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "handler.yml", templates.rest.swagger.handlerYml.template(handlerPackage, operationList, prometheusMetrics));
 
 
         // model
@@ -384,7 +384,7 @@ public class SwaggerGenerator implements Generator {
                 // here are extensions. which will be just a key value pair.
                 if(entryOps.getKey().startsWith("x-")) continue;
                 Map<String, Any> flattened = new HashMap<>();
-                flattened.put("method", Any.wrap(entryOps.getKey().toUpperCase()));
+                flattened.put("method", Any.wrap(entryOps.getKey()));
                 flattened.put("capMethod", Any.wrap(entryOps.getKey().substring(0, 1).toUpperCase() + entryOps.getKey().substring(1)));
                 flattened.put("path", Any.wrap(basePath + path));
                 String normalizedPath = path.replace("{", "").replace("}", "");

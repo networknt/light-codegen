@@ -132,11 +132,11 @@ public class OpenApiGenerator implements Generator {
         transfer(targetPath, ("src.test.resources").replace(".", separator), "logback-test.xml", templates.rest.logback.template());
 
         // preprocess the openapi.yaml to inject health check and server info endpoints
-        injectEndpoints(model);
+        // injectEndpoints(model);
 
         List<Map<String, Object>> operationList = getOperationList(model);
         // routing
-        transfer(targetPath, ("src.main.java." + rootPackage).replace(".", separator), "PathHandlerProvider.java", templates.rest.openapi.handlerProvider.template(rootPackage, handlerPackage, operationList, prometheusMetrics));
+        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "handler.yml", templates.rest.openapi.handlerYml.template(handlerPackage, operationList, prometheusMetrics));
 
         // model
         if(overwriteModel) {
@@ -433,7 +433,7 @@ public class OpenApiGenerator implements Generator {
                 // here are extensions. which will be just a key value pair.
                 if(entryOps.getKey().startsWith("x-")) continue;
                 Map<String, Object> flattened = new HashMap<>();
-                flattened.put("method", entryOps.getKey().toUpperCase());
+                flattened.put("method", entryOps.getKey());
                 flattened.put("capMethod", entryOps.getKey().substring(0, 1).toUpperCase() + entryOps.getKey().substring(1));
                 flattened.put("path", basePath + path);
                 String normalizedPath = path.replace("{", "").replace("}", "");
