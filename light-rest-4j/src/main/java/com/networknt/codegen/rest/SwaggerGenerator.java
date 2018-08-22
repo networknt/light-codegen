@@ -35,6 +35,8 @@ public class SwaggerGenerator implements Generator {
 
     private Map<String, String> typeMapping = new HashMap<>();
     boolean prometheusMetrics =false;
+    boolean skipHealthCheck = false;
+    boolean skipServerInfo = false;
     public SwaggerGenerator() {
         typeMapping.put("array", "java.util.List");
         typeMapping.put("map", "java.util.Map");
@@ -84,6 +86,8 @@ public class SwaggerGenerator implements Generator {
         boolean supportClient = config.toBoolean("supportClient");
         String dockerOrganization = config.toString("dockerOrganization");
         prometheusMetrics = config.toBoolean("prometheusMetrics");
+        skipHealthCheck = config.toBoolean("skipHealthCheck");
+        skipServerInfo = config.toBoolean("skipServerInfo");
         String version = config.toString("version");
         String serviceId = config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version");
 
@@ -132,8 +136,7 @@ public class SwaggerGenerator implements Generator {
 
         List<Map<String, Any>> operationList = getOperationList(model);
         // routing
-        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "handler.yml", templates.rest.swagger.handlerYml.template(serviceId, handlerPackage, operationList, prometheusMetrics));
-
+        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "handler.yml", templates.rest.swagger.handlerYml.template(serviceId, handlerPackage, operationList, prometheusMetrics, !skipHealthCheck, !skipServerInfo));
 
         // model
         Any any = ((Any)model).get("definitions");

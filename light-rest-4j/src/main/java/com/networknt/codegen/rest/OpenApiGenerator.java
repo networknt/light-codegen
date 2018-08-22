@@ -37,6 +37,9 @@ import static java.io.File.separator;
 public class OpenApiGenerator implements Generator {
     private Map<String, String> typeMapping = new HashMap<>();
     boolean prometheusMetrics =false;
+    boolean skipHealthCheck = false;
+    boolean skipServerInfo = false;
+
     public OpenApiGenerator() {
         typeMapping.put("array", "java.util.List");
         typeMapping.put("map", "java.util.Map");
@@ -86,6 +89,9 @@ public class OpenApiGenerator implements Generator {
         boolean supportClient = config.toBoolean("supportClient");
         String dockerOrganization = config.toString("dockerOrganization");
         prometheusMetrics = config.toBoolean("prometheusMetrics");
+        skipHealthCheck = config.toBoolean("skipHealthCheck");
+        skipServerInfo = config.toBoolean("skipServerInfo");
+
         String version = config.toString("version");
         String serviceId = config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version");
 
@@ -134,7 +140,7 @@ public class OpenApiGenerator implements Generator {
 
         List<Map<String, Object>> operationList = getOperationList(model);
         // routing
-        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "handler.yml", templates.rest.openapi.handlerYml.template(serviceId, handlerPackage, operationList, prometheusMetrics));
+        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "handler.yml", templates.rest.openapi.handlerYml.template(serviceId, handlerPackage, operationList, prometheusMetrics, !skipHealthCheck, !skipServerInfo));
 
         // model
         Any anyComponents;
