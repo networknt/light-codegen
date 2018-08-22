@@ -136,138 +136,139 @@ public class SwaggerGenerator implements Generator {
 
 
         // model
-        if(overwriteModel) {
-            Any any = ((Any)model).get("definitions");
-            if(any.valueType() != ValueType.INVALID) {
-                for(Map.Entry<String, Any> entry : any.asMap().entrySet()) {
-                    List<Map<String, Any>> props = new ArrayList<>();
-                    String key = entry.getKey();
-                    Map<String, Any> value = entry.getValue().asMap();
-                    String type = null;
-                    boolean isEnum = false;
-                    Map<String, Any> properties = null;
-                    List<Any> required = null;
+        Any any = ((Any)model).get("definitions");
+        if(any.valueType() != ValueType.INVALID) {
+            for(Map.Entry<String, Any> entry : any.asMap().entrySet()) {
+                List<Map<String, Any>> props = new ArrayList<>();
+                String key = entry.getKey();
+                Map<String, Any> value = entry.getValue().asMap();
+                String type = null;
+                boolean isEnum = false;
+                Map<String, Any> properties = null;
+                List<Any> required = null;
 
-                    for(Map.Entry<String, Any> entrySchema: value.entrySet()) {
-                        if("type".equals(entrySchema.getKey())) {
-                            type = entrySchema.getValue().toString();
-                            if("enum".equals(type)) isEnum = true;
-                        }
-                        if("properties".equals(entrySchema.getKey())) {
-                            properties = entrySchema.getValue().asMap();
-                            // transform properties
+                for(Map.Entry<String, Any> entrySchema: value.entrySet()) {
+                    if("type".equals(entrySchema.getKey())) {
+                        type = entrySchema.getValue().toString();
+                        if("enum".equals(type)) isEnum = true;
+                    }
+                    if("properties".equals(entrySchema.getKey())) {
+                        properties = entrySchema.getValue().asMap();
+                        // transform properties
 
-                            for(Map.Entry<String, Any> entryProp: properties.entrySet()) {
-                                //System.out.println("key = " + entryProp.getKey() + " value = " + entryProp.getValue());
-                                Map<String, Any> propMap = new HashMap<>();
-                                String name = entryProp.getKey();
-                                propMap.put("jsonProperty", Any.wrap(name));
-                                if(name.startsWith("@")) {
-                                    name = name.substring(1);
+                        for(Map.Entry<String, Any> entryProp: properties.entrySet()) {
+                            //System.out.println("key = " + entryProp.getKey() + " value = " + entryProp.getValue());
+                            Map<String, Any> propMap = new HashMap<>();
+                            String name = entryProp.getKey();
+                            propMap.put("jsonProperty", Any.wrap(name));
+                            if(name.startsWith("@")) {
+                                name = name.substring(1);
 
+                            }
+                            propMap.put("name", Any.wrap(name));
+                            propMap.put("getter", Any.wrap("get" + name.substring(0, 1).toUpperCase() + name.substring(1)));
+                            propMap.put("setter", Any.wrap("set" + name.substring(0, 1).toUpperCase() + name.substring(1)));
+                            // assume it is not enum unless it is overwritten
+                            propMap.put("isEnum", Any.wrap(false));
+
+                            boolean isArray = false;
+                            for(Map.Entry<String, Any> entryElement: entryProp.getValue().asMap().entrySet()) {
+                                //System.out.println("key = " + entryElement.getKey() + " value = " + entryElement.getValue());
+
+                                if("type".equals(entryElement.getKey())) {
+                                    String t = typeMapping.get(entryElement.getValue().toString());
+                                    if("java.util.List".equals(t)) {
+                                        isArray = true;
+                                    } else {
+                                        propMap.put("type", Any.wrap(t));
+                                    }
                                 }
-                                propMap.put("name", Any.wrap(name));
-                                propMap.put("getter", Any.wrap("get" + name.substring(0, 1).toUpperCase() + name.substring(1)));
-                                propMap.put("setter", Any.wrap("set" + name.substring(0, 1).toUpperCase() + name.substring(1)));
-                                // assume it is not enum unless it is overwritten
-                                propMap.put("isEnum", Any.wrap(false));
-
-                                boolean isArray = false;
-                                for(Map.Entry<String, Any> entryElement: entryProp.getValue().asMap().entrySet()) {
-                                    //System.out.println("key = " + entryElement.getKey() + " value = " + entryElement.getValue());
-
-                                    if("type".equals(entryElement.getKey())) {
-                                        String t = typeMapping.get(entryElement.getValue().toString());
-                                        if("java.util.List".equals(t)) {
-                                            isArray = true;
-                                        } else {
-                                            propMap.put("type", Any.wrap(t));
-                                        }
-                                    }
-                                    if("items".equals(entryElement.getKey())) {
-                                        Any a = entryElement.getValue();
-                                        if(a.get("$ref").valueType() != ValueType.INVALID && isArray) {
-                                            String s = a.get("$ref").toString();
-                                            s = s.substring(s.lastIndexOf('/') + 1);
-                                            propMap.put("type", Any.wrap("java.util.List<" + s + ">"));
-                                        }
-                                        if(a.get("type").valueType() != ValueType.INVALID && isArray) {
-                                            propMap.put("type", Any.wrap("java.util.List<" + typeMapping.get(a.get("type").toString()) + ">"));
-                                        }
-                                    }
-                                    if("$ref".equals(entryElement.getKey())) {
-                                        String s = entryElement.getValue().toString();
+                                if("items".equals(entryElement.getKey())) {
+                                    Any a = entryElement.getValue();
+                                    if(a.get("$ref").valueType() != ValueType.INVALID && isArray) {
+                                        String s = a.get("$ref").toString();
                                         s = s.substring(s.lastIndexOf('/') + 1);
+                                        propMap.put("type", Any.wrap("java.util.List<" + s + ">"));
+                                    }
+                                    if(a.get("type").valueType() != ValueType.INVALID && isArray) {
+                                        propMap.put("type", Any.wrap("java.util.List<" + typeMapping.get(a.get("type").toString()) + ">"));
+                                    }
+                                }
+                                if("$ref".equals(entryElement.getKey())) {
+                                    String s = entryElement.getValue().toString();
+                                    s = s.substring(s.lastIndexOf('/') + 1);
+                                    propMap.put("type", Any.wrap(s));
+                                }
+                                if("default".equals(entryElement.getKey())) {
+                                    Any a = entryElement.getValue();
+                                    propMap.put("default", a);
+                                }
+                                if("enum".equals(entryElement.getKey())) {
+                                    propMap.put("isEnum", Any.wrap(true));
+                                    propMap.put("nameWithEnum", Any.wrap(name.substring(0, 1).toUpperCase() + name.substring(1) + "Enum"));
+                                    propMap.put("value", Any.wrap(entryElement.getValue()));
+                                }
+                                if("format".equals(entryElement.getKey())) {
+                                    String s = entryElement.getValue().toString();
+                                    if("date-time".equals(s)) {
+                                        propMap.put("type", Any.wrap("java.time.LocalDateTime"));
+                                    }
+                                    if("date".equals(s)) {
+                                        propMap.put("type", Any.wrap("java.time.LocalDate"));
+                                    }
+                                    if("double".equals(s)) {
                                         propMap.put("type", Any.wrap(s));
                                     }
-                                    if("default".equals(entryElement.getKey())) {
-                                        Any a = entryElement.getValue();
-                                        propMap.put("default", a);
+                                    if("float".equals(s)) {
+                                        propMap.put("type", Any.wrap(s));
                                     }
-                                    if("enum".equals(entryElement.getKey())) {
-                                        propMap.put("isEnum", Any.wrap(true));
-                                        propMap.put("nameWithEnum", Any.wrap(name.substring(0, 1).toUpperCase() + name.substring(1) + "Enum"));
-                                        propMap.put("value", Any.wrap(entryElement.getValue()));
-                                    }
-                                    if("format".equals(entryElement.getKey())) {
-                                        String s = entryElement.getValue().toString();
-                                        if("date-time".equals(s)) {
-                                            propMap.put("type", Any.wrap("java.time.LocalDateTime"));
-                                        }
-                                        if("date".equals(s)) {
-                                            propMap.put("type", Any.wrap("java.time.LocalDate"));
-                                        }
-                                        if("double".equals(s)) {
-                                            propMap.put("type", Any.wrap(s));
-                                        }
-                                        if("float".equals(s)) {
-                                            propMap.put("type", Any.wrap(s));
-                                        }
-                                        if("int64".equals(s)){
-                                            propMap.put("type", Any.wrap("java.lang.Long"));
-                                        }
+                                    if("int64".equals(s)){
+                                        propMap.put("type", Any.wrap("java.lang.Long"));
                                     }
                                 }
-                                props.add(propMap);
                             }
-                        }
-                        if("required".equals(entrySchema.getKey())) {
-                            required = entrySchema.getValue().asList();
+                            props.add(propMap);
                         }
                     }
-                    String classVarName = key;
-                    String modelFileName = key.substring(0, 1).toUpperCase() + key.substring(1);
-                    //System.out.println("props = " + Any.wrap(props));
-                    transfer(targetPath, ("src.main.java." + modelPackage).replace(".", separator), modelFileName + ".java", templates.rest.pojo.template(modelPackage, modelFileName, classVarName,  props));
+                    if("required".equals(entrySchema.getKey())) {
+                        required = entrySchema.getValue().asList();
+                    }
                 }
+                String classVarName = key;
+                String modelFileName = key.substring(0, 1).toUpperCase() + key.substring(1);
+                //System.out.println("props = " + Any.wrap(props));
+                if(!overwriteModel && checkExist(targetPath, ("src.main.java." + modelPackage).replace(".", separator), modelFileName + ".java")) {
+                    continue;
+                }
+                transfer(targetPath, ("src.main.java." + modelPackage).replace(".", separator), modelFileName + ".java", templates.rest.pojo.template(modelPackage, modelFileName, classVarName,  props));
             }
         }
-
-
 
 
         // TODO implement model generation based on this object.
         //List<Map<String, Any>> modelList = getPojoList(model);
 
         // handler
-        if(overwriteHandler) {
-            for(Map<String, Any> op : operationList){
-                String className = op.get("handlerName").toString();
-                String example = null;
-                if(op.get("example") != null) {
-                    //example = mapper.writeValueAsString(op.get("example"));
-                    example = JsonStream.serialize(op.get("example"));
-                }
-                transfer(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), className + ".java", templates.rest.handler.template(handlerPackage, className, example));
+        for(Map<String, Any> op : operationList){
+            String className = op.get("handlerName").toString();
+            String example = null;
+            if(op.get("example") != null) {
+                //example = mapper.writeValueAsString(op.get("example"));
+                example = JsonStream.serialize(op.get("example"));
             }
+            if(checkExist(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), className + ".java") && !overwriteHandler) {
+                continue;
+            }
+            transfer(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), className + ".java", templates.rest.handler.template(handlerPackage, className, example));
         }
 
         // handler test cases
         transfer(targetPath, ("src.test.java." + handlerPackage + ".").replace(".", separator),  "TestServer.java", templates.rest.testServer.template(handlerPackage));
-        if(overwriteHandlerTest) {
-            for(Map<String, Any> op : operationList){
-                transfer(targetPath, ("src.test.java." + handlerPackage).replace(".", separator), op.get("handlerName") + "Test.java", templates.rest.swagger.handlerTest.template(handlerPackage, op));
+        for(Map<String, Any> op : operationList){
+            if(checkExist(targetPath, ("src.test.java." + handlerPackage).replace(".", separator), op.get("handlerName") + "Test.java") && !overwriteHandlerTest) {
+                continue;
             }
+            transfer(targetPath, ("src.test.java." + handlerPackage).replace(".", separator), op.get("handlerName") + "Test.java", templates.rest.swagger.handlerTest.template(handlerPackage, op));
         }
 
         // transfer binary files without touching them.

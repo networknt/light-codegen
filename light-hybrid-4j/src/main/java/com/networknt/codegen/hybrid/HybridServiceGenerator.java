@@ -82,7 +82,10 @@ public class HybridServiceGenerator implements Generator {
             for(Any item : items) {
                 Any any = item.get("example");
                 String example = any.valueType() != ValueType.INVALID ? StringEscapeUtils.escapeJson(any.toString()).trim() : "";
-                if(overwriteHandler) transfer(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), item.get("handler") + ".java", templates.hybrid.handler.template(handlerPackage, host, service, item, example));
+                if(!overwriteHandler && checkExist(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), item.get("handler") + ".java")) {
+                    continue;
+                }
+                transfer(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), item.get("handler") + ".java", templates.hybrid.handler.template(handlerPackage, host, service, item, example));
                 String serviceId  = host + "/" + service + "/" + item.get("name") + "/" + item.get("version");
                 Map<String, Object> map = new HashMap<>();
                 map.put("schema", item.get("schema"));
@@ -92,10 +95,11 @@ public class HybridServiceGenerator implements Generator {
 
             // handler test cases
             transfer(targetPath, ("src.test.java." + handlerPackage + ".").replace(".", separator),  "TestServer.java", templates.hybrid.testServer.template(handlerPackage));
-            if(overwriteHandlerTest) {
-                for(Any item : items) {
-                    transfer(targetPath, ("src.test.java." + handlerPackage).replace(".", separator), item.get("handler") + "Test.java", templates.hybrid.handlerTest.template(handlerPackage, host, service, item));
+            for(Any item : items) {
+                if(!overwriteHandlerTest && checkExist(targetPath, ("src.test.java." + handlerPackage).replace(".", separator), item.get("handler") + "Test.java")) {
+                    continue;
                 }
+                transfer(targetPath, ("src.test.java." + handlerPackage).replace(".", separator), item.get("handler") + "Test.java", templates.hybrid.handlerTest.template(handlerPackage, host, service, item));
             }
         }
 

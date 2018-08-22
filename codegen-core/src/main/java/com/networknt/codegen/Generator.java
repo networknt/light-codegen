@@ -85,4 +85,17 @@ public interface Generator {
         }
     }
 
+    /**
+     * This is a default method to check if a handler or handler test exists or not before making overwrite decision.
+     *
+     * @param folder The output folder of the project
+     * @param path  Current file path in the output folder
+     * @param filename Current filename in the output folder
+     * @throws IOException throws IOException
+     */
+    default boolean checkExist(String folder, String path, String filename) throws IOException {
+        String absPath = folder + (path.isEmpty()? "" : separator + path) + separator + filename;
+        return Files.exists(Paths.get(absPath));
+    }
+
 }
