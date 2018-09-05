@@ -6,8 +6,10 @@ import com.jsoniter.any.Any;
 import com.jsoniter.output.JsonStream;
 import com.networknt.codegen.Generator;
 import com.networknt.codegen.Utils;
+import com.networknt.jsonoverlay.Overlay;
 import com.networknt.oas.OpenApiParser;
 import com.networknt.oas.model.*;
+import com.networknt.oas.model.impl.OpenApi3Impl;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -154,7 +156,7 @@ public class OpenApiGenerator implements Generator {
             } catch (MalformedURLException e) {
                 throw new RuntimeException("Failed to parse the model", e);
             }
-            anyComponents = JsonIterator.deserialize(openApi3.toJson().toString()).get("components");
+            anyComponents = JsonIterator.deserialize(Overlay.toJson((OpenApi3Impl)openApi3).toString()).get("components");
         } else {
             throw new RuntimeException("Invalid Model Class: " + model.getClass());
         }
