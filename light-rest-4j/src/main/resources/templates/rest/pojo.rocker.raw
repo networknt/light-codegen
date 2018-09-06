@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class @className {
 
     @for (prop: props) {
-    @if(prop.get("isEnum").toBoolean()) {@templates.rest.enumClass.template(prop)} else {private @prop.get("type") @prop.get("name");}
+    @if(prop.get("isEnum").toBoolean()) {@templates.rest.enumInline.template(prop)} else {private @prop.get("type") @prop.get("name");}
     }
 
     public @className () {

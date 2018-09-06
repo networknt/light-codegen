@@ -168,7 +168,9 @@ public class OpenApiGenerator implements Generator {
                     String key = entry.getKey();
                     Map<String, Any> value = entry.getValue().asMap();
                     String type = null;
+                    String enums = null;
                     boolean isEnum = false;
+                    boolean isEnumClass = false;
                     Map<String, Any> properties = null;
                     List<Any> required = null;
 
@@ -176,6 +178,11 @@ public class OpenApiGenerator implements Generator {
                         if("type".equals(entrySchema.getKey())) {
                             type = entrySchema.getValue().toString();
                             if("enum".equals(type)) isEnum = true;
+                        }
+                        if("enum".equals(entrySchema.getKey())) {
+                            isEnumClass = true;
+                            enums = entrySchema.getValue().asList().toString();
+                            enums = enums.substring(enums.indexOf("[") + 1, enums.indexOf("]"));
                         }
                         if("properties".equals(entrySchema.getKey())) {
                             properties = entrySchema.getValue().asMap();
@@ -302,6 +309,10 @@ public class OpenApiGenerator implements Generator {
                     String modelFileName = key.substring(0, 1).toUpperCase() + key.substring(1);
                     //System.out.println("props = " + Any.wrap(props));
                     if(!overwriteModel && checkExist(targetPath, ("src.main.java." + modelPackage).replace(".", separator), modelFileName + ".java")) {
+                        continue;
+                    }
+                    if (isEnumClass) {
+                        transfer(targetPath, ("src.main.java." + modelPackage).replace(".", separator), modelFileName + ".java", templates.rest.enumClass.template(modelPackage, modelFileName, enums));
                         continue;
                     }
                     transfer(targetPath, ("src.main.java." + modelPackage).replace(".", separator), modelFileName + ".java", templates.rest.pojo.template(modelPackage, modelFileName, classVarName,  props));
