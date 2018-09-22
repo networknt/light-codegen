@@ -1,5 +1,58 @@
 # Change Log
 
+## [1.5.19](https://github.com/networknt/light-codegen/tree/1.5.19) (2018-09-22)
+[Full Changelog](https://github.com/networknt/light-codegen/compare/1.5.11...1.5.19)
+
+**Implemented enhancements:**
+
+- OverwriteHandler flag needs to be at individual handler [\#165](https://github.com/networknt/light-codegen/issues/165)
+
+**Closed issues:**
+
+- OpenAPI spec Reusable Enums not supported [\#176](https://github.com/networknt/light-codegen/issues/176)
+- remove openapi-parser validator mapping in service.yml [\#174](https://github.com/networknt/light-codegen/issues/174)
+- upgrade to new openapi-parser API in openapi generator [\#173](https://github.com/networknt/light-codegen/issues/173)
+- put serviceId into the health endpoint as path parameter [\#172](https://github.com/networknt/light-codegen/issues/172)
+- update rest generator to use the openapi.yml/json and swagger.json directly [\#171](https://github.com/networknt/light-codegen/issues/171)
+- remove XLogger dependencies [\#170](https://github.com/networknt/light-codegen/issues/170)
+- Add support for variable/multi-handler chains in the generator [\#169](https://github.com/networknt/light-codegen/issues/169)
+- generate framework specific security and validator config files [\#168](https://github.com/networknt/light-codegen/issues/168)
+- flatten the config files into the same directory for k8s [\#167](https://github.com/networknt/light-codegen/issues/167)
+- overwriteHandler=false does not create new handlers [\#164](https://github.com/networknt/light-codegen/issues/164)
+- java.lang.ClassCastException: java.lang.String cannot be cast to com.jsoniter.any.Any [\#163](https://github.com/networknt/light-codegen/issues/163)
+- upgrade to undertow 2.0.11.Final [\#162](https://github.com/networknt/light-codegen/issues/162)
+- update HandlerProvider package name [\#161](https://github.com/networknt/light-codegen/issues/161)
+- NotDirectoryException during build of codegen-core [\#159](https://github.com/networknt/light-codegen/issues/159)
+- Update generated handles to extend from LightHttpHandler [\#157](https://github.com/networknt/light-codegen/issues/157)
+- Add a Build Number to the server.yml [\#155](https://github.com/networknt/light-codegen/issues/155)
+- update client.yml, secret.yml and security.yml templates [\#154](https://github.com/networknt/light-codegen/issues/154)
+- Swagger/OpenAPI specs: define proper data type based on the format of the definition type [\#153](https://github.com/networknt/light-codegen/issues/153)
+- filter out signatures for signed jar files in fatjar creation [\#152](https://github.com/networknt/light-codegen/issues/152)
+- Set java heap size to the cgroup memory limit in Dockerfile [\#150](https://github.com/networknt/light-codegen/issues/150)
+- Generation of REST /health and /server/info endpoints shall be configurable [\#149](https://github.com/networknt/light-codegen/issues/149)
+- .project file generated for swagger/openapi is invalid, cannot be opened with eclipse [\#147](https://github.com/networknt/light-codegen/issues/147)
+- Code generation fails without "securitySchemes" section in openapi model [\#146](https://github.com/networknt/light-codegen/issues/146)
+- light-codegen command line error handling [\#143](https://github.com/networknt/light-codegen/issues/143)
+- Update dependencies for REST templates  [\#141](https://github.com/networknt/light-codegen/issues/141)
+- enable codegen-web service with cors so it can be consumed by SPA [\#139](https://github.com/networknt/light-codegen/issues/139)
+- Light Codegen Web with express server [\#138](https://github.com/networknt/light-codegen/issues/138)
+- upgrade graphql-java to version 8.0 [\#137](https://github.com/networknt/light-codegen/issues/137)
+- remove unused properties from light-graphql-4j template [\#136](https://github.com/networknt/light-codegen/issues/136)
+- remove unused properties from server and service templates of hybrid [\#135](https://github.com/networknt/light-codegen/issues/135)
+- remove commons-text dependency and unused properties from light-rest-4j templates [\#134](https://github.com/networknt/light-codegen/issues/134)
+- refactor codegen-web to take advantages of exchange access in hybrid handler [\#126](https://github.com/networknt/light-codegen/issues/126)
+- codegen web generate handler only returns zip file name and not content [\#112](https://github.com/networknt/light-codegen/issues/112)
+
+**Merged pull requests:**
+
+- \#176 support seperate enum classes [\#177](https://github.com/networknt/light-codegen/pull/177) ([auahmed](https://github.com/auahmed))
+- Removing commas from datasource config in service.yml templates. [\#156](https://github.com/networknt/light-codegen/pull/156) ([NicholasAzar](https://github.com/NicholasAzar))
+- Updating view design to match doc site and supporting resources from codegen web light server [\#151](https://github.com/networknt/light-codegen/pull/151) ([NicholasAzar](https://github.com/NicholasAzar))
+-  Fixes \#147,  Fixes \#146 [\#148](https://github.com/networknt/light-codegen/pull/148) ([b-gyula](https://github.com/b-gyula))
+- fixes \#143 [\#144](https://github.com/networknt/light-codegen/pull/144) ([b-gyula](https://github.com/b-gyula))
+- get the latest from develop branch [\#142](https://github.com/networknt/light-codegen/pull/142) ([chenyan71](https://github.com/chenyan71))
+- get the latest from develop [\#132](https://github.com/networknt/light-codegen/pull/132) ([chenyan71](https://github.com/chenyan71))
+
 ## [1.5.11](https://github.com/networknt/light-codegen/tree/1.5.11) (2018-04-01)
 [Full Changelog](https://github.com/networknt/light-codegen/compare/1.5.10...1.5.11)
 
