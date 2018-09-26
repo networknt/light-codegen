@@ -404,7 +404,7 @@ public class OpenApiGenerator implements Generator {
                 // here are extensions. which will be just a key value pair.
                 if(entryOps.getKey().startsWith("x-")) continue;
                 Map<String, Object> flattened = new HashMap<>();
-                flattened.put("method", entryOps.getKey().toUpperCase());
+                flattened.put("method", entryOps.getKey());
                 flattened.put("capMethod", entryOps.getKey().substring(0, 1).toUpperCase() + entryOps.getKey().substring(1));
                 flattened.put("path", basePath + path);
                 String normalizedPath = path.replace("{", "").replace("}", "");

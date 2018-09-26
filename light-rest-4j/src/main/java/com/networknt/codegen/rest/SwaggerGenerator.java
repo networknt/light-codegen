@@ -314,7 +314,7 @@ public class SwaggerGenerator implements Generator {
                 // here are extensions. which will be just a key value pair.
                 if(entryOps.getKey().startsWith("x-")) continue;
                 Map<String, Any> flattened = new HashMap<>();
-                flattened.put("method", Any.wrap(entryOps.getKey().toUpperCase()));
+                flattened.put("method", Any.wrap(entryOps.getKey()));
                 flattened.put("capMethod", Any.wrap(entryOps.getKey().substring(0, 1).toUpperCase() + entryOps.getKey().substring(1)));
                 flattened.put("path", Any.wrap(basePath + path));
                 String normalizedPath = path.replace("{", "").replace("}", "");
