@@ -41,6 +41,7 @@ public class OpenApiGenerator implements Generator {
     boolean prometheusMetrics =false;
     boolean skipHealthCheck = false;
     boolean skipServerInfo = false;
+    boolean specChangeCodeReGenOnly = false;
 
     public OpenApiGenerator() {
         typeMapping.put("array", "java.util.List");
@@ -93,52 +94,55 @@ public class OpenApiGenerator implements Generator {
         prometheusMetrics = config.toBoolean("prometheusMetrics");
         skipHealthCheck = config.toBoolean("skipHealthCheck");
         skipServerInfo = config.toBoolean("skipServerInfo");
+        specChangeCodeReGenOnly = config.toBoolean("specChangeCodeReGenOnly");
 
         String version = config.toString("version");
         String serviceId = config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version");
 
         if(dockerOrganization == null || dockerOrganization.length() == 0) dockerOrganization = "networknt";
 
-        transfer(targetPath, "", "pom.xml", templates.rest.openapi.pom.template(config));
-        // There is only one port that should be exposed in Dockerfile, otherwise, the service
-        // discovery will be so confused. If https is enabled, expose the https port. Otherwise http port.
-        String expose = "";
-        if(enableHttps) {
-            expose = httpsPort;
-        } else {
-            expose = httpPort;
+        if (!specChangeCodeReGenOnly) {
+            transfer(targetPath, "", "pom.xml", templates.rest.openapi.pom.template(config));
+            // There is only one port that should be exposed in Dockerfile, otherwise, the service
+            // discovery will be so confused. If https is enabled, expose the https port. Otherwise http port.
+            String expose = "";
+            if(enableHttps) {
+                expose = httpsPort;
+            } else {
+                expose = httpPort;
+            }
+
+            transfer(targetPath, "docker", "Dockerfile", templates.rest.dockerfile.template(config, expose));
+            transfer(targetPath, "docker", "Dockerfile-Redhat", templates.rest.dockerfileredhat.template(config, expose));
+            transfer(targetPath, "", "build.sh", templates.rest.buildSh.template(dockerOrganization, serviceId));
+            transfer(targetPath, "", ".gitignore", templates.rest.gitignore.template());
+            transfer(targetPath, "", "README.md", templates.rest.README.template());
+            transfer(targetPath, "", "LICENSE", templates.rest.LICENSE.template());
+            transfer(targetPath, "", ".classpath", templates.rest.classpath.template());
+            transfer(targetPath, "", ".project", templates.rest.project.template(config));
+
+            // config
+            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "service.yml", templates.rest.openapi.service.template(config));
+
+            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "server.yml", templates.rest.server.template(serviceId, enableHttp, httpPort, enableHttps, httpsPort, enableRegistry, version));
+            transfer(targetPath, ("src.test.resources.config").replace(".", separator), "server.yml", templates.rest.server.template(serviceId, enableHttp, "49587", enableHttps, "49588", enableRegistry, version));
+
+            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "secret.yml", templates.rest.secret.template());
+            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "openapi-security.yml", templates.rest.openapiSecurity.template());
+            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "openapi-validator.yml", templates.rest.openapiValidator.template());
+            if(supportClient) {
+                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "client.yml", templates.rest.clientYml.template());
+            } else {
+                transfer(targetPath, ("src.test.resources.config").replace(".", separator), "client.yml", templates.rest.clientYml.template());
+            }
+
+            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "primary.crt", templates.rest.primaryCrt.template());
+            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "secondary.crt", templates.rest.secondaryCrt.template());
+
+            // logging
+            transfer(targetPath, ("src.main.resources").replace(".", separator), "logback.xml", templates.rest.logback.template());
+            transfer(targetPath, ("src.test.resources").replace(".", separator), "logback-test.xml", templates.rest.logback.template());
         }
-
-        transfer(targetPath, "docker", "Dockerfile", templates.rest.dockerfile.template(config, expose));
-        transfer(targetPath, "docker", "Dockerfile-Redhat", templates.rest.dockerfileredhat.template(config, expose));
-        transfer(targetPath, "", "build.sh", templates.rest.buildSh.template(dockerOrganization, serviceId));
-        transfer(targetPath, "", ".gitignore", templates.rest.gitignore.template());
-        transfer(targetPath, "", "README.md", templates.rest.README.template());
-        transfer(targetPath, "", "LICENSE", templates.rest.LICENSE.template());
-        transfer(targetPath, "", ".classpath", templates.rest.classpath.template());
-        transfer(targetPath, "", ".project", templates.rest.project.template(config));
-
-        // config
-        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "service.yml", templates.rest.openapi.service.template(config));
-
-        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "server.yml", templates.rest.server.template(serviceId, enableHttp, httpPort, enableHttps, httpsPort, enableRegistry, version));
-        transfer(targetPath, ("src.test.resources.config").replace(".", separator), "server.yml", templates.rest.server.template(serviceId, enableHttp, "49587", enableHttps, "49588", enableRegistry, version));
-
-        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "secret.yml", templates.rest.secret.template());
-        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "openapi-security.yml", templates.rest.openapiSecurity.template());
-        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "openapi-validator.yml", templates.rest.openapiValidator.template());
-        if(supportClient) {
-            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "client.yml", templates.rest.clientYml.template());
-        } else {
-            transfer(targetPath, ("src.test.resources.config").replace(".", separator), "client.yml", templates.rest.clientYml.template());
-        }
-
-        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "primary.crt", templates.rest.primaryCrt.template());
-        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "secondary.crt", templates.rest.secondaryCrt.template());
-
-        // logging
-        transfer(targetPath, ("src.main.resources").replace(".", separator), "logback.xml", templates.rest.logback.template());
-        transfer(targetPath, ("src.test.resources").replace(".", separator), "logback-test.xml", templates.rest.logback.template());
 
         List<Map<String, Object>> operationList = getOperationList(model);
         // routing
