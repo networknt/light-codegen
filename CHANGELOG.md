@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.5.20](https://github.com/networknt/light-codegen/tree/1.5.20) (2018-10-05)
+[Full Changelog](https://github.com/networknt/light-codegen/compare/1.5.19...1.5.20)
+
+**Closed issues:**
+
+- got error on generated handler test case [\#179](https://github.com/networknt/light-codegen/issues/179)
+
 ## [1.5.19](https://github.com/networknt/light-codegen/tree/1.5.19) (2018-09-22)
 [Full Changelog](https://github.com/networknt/light-codegen/compare/1.5.11...1.5.19)
 
