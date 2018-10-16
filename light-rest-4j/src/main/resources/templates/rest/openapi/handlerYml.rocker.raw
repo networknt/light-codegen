@@ -50,6 +50,8 @@ handlers:
   # Framework endpoint handlers
   - com.networknt.health.HealthGetHandler@@health
   - com.networknt.info.ServerInfoGetHandler@@info
+  - com.networknt.specification.SpecDisplayHandler@@spec
+  - com.networknt.specification.SpecSwaggerUIHandler@@swaggerui
   # - com.networknt.metrics.prometheus.PrometheusGetHandler@@getprometheus
   # Business Handlers
 @for(item: items) {  - @with (p = handlerPackage + ".") {@p}@item.get("handlerName")
@@ -90,3 +92,11 @@ paths:
     exec:
       - getprometheus
 }
+  - path: '/spec.yaml'
+    method: 'get'
+    exec:
+      - spec
+  - path: '/specui.html'
+    method: 'get'
+    exec:
+      - swaggerui
