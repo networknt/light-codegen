@@ -24,6 +24,8 @@ public class OpenApiGeneratorTest {
     public static String configName = "/config.json";
     public static String openapiJson = "/openapi.json";
     public static String openapiYaml = "/openapi.yaml";
+    public static String openapiNoServersYaml = "/openapi-noServers.yaml";
+
     @BeforeClass
     public static void setUp() throws IOException {
         // create the output directory
@@ -73,4 +75,12 @@ public class OpenApiGeneratorTest {
         Assert.assertNotNull(bf);
         System.out.println(bf.toString());
     }
+    @Test
+    public void testNoServersGeneratorYaml() throws IOException {
+        Any anyConfig = JsonIterator.parse(OpenApiGeneratorTest.class.getResourceAsStream(configName), 1024).readAny();
+        String strModel = new Scanner(OpenApiGeneratorTest.class.getResourceAsStream(openapiNoServersYaml), "UTF-8").useDelimiter("\\A").next();
+        OpenApiGenerator generator = new OpenApiGenerator();
+        generator.generate(targetPath, strModel, anyConfig);
+    }
+
 }
