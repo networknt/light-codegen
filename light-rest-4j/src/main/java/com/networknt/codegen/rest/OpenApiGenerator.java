@@ -445,8 +445,11 @@ public class OpenApiGenerator implements Generator {
 
     private static String getBasePath(OpenApi3 openApi3) {
         String basePath = "";
-        Server server = openApi3.getServer(0);
-        String url = server.getUrl();
+        String url = null;
+        if (openApi3.getServers().size() > 0) {
+            Server server = openApi3.getServer(0);
+            url = server.getUrl();
+        }
         if(url != null) {
             // find "://" index
             int protocolIndex = url.indexOf("://");
