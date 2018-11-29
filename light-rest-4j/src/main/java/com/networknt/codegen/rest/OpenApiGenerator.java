@@ -216,7 +216,7 @@ public class OpenApiGenerator implements Generator {
                                         if("java.util.List".equals(t)) {
                                             isArray = true;
                                         } else {
-                                            propMap.put("type", Any.wrap(t));
+                                            propMap.putIfAbsent("type", Any.wrap(t));
                                         }
                                     }
                                     if("items".equals(entryElement.getKey())) {
@@ -253,10 +253,10 @@ public class OpenApiGenerator implements Generator {
                                             propMap.put("type", Any.wrap("java.time.LocalDate"));
                                         }
                                         if("double".equals(s)) {
-                                            propMap.put("type", Any.wrap(s));
+                                            propMap.put("type", Any.wrap("java.lang.Double"));
                                         }
                                         if("float".equals(s)) {
-                                            propMap.put("type", Any.wrap(s));
+                                            propMap.put("type", Any.wrap("java.lang.Float"));
                                         }
                                         if("int64".equals(s)){
                                             propMap.put("type", Any.wrap("java.lang.Long"));
@@ -264,9 +264,9 @@ public class OpenApiGenerator implements Generator {
                                     }
                                     if("oneOf".equals(entryElement.getKey())) {
                                         List<Any> list = entryElement.getValue().asList();
-                                        String t = list.get(0).asMap().get("type").toString();
+                                        Any t = list.get(0).asMap().get("type");
                                         if(t != null) {
-                                            propMap.put("type", Any.wrap(typeMapping.get(t)));
+                                            propMap.put("type", Any.wrap(typeMapping.get(t.toString())));
                                         } else {
                                             // maybe reference? default type to object.
                                             propMap.put("type", Any.wrap("Object"));
@@ -274,9 +274,9 @@ public class OpenApiGenerator implements Generator {
                                     }
                                     if("anyOf".equals(entryElement.getKey())) {
                                         List<Any> list = entryElement.getValue().asList();
-                                        String t = list.get(0).asMap().get("type").toString();
+                                        Any t = list.get(0).asMap().get("type");
                                         if(t != null) {
-                                            propMap.put("type", Any.wrap(typeMapping.get(t)));
+                                            propMap.put("type", Any.wrap(typeMapping.get(t.toString())));
                                         } else {
                                             // maybe reference? default type to object.
                                             propMap.put("type", Any.wrap("Object"));
@@ -284,9 +284,9 @@ public class OpenApiGenerator implements Generator {
                                     }
                                     if("allOf".equals(entryElement.getKey())) {
                                         List<Any> list = entryElement.getValue().asList();
-                                        String t = list.get(0).asMap().get("type").toString();
+                                        Any t = list.get(0).asMap().get("type");
                                         if(t != null) {
-                                            propMap.put("type", Any.wrap(typeMapping.get(t)));
+                                            propMap.put("type", Any.wrap(typeMapping.get(t.toString())));
                                         } else {
                                             // maybe reference? default type to object.
                                             propMap.put("type", Any.wrap("Object"));
