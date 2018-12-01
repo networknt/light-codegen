@@ -1,5 +1,23 @@
 # Change Log
 
+## [1.5.23](https://github.com/networknt/light-codegen/tree/1.5.23) (2018-12-01)
+[Full Changelog](https://github.com/networknt/light-codegen/compare/1.5.22...1.5.23)
+
+**Fixed bugs:**
+
+- NPE when a type is not specified in allOf, oneOf, anyOf [\#183](https://github.com/networknt/light-codegen/issues/183)
+
+**Closed issues:**
+
+- possible to map number to BigDecimal in Java [\#140](https://github.com/networknt/light-codegen/issues/140)
+
+**Merged pull requests:**
+
+- Codegen fails, when optional servers field is empty [\#185](https://github.com/networknt/light-codegen/pull/185) ([zabooma](https://github.com/zabooma))
+
+## [1.5.22](https://github.com/networknt/light-codegen/tree/1.5.22) (2018-11-10)
+[Full Changelog](https://github.com/networknt/light-codegen/compare/1.5.21...1.5.22)
+
 ## [1.5.21](https://github.com/networknt/light-codegen/tree/1.5.21) (2018-10-16)
 [Full Changelog](https://github.com/networknt/light-codegen/compare/1.5.20...1.5.21)
 
