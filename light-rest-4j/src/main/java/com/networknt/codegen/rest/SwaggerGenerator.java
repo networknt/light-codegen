@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import static java.io.File.separator;
 
@@ -262,7 +263,18 @@ public class SwaggerGenerator implements Generator {
             if(checkExist(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), className + ".java") && !overwriteHandler) {
                 continue;
             }
-            transfer(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), className + ".java", templates.rest.handler.template(handlerPackage, className, example));
+            Any parametersRaw = op.get("parameters");
+            List<Map> parameterList = new ArrayList();
+            if(parametersRaw != null) {
+                List parameters = parametersRaw.asList();
+                for(Object parameterRaw : parameters) {
+                    Map parameterMap = ((Any)parameterRaw).asMap();
+                    Map parameterResultMap = new HashMap();
+                    parameterMap.forEach((k, v) -> parameterResultMap.put(k, String.valueOf(v)));
+                    parameterList.add(parameterResultMap);
+                }
+            }
+            transfer(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), className + ".java", templates.rest.handler.template(handlerPackage, className, example, parameterList));
         }
 
         // handler test cases
@@ -334,6 +346,10 @@ public class SwaggerGenerator implements Generator {
                                 flattened.put("example", jsonRes);
                             }
                         }
+                    }
+                    Any parametersRaw = values.get("parameters");
+                    if(parametersRaw != null) {
+                        flattened.put("parameters", parametersRaw);
                     }
                     result.add(flattened);
                 }

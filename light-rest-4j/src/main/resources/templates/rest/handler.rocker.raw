@@ -1,5 +1,8 @@
 @import org.apache.commons.text.StringEscapeUtils
-@args (String handlerPackage, String className, String example)
+@import java.util.Map
+@import java.util.List
+
+@args (String handlerPackage, String className, String example, List<Map> parameters)
 package @handlerPackage;
 
 import com.networknt.handler.LightHttpHandler;
@@ -9,6 +12,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class @className implements LightHttpHandler {
+    /**@if(parameters != null) { @for (parameter : parameters) {
+     * @@param: @?parameter.get("name"). @if(parameter.get("required").equals("true")) {@@Required.} else{@@Optional.}
+     * @if(parameter.get("type") != null) {type: @parameter.get("type");} @if(parameter.get("minLength") != null) {maxLength: @parameter.get("minLength");} @if(parameter.get("maxLength") != null) {maxLength: @parameter.get("maxLength");}
+     * @if(parameter.get("description") != null ){description: @parameter.get("description")}}}
+     */
     @@Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {
         @if(example != null) {
