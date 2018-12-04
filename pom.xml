@@ -212,7 +212,6 @@
                 <artifactId>openapi-parser</artifactId>
                 <version>${version.openapi-parser}</version>
             </dependency>
-
             <dependency>
                 <groupId>com.jsoniter</groupId>
                 <artifactId>jsoniter</artifactId>

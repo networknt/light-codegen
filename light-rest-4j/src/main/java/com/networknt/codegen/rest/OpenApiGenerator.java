@@ -39,6 +39,7 @@ public class OpenApiGenerator implements Generator {
     boolean skipHealthCheck = false;
     boolean skipServerInfo = false;
     boolean specChangeCodeReGenOnly = false;
+    boolean enablePramDescription = true;
 
     public OpenApiGenerator() {
         typeMapping.put("array", "java.util.List");
@@ -92,6 +93,7 @@ public class OpenApiGenerator implements Generator {
         skipHealthCheck = config.toBoolean("skipHealthCheck");
         skipServerInfo = config.toBoolean("skipServerInfo");
         specChangeCodeReGenOnly = config.toBoolean("specChangeCodeReGenOnly");
+        enablePramDescription = config.toBoolean("enablePramDescription");
 
         String version = config.toString("version");
         String serviceId = config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version");
@@ -413,30 +415,31 @@ public class OpenApiGenerator implements Generator {
                 flattened.put("normalizedPath", basePath + normalizedPath);
                 flattened.put("handlerName", Utils.camelize(normalizedPath) + Utils.camelize(entryOps.getKey()) + "Handler");
                 Operation operation = entryOps.getValue();
-                //get parameters info and put into result
-                List<Parameter> parameterRawList = operation.getParameters();
-                List<Map> parametersResultList = new LinkedList<>();
-                parameterRawList.forEach(parameter -> {
-                            Map<String, String> parameterMap = new HashMap<>();
-                            parameterMap.put("name", parameter.getName());
-                            parameterMap.put("description", parameter.getDescription());
-                            if(parameter.getRequired() != null) {
-                                parameterMap.put("required", String.valueOf(parameter.getRequired()));
-                            }
-                            Schema schema = parameter.getSchema();
-                            if(schema != null) {
-                                parameterMap.put("type", schema.getType());
-                                if(schema.getMinLength() != null) {
-                                    parameterMap.put("minLength", String.valueOf(schema.getMinLength()));
+                if (enablePramDescription) {
+                    //get parameters info and put into result
+                    List<Parameter> parameterRawList = operation.getParameters();
+                    List<Map> parametersResultList = new LinkedList<>();
+                    parameterRawList.forEach(parameter -> {
+                                Map<String, String> parameterMap = new HashMap<>();
+                                parameterMap.put("name", parameter.getName());
+                                parameterMap.put("description", parameter.getDescription());
+                                if(parameter.getRequired() != null) {
+                                    parameterMap.put("required", String.valueOf(parameter.getRequired()));
                                 }
-                                if(schema.getMaxLength() != null) {
-                                    parameterMap.put("maxLength", String.valueOf(schema.getMaxLength()));
+                                Schema schema = parameter.getSchema();
+                                if(schema != null) {
+                                    parameterMap.put("type", schema.getType());
+                                    if(schema.getMinLength() != null) {
+                                        parameterMap.put("minLength", String.valueOf(schema.getMinLength()));
+                                    }
+                                    if(schema.getMaxLength() != null) {
+                                        parameterMap.put("maxLength", String.valueOf(schema.getMaxLength()));
+                                    }
                                 }
-                            }
-                            parametersResultList.add(parameterMap);
-                        });
-                flattened.put("parameters", parametersResultList);
-
+                                parametersResultList.add(parameterMap);
+                            });
+                    flattened.put("parameters", parametersResultList);
+                }
                 Response response = operation.getResponse("200");
                 if(response != null) {
                     MediaType mediaType = response.getContentMediaType("application/json");
