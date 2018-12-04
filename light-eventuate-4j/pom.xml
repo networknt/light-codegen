@@ -74,6 +74,9 @@
                         </goals>
                         <configuration>
                             <templateDirectory>src/main/resources</templateDirectory>
+                            <postProcessing>
+                                <param>com.fizzed.rocker.processor.WhitespaceRemovalProcessor</param>
+                            </postProcessing>
                         </configuration>
                     </execution>
                 </executions>

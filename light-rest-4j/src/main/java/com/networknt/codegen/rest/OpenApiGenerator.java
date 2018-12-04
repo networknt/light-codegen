@@ -39,7 +39,7 @@ public class OpenApiGenerator implements Generator {
     boolean skipHealthCheck = false;
     boolean skipServerInfo = false;
     boolean specChangeCodeReGenOnly = false;
-    boolean enablePramDescription = true;
+    boolean enableParamDescription = true;
 
     public OpenApiGenerator() {
         typeMapping.put("array", "java.util.List");
@@ -93,7 +93,7 @@ public class OpenApiGenerator implements Generator {
         skipHealthCheck = config.toBoolean("skipHealthCheck");
         skipServerInfo = config.toBoolean("skipServerInfo");
         specChangeCodeReGenOnly = config.toBoolean("specChangeCodeReGenOnly");
-        enablePramDescription = config.toBoolean("enablePramDescription");
+        enableParamDescription = config.toBoolean("enableParamDescription");
 
         String version = config.toString("version");
         String serviceId = config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version");
@@ -415,7 +415,7 @@ public class OpenApiGenerator implements Generator {
                 flattened.put("normalizedPath", basePath + normalizedPath);
                 flattened.put("handlerName", Utils.camelize(normalizedPath) + Utils.camelize(entryOps.getKey()) + "Handler");
                 Operation operation = entryOps.getValue();
-                if (enablePramDescription) {
+                if (enableParamDescription) {
                     //get parameters info and put into result
                     List<Parameter> parameterRawList = operation.getParameters();
                     List<Map> parametersResultList = new LinkedList<>();

@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import static java.io.File.separator;
 
@@ -38,7 +37,7 @@ public class SwaggerGenerator implements Generator {
     boolean prometheusMetrics =false;
     boolean skipHealthCheck = false;
     boolean skipServerInfo = false;
-    boolean enablePramDescription = false;
+    boolean enableParamDescription = false;
     public SwaggerGenerator() {
         typeMapping.put("array", "java.util.List");
         typeMapping.put("map", "java.util.Map");
@@ -92,7 +91,7 @@ public class SwaggerGenerator implements Generator {
         skipServerInfo = config.toBoolean("skipServerInfo");
         String version = config.toString("version");
         String serviceId = config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version");
-        enablePramDescription = config.toBoolean("enablePramDescription");
+        enableParamDescription = config.toBoolean("enableParamDescription");
 
         if(dockerOrganization == null || dockerOrganization.length() == 0) dockerOrganization = "networknt";
 
@@ -349,13 +348,13 @@ public class SwaggerGenerator implements Generator {
                             }
                         }
                     }
-                    if (enablePramDescription) {
+                    if (enableParamDescription) {
                         Any parametersRaw = values.get("parameters");
                         if(parametersRaw != null) {
                             flattened.put("parameters", parametersRaw);
                         }
-                        result.add(flattened);
                     }
+                    result.add(flattened);
                 }
             }
         }
