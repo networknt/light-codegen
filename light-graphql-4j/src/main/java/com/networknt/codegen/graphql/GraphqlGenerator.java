@@ -3,14 +3,19 @@ package com.networknt.codegen.graphql;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jsoniter.any.Any;
 import com.networknt.codegen.Generator;
+import com.networknt.utility.NioUtils;
+import graphql.schema.GraphQLSchema;
+import graphql.schema.idl.RuntimeWiring;
+import graphql.schema.idl.SchemaGenerator;
+import graphql.schema.idl.SchemaParser;
+import graphql.schema.idl.TypeDefinitionRegistry;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.*;
+import java.util.Map;
 
 import static java.io.File.separator;
 
@@ -39,7 +44,7 @@ public class GraphqlGenerator implements Generator {
         boolean supportClient = config.toBoolean("supportClient");
         String dockerOrganization = config.toString("dockerOrganization");
         String version = config.toString("version");
-        
+
         if(dockerOrganization == null || dockerOrganization.length() == 0) dockerOrganization = "networknt";
 
         transfer(targetPath, "", "pom.xml", templates.graphql.pom.template(config));
