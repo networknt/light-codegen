@@ -34,10 +34,6 @@
             <groupId>com.networknt</groupId>
             <artifactId>codegen-core</artifactId>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>com.networknt</groupId>-->
-            <!--<artifactId>service</artifactId>-->
-        <!--</dependency>-->
         <dependency>
             <groupId>com.networknt</groupId>
             <artifactId>light-rest-4j-generator</artifactId>
