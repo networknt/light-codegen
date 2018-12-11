@@ -20,10 +20,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static java.io.File.separator;
 
@@ -42,6 +39,7 @@ public class OpenApiGenerator implements Generator {
     boolean skipHealthCheck = false;
     boolean skipServerInfo = false;
     boolean specChangeCodeReGenOnly = false;
+    boolean enableParamDescription = true;
 
     public OpenApiGenerator() {
         typeMapping.put("array", "java.util.List");
@@ -95,6 +93,7 @@ public class OpenApiGenerator implements Generator {
         skipHealthCheck = config.toBoolean("skipHealthCheck");
         skipServerInfo = config.toBoolean("skipServerInfo");
         specChangeCodeReGenOnly = config.toBoolean("specChangeCodeReGenOnly");
+        enableParamDescription = config.toBoolean("enableParamDescription");
 
         String version = config.toString("version");
         String serviceId = config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version");
@@ -328,6 +327,7 @@ public class OpenApiGenerator implements Generator {
         for(Map<String, Object> op : operationList){
             String className = op.get("handlerName").toString();
             String example = null;
+            List<Map> parameters = (List) op.get("parameters");
             if(op.get("example") != null) {
                 //example = mapper.writeValueAsString(op.get("example"));
                 example = JsonStream.serialize(op.get("example"));
@@ -335,7 +335,7 @@ public class OpenApiGenerator implements Generator {
             if(checkExist(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), className + ".java") && !overwriteHandler) {
                 continue;
             }
-            transfer(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), className + ".java", templates.rest.handler.template(handlerPackage, className, example));
+            transfer(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), className + ".java", templates.rest.handler.template(handlerPackage, className, example, parameters));
         }
 
         // handler test cases
@@ -415,6 +415,31 @@ public class OpenApiGenerator implements Generator {
                 flattened.put("normalizedPath", basePath + normalizedPath);
                 flattened.put("handlerName", Utils.camelize(normalizedPath) + Utils.camelize(entryOps.getKey()) + "Handler");
                 Operation operation = entryOps.getValue();
+                if (enableParamDescription) {
+                    //get parameters info and put into result
+                    List<Parameter> parameterRawList = operation.getParameters();
+                    List<Map> parametersResultList = new LinkedList<>();
+                    parameterRawList.forEach(parameter -> {
+                                Map<String, String> parameterMap = new HashMap<>();
+                                parameterMap.put("name", parameter.getName());
+                                parameterMap.put("description", parameter.getDescription());
+                                if(parameter.getRequired() != null) {
+                                    parameterMap.put("required", String.valueOf(parameter.getRequired()));
+                                }
+                                Schema schema = parameter.getSchema();
+                                if(schema != null) {
+                                    parameterMap.put("type", schema.getType());
+                                    if(schema.getMinLength() != null) {
+                                        parameterMap.put("minLength", String.valueOf(schema.getMinLength()));
+                                    }
+                                    if(schema.getMaxLength() != null) {
+                                        parameterMap.put("maxLength", String.valueOf(schema.getMaxLength()));
+                                    }
+                                }
+                                parametersResultList.add(parameterMap);
+                            });
+                    flattened.put("parameters", parametersResultList);
+                }
                 Response response = operation.getResponse("200");
                 if(response != null) {
                     MediaType mediaType = response.getContentMediaType("application/json");

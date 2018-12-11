@@ -37,6 +37,7 @@ public class SwaggerGenerator implements Generator {
     boolean prometheusMetrics =false;
     boolean skipHealthCheck = false;
     boolean skipServerInfo = false;
+    boolean enableParamDescription = true;
     public SwaggerGenerator() {
         typeMapping.put("array", "java.util.List");
         typeMapping.put("map", "java.util.Map");
@@ -90,6 +91,7 @@ public class SwaggerGenerator implements Generator {
         skipServerInfo = config.toBoolean("skipServerInfo");
         String version = config.toString("version");
         String serviceId = config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version");
+        enableParamDescription = config.toBoolean("enableParamDescription");
 
         if(dockerOrganization == null || dockerOrganization.length() == 0) dockerOrganization = "networknt";
 
@@ -262,7 +264,18 @@ public class SwaggerGenerator implements Generator {
             if(checkExist(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), className + ".java") && !overwriteHandler) {
                 continue;
             }
-            transfer(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), className + ".java", templates.rest.handler.template(handlerPackage, className, example));
+            Any parametersRaw = op.get("parameters");
+            List<Map> parameterList = new ArrayList();
+            if(parametersRaw != null) {
+                List parameters = parametersRaw.asList();
+                for(Object parameterRaw : parameters) {
+                    Map parameterMap = ((Any)parameterRaw).asMap();
+                    Map parameterResultMap = new HashMap();
+                    parameterMap.forEach((k, v) -> parameterResultMap.put(k, String.valueOf(v)));
+                    parameterList.add(parameterResultMap);
+                }
+            }
+            transfer(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), className + ".java", templates.rest.handler.template(handlerPackage, className, example, parameterList));
         }
 
         // handler test cases
@@ -333,6 +346,12 @@ public class SwaggerGenerator implements Generator {
                                 Any jsonRes = examples.asMap().get("application/json");
                                 flattened.put("example", jsonRes);
                             }
+                        }
+                    }
+                    if (enableParamDescription) {
+                        Any parametersRaw = values.get("parameters");
+                        if(parametersRaw != null) {
+                            flattened.put("parameters", parametersRaw);
                         }
                     }
                     result.add(flattened);

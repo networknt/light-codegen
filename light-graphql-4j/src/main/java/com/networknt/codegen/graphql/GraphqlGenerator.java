@@ -44,7 +44,7 @@ public class GraphqlGenerator implements Generator {
         boolean supportClient = config.toBoolean("supportClient");
         String dockerOrganization = config.toString("dockerOrganization");
         String version = config.toString("version");
-        
+
         if(dockerOrganization == null || dockerOrganization.length() == 0) dockerOrganization = "networknt";
 
         transfer(targetPath, "", "pom.xml", templates.graphql.pom.template(config));
