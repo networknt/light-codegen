@@ -13,10 +13,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static java.io.File.separator;
 
@@ -163,6 +160,7 @@ public class SwaggerGenerator implements Generator {
                             //System.out.println("key = " + entryProp.getKey() + " value = " + entryProp.getValue());
                             Map<String, Any> propMap = new HashMap<>();
                             String name = entryProp.getKey();
+                            name = name.trim().replaceAll(" ", "_");
                             propMap.put("jsonProperty", Any.wrap(name));
                             if(name.startsWith("@")) {
                                 name = name.substring(1);
@@ -209,6 +207,7 @@ public class SwaggerGenerator implements Generator {
                                 if("enum".equals(entryElement.getKey())) {
                                     propMap.put("isEnum", Any.wrap(true));
                                     propMap.put("nameWithEnum", Any.wrap(name.substring(0, 1).toUpperCase() + name.substring(1) + "Enum"));
+                                    this.addUnderscores(entryElement);
                                     propMap.put("value", Any.wrap(entryElement.getValue()));
                                 }
                                 if("format".equals(entryElement.getKey())) {
@@ -340,5 +339,15 @@ public class SwaggerGenerator implements Generator {
             }
         }
         return result;
+    }
+    private static void addUnderscores(Map.Entry<String, Any> entryElement) {
+        Iterator<Any> iterator = entryElement.getValue().iterator();
+        List<Any> list = new ArrayList<>();
+        while (iterator.hasNext()) {
+            Any any = iterator.next();
+            String value = any.toString().trim().replaceAll(" ", "_");
+            list.add(Any.wrap(value));
+        }
+        entryElement.setValue(Any.wrap(list));
     }
 }
