@@ -37,7 +37,7 @@ public class SwaggerGenerator implements Generator {
     boolean prometheusMetrics =false;
     boolean skipHealthCheck = false;
     boolean skipServerInfo = false;
-    boolean enableParamDescription = false;
+    boolean enableParamDescription = true;
     public SwaggerGenerator() {
         typeMapping.put("array", "java.util.List");
         typeMapping.put("map", "java.util.Map");
