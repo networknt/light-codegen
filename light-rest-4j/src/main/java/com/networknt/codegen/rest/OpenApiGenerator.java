@@ -238,11 +238,10 @@ public class OpenApiGenerator implements Generator {
                                         propMap.put("default", a);
                                     }
                                     if("enum".equals(entryElement.getKey())) {
-                                        propMap.put("isEnum" + "", Any.wrap(true));
+                                        propMap.put("isEnum", Any.wrap(true));
                                         propMap.put("nameWithEnum", Any.wrap(name.substring(0, 1).toUpperCase() + name.substring(1) + "Enum"));
                                         this.addUnderscores(entryElement);
                                         propMap.put("value", Any.wrap(entryElement.getValue()));
-
                                     }
                                     if("format".equals(entryElement.getKey())) {
                                         String s = entryElement.getValue().toString();
