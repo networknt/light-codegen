@@ -23,7 +23,7 @@ import java.util.List;
  * Created by stevehu on 2017-04-23.
  */
 public class SwaggerGeneratorTest {
-    public static String targetPath = System.getProperty("user.dir").replace("light-rest-4j", "openapi-test");;
+    public static String targetPath = "/tmp/swagger";
     public static String configName = "/config.json";
     public static String swaggerName = "/swagger.json";
     public static String packageName = "com.networknt.petstore.model";

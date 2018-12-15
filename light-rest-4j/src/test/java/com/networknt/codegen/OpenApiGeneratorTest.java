@@ -23,7 +23,7 @@ import java.util.Scanner;
  * @author Steve Hu
  */
 public class OpenApiGeneratorTest {
-    public static String targetPath = System.getProperty("user.dir").replace("light-rest-4j", "openapi-test");
+    public static String targetPath = "/tmp/openapi";
     public static String configName = "/config.json";
     public static String openapiJson = "/openapi.json";
     public static String openapiYaml = "/openapi.yaml";
