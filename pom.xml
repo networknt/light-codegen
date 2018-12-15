@@ -97,6 +97,7 @@
         <version.jcommander>1.72</version.jcommander>
         <version.fastscanner>2.18.1</version.fastscanner>
         <version.graphql>8.0</version.graphql>
+        <version.qdox>2.0-M9</version.qdox>
         <versions.maven-version>2.4</versions.maven-version>
         <argLine>-Xmx512m -XX:MaxPermSize=256m</argLine>
     </properties>
@@ -287,6 +288,11 @@
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-classic</artifactId>
                 <version>${version.logback}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.thoughtworks.qdox</groupId>
+                <artifactId>qdox</artifactId>
+                <version>${version.qdox}</version>
             </dependency>
 
             <!-- Test dependencies -->
