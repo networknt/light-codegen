@@ -5,12 +5,12 @@
 
 **Implemented enhancements:**
 
-- Add javadoc descriptions for parameters in handler's from codegen [\#188](https://github.com/networknt/light-codegen/issues/188)
+- Add javadoc descriptions for parameters in handler from codegen [\#188](https://github.com/networknt/light-codegen/issues/188)
 
 **Fixed bugs:**
 
 - update jackson-datatype-jdk8 artifactId for hybrid server pom.xml [\#186](https://github.com/networknt/light-codegen/issues/186)
-- Enum java variable names don't add underscores when spaces are present [\#182](https://github.com/networknt/light-codegen/issues/182)
+- Enum java variable names do not add underscores when spaces are present [\#182](https://github.com/networknt/light-codegen/issues/182)
 
 **Closed issues:**
 
