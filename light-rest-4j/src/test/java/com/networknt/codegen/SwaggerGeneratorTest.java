@@ -4,10 +4,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jsoniter.JsonIterator;
 import com.jsoniter.any.Any;
 import com.networknt.codegen.rest.SwaggerGenerator;
+import com.thoughtworks.qdox.JavaProjectBuilder;
+import com.thoughtworks.qdox.model.JavaClass;
+import com.thoughtworks.qdox.model.JavaField;
+import com.thoughtworks.qdox.model.JavaPackage;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
@@ -21,6 +26,7 @@ public class SwaggerGeneratorTest {
     public static String targetPath = "/tmp/swagger";
     public static String configName = "/config.json";
     public static String swaggerName = "/swagger.json";
+    public static String packageName = "com.networknt.petstore.model";
 
     ObjectMapper mapper = new ObjectMapper();
 
@@ -64,5 +70,29 @@ public class SwaggerGeneratorTest {
         ByteBuffer bf = generator.getConfigSchema();
         Assert.assertNotNull(bf);
         System.out.println(bf.toString());
+    }
+
+    @Test
+    public void testInvalidVaribleNameGeneratorJson() throws IOException {
+        Any anyConfig = JsonIterator.parse(SwaggerGeneratorTest.class.getResourceAsStream(configName), 1024).readAny();
+        Any anyModel = JsonIterator.parse(SwaggerGeneratorTest.class.getResourceAsStream(swaggerName), 1024).readAny();
+
+        SwaggerGenerator generator = new SwaggerGenerator();
+        generator.generate(targetPath, anyModel, anyConfig);
+
+        File file = new File(targetPath);
+        JavaProjectBuilder javaProjectBuilder = new JavaProjectBuilder();
+        javaProjectBuilder.addSourceTree(file);
+        JavaPackage javaPackage = javaProjectBuilder.getPackageByName(packageName);
+
+        for (JavaClass javaClass : javaPackage.getClasses()) {
+            List<JavaField> fields = javaClass.getFields();
+            for (JavaClass javaNestedClass : javaClass.getNestedClasses()) {
+                fields.addAll(javaNestedClass.getFields());
+            }
+            for (JavaField field : fields) {
+                Assert.assertFalse(field.getName().contains(" "));
+            }
+        }
     }
 }

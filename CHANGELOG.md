@@ -1,5 +1,29 @@
 # Change Log
 
+## [1.5.24](https://github.com/networknt/light-codegen/tree/1.5.24) (2018-12-15)
+[Full Changelog](https://github.com/networknt/light-codegen/compare/1.5.23...1.5.24)
+
+**Implemented enhancements:**
+
+- Add javadoc descriptions for parameters in handler from codegen [\#188](https://github.com/networknt/light-codegen/issues/188)
+
+**Fixed bugs:**
+
+- update jackson-datatype-jdk8 artifactId for hybrid server pom.xml [\#186](https://github.com/networknt/light-codegen/issues/186)
+- Enum java variable names do not add underscores when spaces are present [\#182](https://github.com/networknt/light-codegen/issues/182)
+
+**Closed issues:**
+
+- move generated openapi-test folder to tmp [\#194](https://github.com/networknt/light-codegen/issues/194)
+- update version and dependency of qdox [\#193](https://github.com/networknt/light-codegen/issues/193)
+- update logback templates to avoid duplicated logging records [\#191](https://github.com/networknt/light-codegen/issues/191)
+- move service.yml and client.yml from hybrid service main to test [\#187](https://github.com/networknt/light-codegen/issues/187)
+
+**Merged pull requests:**
+
+- Fixed -Add underscores automatically when space are present \#182 [\#192](https://github.com/networknt/light-codegen/pull/192) ([jiachen1120](https://github.com/jiachen1120))
+- Add javadoc descriptions for parameters in handlers [\#189](https://github.com/networknt/light-codegen/pull/189) ([BalloonWen](https://github.com/BalloonWen))
+
 ## [1.5.23](https://github.com/networknt/light-codegen/tree/1.5.23) (2018-12-01)
 [Full Changelog](https://github.com/networknt/light-codegen/compare/1.5.22...1.5.23)
 

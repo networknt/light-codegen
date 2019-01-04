@@ -21,7 +21,7 @@
     <parent>
         <groupId>com.networknt</groupId>
         <artifactId>light-codegen</artifactId>
-        <version>1.5.24</version>
+        <version>1.5.26</version>
         <relativePath>..</relativePath>
     </parent>
 
@@ -63,6 +63,10 @@
             <groupId>com.fizzed</groupId>
             <artifactId>rocker-runtime</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.thoughtworks.qdox</groupId>
+            <artifactId>qdox</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>ch.qos.logback</groupId>
@@ -94,7 +98,6 @@
                     </execution>
                 </executions>
             </plugin>
-
         </plugins>
     </build>
 </project>
