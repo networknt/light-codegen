@@ -43,6 +43,8 @@ handlers:
   - com.networknt.security.JwtVerifyHandler@@security
   - com.networknt.body.BodyHandler@@body
   - com.networknt.audit.AuditHandler@@audit
+  # DumpHandler is to dump detail request/response info to log, useful for troubleshooting but not suggested to use in production due to it may lower the performance
+  # - com.networknt.dump.DumpHandler@@dump
   - com.networknt.sanitizer.SanitizerHandler@@sanitizer
   - com.networknt.validator.ValidatorHandler@@validator
   # Customer business domain specific cross-cutting concerns handlers
@@ -65,6 +67,7 @@ chains:
     - security
     - body
     - audit
+    - dump
     - sanitizer
     - validator
 
