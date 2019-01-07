@@ -43,7 +43,8 @@ handlers:
   - com.networknt.openapi.JwtVerifyHandler@@security
   - com.networknt.body.BodyHandler@@body
   - com.networknt.audit.AuditHandler@@audit
-  - com.networknt.dump.DumpHandler@@dump
+  # DumpHandler is to dump detail request/response info to log, useful for troubleshooting but not suggested to use in production due to it may lower the performance
+  # - com.networknt.dump.DumpHandler@@dump
   - com.networknt.sanitizer.SanitizerHandler@@sanitizer
   - com.networknt.openapi.ValidatorHandler@@validator
   # Customer business domain specific cross-cutting concerns handlers

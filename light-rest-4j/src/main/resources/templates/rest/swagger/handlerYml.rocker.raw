@@ -67,7 +67,7 @@ chains:
     - security
     - body
     - audit
-    - dump
+#    - dump
     - sanitizer
     - validator
 
