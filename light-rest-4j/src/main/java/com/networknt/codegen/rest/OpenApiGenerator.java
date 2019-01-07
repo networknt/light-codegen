@@ -233,12 +233,7 @@ public class OpenApiGenerator implements Generator {
                         transfer(targetPath, ("src.main.java." + modelPackage).replace(".", separator), modelFileName + ".java", templates.rest.enumClass.template(modelPackage, modelFileName, enums));
                         continue;
                     }
-                    try {
-                    	System.out.println(props.toString());
                     transfer(targetPath, ("src.main.java." + modelPackage).replace(".", separator), modelFileName + ".java", templates.rest.pojo.template(modelPackage, modelFileName, classVarName,  props));
-                    }catch(Throwable e) {
-                    	System.out.println(e.toString());
-                    }
                 }
             }
         }
