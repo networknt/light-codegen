@@ -207,18 +207,12 @@ public class OpenApiGenerator implements Generator {
                             enums = enums.substring(enums.indexOf("[") + 1, enums.indexOf("]"));
                         }
                         if("properties".equals(entrySchema.getKey())) {
-                            handleProperties(props, entrySchema);
+                        	handleProperties(props, entrySchema.getValue().asMap());
                         }
                         if("required".equals(entrySchema.getKey())) {
                             required = entrySchema.getValue().asList();
                         }
         		        if("allOf".equals(entrySchema.getKey())) {
-        				    Map<String, Any> propMap = new HashMap<>();
-
-        				    // initialize the property map
-        				    initializePropertyMap(entry, propMap);
-        				    
-        				    // iterate through the entries
         				    // could be referred to as "$ref" references or listed in "properties"
         				    for(Any listItem : entrySchema.getValue().asList()) {
         				    	//Map<String, Any> allOfItem = (Map<String, Any>)listItem.asMap().entrySet();
@@ -227,15 +221,13 @@ public class OpenApiGenerator implements Generator {
 	        				        if("$ref".equals(allOfItem.getKey())) {
 	        				            String s = allOfItem.getValue().toString();
 	        				            s = s.substring(s.lastIndexOf('/') + 1);
-	        				            propMap.put("type", Any.wrap(s));
+	        				            handleProperties(props, schemas.get(s).get("properties").asMap());
 	        				        }
 	                                if("properties".equals(allOfItem.getKey())) {
-	                                    handleProperties(props, allOfItem);
+	                                	handleProperties(props, allOfItem.getValue().asMap());
 	                                }
 	        		            }
         				    }
-
-        		            props.add(propMap);
         		        }                        
                     }
                     String classVarName = key;
@@ -341,11 +333,9 @@ public class OpenApiGenerator implements Generator {
 	 * @param props The properties map to add to
 	 * @param entrySchema The schema where the properties are listed
 	 */
-	private void handleProperties(List<Map<String, Any>> props, Map.Entry<String, Any> entrySchema) {
-		Map<String, Any> properties;
-		properties = entrySchema.getValue().asMap();
+	//private void handleProperties(List<Map<String, Any>> props, Map.Entry<String, Any> entrySchema) {
+	private void handleProperties(List<Map<String, Any>> props, Map<String, Any> properties) {
 		// transform properties
-
 		for(Map.Entry<String, Any> entryProp: properties.entrySet()) {
 		    //System.out.println("key = " + entryProp.getKey() + " value = " + entryProp.getValue());
 		    Map<String, Any> propMap = new HashMap<>();
