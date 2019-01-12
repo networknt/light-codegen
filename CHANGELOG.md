@@ -1,5 +1,27 @@
 # Change Log
 
+## [1.5.27](https://github.com/networknt/light-codegen/tree/1.5.27) (2019-01-12)
+[Full Changelog](https://github.com/networknt/light-codegen/compare/1.5.25...1.5.27)
+
+**Closed issues:**
+
+- Handle properties in Model Composition - using allOf in OpenAPI [\#201](https://github.com/networknt/light-codegen/issues/201)
+- Add new functionality and updated config.json with new parameters [\#200](https://github.com/networknt/light-codegen/issues/200)
+- Generation failure if schemas in API define allOf directly in the object [\#196](https://github.com/networknt/light-codegen/issues/196)
+- Generation failure in 1.5.24 for allOf elements [\#195](https://github.com/networknt/light-codegen/issues/195)
+- add a parameter for light-codegen for only re-generate code for spec change [\#180](https://github.com/networknt/light-codegen/issues/180)
+- Add Fortify support to Maven script  [\#76](https://github.com/networknt/light-codegen/issues/76)
+
+**Merged pull requests:**
+
+- Merge fixes from wip branch - support allOf, dump handler, properties handling [\#203](https://github.com/networknt/light-codegen/pull/203) ([ddobrin](https://github.com/ddobrin))
+- comment out dump handler in generated handler.yml [\#202](https://github.com/networknt/light-codegen/pull/202) ([BalloonWen](https://github.com/BalloonWen))
+- upgrade jackson to 2.9.8 [\#199](https://github.com/networknt/light-codegen/pull/199) ([ddobrin](https://github.com/ddobrin))
+- Added Dump Handler and Mask template to code-gen [\#198](https://github.com/networknt/light-codegen/pull/198) ([BalloonWen](https://github.com/BalloonWen))
+
+## [1.5.25](https://github.com/networknt/light-codegen/tree/1.5.25) (2018-12-24)
+[Full Changelog](https://github.com/networknt/light-codegen/compare/1.5.24...1.5.25)
+
 ## [1.5.24](https://github.com/networknt/light-codegen/tree/1.5.24) (2018-12-15)
 [Full Changelog](https://github.com/networknt/light-codegen/compare/1.5.23...1.5.24)
 
