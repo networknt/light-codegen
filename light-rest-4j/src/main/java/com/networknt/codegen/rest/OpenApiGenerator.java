@@ -477,6 +477,7 @@ public class OpenApiGenerator implements Generator {
                 flattened.put("normalizedPath", basePath + normalizedPath);
                 flattened.put("handlerName", Utils.camelize(normalizedPath) + Utils.camelize(entryOps.getKey()) + "Handler");
                 Operation operation = entryOps.getValue();
+                UrlGenerator.generateUrl(basePath, path, entryOps.getValue().getParameters());
                 if (enableParamDescription) {
                     //get parameters info and put into result
                     List<Parameter> parameterRawList = operation.getParameters();
