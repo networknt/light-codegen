@@ -233,6 +233,9 @@ public class OpenApiGenerator implements Generator {
                     String classVarName = key;
                     String modelFileName = key.substring(0, 1).toUpperCase() + key.substring(1);
                     //System.out.println("props = " + Any.wrap(props));
+                    if (!"object".equals(type)) {
+                        continue;
+                    }
                     if(!overwriteModel && checkExist(targetPath, ("src.main.java." + modelPackage).replace(".", separator), modelFileName + ".java")) {
                         continue;
                     }
