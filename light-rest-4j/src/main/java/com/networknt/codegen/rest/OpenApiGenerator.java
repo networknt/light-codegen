@@ -331,7 +331,6 @@ public class OpenApiGenerator implements Generator {
 	 * Handle elements listed as "properties"
 	 * 
 	 * @param props The properties map to add to
-	 * @param entrySchema The schema where the properties are listed
 	 */
 	//private void handleProperties(List<Map<String, Any>> props, Map.Entry<String, Any> entrySchema) {
 	private void handleProperties(List<Map<String, Any>> props, Map<String, Any> properties) {
@@ -474,10 +473,9 @@ public class OpenApiGenerator implements Generator {
                 flattened.put("capMethod", entryOps.getKey().substring(0, 1).toUpperCase() + entryOps.getKey().substring(1));
                 flattened.put("path", basePath + path);
                 String normalizedPath = path.replace("{", "").replace("}", "");
-                flattened.put("normalizedPath", basePath + normalizedPath);
                 flattened.put("handlerName", Utils.camelize(normalizedPath) + Utils.camelize(entryOps.getKey()) + "Handler");
                 Operation operation = entryOps.getValue();
-                UrlGenerator.generateUrl(basePath, path, entryOps.getValue().getParameters());
+                flattened.put("normalizedPath", UrlGenerator.generateUrl(basePath, path, entryOps.getValue().getParameters()));
                 if (enableParamDescription) {
                     //get parameters info and put into result
                     List<Parameter> parameterRawList = operation.getParameters();
