@@ -18,10 +18,13 @@ public class UrlGenerator {
     private static String NUMBER = "number";
     private static String INTEGER = "integer";
     private static String STRING = "string";
+    private static String BOOLEAN = "boolean";
     private static String INT32 = "int32";
     private static String INT64 = "int64";
     private static String FLOAT = "float";
     private static String DOUBLE = "double";
+    private static String TRUE = "true";
+    private static String FALSE = "false";
     private static int DEFAULT_MIN_NUM = 1;
     private static int DEFAULT_MAX_NUM = 100;
     private static int DEFAULT_MIN_LENGTH = 5;
@@ -30,9 +33,25 @@ public class UrlGenerator {
     private static String DEFAULT_STR_PATTERN = "[a-zA-Z]+";
     private static String IN_PATH = "path";
     private static String IN_QUERY = "query";
-
-
     private static Logger logger = LoggerFactory.getLogger(UrlGenerator.class);
+
+    public static String generateUrl(String basePath, String path, List<Parameter> parameters) {
+        String url = "";
+        if(!parameters.isEmpty()){
+            Optional<Parameter> pathParameter = parameters.stream()
+                    .filter(parameter -> IN_PATH.equals(parameter.getIn()))
+                    .findFirst();
+            if(pathParameter.isPresent()) {
+                //generate a valid path parameter then replace {} with it.
+                String pathParameterStr = generateValidParam(pathParameter.get());
+                path = path.replaceAll(PATH_TEMPLATE_PATTERN, pathParameterStr);
+            }
+
+            url = basePath + path + generateQueryParamUrl(parameters);
+        }
+        return url;
+    }
+
     public static String generateQueryParamUrl(List<Parameter> parameters) {
         String url = "";
         url += parameters.stream()
@@ -69,11 +88,17 @@ public class UrlGenerator {
                 validParam = generateValidNum(schema);
             } else if(type.toLowerCase().equals(STRING)) {
                 validParam = generateValidStr(schema);
+            } else if(type.toLowerCase().equals(BOOLEAN)) {
+                validParam = generateValidBool(schema);
             } else {
                 logger.info("unsupported param type to generate test case: {}/ {}", parameter.getName(), type);
             }
         }
         return validParam;
+    }
+
+    private static String generateValidBool(Schema schema) {
+        return ThreadLocalRandom.current().nextBoolean() == true ? TRUE : FALSE;
     }
 
     private static String generateValidStr(Schema schema) {
@@ -111,22 +136,5 @@ public class UrlGenerator {
         }
 
         return validNumStr;
-    }
-
-    public static String generateUrl(String basePath, String path, List<Parameter> parameters) {
-        String url = "";
-        if(!parameters.isEmpty()){
-            Optional<Parameter> pathParameter = parameters.stream()
-                    .filter(parameter -> IN_PATH.equals(parameter.getIn()))
-                    .findFirst();
-            if(pathParameter.isPresent()) {
-                //generate a valid path parameter then replace {} with it.
-                String pathParameterStr = generateValidParam(pathParameter.get());
-                path = path.replaceAll(PATH_TEMPLATE_PATTERN, pathParameterStr);
-            }
-
-            url = basePath + path + generateQueryParamUrl(parameters);
-        }
-        return url;
     }
 }
