@@ -36,7 +36,7 @@ public class UrlGenerator {
     private static Logger logger = LoggerFactory.getLogger(UrlGenerator.class);
 
     public static String generateUrl(String basePath, String path, List<Parameter> parameters) {
-        String url = "";
+        String url = basePath + path;
         if(!parameters.isEmpty()){
             Optional<Parameter> pathParameter = parameters.stream()
                     .filter(parameter -> IN_PATH.equals(parameter.getIn()))
@@ -73,7 +73,7 @@ public class UrlGenerator {
         return encoded;
     }
 
-    private static String generateValidParam(Parameter parameter) {
+    protected static String generateValidParam(Parameter parameter) {
         String validParam = "";
         Schema schema = parameter.getSchema();
         if(!schema.getAllOfSchemas().isEmpty() || !schema.getOneOfSchemas().isEmpty()){
@@ -122,7 +122,7 @@ public class UrlGenerator {
                 validInt = ThreadLocalRandom.current().nextInt(min.intValue(), max.intValue());
                 //when exclusiveMinimum || exclusiveMaximum is true, validDouble shouldn't equals to minimum/max value, regenerate.
             } while ((Boolean.TRUE.equals(schema.getExclusiveMinimum()) && validInt == min.intValue())
-                || (Boolean.TRUE.equals(schema.getExclusiveMaximum()) == true&& validInt == max.intValue()));
+                || (Boolean.TRUE.equals(schema.getExclusiveMaximum()) && validInt == max.intValue()));
             validNumStr = String.valueOf(validInt);
         } else if(DOUBLE.equals(format) || FLOAT.equals(format)) {
             double validDouble;
@@ -131,10 +131,9 @@ public class UrlGenerator {
                 validDouble = ThreadLocalRandom.current().nextDouble(min.doubleValue(), max.doubleValue());
                 //when exclusiveMinimum || exclusiveMaximum is true, validDouble shouldn't equals to minimum/max value, regenerate.
             } while ((Boolean.TRUE.equals(schema.getExclusiveMinimum()) && validDouble == min.intValue())
-                    || (Boolean.TRUE.equals(schema.getExclusiveMaximum()) == true&& validDouble == max.intValue()));
+                    || (Boolean.TRUE.equals(schema.getExclusiveMaximum()) && validDouble == max.intValue()));
             validNumStr = String.valueOf(validDouble);
         }
-
         return validNumStr;
     }
 }

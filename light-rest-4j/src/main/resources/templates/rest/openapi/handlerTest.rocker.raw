@@ -1,24 +1,13 @@
 @import java.util.Map
 @import com.jsoniter.any.Any
-@import java.util.stream.Collectors;
+@import java.util.stream.Collectors
 @args (String handlerPackage, Map<String, Object> map)
 package @handlerPackage;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.networknt.client.Http2Client;
-import com.networknt.config.Config;
-import com.networknt.exception.ApiException;
 import com.networknt.exception.ClientException;
-import com.networknt.jsonoverlay.Overlay;
-import com.networknt.oas.model.*;
-import com.networknt.oas.model.impl.SchemaImpl;
-import com.networknt.openapi.ApiNormalisedPath;
-import com.networknt.openapi.NormalisedPath;
-import com.networknt.openapi.OpenApiHelper;
 import com.networknt.openapi.OpenApiOperation;
-import com.networknt.schema.JsonSchema;
-import com.networknt.schema.JsonSchemaFactory;
-import com.networknt.schema.SchemaValidatorsConfig;
 import com.networknt.schema.ValidationMessage;
 import io.undertow.UndertowOptions;
 import io.undertow.client.ClientConnection;
@@ -26,6 +15,7 @@ import io.undertow.client.ClientRequest;
 import io.undertow.client.ClientResponse;
 import io.undertow.util.HeaderValues;
 import io.undertow.util.Headers;
+import io.undertow.util.HttpString;
 import io.undertow.util.Methods;
 import org.junit.Assert;
 import org.junit.ClassRule;
@@ -46,8 +36,9 @@ import java.util.concurrent.atomic.AtomicReference;
        httpMethod = map.get("method"),
        hasBody = ("POST".equals(map.get("method").toString()) || "PUT".equals(map.get("method").toString()) || "PATCH".equals(map.get("method").toString())),
        path = map.get("normalizedPath"),
-       supportedStatusCodesStr = map.get("supportedStatusCodesStr")) {
-public class @className {
+       supportedStatusCodesStr = map.get("supportedStatusCodesStr"),
+       headerNameValueMap = (Map)map.get("headerNameValueMap")) {
+public class @className extends HandlerTestBase{
     @@ClassRule
     public static TestServer server = TestServer.getInstance();
 
@@ -57,9 +48,11 @@ public class @className {
     static final int httpPort = server.getServerConfig().getHttpPort();
     static final int httpsPort = server.getServerConfig().getHttpsPort();
     static final String url = enableHttp2 || enableHttps ? "https://localhost:" + httpsPort : "http://localhost:" + httpPort;
+    static final String DEFAULT_CONTENT_TYPE = "*/*";
+    static final String JSON_CONTENT_TYPE = "application/json";
 
     @@Test
-    public void test@method throws ClientException, ApiException {
+    public void test@method throws ClientException {
 
         final Http2Client client = Http2Client.getInstance();
         final CountDownLatch latch = new CountDownLatch(1);
@@ -75,8 +68,10 @@ public class @className {
         try {
             ClientRequest request = new ClientRequest().setPath(requestUri).setMethod(Methods.@httpMethod);
             @if(hasBody) {
-            request.getRequestHeaders().put(Headers.CONTENT_TYPE, "application/json");
+            request.getRequestHeaders().put(Headers.CONTENT_TYPE, JSON_CONTENT_TYPE);
             request.getRequestHeaders().put(Headers.TRANSFER_ENCODING, "chunked");
+            //customized header parameters @for((String key, Object item): headerNameValueMap) {
+            request.getRequestHeaders().put(new HttpString("@key"), "@item");}
             connection.sendRequest(request, client.createClientCallback(reference, latch, "{\"content\": \"request body to be replaced\"}"));
             } else {
             connection.sendRequest(request, client.createClientCallback(reference, latch));
@@ -93,56 +88,22 @@ public class @className {
         int statusCode = reference.get().getResponseCode();
 
         if(statusCode == 200) {
-            Assert.assertTrue(contentTypeName.isPresent());
-            Assert.assertNotNull(body);
+            Assert.assertTrue("Content-Type is not in Response Header", contentTypeName.isPresent());
+            Assert.assertNotNull("No Response Body", body);
         }  else {
             if(contentTypeName.isPresent()) {
                 Assert.assertNotNull(body);
             }
         }
-        JsonNode schemaObj = getContentSchema(operation, String.valueOf(statusCode), contentTypeName.get().getFirst());
+        String contentTypeStr = contentTypeName.isPresent() ? contentTypeName.get().getFirst() : DEFAULT_CONTENT_TYPE;
+        JsonNode schemaObj = getContentSchema(operation, String.valueOf(statusCode), contentTypeStr);
         if(schemaObj == null) {
-            schemaObj = getContentSchema(operation, "default", contentTypeName.get().getFirst());
+            schemaObj = getContentSchema(operation, "default", contentTypeStr);
         }
         if(schemaObj != null) {
             Set<ValidationMessage> messages = doValidate(body, schemaObj);
             Assert.assertEquals(0, messages.size());
         }
-    }
-
-    private OpenApiOperation getOpenApiOperation(String uri, String httpMethod) {
-        NormalisedPath requestPath = new ApiNormalisedPath(uri);
-        Optional<NormalisedPath> maybeApiPath = OpenApiHelper.findMatchingApiPath(requestPath);
-        if (!maybeApiPath.isPresent()) {
-            return null;
-        }
-
-        final NormalisedPath openApiPathString = maybeApiPath.get();
-        final Path path = OpenApiHelper.openApi3.getPath(openApiPathString.original());
-
-        final Operation operation = path.getOperation(httpMethod);
-        return new OpenApiOperation(openApiPathString, path, httpMethod, operation);
-    }
-
-    private Set<ValidationMessage> doValidate(Object value, JsonNode schema) {
-        SchemaValidatorsConfig config = new SchemaValidatorsConfig();
-        JsonSchema jsonSchema = JsonSchemaFactory.getInstance().getSchema(schema, config);
-        final JsonNode content = Config.getInstance().getMapper().valueToTree(value);
-        return jsonSchema.validate(content);
-    }
-
-    private JsonNode getContentSchema(OpenApiOperation operation, String statusCode, String mediaType) {
-        Schema schema;
-        Optional<Response> response = Optional.ofNullable(operation.getOperation().getResponse(String.valueOf(statusCode)));
-        if(response.isPresent()) {
-            Optional<MediaType> mediaType1 = Optional.ofNullable(response.get().getContentMediaType(mediaType));
-            if(mediaType1.isPresent()) {
-                schema = mediaType1.get().getSchema();
-                JsonNode schemaNode = schema == null ? null : Overlay.toJson((SchemaImpl)schema);
-                return schemaNode;
-            }
-        }
-        return null;
     }
 }
 }

@@ -267,7 +267,8 @@ public class OpenApiGenerator implements Generator {
 
         // handler test cases
         transfer(targetPath, ("src.test.java." + handlerPackage + ".").replace(".", separator),  "TestServer.java", templates.rest.testServer.template(handlerPackage));
-
+        // handler test base
+        transfer(targetPath, ("src.test.java." + handlerPackage + ".").replace(".", separator),  "HandlerTestBase.java", templates.rest.openapi.handlerTestBase.template());
         for(Map<String, Object> op : operationList){
             if(checkExist(targetPath, ("src.test.java." + handlerPackage).replace(".", separator), op.get("handlerName") + "Test.java") && !overwriteHandlerTest) {
                 continue;
@@ -479,6 +480,11 @@ public class OpenApiGenerator implements Generator {
                 flattened.put("normalizedPath", UrlGenerator.generateUrl(basePath, path, entryOps.getValue().getParameters()));
                 //eg. 200 || statusCode == 400 || statusCode == 500
                 flattened.put("supportedStatusCodesStr", operation.getResponses().keySet().stream().collect(Collectors.joining(" || statusCode = ")));
+                Map<String, Object> headerNameValueMap = operation.getParameters()
+                        .stream()
+                        .filter(parameter -> parameter.getIn().equals("header"))
+                        .collect(Collectors.toMap(k -> k.getName(), v -> UrlGenerator.generateValidParam(v)));
+                flattened.put("headerNameValueMap", headerNameValueMap);
                 if (enableParamDescription) {
                     //get parameters info and put into result
                     List<Parameter> parameterRawList = operation.getParameters();
