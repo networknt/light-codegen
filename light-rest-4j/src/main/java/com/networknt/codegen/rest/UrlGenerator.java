@@ -14,27 +14,38 @@ import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
+/**
+ * This class is to generate random url based on com.networknt.oas.model.Schema;
+ */
 public class UrlGenerator {
-    private static String NUMBER = "number";
-    private static String INTEGER = "integer";
-    private static String STRING = "string";
-    private static String BOOLEAN = "boolean";
-    private static String INT32 = "int32";
-    private static String INT64 = "int64";
-    private static String FLOAT = "float";
-    private static String DOUBLE = "double";
-    private static String TRUE = "true";
-    private static String FALSE = "false";
-    private static int DEFAULT_MIN_NUM = 1;
-    private static int DEFAULT_MAX_NUM = 100;
-    private static int DEFAULT_MIN_LENGTH = 5;
-    private static int DEFAULT_MAX_LENGTH = 30;
-    private static String PATH_TEMPLATE_PATTERN = "\\{(.*?)\\}";
-    private static String DEFAULT_STR_PATTERN = "[a-zA-Z]+";
-    private static String IN_PATH = "path";
-    private static String IN_QUERY = "query";
-    private static Logger logger = LoggerFactory.getLogger(UrlGenerator.class);
+    private static final String NUMBER = "number";
+    private static final String INTEGER = "integer";
+    private static final String STRING = "string";
+    private static final String BOOLEAN = "boolean";
+    private static final String INT32 = "int32";
+    private static final String INT64 = "int64";
+    private static final String FLOAT = "float";
+    private static final String DOUBLE = "double";
+    private static final String TRUE = "true";
+    private static final String FALSE = "false";
+    private static final int DEFAULT_MIN_NUM = 1;
+    private static final int DEFAULT_MAX_NUM = 100;
+    private static final int DEFAULT_MIN_LENGTH = 5;
+    private static final int DEFAULT_MAX_LENGTH = 30;
+    //replace ${}
+    private static final String PATH_TEMPLATE_PATTERN = "\\{(.*?)\\}";
+    private static final String DEFAULT_STR_PATTERN = "[a-zA-Z]+";
+    private static final String IN_PATH = "path";
+    private static final String IN_QUERY = "query";
+    private static final Logger logger = LoggerFactory.getLogger(UrlGenerator.class);
 
+    /**
+     *
+     * @param basePath base path of the url
+     * @param path path of the url
+     * @param parameters all the parameters under an operation
+     * @return String generated url
+     */
     public static String generateUrl(String basePath, String path, List<Parameter> parameters) {
         String url = basePath + path;
         if(!parameters.isEmpty()){
@@ -52,6 +63,9 @@ public class UrlGenerator {
         return url;
     }
 
+    /**
+     * based on parameter schemas generate query parameter part of the url
+     */
     public static String generateQueryParamUrl(List<Parameter> parameters) {
         String url = "";
         url += parameters.stream()
@@ -73,6 +87,11 @@ public class UrlGenerator {
         return encoded;
     }
 
+    /**
+     * generate a valid parameter value based on schema of that parameter
+     * @param parameter parameter under an operation
+     * @return String parameter value
+     */
     protected static String generateValidParam(Parameter parameter) {
         String validParam = "";
         Schema schema = parameter.getSchema();
@@ -97,10 +116,20 @@ public class UrlGenerator {
         return validParam;
     }
 
+    /**
+     * generate bool based on schema
+     * @param schema schema of a parameter
+     * @return "true" or "false"
+     */
     private static String generateValidBool(Schema schema) {
-        return ThreadLocalRandom.current().nextBoolean() == true ? TRUE : FALSE;
+        return ThreadLocalRandom.current().nextBoolean() ? TRUE : FALSE;
     }
 
+    /**
+     * generate String based on schema: minLength, maxLength, pattern
+     * @param schema schema of a parameter
+     * @return String
+     */
     private static String generateValidStr(Schema schema) {
         String pattern = schema.getPattern() == null ? DEFAULT_STR_PATTERN : schema.getPattern();
         int minLength = schema.getMinLength() == null ? DEFAULT_MIN_LENGTH : schema.getMinLength();
@@ -109,6 +138,11 @@ public class UrlGenerator {
         return generex.random(minLength, maxLength);
     }
 
+    /**
+     * generate number based on schema: format, minimum, maximum, exclusiveMinimum, exclusiveMaximum,
+     * @param schema
+     * @return String generated number
+     */
     private static String generateValidNum(Schema schema) {
         //if format is empty, consider it's an int.
         String format = StringUtils.isBlank(schema.getFormat()) ? INT32 : schema.getFormat();

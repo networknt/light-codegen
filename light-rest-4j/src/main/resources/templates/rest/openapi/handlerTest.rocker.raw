@@ -4,18 +4,19 @@
 @args (String handlerPackage, Map<String, Object> map)
 package @handlerPackage;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.networknt.client.Http2Client;
 import com.networknt.exception.ClientException;
-import com.networknt.openapi.OpenApiOperation;
-import com.networknt.schema.ValidationMessage;
+import com.networknt.openapi.ResponseValidator;
+import com.networknt.schema.SchemaValidatorsConfig;
+import com.networknt.status.Status;
+import com.networknt.utility.StringUtils;
 import io.undertow.UndertowOptions;
 import io.undertow.client.ClientConnection;
 import io.undertow.client.ClientRequest;
 import io.undertow.client.ClientResponse;
 import io.undertow.util.HeaderValues;
-import io.undertow.util.Headers;
 import io.undertow.util.HttpString;
+import io.undertow.util.Headers;
 import io.undertow.util.Methods;
 import org.junit.Assert;
 import org.junit.ClassRule;
@@ -26,7 +27,6 @@ import org.xnio.IoUtils;
 import org.xnio.OptionMap;
 import java.net.URI;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -38,7 +38,7 @@ import java.util.concurrent.atomic.AtomicReference;
        path = map.get("normalizedPath"),
        supportedStatusCodesStr = map.get("supportedStatusCodesStr"),
        headerNameValueMap = (Map)map.get("headerNameValueMap")) {
-public class @className extends HandlerTestBase{
+public class @className {
     @@ClassRule
     public static TestServer server = TestServer.getInstance();
 
@@ -48,8 +48,7 @@ public class @className extends HandlerTestBase{
     static final int httpPort = server.getServerConfig().getHttpPort();
     static final int httpsPort = server.getServerConfig().getHttpsPort();
     static final String url = enableHttp2 || enableHttps ? "https://localhost:" + httpsPort : "http://localhost:" + httpPort;
-    static final String DEFAULT_CONTENT_TYPE = "*/*";
-    static final String JSON_CONTENT_TYPE = "application/json";
+    static final String JSON_MEDIA_TYPE = "application/json";
 
     @@Test
     public void test@method throws ClientException {
@@ -64,11 +63,11 @@ public class @className extends HandlerTestBase{
         }
         final AtomicReference<ClientResponse> reference = new AtomicReference<>();
         String requestUri = "@path";
-        OpenApiOperation operation = getOpenApiOperation(requestUri, "@httpMethod.toString().toLowerCase()");
+        String httpMethod = "@httpMethod.toString().toLowerCase()";
         try {
             ClientRequest request = new ClientRequest().setPath(requestUri).setMethod(Methods.@httpMethod);
             @if(hasBody) {
-            request.getRequestHeaders().put(Headers.CONTENT_TYPE, JSON_CONTENT_TYPE);
+            request.getRequestHeaders().put(Headers.CONTENT_TYPE, JSON_MEDIA_TYPE);
             request.getRequestHeaders().put(Headers.TRANSFER_ENCODING, "chunked");
             //customized header parameters @for((String key, Object item): headerNameValueMap) {
             request.getRequestHeaders().put(new HttpString("@key"), "@item");}
@@ -85,24 +84,19 @@ public class @className extends HandlerTestBase{
         }
         String body = reference.get().getAttachment(Http2Client.RESPONSE_BODY);
         Optional<HeaderValues> contentTypeName = Optional.ofNullable(reference.get().getResponseHeaders().get(Headers.CONTENT_TYPE));
+        SchemaValidatorsConfig config = new SchemaValidatorsConfig();
+        config.setMissingNodeAsError(false);
+        ResponseValidator responseValidator = new ResponseValidator(config);
         int statusCode = reference.get().getResponseCode();
-
         if(statusCode == 200) {
-            Assert.assertTrue("Content-Type is not in Response Header", contentTypeName.isPresent());
-            Assert.assertNotNull("No Response Body", body);
+            Status status = responseValidator.validateResponseContent(body, requestUri, httpMethod);
+            Assert.assertNull(status);
         }  else {
-            if(contentTypeName.isPresent()) {
-                Assert.assertNotNull(body);
+            if(!StringUtils.isEmpty(body)) {
+                Assert.assertNotNull(contentTypeName.get());
+                Status status = responseValidator.validateResponseContent(body, requestUri, httpMethod, String.valueOf(statusCode));
+                Assert.assertNull(status);
             }
-        }
-        String contentTypeStr = contentTypeName.isPresent() ? contentTypeName.get().getFirst() : DEFAULT_CONTENT_TYPE;
-        JsonNode schemaObj = getContentSchema(operation, String.valueOf(statusCode), contentTypeStr);
-        if(schemaObj == null) {
-            schemaObj = getContentSchema(operation, "default", contentTypeStr);
-        }
-        if(schemaObj != null) {
-            Set<ValidationMessage> messages = doValidate(body, schemaObj);
-            Assert.assertEquals(0, messages.size());
         }
     }
 }

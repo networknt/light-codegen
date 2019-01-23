@@ -267,8 +267,6 @@ public class OpenApiGenerator implements Generator {
 
         // handler test cases
         transfer(targetPath, ("src.test.java." + handlerPackage + ".").replace(".", separator),  "TestServer.java", templates.rest.testServer.template(handlerPackage));
-        // handler test base
-        transfer(targetPath, ("src.test.java." + handlerPackage + ".").replace(".", separator),  "HandlerTestBase.java", templates.rest.openapi.handlerTestBase.template());
         for(Map<String, Object> op : operationList){
             if(checkExist(targetPath, ("src.test.java." + handlerPackage).replace(".", separator), op.get("handlerName") + "Test.java") && !overwriteHandlerTest) {
                 continue;
