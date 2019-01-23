@@ -1,6 +1,7 @@
 @import com.jsoniter.any.Any
 @import java.util.Map
 @import java.util.List
+@option discardLogicWhitespace=true
 
 @args (String modelPackage, String className, String classVarName, List<Map<String, Any>> props)
 package @modelPackage;
@@ -37,6 +38,7 @@ public class @className {
     }
     }
     }
+    @if(props.size() > 0) {
 
     @@Override
     public boolean equals(Object o) {
@@ -57,6 +59,7 @@ public class @className {
         return Objects.hash(@for((i, prop): props) {@if(i.index() < props.size() - 1) {@prop.get("name"),} @if(i.index() == props.size() - 1) {@prop.get("name"));}}
     }
 
+    }
     @@Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

@@ -233,6 +233,13 @@ public class OpenApiGenerator implements Generator {
                     String classVarName = key;
                     String modelFileName = key.substring(0, 1).toUpperCase() + key.substring(1);
                     //System.out.println("props = " + Any.wrap(props));
+
+                    // Check the type of current schema. Generation will be executed only if the type of the schema equals to object.
+                    // Since generate a model for primitive types and arrays do not make sense, and an error class would be generated
+                    // due to lack of properties if force to generate.
+                    if (!"object".equals(type)) {
+                        continue;
+                    }
                     if(!overwriteModel && checkExist(targetPath, ("src.main.java." + modelPackage).replace(".", separator), modelFileName + ".java")) {
                         continue;
                     }
