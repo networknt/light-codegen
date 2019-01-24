@@ -73,6 +73,8 @@ public class @className {
             request.getRequestHeaders().put(new HttpString("@key"), "@item");}
             connection.sendRequest(request, client.createClientCallback(reference, latch, "{\"content\": \"request body to be replaced\"}"));
             } else {
+            //customized header parameters @for((String key, Object item): headerNameValueMap) {
+            request.getRequestHeaders().put(new HttpString("@key"), "@item");}
             connection.sendRequest(request, client.createClientCallback(reference, latch));
             }
             latch.await();
