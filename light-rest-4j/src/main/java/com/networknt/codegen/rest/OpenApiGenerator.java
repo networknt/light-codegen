@@ -163,6 +163,9 @@ public class OpenApiGenerator implements Generator {
         
 		        // routing handler
 		        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "handler.yml", templates.rest.openapi.handlerYml.template(serviceId, handlerPackage, operationList, prometheusMetrics, !skipHealthCheck, !skipServerInfo));
+		        
+		        // exclusion list for Config module
+	            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "exclusions.yml", templates.rest.openapi.exclusions.template());
 	        }
         }
         
