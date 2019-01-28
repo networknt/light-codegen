@@ -21,6 +21,7 @@ import io.undertow.util.Methods;
 import org.junit.Assert;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.Ignore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnio.IoUtils;
@@ -38,6 +39,7 @@ import java.util.concurrent.atomic.AtomicReference;
        path = map.get("normalizedPath"),
        supportedStatusCodesStr = map.get("supportedStatusCodesStr"),
        headerNameValueMap = (Map)map.get("headerNameValueMap")) {
+@@Ignore
 public class @className {
     @@ClassRule
     public static TestServer server = TestServer.getInstance();
