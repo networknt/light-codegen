@@ -1,9 +1,9 @@
 package com.networknt.codegen.rest;
 
-import com.mifmif.common.regex.Generex;
 import com.networknt.oas.model.Parameter;
 import com.networknt.oas.model.Schema;
 import com.networknt.utility.StringUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +34,6 @@ public class UrlGenerator {
     private static final int DEFAULT_MAX_LENGTH = 30;
     //replace ${}
     private static final String PATH_TEMPLATE_PATTERN = "\\{(.*?)\\}";
-    private static final String DEFAULT_STR_PATTERN = "[a-zA-Z]+";
     private static final String IN_PATH = "path";
     private static final String IN_QUERY = "query";
     private static final Logger logger = LoggerFactory.getLogger(UrlGenerator.class);
@@ -131,11 +130,16 @@ public class UrlGenerator {
      * @return String
      */
     private static String generateValidStr(Schema schema) {
-        String pattern = schema.getPattern() == null ? DEFAULT_STR_PATTERN : schema.getPattern();
         int minLength = schema.getMinLength() == null ? DEFAULT_MIN_LENGTH : schema.getMinLength();
         int maxLength = schema.getMaxLength() == null ? DEFAULT_MAX_LENGTH : schema.getMaxLength();
-        Generex generex = new Generex(pattern);
-        return generex.random(minLength, maxLength);
+        String validStr;
+        if(maxLength <= minLength) {
+            logger.error("maximum length {} should be larger than minimum length {}", maxLength, minLength);
+            validStr = RandomStringUtils.random(ThreadLocalRandom.current().nextInt(DEFAULT_MIN_LENGTH, DEFAULT_MAX_LENGTH), true, false);
+        } else {
+            validStr = RandomStringUtils.random(ThreadLocalRandom.current().nextInt(minLength, maxLength), true, false);
+        }
+        return validStr;
     }
 
     /**
