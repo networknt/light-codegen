@@ -22,6 +22,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import static java.io.File.separator;
 
@@ -273,7 +274,6 @@ public class OpenApiGenerator implements Generator {
 
         // handler test cases
         transfer(targetPath, ("src.test.java." + handlerPackage + ".").replace(".", separator),  "TestServer.java", templates.rest.testServer.template(handlerPackage));
-
         for(Map<String, Object> op : operationList){
             if(checkExist(targetPath, ("src.test.java." + handlerPackage).replace(".", separator), op.get("handlerName") + "Test.java") && !overwriteHandlerTest) {
                 continue;
@@ -338,7 +338,6 @@ public class OpenApiGenerator implements Generator {
 	 * Handle elements listed as "properties"
 	 * 
 	 * @param props The properties map to add to
-	 * @param entrySchema The schema where the properties are listed
 	 */
 	//private void handleProperties(List<Map<String, Any>> props, Map.Entry<String, Any> entrySchema) {
 	private void handleProperties(List<Map<String, Any>> props, Map<String, Any> properties) {
@@ -481,9 +480,16 @@ public class OpenApiGenerator implements Generator {
                 flattened.put("capMethod", entryOps.getKey().substring(0, 1).toUpperCase() + entryOps.getKey().substring(1));
                 flattened.put("path", basePath + path);
                 String normalizedPath = path.replace("{", "").replace("}", "");
-                flattened.put("normalizedPath", basePath + normalizedPath);
                 flattened.put("handlerName", Utils.camelize(normalizedPath) + Utils.camelize(entryOps.getKey()) + "Handler");
                 Operation operation = entryOps.getValue();
+                flattened.put("normalizedPath", UrlGenerator.generateUrl(basePath, path, entryOps.getValue().getParameters()));
+                //eg. 200 || statusCode == 400 || statusCode == 500
+                flattened.put("supportedStatusCodesStr", operation.getResponses().keySet().stream().collect(Collectors.joining(" || statusCode = ")));
+                Map<String, Object> headerNameValueMap = operation.getParameters()
+                        .stream()
+                        .filter(parameter -> parameter.getIn().equals("header"))
+                        .collect(Collectors.toMap(k -> k.getName(), v -> UrlGenerator.generateValidParam(v)));
+                flattened.put("headerNameValueMap", headerNameValueMap);
                 if (enableParamDescription) {
                     //get parameters info and put into result
                     List<Parameter> parameterRawList = operation.getParameters();
