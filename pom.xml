@@ -98,7 +98,6 @@
         <version.fastscanner>2.18.1</version.fastscanner>
         <version.graphql>8.0</version.graphql>
         <version.qdox>2.0-M9</version.qdox>
-        <version.generex>1.0.2</version.generex>
         <versions.maven-version>2.4</versions.maven-version>
         <argLine>-Xmx512m -XX:MaxPermSize=256m</argLine>
     </properties>
@@ -294,11 +293,6 @@
                 <groupId>com.thoughtworks.qdox</groupId>
                 <artifactId>qdox</artifactId>
                 <version>${version.qdox}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.github.mifmif</groupId>
-                <artifactId>generex</artifactId>
-                <version>${version.generex}</version>
             </dependency>
 
             <!-- Test dependencies -->
