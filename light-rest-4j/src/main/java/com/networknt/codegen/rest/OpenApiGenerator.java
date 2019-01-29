@@ -82,9 +82,9 @@ public class OpenApiGenerator implements Generator {
     @Override
     public void generate(String targetPath, Object model, Any config) throws IOException {
         // whoever is calling this needs to make sure that model is converted to Map<String, Object>
-        String rootPackage = config.toString("rootPackage");
-        String modelPackage = config.toString("modelPackage");
-        String handlerPackage = config.toString("handlerPackage");
+        String rootPackage = config.toString("rootPackage").trim();
+        String modelPackage = config.toString("modelPackage").trim();
+        String handlerPackage = config.toString("handlerPackage").trim();
         
         boolean overwriteHandler = config.toBoolean("overwriteHandler");
         boolean overwriteHandlerTest = config.toBoolean("overwriteHandlerTest");
@@ -92,13 +92,13 @@ public class OpenApiGenerator implements Generator {
         generateModelOnly = config.toBoolean("generateModelOnly");
         
         boolean enableHttp = config.toBoolean("enableHttp");
-        String httpPort = config.toString("httpPort");
+        String httpPort = config.toString("httpPort").trim();
         boolean enableHttps = config.toBoolean("enableHttps");
-        String httpsPort = config.toString("httpsPort");
+        String httpsPort = config.toString("httpsPort").trim();
         
         boolean enableRegistry = config.toBoolean("enableRegistry");
         boolean supportClient = config.toBoolean("supportClient");
-        String dockerOrganization = config.toString("dockerOrganization");
+        String dockerOrganization = config.toString("dockerOrganization").trim();
         
         prometheusMetrics = config.toBoolean("prometheusMetrics");
         skipHealthCheck = config.toBoolean("skipHealthCheck");
@@ -108,8 +108,8 @@ public class OpenApiGenerator implements Generator {
         
         generateValuesYml = config.toBoolean("generateValuesYml");
 
-        String version = config.toString("version");
-        String serviceId = config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version");
+        String version = config.toString("version").trim();
+        String serviceId = config.get("groupId").toString().trim() + "." + config.get("artifactId").toString().trim() + "-" + config.get("version").toString().trim();
 
         if(dockerOrganization == null || dockerOrganization.length() == 0) dockerOrganization = "networknt";
 
