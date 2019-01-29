@@ -45,6 +45,7 @@ public class OpenApiGenerator implements Generator {
     boolean regenerateCodeOnly = false;
     boolean enableParamDescription = true;
     boolean generateModelOnly = false;
+    boolean generateValuesYml = false;
 
     public OpenApiGenerator() {
         typeMapping.put("array", "java.util.List");
@@ -104,6 +105,8 @@ public class OpenApiGenerator implements Generator {
         skipServerInfo = config.toBoolean("skipServerInfo");
         regenerateCodeOnly = config.toBoolean("specChangeCodeReGenOnly");
         enableParamDescription = config.toBoolean("enableParamDescription");
+        
+        generateValuesYml = config.toBoolean("generateValuesYml");
 
         String version = config.toString("version");
         String serviceId = config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version");
@@ -166,6 +169,10 @@ public class OpenApiGenerator implements Generator {
 		        
 		        // exclusion list for Config module
 	            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "exclusions.yml", templates.rest.openapi.exclusions.template());
+	            
+	            // values.yml file, transfer only if explicitly set in the config.json
+	            if(generateValuesYml)
+	            	transfer(targetPath, ("src.main.resources.config").replace(".", separator), "values.yml", templates.rest.openapi.values.template());
 	        }
         }
         
