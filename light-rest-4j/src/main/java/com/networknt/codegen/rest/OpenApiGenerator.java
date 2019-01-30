@@ -224,6 +224,8 @@ public class OpenApiGenerator implements Generator {
                             required = entrySchema.getValue().asList();
                         }
         		        if("allOf".equals(entrySchema.getKey())) {
+        		        	type = "object";
+        		        	
         				    // could be referred to as "$ref" references or listed in "properties"
         				    for(Any listItem : entrySchema.getValue().asList()) {
         				    	//Map<String, Any> allOfItem = (Map<String, Any>)listItem.asMap().entrySet();
