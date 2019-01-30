@@ -3,6 +3,6 @@
 # the generic validator.yml will be loaded as a fallback.
 ---
 # Enable request validation. Response validation is not done on the server but client.
-enabled: true
+enabled: ${openapiValidator.enabled:true}
 # Log error message if validation error occurs
-logError: true
+logError: ${openapiValidator.logError:true}
