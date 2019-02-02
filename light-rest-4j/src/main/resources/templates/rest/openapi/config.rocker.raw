@@ -9,10 +9,9 @@
 #       Notes:
 #       File name included in the list will be excluded
 #       If the file is not provided, the config module will safely ignore it
+#       Simply list the config file names without extensions(.json, .yaml, .yml)
 #----------------------------------------------------------------------------------------------------------------
 exclusionConfigFileList:
-	- openapi.yaml
-	- openapi.json
-	- openapi.yml
-	- values.yml
-	- status.yml
+	- openapi
+	- values
+	- status
