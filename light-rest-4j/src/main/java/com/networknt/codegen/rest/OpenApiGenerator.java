@@ -249,7 +249,7 @@ public class OpenApiGenerator implements Generator {
                     // Since generate a model for primitive types and arrays do not make sense, and an error class would be generated
                     // due to lack of properties if force to generate.
                     if (type == null) {
-                        throw new RuntimeException("Cannot find type of \"" + modelFileName + "\" in #/components/schemas/ of specification file.");
+                        throw new RuntimeException("Cannot find the type of \"" + modelFileName + "\" in #/components/schemas/ of the specification file.");
                     }
                     if (!"object".equals(type)) {
                         continue;
