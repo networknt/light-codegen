@@ -168,7 +168,7 @@ public class OpenApiGenerator implements Generator {
 		        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "handler.yml", templates.rest.openapi.handlerYml.template(serviceId, handlerPackage, operationList, prometheusMetrics, !skipHealthCheck, !skipServerInfo));
 		        
 		        // exclusion list for Config module
-	            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "exclusions.yml", templates.rest.openapi.exclusions.template());
+	            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "config.yml", templates.rest.openapi.config.template());
 	            
 	            // values.yml file, transfer only if explicitly set in the config.json
 	            if(generateValuesYml)
