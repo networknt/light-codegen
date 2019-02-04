@@ -251,7 +251,7 @@ public class OpenApiGenerator implements Generator {
                     if (type == null) {
                         throw new RuntimeException("Cannot find type of \"" + modelFileName + "\" in #/components/schemas/ of specification file.");
                     }
-                    if (!type.equals("object")) {
+                    if (!"object".equals(type)) {
                         continue;
                     }
 
