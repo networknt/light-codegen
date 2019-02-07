@@ -7,6 +7,8 @@ singletons:
   - com.networknt.rpc.router.RpcRouter
 # StartupHookProvider implementations, there are one to many and they are called in the same sequence defined.
 - com.networknt.server.StartupHookProvider:
+  # If you are using mask module to remove sensitive info before logging, uncomment the following line.
+  # - com.networknt.server.JsonPathStartupHookProvider
   # registry all service handlers by from annotations
   - com.networknt.rpc.router.RpcStartupHookProvider
 @if(config.toBoolean("eventuateQueryModule") ){
