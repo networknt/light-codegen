@@ -12,6 +12,6 @@
 #       Simply list the config file names without extensions(.json, .yaml, .yml)
 #----------------------------------------------------------------------------------------------------------------
 exclusionConfigFileList:
-	- openapi
-	- values
-	- status
+  - openapi
+  - values
+  - status
