@@ -1,0 +1,3 @@
+@import com.jsoniter.any.Any
+@args (Any config)
+rootProject.name = "@config.get("artifactId")"

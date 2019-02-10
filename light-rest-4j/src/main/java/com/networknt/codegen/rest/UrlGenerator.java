@@ -64,6 +64,8 @@ public class UrlGenerator {
 
     /**
      * based on parameter schemas generate query parameter part of the url
+     * @param parameters a list of Parameters
+     * @return String of URL
      */
     public static String generateQueryParamUrl(List<Parameter> parameters) {
         String url = "";

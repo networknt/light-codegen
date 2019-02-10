@@ -1,0 +1,180 @@
+@args (String handlerPackage)
+package @handlerPackage
+
+import assertk.Assert
+import assertk.assertions.contains
+import assertk.assertions.isEqualTo
+import com.networknt.client.Http2Client
+import com.networknt.server.Server
+import io.undertow.UndertowOptions
+import io.undertow.client.ClientCallback
+import io.undertow.client.ClientExchange
+import io.undertow.client.ClientRequest
+import io.undertow.client.ClientResponse
+import io.undertow.util.FlexBase64
+import io.undertow.util.Headers
+import io.undertow.util.HttpString
+import io.undertow.util.Methods
+import mu.KotlinLogging
+import org.junit.jupiter.api.extension.AfterAllCallback
+import org.junit.jupiter.api.extension.BeforeAllCallback
+import org.junit.jupiter.api.extension.ExtensionContext
+import org.xnio.OptionMap
+import java.io.IOException
+import java.net.ServerSocket
+import java.net.URI
+import java.util.*
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.atomic.AtomicReference
+
+/**
+ * Junit5 Extension which sets up a light-server BeforeAll tests and tears it down AfterAll.
+ * Use with `@@ExtendWith(LightTestServer::class)`
+ *
+ * The first time a server is started in a particular VM, a random port is assigned to it to avoid clashes between
+ * concurrent test runs or other active servers.
+ *
+ * There are also static utility methods to make requests to the configured server.
+ */
+class LightTestServer() : BeforeAllCallback, AfterAllCallback {
+
+    // EXTENSION LIFE-CYCLE METHODS
+
+    var oldIsDynamicPort: Boolean? = null
+    var oldHttpsPort: Int? = null
+
+    // Patch Server.config and start server
+    override fun beforeAll(context: ExtensionContext?) {
+        oldIsDynamicPort = Server.config.isDynamicPort
+        oldHttpsPort = Server.config.httpsPort
+        Server.config.isDynamicPort = false
+        Server.config.httpsPort = httpsPort
+        Server.start()
+    }
+
+    // Stop server and unpatch config
+    override fun afterAll(context: ExtensionContext?) {
+        Server.stop()
+        Server.config.isDynamicPort = oldIsDynamicPort!!
+        Server.config.httpsPort = oldHttpsPort!!
+    }
+
+    companion object {
+
+        val log = KotlinLogging.logger {}
+
+        // SERVER STATE
+
+        val httpsPort = randomFreePort(40000, 60000)
+        val baseUrl = "https://localhost:$httpsPort"
+
+
+        // MAKE REQUESTS TO SERVER
+
+        /** Make a GET request to the server maintained by this extension. */
+        fun makeGetRequest(path: String, auth: String? = null): ClientResponse {
+            return makeRequest(path, Methods.GET, null, auth)
+        }
+
+        /** Make a POST request to the server maintained by this extension. */
+        fun makePostRequest(path: String, body: String, auth: String? = null): ClientResponse {
+            return makeRequest(path, Methods.POST, body, auth)
+        }
+
+        /** Make a PUT request to the server maintained by this extension. */
+        fun makePutRequest(path: String, body: String, auth: String? = null): ClientResponse {
+            return makeRequest(path, Methods.PUT, body, auth)
+        }
+
+        /** Make a DELETE request to the server maintained by this extension. */
+        fun makeDeleteRequest(path: String, auth: String? = null): ClientResponse {
+            return makeRequest(path, Methods.DELETE, null, auth)
+        }
+
+        /** Finds a random free port by attempting to listen on random ports until it succeeds. */
+        fun randomFreePort(minPort: Int, maxPort: Int): Int {
+            val random = Random()
+            while (true) {
+                val port = random.nextInt(maxPort - minPort) + minPort
+                try {
+                    val ss = ServerSocket(port)
+                    ss.close()
+                    return port
+                } catch (e: IOException) {
+                    log.info { "Port ${port} was busy" }
+                }
+            }
+        }
+
+        /** Make a request to the server maintained by this extension. */
+        fun makeRequest(path: String, method: HttpString, body: String?, auth: String? = null): ClientResponse {
+            log.info { "${method} :: $baseUrl :: ${path}" }
+
+            val client = Http2Client.getInstance()
+
+            client.connect(
+                URI(baseUrl),
+                Http2Client.WORKER,
+                Http2Client.SSL,
+                Http2Client.BUFFER_POOL,
+                OptionMap.create(UndertowOptions.ENABLE_HTTP2, true)
+            ).get().use { connection ->
+
+                val request = ClientRequest().setPath(path).setMethod(method)
+                authenticate(request, auth)
+                val latch = CountDownLatch(1)
+                val reference = AtomicReference<ClientResponse>()
+                val callback: ClientCallback<ClientExchange>
+
+                if (body == null) {
+                    callback = client.createClientCallback(reference, latch)
+                } else {
+                    log.info { "body: ${body}" }
+                    val firstChar = if (body.length > 0) body[0] else '\u0000'
+                    if (firstChar == '[' || firstChar == '@{') {
+                        request.requestHeaders.put(Headers.CONTENT_TYPE, "application/json")
+                    } else {
+                        request.requestHeaders.put(Headers.CONTENT_TYPE, "text/plain")
+                    }
+                    request.requestHeaders.put(Headers.TRANSFER_ENCODING, "chunked")
+                    callback = client.createClientCallback(reference, latch, body)
+                }
+
+                connection.sendRequest(request, callback)
+                latch.await()
+
+                val response = reference.get()
+                log.info { "Response code = ${response.responseCode}" }
+                log.info { "Response body = ${response.getAttachment(Http2Client.RESPONSE_BODY)}" }
+                return response
+            }
+
+        }
+
+        private fun authenticate(request: ClientRequest, auth: String?) {
+            if (auth == null) return
+
+            log.info { "auth = ${auth}" }
+            val bytes = auth.toByteArray(Charsets.UTF_8)
+            log.info { "bytes = ${bytes}" }
+            val encoded = FlexBase64.encodeString(bytes, false)
+            log.info { "encoded = ${encoded}" }
+            request.requestHeaders.add(
+                Headers.AUTHORIZATION,
+                "Basic ${encoded}"
+            )
+        }
+    }
+}
+
+fun Assert<ClientResponse>.rcIsEqualTo(expected: Int) = given { actual ->
+    assertThat(actual.responseCode, "Response Code").isEqualTo(expected)
+}
+
+fun Assert<ClientResponse>.bodyIsEqualTo(expected: String) = given { actual ->
+    assertThat(actual.getAttachment(com.networknt.client.Http2Client.RESPONSE_BODY), "Body").isEqualTo(expected)
+}
+
+fun Assert<ClientResponse>.bodyContains(expected: String)  = given { actual ->
+    assertThat(actual.getAttachment(com.networknt.client.Http2Client.RESPONSE_BODY), "Body").contains(expected)
+}
