@@ -1,0 +1,27 @@
+@import com.jsoniter.any.Any
+@args (Any config)
+# Versions of Frequently used Libraries
+kafkaVersion=2.0.0
+light4jVersion=1.5.29
+jacksonVersion=2.9.8
+undertowVersion=2.0.16.Final
+logbackVersion=1.2.3
+jsonSchemaValidatorVersion=1.0.2
+junitVersion=5.3.1
+kotlinLoggingVersion=1.6.22
+assertkVersion=0.13
+@if(config.toBoolean("supportDb") || config.toBoolean("supportH2ForTest")){
+hikaricpVersion=3.1.0
+}
+@if(config.toBoolean("supportDb") && "oracle".equalsIgnoreCase(config.toString("dbInfo", "name"))){
+oracleVersion=11.2.0.3
+}
+@if(config.toBoolean("supportDb") && "mysql".equalsIgnoreCase(config.toString("dbInfo", "name"))){
+mysqlVersion=6.0.5
+}
+@if(config.toBoolean("supportDb") && "postgres".equalsIgnoreCase(config.toString("dbInfo", "name"))){
+postgresVersion=42.1.1
+}
+@if(config.toBoolean("supportH2ForTest")){
+h2Version=1.3.176
+}

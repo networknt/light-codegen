@@ -1,0 +1,13 @@
+@import com.jsoniter.any.Any
+@option discardLogicWhitespace=true
+@import java.util.Map
+@import java.util.List
+@args (String modelPackage, String className, String classVarName, List<Map<String, Any>> props)
+package @modelPackage;
+data class @className (
+    @for ((i, prop): props) {
+        @if(i.index() < props.size() - 1) {val @prop.get("name"): @prop.get("type"),}
+        @if(i.index() == props.size() - 1) {val @prop.get("name"): @prop.get("type")}
+    }
+)
+
