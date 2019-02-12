@@ -70,12 +70,10 @@ public class YAMLFileParameterizer {
 			return;
 		}
 		
-		if (srcFile.exists()) {
-			try {
-				FileUtils.copyFile(srcFile, destFile);
-			} catch (IOException e) {
-				logger.error(e.getMessage(), e);
-			}
+		try {
+			FileUtils.copyFile(srcFile, destFile);
+		} catch (IOException e) {
+			logger.error(e.getMessage(), e);
 		}
 	}
 	
