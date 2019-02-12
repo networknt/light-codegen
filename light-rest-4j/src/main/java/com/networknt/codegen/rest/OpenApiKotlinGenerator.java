@@ -21,7 +21,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import static java.io.File.separator;
@@ -35,10 +34,10 @@ import static java.io.File.separator;
  *
  * @author Steve Hu
  */
-public class OpenApiGenerator implements Generator {
+public class OpenApiKotlinGenerator implements Generator {
     private Map<String, String> typeMapping = new HashMap<>();
-    
-    // optional generation parameters. if not set, they use default values as 
+
+    // optional generation parameters. if not set, they use default values as
     boolean prometheusMetrics =false;
     boolean skipHealthCheck = false;
     boolean skipServerInfo = false;
@@ -47,7 +46,7 @@ public class OpenApiGenerator implements Generator {
     boolean generateModelOnly = false;
     boolean generateValuesYml = false;
 
-    public OpenApiGenerator() {
+    public OpenApiKotlinGenerator() {
         typeMapping.put("array", "java.util.List");
         typeMapping.put("map", "java.util.Map");
         typeMapping.put("List", "java.util.List");
@@ -69,7 +68,7 @@ public class OpenApiGenerator implements Generator {
 
     @Override
     public String getFramework() {
-        return "openapi";
+        return "openapikotlin";
     }
 
     /**
@@ -85,30 +84,28 @@ public class OpenApiGenerator implements Generator {
         String rootPackage = config.toString("rootPackage").trim();
         String modelPackage = config.toString("modelPackage").trim();
         String handlerPackage = config.toString("handlerPackage").trim();
-        
+
         boolean overwriteHandler = config.toBoolean("overwriteHandler");
         boolean overwriteHandlerTest = config.toBoolean("overwriteHandlerTest");
         boolean overwriteModel = config.toBoolean("overwriteModel");
         generateModelOnly = config.toBoolean("generateModelOnly");
-        
+
         boolean enableHttp = config.toBoolean("enableHttp");
         String httpPort = config.toString("httpPort").trim();
         boolean enableHttps = config.toBoolean("enableHttps");
         String httpsPort = config.toString("httpsPort").trim();
-        
+
         boolean enableRegistry = config.toBoolean("enableRegistry");
         boolean supportClient = config.toBoolean("supportClient");
         String dockerOrganization = config.toString("dockerOrganization").trim();
-        
+
         prometheusMetrics = config.toBoolean("prometheusMetrics");
         skipHealthCheck = config.toBoolean("skipHealthCheck");
         skipServerInfo = config.toBoolean("skipServerInfo");
         regenerateCodeOnly = config.toBoolean("specChangeCodeReGenOnly");
         enableParamDescription = config.toBoolean("enableParamDescription");
-        
+
         generateValuesYml = config.toBoolean("generateValuesYml");
-        
-        boolean generateEnvVars = config.toBoolean("generateEnvVars");
 
         String version = config.toString("version").trim();
         String serviceId = config.get("groupId").toString().trim() + "." + config.get("artifactId").toString().trim() + "-" + config.get("version").toString().trim();
@@ -117,69 +114,75 @@ public class OpenApiGenerator implements Generator {
 
         // get the list of operations for this model
         List<Map<String, Object>> operationList = getOperationList(model);
-        
-        // bypass project generation if the mode is the only one requested to be built 
+
+        // bypass project generation if the mode is the only one requested to be built
         if(!generateModelOnly) {
-        	// if set to true, regenerate the code only (handlers, model and the handler.yml, potentially affected by operation changes
-	        if (!regenerateCodeOnly) {
-	        	// generate configurations, project, masks, certs, etc
-	            transfer(targetPath, "", "pom.xml", templates.rest.openapi.pom.template(config));
-	            // There is only one port that should be exposed in Dockerfile, otherwise, the service
-	            // discovery will be so confused. If https is enabled, expose the https port. Otherwise http port.
-	            String expose = "";
-	            if(enableHttps) {
-	                expose = httpsPort;
-	            } else {
-	                expose = httpPort;
-	            }
-	
-	            transfer(targetPath, "docker", "Dockerfile", templates.rest.dockerfile.template(config, expose));
-	            transfer(targetPath, "docker", "Dockerfile-Redhat", templates.rest.dockerfileredhat.template(config, expose));
-	            transfer(targetPath, "", "build.sh", templates.rest.buildSh.template(dockerOrganization, serviceId));
-	            transfer(targetPath, "", ".gitignore", templates.rest.gitignore.template());
-	            transfer(targetPath, "", "README.md", templates.rest.README.template());
-	            transfer(targetPath, "", "LICENSE", templates.rest.LICENSE.template());
-	            transfer(targetPath, "", ".classpath", templates.rest.classpath.template());
-	            transfer(targetPath, "", ".project", templates.rest.project.template(config));
-	
-	            // config
-	            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "service.yml", templates.rest.openapi.service.template(config));
-	
-	            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "server.yml", templates.rest.server.template(serviceId, enableHttp, httpPort, enableHttps, httpsPort, enableRegistry, version));
-	            transfer(targetPath, ("src.test.resources.config").replace(".", separator), "server.yml", templates.rest.server.template(serviceId, enableHttp, "49587", enableHttps, "49588", enableRegistry, version));
-	
-	            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "secret.yml", templates.rest.secret.template());
-	            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "openapi-security.yml", templates.rest.openapiSecurity.template());
-	            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "openapi-validator.yml", templates.rest.openapiValidator.template());
-	            if(supportClient) {
-	                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "client.yml", templates.rest.clientYml.template());
-	            } else {
-	                transfer(targetPath, ("src.test.resources.config").replace(".", separator), "client.yml", templates.rest.clientYml.template());
-	            }
-	
-	            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "primary.crt", templates.rest.primaryCrt.template());
-	            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "secondary.crt", templates.rest.secondaryCrt.template());
-	
-	            // mask
-	            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "mask.yml", templates.rest.maskYml.template());
-	            // logging
-	            transfer(targetPath, ("src.main.resources").replace(".", separator), "logback.xml", templates.rest.logback.template());
-	            transfer(targetPath, ("src.test.resources").replace(".", separator), "logback-test.xml", templates.rest.logback.template());
-        
-		        // routing handler
-		        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "handler.yml", templates.rest.openapi.handlerYml.template(serviceId, handlerPackage, operationList, prometheusMetrics, !skipHealthCheck, !skipServerInfo));
-		        
-		        // exclusion list for Config module
-	            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "config.yml", templates.rest.openapi.config.template());
-	            
-	            // values.yml file, transfer only if explicitly set in the config.json
-	            if(generateValuesYml)
-	            	transfer(targetPath, ("src.main.resources.config").replace(".", separator), "values.yml", templates.rest.openapi.values.template());
-	            
-	            YAMLFileParameterizer.rewriteAll(YAMLFileParameterizer.DEFAULT_SOURCE_DIR, targetPath+separator+YAMLFileParameterizer.DEFAULT_SOURCE_DIR, generateEnvVars);
-	        }
+            // if set to true, regenerate the code only (handlers, model and the handler.yml, potentially affected by operation changes
+            if (!regenerateCodeOnly) {
+                // generate configurations, project, masks, certs, etc
+                // There is only one port that should be exposed in Dockerfile, otherwise, the service
+                // discovery will be so confused. If https is enabled, expose the https port. Otherwise http port.
+                String expose = "";
+                if(enableHttps) {
+                    expose = httpsPort;
+                } else {
+                    expose = httpPort;
+                }
+
+                transfer(targetPath, "docker", "Dockerfile", templates.restkotlin.dockerfile.template(config, expose));
+                transfer(targetPath, "docker", "Dockerfile-Redhat", templates.restkotlin.dockerfileredhat.template(config, expose));
+                transfer(targetPath, "", "build.sh", templates.restkotlin.buildSh.template(dockerOrganization, serviceId));
+                transfer(targetPath, "", ".gitignore", templates.restkotlin.gitignore.template());
+                transfer(targetPath, "", "README.md", templates.restkotlin.README.template());
+                transfer(targetPath, "", "LICENSE", templates.restkotlin.LICENSE.template());
+                transfer(targetPath, "", "build.gradle.kts", templates.restkotlin.buildGradleKts.template(config));
+                transfer(targetPath, "", "gradle.properties", templates.restkotlin.gradleProperties.template(config));
+                transfer(targetPath, "", "gradlew", templates.restkotlin.gradlew.template());
+                transfer(targetPath, "", "gradlew.bat", templates.restkotlin.gradlewBat.template());
+                transfer(targetPath, "", "settings.gradle.kts", templates.restkotlin.settingsGradleKts.template(config));
+
+                transfer(targetPath, "gradle" + separator + "wrapper", "gradle-wrapper.properties", templates.restkotlin.gradleWrapperProperties.template());
+                try (InputStream is = OpenApiGenerator.class.getResourceAsStream("/binaries/gradle-wrapper.jar")) {
+                    Files.copy(is, Paths.get(targetPath, ("gradle.wrapper").replace(".", separator), "gradle-wrapper.jar"), StandardCopyOption.REPLACE_EXISTING);
+                }
+
+                // config
+                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "service.yml", templates.restkotlin.openapi.service.template(config));
+
+                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "server.yml", templates.restkotlin.server.template(serviceId, enableHttp, httpPort, enableHttps, httpsPort, enableRegistry, version));
+                transfer(targetPath, ("src.test.resources.config").replace(".", separator), "server.yml", templates.restkotlin.server.template(serviceId, enableHttp, "49587", enableHttps, "49588", enableRegistry, version));
+
+                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "secret.yml", templates.restkotlin.secret.template());
+                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "openapi-security.yml", templates.restkotlin.openapiSecurity.template());
+                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "openapi-validator.yml", templates.restkotlin.openapiValidator.template());
+                if(supportClient) {
+                    transfer(targetPath, ("src.main.resources.config").replace(".", separator), "client.yml", templates.restkotlin.clientYml.template());
+                } else {
+                    transfer(targetPath, ("src.test.resources.config").replace(".", separator), "client.yml", templates.restkotlin.clientYml.template());
+                }
+
+                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "primary.crt", templates.restkotlin.primaryCrt.template());
+                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "secondary.crt", templates.restkotlin.secondaryCrt.template());
+
+                // mask
+                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "mask.yml", templates.restkotlin.maskYml.template());
+                // logging
+                transfer(targetPath, ("src.main.resources").replace(".", separator), "logback.xml", templates.restkotlin.logback.template());
+                transfer(targetPath, ("src.test.resources").replace(".", separator), "logback-test.xml", templates.restkotlin.logback.template());
+                transfer(targetPath, ("src.test.resources").replace(".", separator), "junit-platform.properties", templates.restkotlin.junitPlatformProperties.template());
+
+                // routing handler
+                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "handler.yml", templates.restkotlin.openapi.handlerYml.template(serviceId, handlerPackage, operationList, prometheusMetrics, !skipHealthCheck, !skipServerInfo));
+
+                // exclusion list for Config module
+                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "config.yml", templates.restkotlin.openapi.config.template());
+
+                // values.yml file, transfer only if explicitly set in the config.json
+                if(generateValuesYml)
+                    transfer(targetPath, ("src.main.resources.config").replace(".", separator), "values.yml", templates.restkotlin.openapi.values.template());
+            }
         }
-        
+
         // model
         Any anyComponents;
         if(model instanceof Any) {
@@ -222,30 +225,30 @@ public class OpenApiGenerator implements Generator {
                             enums = enums.substring(enums.indexOf("[") + 1, enums.indexOf("]"));
                         }
                         if("properties".equals(entrySchema.getKey())) {
-                        	handleProperties(props, entrySchema.getValue().asMap());
+                            handleProperties(props, entrySchema.getValue().asMap());
                         }
                         if("required".equals(entrySchema.getKey())) {
                             required = entrySchema.getValue().asList();
                         }
-        		        if("allOf".equals(entrySchema.getKey())) {
-        		        	type = "object";
-        		        	
-        				    // could be referred to as "$ref" references or listed in "properties"
-        				    for(Any listItem : entrySchema.getValue().asList()) {
-        				    	//Map<String, Any> allOfItem = (Map<String, Any>)listItem.asMap().entrySet();
-        				    			
-	        				    for(Map.Entry<String, Any> allOfItem : ((Map<String, Any>)listItem.asMap()).entrySet()) {
-	        				        if("$ref".equals(allOfItem.getKey())) {
-	        				            String s = allOfItem.getValue().toString();
-	        				            s = s.substring(s.lastIndexOf('/') + 1);
-	        				            handleProperties(props, schemas.get(s).get("properties").asMap());
-	        				        }
-	                                if("properties".equals(allOfItem.getKey())) {
-	                                	handleProperties(props, allOfItem.getValue().asMap());
-	                                }
-	        		            }
-        				    }
-        		        }                        
+                        if("allOf".equals(entrySchema.getKey())) {
+                            type = "object";
+
+                            // could be referred to as "$ref" references or listed in "properties"
+                            for(Any listItem : entrySchema.getValue().asList()) {
+                                //Map<String, Any> allOfItem = (Map<String, Any>)listItem.asMap().entrySet();
+
+                                for(Map.Entry<String, Any> allOfItem : ((Map<String, Any>)listItem.asMap()).entrySet()) {
+                                    if("$ref".equals(allOfItem.getKey())) {
+                                        String s = allOfItem.getValue().toString();
+                                        s = s.substring(s.lastIndexOf('/') + 1);
+                                        handleProperties(props, schemas.get(s).get("properties").asMap());
+                                    }
+                                    if("properties".equals(allOfItem.getKey())) {
+                                        handleProperties(props, allOfItem.getValue().asMap());
+                                    }
+                                }
+                            }
+                        }
                     }
                     String classVarName = key;
                     String modelFileName = key.substring(0, 1).toUpperCase() + key.substring(1);
@@ -254,29 +257,25 @@ public class OpenApiGenerator implements Generator {
                     // Check the type of current schema. Generation will be executed only if the type of the schema equals to object.
                     // Since generate a model for primitive types and arrays do not make sense, and an error class would be generated
                     // due to lack of properties if force to generate.
-                    if (type == null) {
-                        throw new RuntimeException("Cannot find the type of \"" + modelFileName + "\" in #/components/schemas/ of the specification file.");
-                    }
                     if (!"object".equals(type)) {
                         continue;
                     }
-
-                    if(!overwriteModel && checkExist(targetPath, ("src.main.java." + modelPackage).replace(".", separator), modelFileName + ".java")) {
+                    if(!overwriteModel && checkExist(targetPath, ("src.main.kotlin." + modelPackage).replace(".", separator), modelFileName + ".kt")) {
                         continue;
                     }
                     if (isEnumClass) {
-                        transfer(targetPath, ("src.main.java." + modelPackage).replace(".", separator), modelFileName + ".java", templates.rest.enumClass.template(modelPackage, modelFileName, enums));
+                        transfer(targetPath, ("src.main.kotlin." + modelPackage).replace(".", separator), modelFileName + ".kt", templates.restkotlin.enumClass.template(modelPackage, modelFileName, enums));
                         continue;
                     }
-                    transfer(targetPath, ("src.main.java." + modelPackage).replace(".", separator), modelFileName + ".java", templates.rest.pojo.template(modelPackage, modelFileName, classVarName,  props));
+                    transfer(targetPath, ("src.main.kotlin." + modelPackage).replace(".", separator), modelFileName + ".kt", templates.restkotlin.pojo.template(modelPackage, modelFileName, classVarName,  props));
                 }
             }
         }
 
         // exit after generating the model if the consumer needs only the model classes
         if(generateModelOnly)
-        	return;
-        
+            return;
+
         // handler
         for(Map<String, Object> op : operationList){
             String className = op.get("handlerName").toString();
@@ -286,19 +285,19 @@ public class OpenApiGenerator implements Generator {
                 //example = mapper.writeValueAsString(op.get("example"));
                 example = JsonStream.serialize(op.get("example"));
             }
-            if(checkExist(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), className + ".java") && !overwriteHandler) {
+            if(checkExist(targetPath, ("src.main.kotlin." + handlerPackage).replace(".", separator), className + ".kt") && !overwriteHandler) {
                 continue;
             }
-            transfer(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), className + ".java", templates.rest.handler.template(handlerPackage, className, example, parameters));
+            transfer(targetPath, ("src.main.kotlin." + handlerPackage).replace(".", separator), className + ".kt", templates.restkotlin.handler.template(handlerPackage, className, example, parameters));
         }
 
         // handler test cases
-        transfer(targetPath, ("src.test.java." + handlerPackage + ".").replace(".", separator),  "TestServer.java", templates.rest.testServer.template(handlerPackage));
+        transfer(targetPath, ("src.test.kotlin." + handlerPackage + ".").replace(".", separator),  "LightTestServer.kt", templates.restkotlin.lightTestServerKt.template(handlerPackage));
         for(Map<String, Object> op : operationList){
-            if(checkExist(targetPath, ("src.test.java." + handlerPackage).replace(".", separator), op.get("handlerName") + "Test.java") && !overwriteHandlerTest) {
+            if(checkExist(targetPath, ("src.test.kotlin." + handlerPackage).replace(".", separator), op.get("handlerName") + "Test.kt") && !overwriteHandlerTest) {
                 continue;
             }
-            transfer(targetPath, ("src.test.java." + handlerPackage).replace(".", separator), op.get("handlerName") + "Test.java", templates.rest.openapi.handlerTest.template(handlerPackage, op));
+            transfer(targetPath, ("src.test.kotlin." + handlerPackage).replace(".", separator), op.get("handlerName") + "Test.kt", templates.restkotlin.handlerTest.template(handlerPackage, op));
         }
 
         // transfer binary files without touching them.
@@ -340,135 +339,138 @@ public class OpenApiGenerator implements Generator {
      * @param entry The entry for which to generate
      * @param propMap The property map to add to, created in the caller
      */
-	private void initializePropertyMap(Entry<String, Any> entry, Map<String, Any> propMap) {
-	    String name = entry.getKey();
-	    propMap.put("jsonProperty", Any.wrap(name));
-	    if(name.startsWith("@")) {
-	        name = name.substring(1);
+    private void initializePropertyMap(Map.Entry<String, Any> entry, Map<String, Any> propMap) {
+        String name = entry.getKey();
+        propMap.put("jsonProperty", Any.wrap(name));
+        if(name.startsWith("@")) {
+            name = name.substring(1);
 
-	    }
-	    propMap.put("name", Any.wrap(name));
-	    propMap.put("getter", Any.wrap("get" + name.substring(0, 1).toUpperCase() + name.substring(1)));
-	    propMap.put("setter", Any.wrap("set" + name.substring(0, 1).toUpperCase() + name.substring(1)));
-	    // assume it is not enum unless it is overwritten
-	    propMap.put("isEnum", Any.wrap(false));
-	}
+        }
+        propMap.put("name", Any.wrap(name));
+        propMap.put("getter", Any.wrap("get" + name.substring(0, 1).toUpperCase() + name.substring(1)));
+        propMap.put("setter", Any.wrap("set" + name.substring(0, 1).toUpperCase() + name.substring(1)));
+        // assume it is not enum unless it is overwritten
+        propMap.put("isEnum", Any.wrap(false));
+    }
 
-	/**
-	 * Handle elements listed as "properties"
-	 * 
-	 * @param props The properties map to add to
-	 */
-	//private void handleProperties(List<Map<String, Any>> props, Map.Entry<String, Any> entrySchema) {
-	private void handleProperties(List<Map<String, Any>> props, Map<String, Any> properties) {
-		// transform properties
-		for(Map.Entry<String, Any> entryProp: properties.entrySet()) {
-		    //System.out.println("key = " + entryProp.getKey() + " value = " + entryProp.getValue());
-		    Map<String, Any> propMap = new HashMap<>();
-		    
-		    // initialize property map
-		    initializePropertyMap(entryProp, propMap);
+    /**
+     * Handle elements listed as "properties"
+     *
+     * @param props The properties map to add to
+     */
+    //private void handleProperties(List<Map<String, Any>> props, Map.Entry<String, Any> entrySchema) {
+    private void handleProperties(List<Map<String, Any>> props, Map<String, Any> properties) {
+        // transform properties
+        for(Map.Entry<String, Any> entryProp: properties.entrySet()) {
+            //System.out.println("key = " + entryProp.getKey() + " value = " + entryProp.getValue());
+            Map<String, Any> propMap = new HashMap<>();
 
-		    String name = entryProp.getKey();
-		    boolean isArray = false;
-		    for(Map.Entry<String, Any> entryElement: entryProp.getValue().asMap().entrySet()) {
-		        //System.out.println("key = " + entryElement.getKey() + " value = " + entryElement.getValue());
+            // initialize property map
+            initializePropertyMap(entryProp, propMap);
 
-		        if("type".equals(entryElement.getKey())) {
-		            String t = typeMapping.get(entryElement.getValue().toString());
-		            if("java.util.List".equals(t)) {
-		                isArray = true;
-		            } else {
-		                propMap.putIfAbsent("type", Any.wrap(t));
-		            }
-		        }
-		        if("items".equals(entryElement.getKey())) {
-		            Any a = entryElement.getValue();
-		            if(a.get("$ref").valueType() != ValueType.INVALID && isArray) {
-		                String s = a.get("$ref").toString();
-		                s = s.substring(s.lastIndexOf('/') + 1);
-		                propMap.put("type", Any.wrap("java.util.List<" + s + ">"));
-		            }
-		            if(a.get("type").valueType() != ValueType.INVALID && isArray) {
-		                propMap.put("type", Any.wrap("java.util.List<" + typeMapping.get(a.get("type").toString()) + ">"));
-		            }
-		        }
-		        if("$ref".equals(entryElement.getKey())) {
-		            String s = entryElement.getValue().toString();
-		            s = s.substring(s.lastIndexOf('/') + 1);
-		            propMap.put("type", Any.wrap(s));
-		        }
-		        if("default".equals(entryElement.getKey())) {
-		            Any a = entryElement.getValue();
-		            propMap.put("default", a);
-		        }
-		        if("enum".equals(entryElement.getKey())) {
-		            propMap.put("isEnum", Any.wrap(true));
-		            propMap.put("nameWithEnum", Any.wrap(name.substring(0, 1).toUpperCase() + name.substring(1) + "Enum"));
-		            this.addUnderscores(entryElement);
-		            propMap.put("value", Any.wrap(entryElement.getValue()));
-		        }
-		        if("format".equals(entryElement.getKey())) {
-		            String s = entryElement.getValue().toString();
-		            if("date-time".equals(s)) {
-		                propMap.put("type", Any.wrap("java.time.LocalDateTime"));
-		            }
-		            if("date".equals(s)) {
-		                propMap.put("type", Any.wrap("java.time.LocalDate"));
-		            }
-		            if("double".equals(s)) {
-		                propMap.put("type", Any.wrap("java.lang.Double"));
-		            }
-		            if("float".equals(s)) {
-		                propMap.put("type", Any.wrap("java.lang.Float"));
-		            }
-		            if("int64".equals(s)){
-		                propMap.put("type", Any.wrap("java.lang.Long"));
-		            }
-		        }
-		        if("oneOf".equals(entryElement.getKey())) {
-		            List<Any> list = entryElement.getValue().asList();
-		            Any t = list.get(0).asMap().get("type");
-		            if(t != null) {
-		                propMap.put("type", Any.wrap(typeMapping.get(t.toString())));
-		            } else {
-		                // maybe reference? default type to object.
-		                propMap.put("type", Any.wrap("Object"));
-		            }
-		        }
-		        if("anyOf".equals(entryElement.getKey())) {
-		            List<Any> list = entryElement.getValue().asList();
-		            Any t = list.get(0).asMap().get("type");
-		            if(t != null) {
-		                propMap.put("type", Any.wrap(typeMapping.get(t.toString())));
-		            } else {
-		                // maybe reference? default type to object.
-		                propMap.put("type", Any.wrap("Object"));
-		            }
-		        }
-		        if("allOf".equals(entryElement.getKey())) {
-		            List<Any> list = entryElement.getValue().asList();
-		            Any t = list.get(0).asMap().get("type");
-		            if(t != null) {
-		                propMap.put("type", Any.wrap(typeMapping.get(t.toString())));
-		            } else {
-		                // maybe reference? default type to object.
-		                propMap.put("type", Any.wrap("Object"));
-		            }
-		        }
-		        if("not".equals(entryElement.getKey())) {
-		            Map<String, Any> m = entryElement.getValue().asMap();
-		            Any t = m.get("type");
-		            if(t != null) {
-		                propMap.put("type", t);
-		            } else {
-		                propMap.put("type", Any.wrap("Object"));
-		            }
-		        }
-		    }
-		    props.add(propMap);
-		}
-	}
+            String name = entryProp.getKey();
+            boolean isArray = false;
+            for(Map.Entry<String, Any> entryElement: entryProp.getValue().asMap().entrySet()) {
+                //System.out.println("key = " + entryElement.getKey() + " value = " + entryElement.getValue());
+
+                if("type".equals(entryElement.getKey())) {
+                    String t = typeMapping.get(entryElement.getValue().toString());
+                    if("java.util.List".equals(t)) {
+                        isArray = true;
+                    } else {
+                        propMap.putIfAbsent("type", Any.wrap(t));
+                    }
+                }
+                if("items".equals(entryElement.getKey())) {
+                    Any a = entryElement.getValue();
+                    if(a.get("$ref").valueType() != ValueType.INVALID && isArray) {
+                        String s = a.get("$ref").toString();
+                        s = s.substring(s.lastIndexOf('/') + 1);
+                        propMap.put("type", Any.wrap("java.util.List<" + s + ">"));
+                    }
+                    if(a.get("type").valueType() != ValueType.INVALID && isArray) {
+                        propMap.put("type", Any.wrap("java.util.List<" + typeMapping.get(a.get("type").toString()) + ">"));
+                    }
+                }
+                if("$ref".equals(entryElement.getKey())) {
+                    String s = entryElement.getValue().toString();
+                    s = s.substring(s.lastIndexOf('/') + 1);
+                    propMap.put("type", Any.wrap(s));
+                }
+                if("default".equals(entryElement.getKey())) {
+                    Any a = entryElement.getValue();
+                    propMap.put("default", a);
+                }
+                if("enum".equals(entryElement.getKey())) {
+                    propMap.put("isEnum", Any.wrap(true));
+                    propMap.put("nameWithEnum", Any.wrap(name.substring(0, 1).toUpperCase() + name.substring(1) + "Enum"));
+                    this.addUnderscores(entryElement);
+                    propMap.put("value", Any.wrap(entryElement.getValue()));
+                }
+                if("format".equals(entryElement.getKey())) {
+                    String s = entryElement.getValue().toString();
+                    if("date-time".equals(s)) {
+                        propMap.put("type", Any.wrap("java.time.LocalDateTime"));
+                    }
+                    if("date".equals(s)) {
+                        propMap.put("type", Any.wrap("java.time.LocalDate"));
+                    }
+                    if("double".equals(s)) {
+                        propMap.put("type", Any.wrap("Double"));
+                    }
+                    if("float".equals(s)) {
+                        propMap.put("type", Any.wrap("Float"));
+                    }
+                    if("int64".equals(s)){
+                        propMap.put("type", Any.wrap("Long"));
+                    }
+                    if("int32".equals(s)) {
+                        propMap.put("type", Any.wrap("Int"));
+                    }
+                }
+                if("oneOf".equals(entryElement.getKey())) {
+                    List<Any> list = entryElement.getValue().asList();
+                    Any t = list.get(0).asMap().get("type");
+                    if(t != null) {
+                        propMap.put("type", Any.wrap(typeMapping.get(t.toString())));
+                    } else {
+                        // maybe reference? default type to object.
+                        propMap.put("type", Any.wrap("Object"));
+                    }
+                }
+                if("anyOf".equals(entryElement.getKey())) {
+                    List<Any> list = entryElement.getValue().asList();
+                    Any t = list.get(0).asMap().get("type");
+                    if(t != null) {
+                        propMap.put("type", Any.wrap(typeMapping.get(t.toString())));
+                    } else {
+                        // maybe reference? default type to object.
+                        propMap.put("type", Any.wrap("Object"));
+                    }
+                }
+                if("allOf".equals(entryElement.getKey())) {
+                    List<Any> list = entryElement.getValue().asList();
+                    Any t = list.get(0).asMap().get("type");
+                    if(t != null) {
+                        propMap.put("type", Any.wrap(typeMapping.get(t.toString())));
+                    } else {
+                        // maybe reference? default type to object.
+                        propMap.put("type", Any.wrap("Object"));
+                    }
+                }
+                if("not".equals(entryElement.getKey())) {
+                    Map<String, Any> m = entryElement.getValue().asMap();
+                    Any t = m.get("type");
+                    if(t != null) {
+                        propMap.put("type", t);
+                    } else {
+                        propMap.put("type", Any.wrap("Object"));
+                    }
+                }
+            }
+            props.add(propMap);
+        }
+    }
 
     public List<Map<String, Object>> getOperationList(Object model) {
         List<Map<String, Object>> result = new ArrayList<>();
@@ -515,24 +517,24 @@ public class OpenApiGenerator implements Generator {
                     List<Parameter> parameterRawList = operation.getParameters();
                     List<Map> parametersResultList = new LinkedList<>();
                     parameterRawList.forEach(parameter -> {
-                                Map<String, String> parameterMap = new HashMap<>();
-                                parameterMap.put("name", parameter.getName());
-                                parameterMap.put("description", parameter.getDescription());
-                                if(parameter.getRequired() != null) {
-                                    parameterMap.put("required", String.valueOf(parameter.getRequired()));
-                                }
-                                Schema schema = parameter.getSchema();
-                                if(schema != null) {
-                                    parameterMap.put("type", schema.getType());
-                                    if(schema.getMinLength() != null) {
-                                        parameterMap.put("minLength", String.valueOf(schema.getMinLength()));
-                                    }
-                                    if(schema.getMaxLength() != null) {
-                                        parameterMap.put("maxLength", String.valueOf(schema.getMaxLength()));
-                                    }
-                                }
-                                parametersResultList.add(parameterMap);
-                            });
+                        Map<String, String> parameterMap = new HashMap<>();
+                        parameterMap.put("name", parameter.getName());
+                        parameterMap.put("description", parameter.getDescription());
+                        if(parameter.getRequired() != null) {
+                            parameterMap.put("required", String.valueOf(parameter.getRequired()));
+                        }
+                        Schema schema = parameter.getSchema();
+                        if(schema != null) {
+                            parameterMap.put("type", schema.getType());
+                            if(schema.getMinLength() != null) {
+                                parameterMap.put("minLength", String.valueOf(schema.getMinLength()));
+                            }
+                            if(schema.getMaxLength() != null) {
+                                parameterMap.put("maxLength", String.valueOf(schema.getMaxLength()));
+                            }
+                        }
+                        parametersResultList.add(parameterMap);
+                    });
                     flattened.put("parameters", parametersResultList);
                 }
                 Response response = operation.getResponse("200");
@@ -591,4 +593,6 @@ public class OpenApiGenerator implements Generator {
         }
         entryElement.setValue(Any.wrap(list));
     }
+
+
 }

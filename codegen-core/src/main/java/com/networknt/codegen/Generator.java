@@ -92,6 +92,7 @@ public interface Generator {
      * @param path  Current file path in the output folder
      * @param filename Current filename in the output folder
      * @throws IOException throws IOException
+     * @return boolean if the path exists or not
      */
     default boolean checkExist(String folder, String path, String filename) throws IOException {
         String absPath = folder + (path.isEmpty()? "" : separator + path) + separator + filename;

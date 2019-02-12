@@ -32,6 +32,6 @@ singletons:
   - com.networknt.codegen.hybrid.HybridServerGenerator
   - com.networknt.codegen.hybrid.HybridServiceGenerator
   - com.networknt.codegen.graphql.GraphqlGenerator
-
+  - com.networknt.codegen.rest.OpenApiKotlinGenerator
 - com.networknt.resources.PathResourceProvider:
   - com.networknt.codegen.handler.CodegenResourceProvider

@@ -1,0 +1,6 @@
+@args (String modelPackage, String className, String enums)
+package @modelPackage;
+
+enum class @className {
+    @enums
+}
