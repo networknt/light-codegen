@@ -1,15 +1,6 @@
 package com.networknt.codegen.rest;
 
-import com.jsoniter.JsonIterator;
-import com.jsoniter.ValueType;
-import com.jsoniter.any.Any;
-import com.jsoniter.output.JsonStream;
-import com.networknt.codegen.Generator;
-import com.networknt.codegen.Utils;
-import com.networknt.jsonoverlay.Overlay;
-import com.networknt.oas.OpenApiParser;
-import com.networknt.oas.model.*;
-import com.networknt.oas.model.impl.OpenApi3Impl;
+import static java.io.File.separator;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -20,11 +11,33 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import static java.io.File.separator;
+import com.jsoniter.JsonIterator;
+import com.jsoniter.ValueType;
+import com.jsoniter.any.Any;
+import com.jsoniter.output.JsonStream;
+import com.networknt.codegen.Generator;
+import com.networknt.codegen.Utils;
+import com.networknt.jsonoverlay.Overlay;
+import com.networknt.oas.OpenApiParser;
+import com.networknt.oas.model.Example;
+import com.networknt.oas.model.MediaType;
+import com.networknt.oas.model.OpenApi3;
+import com.networknt.oas.model.Operation;
+import com.networknt.oas.model.Parameter;
+import com.networknt.oas.model.Path;
+import com.networknt.oas.model.Response;
+import com.networknt.oas.model.Schema;
+import com.networknt.oas.model.Server;
+import com.networknt.oas.model.impl.OpenApi3Impl;
 
 /**
  * The input for OpenAPI 3.0 generator include config with json format
@@ -37,6 +50,8 @@ import static java.io.File.separator;
  */
 public class OpenApiGenerator implements Generator {
     private Map<String, String> typeMapping = new HashMap<>();
+    
+    static final String GENERATE_ENV_VARS="generateEnvVars";
     
     // optional generation parameters. if not set, they use default values as 
     boolean prometheusMetrics =false;
@@ -108,7 +123,8 @@ public class OpenApiGenerator implements Generator {
         
         generateValuesYml = config.toBoolean("generateValuesYml");
         
-        boolean generateEnvVars = config.toBoolean("generateEnvVars");
+        Any generateEnvVarsConfig = config.get("generateEnvVars");
+        
 
         String version = config.toString("version").trim();
         String serviceId = config.get("groupId").toString().trim() + "." + config.get("artifactId").toString().trim() + "-" + config.get("version").toString().trim();
@@ -176,7 +192,9 @@ public class OpenApiGenerator implements Generator {
 	            if(generateValuesYml)
 	            	transfer(targetPath, ("src.main.resources.config").replace(".", separator), "values.yml", templates.rest.openapi.values.template());
 	            
-	            YAMLFileParameterizer.rewriteAll(YAMLFileParameterizer.DEFAULT_SOURCE_DIR, targetPath+separator+YAMLFileParameterizer.DEFAULT_SOURCE_DIR, generateEnvVars);
+	            if (config.keys().contains(GENERATE_ENV_VARS)) {
+	            	YAMLFileParameterizer.rewriteAll(YAMLFileParameterizer.DEFAULT_SOURCE_DIR, targetPath+separator+YAMLFileParameterizer.DEFAULT_SOURCE_DIR, config.get(GENERATE_ENV_VARS).toBoolean());
+	            }
 	        }
         }
         

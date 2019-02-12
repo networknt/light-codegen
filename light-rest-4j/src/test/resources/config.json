@@ -24,6 +24,5 @@
   },
   "supportH2ForTest": false,
   "supportClient": false,
-  "dockerOrganization": "networknt",
-  "generateEnvVars": true
+  "dockerOrganization": "networknt"
 }
