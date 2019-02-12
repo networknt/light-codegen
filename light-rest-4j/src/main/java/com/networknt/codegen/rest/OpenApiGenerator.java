@@ -123,9 +123,6 @@ public class OpenApiGenerator implements Generator {
         
         generateValuesYml = config.toBoolean("generateValuesYml");
         
-        Any generateEnvVarsConfig = config.get("generateEnvVars");
-        
-
         String version = config.toString("version").trim();
         String serviceId = config.get("groupId").toString().trim() + "." + config.get("artifactId").toString().trim() + "-" + config.get("version").toString().trim();
 
