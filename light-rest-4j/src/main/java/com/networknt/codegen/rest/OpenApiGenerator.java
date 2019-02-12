@@ -107,6 +107,8 @@ public class OpenApiGenerator implements Generator {
         enableParamDescription = config.toBoolean("enableParamDescription");
         
         generateValuesYml = config.toBoolean("generateValuesYml");
+        
+        boolean generateEnvVars = config.toBoolean("generateEnvVars");
 
         String version = config.toString("version").trim();
         String serviceId = config.get("groupId").toString().trim() + "." + config.get("artifactId").toString().trim() + "-" + config.get("version").toString().trim();
@@ -173,6 +175,8 @@ public class OpenApiGenerator implements Generator {
 	            // values.yml file, transfer only if explicitly set in the config.json
 	            if(generateValuesYml)
 	            	transfer(targetPath, ("src.main.resources.config").replace(".", separator), "values.yml", templates.rest.openapi.values.template());
+	            
+	            YAMLFileParameterizer.rewriteAll(YAMLFileParameterizer.DEFAULT_SOURCE_DIR, targetPath+separator+YAMLFileParameterizer.DEFAULT_SOURCE_DIR, generateEnvVars);
 	        }
         }
         

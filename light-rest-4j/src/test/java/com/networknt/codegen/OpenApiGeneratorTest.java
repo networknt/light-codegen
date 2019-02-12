@@ -1,23 +1,28 @@
 package com.networknt.codegen;
 
-import com.jsoniter.JsonIterator;
-import com.jsoniter.any.Any;
-import com.networknt.codegen.rest.OpenApiGenerator;
-import com.thoughtworks.qdox.JavaProjectBuilder;
-import com.thoughtworks.qdox.model.JavaClass;
-import com.thoughtworks.qdox.model.JavaField;
-import com.thoughtworks.qdox.model.JavaPackage;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Scanner;
+
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import com.jsoniter.JsonIterator;
+import com.jsoniter.any.Any;
+import com.networknt.codegen.rest.OpenApiGenerator;
+import com.networknt.codegen.rest.YAMLFileParameterizer;
+import com.thoughtworks.qdox.JavaProjectBuilder;
+import com.thoughtworks.qdox.model.JavaClass;
+import com.thoughtworks.qdox.model.JavaField;
+import com.thoughtworks.qdox.model.JavaPackage;
 
 /**
  * @author Steve Hu
@@ -132,5 +137,20 @@ public class OpenApiGeneratorTest {
                 Assert.assertFalse(field.getName().contains(" "));
             }
         }
+    }
+    
+    @Test
+    public void testYAMLFileParameterizer() {
+    	File srcDir = new File("src/main/resources/config/");
+    	File destDir = new File("/tmp/test/");
+    	
+    	FilenameFilter filter = (dir, name)->name.toLowerCase().endsWith(".yml");
+    	
+    	YAMLFileParameterizer.rewriteAll(srcDir, destDir, true);
+    	
+    	int srcCount = srcDir.list(filter).length;
+    	int destCount = destDir.list(filter).length;
+    	
+    	assertTrue(srcCount==destCount);
     }
 }
