@@ -258,13 +258,13 @@ public class YAMLFileParameterizer {
 					ScalarNode sv = (ScalarNode)v;
 					
 					copy(srclines, destlines, pos, startLine);
-					destlines.add(String.format("%s:${%s%s%s:%s}", sk.getValue(), filename, KEY_SEPARATOR, sk.getValue(), sv.getValue()));
+					destlines.add(String.format("%s: ${%s%s%s:%s}", sk.getValue(), filename, KEY_SEPARATOR, sk.getValue(), sv.getValue()));
 					
 					pos = stopLine+1;
 				}else {
 					if (!skipArray && !skipMap) {
 						copy(srclines, destlines, pos, startLine);
-						destlines.add(String.format("%s:${%s%s%s}", sk.getValue(), filename, KEY_SEPARATOR, sk.getValue()));
+						destlines.add(String.format("%s: ${%s%s%s}", sk.getValue(), filename, KEY_SEPARATOR, sk.getValue()));
 						
 						pos = stopLine+1;
 					}else {
