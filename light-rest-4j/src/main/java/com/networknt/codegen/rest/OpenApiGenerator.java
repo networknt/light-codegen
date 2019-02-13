@@ -289,7 +289,10 @@ public class OpenApiGenerator implements Generator {
         }
 
         // handler test cases
-        transfer(targetPath, ("src.test.java." + handlerPackage + ".").replace(".", separator),  "TestServer.java", templates.rest.testServer.template(handlerPackage));
+        if (!regenerateCodeOnly) {
+            transfer(targetPath, ("src.test.java." + handlerPackage + ".").replace(".", separator),  "TestServer.java", templates.rest.testServer.template(handlerPackage));
+        }
+
         for(Map<String, Object> op : operationList){
             if(checkExist(targetPath, ("src.test.java." + handlerPackage).replace(".", separator), op.get("handlerName") + "Test.java") && !overwriteHandlerTest) {
                 continue;
