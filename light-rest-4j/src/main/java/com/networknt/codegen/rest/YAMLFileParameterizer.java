@@ -8,9 +8,16 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
@@ -44,6 +51,11 @@ public class YAMLFileParameterizer {
 	protected static final String KEY_SKIP_MAP="skipMap";
 	
 	public static void rewriteAll(String srcLocation, String destDir, Map<String, Any> generateEnvVars) {
+		
+		if (logger.isDebugEnabled()) {
+			logger.debug("rewriting files in {}", srcLocation);
+		}
+		
 		if (fromClasspath(srcLocation)) {
 			rewriteResources(resolveLocation(srcLocation), destDir, generateEnvVars);
 		}else {
@@ -73,27 +85,29 @@ public class YAMLFileParameterizer {
 
 	
 	public static void rewriteResources(String resourceLocation, String destDir, Map<String, Any> generateEnvVars) {
-		try {
-			List<String> filenames = IOUtils.readLines(YAMLFileParameterizer.class.getClassLoader().getResourceAsStream(resourceLocation), (String)null);
-			
-			List<String> ymlFileNames = filenames.stream().filter(name->name.toLowerCase().endsWith(YML_EXT)).collect(Collectors.toList());
-			
-			File dest = new File(destDir);
-			
-			if (!dest.isDirectory() || !dest.exists()) {
-				if (!dest.mkdir()) {
-					logger.error("Failed to create dir {}", destDir);
-					return;
-				}
+		List<String> filenames = listClasspathDir(resourceLocation);
+		
+		if (logger.isDebugEnabled()) {
+			logger.debug("files in {}: {}", resourceLocation, String.join(",", filenames));
+		}
+		
+		List<String> ymlFileNames = filenames.stream().filter(name->name.toLowerCase().endsWith(YML_EXT)).collect(Collectors.toList());
+		
+		if (logger.isDebugEnabled()) {
+			logger.debug("ymlFileNames in {}: {}", resourceLocation, String.join(",", ymlFileNames));
+		}
+		
+		File dest = new File(destDir);
+		
+		if (!dest.isDirectory() || !dest.exists()) {
+			if (!dest.mkdir()) {
+				logger.error("Failed to create dir {}", destDir);
+				return;
 			}
-			
-			for (String filename: ymlFileNames) {
-				rewriteResource(stripExtension(filename), resourceLocation+File.separator+filename, destDir+File.separator+filename, generateEnvVars);
-			}
-			
-			
-		} catch (IOException e) {
-			logger.error(e.getMessage(), e);
+		}
+		
+		for (String filename: ymlFileNames) {
+			rewriteResource(stripExtension(filename), resourceLocation+filename, destDir+File.separator+filename, generateEnvVars);
 		}
 	}
 	
@@ -154,7 +168,7 @@ public class YAMLFileParameterizer {
 	}
 	
 	protected static void copyResource(String resourceLocation, String destFilename) {
-		try (InputStream in = YAMLFileParameterizer.class.getClassLoader().getResourceAsStream(resourceLocation);
+		try (InputStream in = getResourceAsStream(resourceLocation);
 				FileOutputStream out = new FileOutputStream(destFilename)) {
 			IOUtils.copy(in, out);
 		} catch (IOException e) {
@@ -176,8 +190,58 @@ public class YAMLFileParameterizer {
 		}
 	}
 	
+	protected static URL getResourceURL(String resource) {
+		return YAMLFileParameterizer.class.getClassLoader().getResource(resource);
+	}
+	
+	protected static InputStream getResourceAsStream(String resource) {
+		return YAMLFileParameterizer.class.getClassLoader().getResourceAsStream(resource);
+	}
+	
+	protected static List<String> listClasspathDir(String dir) {
+		List<String> result = new ArrayList<>();
+
+		try {
+			URL dirURL = getResourceURL(dir);
+			
+			if (null==dirURL) {
+				logger.error("cannot file {} in classpath.", dir);
+				return result;
+			}
+			
+			if (dirURL.getProtocol().equals("file")) {
+				result.addAll(Arrays.asList(new File(dirURL.toURI()).list()));
+				return result;
+			}else if (dirURL.getProtocol().equals("jar")) { /* A JAR path */
+				// strip out only the JAR file
+				String path = dirURL.getPath();
+				String jarPath = path.substring("file:".length(), path.indexOf("!"));
+				
+				JarFile jar = new JarFile(URLDecoder.decode(jarPath, "UTF-8"));
+				
+				Enumeration<JarEntry> entries = jar.entries(); // gives ALL entries in jar
+				int length = dir.length();
+				
+				while (entries.hasMoreElements()) {
+					String name = entries.nextElement().getName();
+					
+					int pathIndex = name.lastIndexOf(dir);
+					if (pathIndex >= 0) {
+						result.add(name.substring(pathIndex+length));
+					}
+				}
+				jar.close();
+				return result;
+			}
+		} catch(Exception e) {
+			logger.error(e.getMessage(), e);
+		}
+		
+		throw new UnsupportedOperationException("Cannot list files in " + dir);
+	}
+	
 	protected static Node loadResource(String resourceLocation) {
-		try (InputStream in = YAMLFileParameterizer.class.getClassLoader().getResourceAsStream(resourceLocation);
+		try (InputStream in = getResourceAsStream(resourceLocation);
 				BufferedReader inputReader = new BufferedReader(new InputStreamReader(in))) {
 			Composer composer = new Composer(new ParserImpl(new StreamReader(inputReader)), new Resolver());
 			return composer.getSingleNode();
@@ -189,8 +253,9 @@ public class YAMLFileParameterizer {
 	}
 	
 	protected static List<String> readResource(String resourceLocation) {
-		try (InputStream in = YAMLFileParameterizer.class.getClassLoader().getResourceAsStream(resourceLocation)) {
-			return IOUtils.readLines(in, (String) null);
+		try (InputStream in = getResourceAsStream(resourceLocation);
+				InputStreamReader reader = new InputStreamReader(in, StandardCharsets.UTF_8)) {
+			return  IOUtils.readLines(reader);
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 		}
