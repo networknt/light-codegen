@@ -140,17 +140,43 @@ public class OpenApiGeneratorTest {
     }
     
     @Test
-    public void testYAMLFileParameterizer() {
-    	File srcDir = new File("src/main/resources/config/");
-    	File destDir = new File("/tmp/test/");
+    public void testResourceParameterizing() throws IOException {
+    	String destDirName = "/tmp/yml_param_test";
+    	File destDir = new File(destDirName);
+    	
+    	if (destDir.exists() && destDir.isDirectory()) {
+    		destDir.delete();
+    	}
     	
     	FilenameFilter filter = (dir, name)->name.toLowerCase().endsWith(".yml");
     	
-    	YAMLFileParameterizer.rewriteAll(srcDir, destDir, true);
+    	Any anyConfig = JsonIterator.parse(OpenApiGeneratorTest.class.getResourceAsStream(configName), 1024).readAny();
     	
-    	int srcCount = srcDir.list(filter).length;
+    	YAMLFileParameterizer.rewriteAll(YAMLFileParameterizer.DEFAULT_RESOURCE_LOCATION, destDirName, anyConfig.get(OpenApiGenerator.GENERATE_ENV_VARS).asMap());
+    	
     	int destCount = destDir.list(filter).length;
     	
-    	assertTrue(srcCount==destCount);
+    	assertTrue(destCount>0);
+    }
+    
+    @Test
+    public void testFileParameterizing() throws IOException {
+    	String srcDirName = "src/main/resources/handlerconfig";
+    	String destDirName = "/tmp/yml_param_test";
+    	File destDir = new File(destDirName);
+    	
+    	if (destDir.exists() && destDir.isDirectory()) {
+    		destDir.delete();
+    	}
+    	
+    	FilenameFilter filter = (dir, name)->name.toLowerCase().endsWith(".yml");
+    	
+    	Any anyConfig = JsonIterator.parse(OpenApiGeneratorTest.class.getResourceAsStream(configName), 1024).readAny();
+    	
+    	YAMLFileParameterizer.rewriteAll(srcDirName, destDirName, anyConfig.get(OpenApiGenerator.GENERATE_ENV_VARS).asMap());
+    	
+    	int destCount = destDir.list(filter).length;
+    	
+    	assertTrue(destCount>0);
     }
 }
