@@ -23,6 +23,7 @@ import org.yaml.snakeyaml.nodes.MappingNode;
 import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.nodes.NodeTuple;
 import org.yaml.snakeyaml.nodes.ScalarNode;
+import org.yaml.snakeyaml.nodes.SequenceNode;
 import org.yaml.snakeyaml.parser.ParserImpl;
 import org.yaml.snakeyaml.reader.StreamReader;
 import org.yaml.snakeyaml.resolver.Resolver;
@@ -262,7 +263,8 @@ public class YAMLFileParameterizer {
 					
 					pos = stopLine+1;
 				}else {
-					if (!skipArray && !skipMap) {
+					if (((v instanceof SequenceNode) && !skipArray) 
+							|| ((v instanceof MappingNode) && !skipMap)) {
 						copy(srclines, destlines, pos, startLine);
 						destlines.add(String.format("%s: ${%s%s%s}", sk.getValue(), filename, KEY_SEPARATOR, sk.getValue()));
 						
