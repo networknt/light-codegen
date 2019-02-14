@@ -28,6 +28,10 @@
   "generateEnvVars": {
   	"generate": true,
   	"skipArray": true,
-  	"skipMap": true
+  	"skipMap": true,
+  	"exclude": [
+  		"handerl.yml",
+  		"values.yml"
+  	]
   }
 }

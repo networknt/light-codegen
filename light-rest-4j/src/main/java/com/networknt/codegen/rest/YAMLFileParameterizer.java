@@ -13,9 +13,12 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.stream.Collectors;
@@ -41,7 +44,10 @@ public class YAMLFileParameterizer {
 	private static final Logger logger = LoggerFactory.getLogger(YAMLFileParameterizer.class);
 	private static final String KEY_SEPARATOR = ".";
 	private static final String YML_EXT = ".yml";
+	private static final String BAK_EXT = ".bak";
+	private static final String SLASH = "/";
 	
+	public static final String GENERATE_ENV_VARS="generateEnvVars";
 	public static final String CLASS_PATH_PREFIX="classpath:";
 	public static final String DEFAULT_RESOURCE_LOCATION = CLASS_PATH_PREFIX+"handlerconfig/";
 	public static final String DEFAULT_DEST_DIR = "src/main/resources/config";
@@ -49,6 +55,23 @@ public class YAMLFileParameterizer {
 	protected static final String KEY_GENERATE="generate";
 	protected static final String KEY_SKIP_ARRAY="skipArray";
 	protected static final String KEY_SKIP_MAP="skipMap";
+	protected static final String KEY_IN_PLACE="inPlace";
+	protected static final String KEY_EXCLUDE="exclude";
+	
+	/**
+	 * In place rewriting.
+	 * 
+	 * @param dir - file dir
+	 * @param generateEnvVars - config
+	 */
+	public static void rewriteAll(String dir, Map<String, Any> generateEnvVars) {
+		if (logger.isDebugEnabled()) {
+			logger.debug("rewriting files in {}", dir);
+		}
+		
+		generateEnvVars.put(KEY_IN_PLACE, Any.wrap(true));
+		rewriteFiles(new File(dir), new File(dir), generateEnvVars);
+	}
 	
 	public static void rewriteAll(String srcLocation, String destDir, Map<String, Any> generateEnvVars) {
 		
@@ -70,22 +93,72 @@ public class YAMLFileParameterizer {
 		}
 
 		if (!destDir.isDirectory() || !destDir.exists()) {
-			if (!destDir.mkdir()) {
+			if (!destDir.mkdirs()) {
 				logger.error("Failed to create dir {}", destDir);
 				return;
 			}
 		}
+		
+		String dirPath = getAbsolutePath(sourceDir);
+		
+		if (null==dirPath) {
+			logger.error("dir does not exist.", sourceDir.getAbsolutePath());
+			return;		
+		}
+		
+		Set<String> excludeSet = buildFileExcludeSet(dirPath, generateEnvVars);
 
-		File[] files = sourceDir.listFiles((dir, name)->name.toLowerCase().endsWith(YML_EXT));
+		File[] files = sourceDir.listFiles((dir, name)->name.toLowerCase().endsWith(YML_EXT) && !excludeFile(dir, name, excludeSet));
 
 		for (File file: files) {
 			rewriteFile(file, new File(destDir, file.getName()), generateEnvVars);
 		}
 	}
-
 	
 	public static void rewriteResources(String resourceLocation, String destDir, Map<String, Any> generateEnvVars) {
+		if (StringUtils.isBlank(resourceLocation)) {
+			return;
+		}
+		
+		String location = StringUtils.trimToEmpty(resourceLocation);
+		if (!location.endsWith(SLASH)) {
+			location = location+SLASH;
+		}
+		
 		List<String> filenames = listClasspathDir(resourceLocation);
+		
+		if (logger.isDebugEnabled()) {
+			logger.debug("files in {}: {}", resourceLocation, String.join(",", filenames));
+		}
+		
+		Set<String> excludeSet = buildResourceExcludeSet(resourceLocation, generateEnvVars);
+		
+		List<String> ymlFileNames = filenames.stream()
+											.filter(name->name.toLowerCase().endsWith(YML_EXT) && !excludeResource(resourceLocation, name, excludeSet))
+											.collect(Collectors.toList());
+		
+		if (logger.isDebugEnabled()) {
+			logger.debug("ymlFileNames in {}: {}", resourceLocation, String.join(",", ymlFileNames));
+		}
+		
+		File dest = new File(destDir);
+		
+		if (!dest.isDirectory() || !dest.exists()) {
+			if (!dest.mkdirs()) {
+				logger.error("Failed to create dir {}", destDir);
+				return;
+			}
+		}
+		
+		for (String filename: ymlFileNames) {
+			rewriteResource(stripExtension(filename), resourceLocation+filename, destDir+File.separator+filename, generateEnvVars);
+		}
+	}
+	
+	public static void copyResources(String resourceLocation, String destDir) {
+		String location= resolveLocation(resourceLocation);
+		
+		List<String> filenames = listClasspathDir(location);
 		
 		if (logger.isDebugEnabled()) {
 			logger.debug("files in {}: {}", resourceLocation, String.join(",", filenames));
@@ -100,14 +173,14 @@ public class YAMLFileParameterizer {
 		File dest = new File(destDir);
 		
 		if (!dest.isDirectory() || !dest.exists()) {
-			if (!dest.mkdir()) {
+			if (!dest.mkdirs()) {
 				logger.error("Failed to create dir {}", destDir);
 				return;
 			}
 		}
 		
 		for (String filename: ymlFileNames) {
-			rewriteResource(stripExtension(filename), resourceLocation+filename, destDir+File.separator+filename, generateEnvVars);
+			copyResource(location+filename, destDir+File.separator+filename);
 		}
 	}
 	
@@ -134,15 +207,47 @@ public class YAMLFileParameterizer {
 		}
 		
 		if (!getValue(generateEnvVars, KEY_GENERATE)) {
-			copyFile(srcFile, destFile);
+			if (!getValue(generateEnvVars, KEY_IN_PLACE)) {// in-place copy is meaningless
+				copyFile(srcFile, destFile);
+			}
 		}else {
-			Node document = loadFile(srcFile);
-			List<String> lines = readFile(srcFile);
-			
-			String filename = stripExtension(srcFile.getName());
-			
-			if (null!=document && null!=lines) {
-				parameterize(filename, document, lines, destFile, generateEnvVars);
+			try {
+				String filename = stripExtension(srcFile.getName());
+				
+				String srcFilename = getAbsolutePath(srcFile);
+				
+				if (null==srcFilename) {
+					logger.error("file {} does not exist.", srcFile.getAbsolutePath());
+					return;
+				}
+				
+				File inputFile = srcFile;
+				boolean inPlace = getValue(generateEnvVars, KEY_IN_PLACE);
+				
+				if (inPlace) {// rename the original file as a back up
+					String bakFilename =  srcFilename + BAK_EXT;
+					File bakFile = new File(bakFilename);
+					
+					if (!srcFile.renameTo(bakFile)) {
+						logger.error("Failed to reanme file {} to {}.", srcFilename, bakFilename);
+						return;
+					}	
+					
+					inputFile = bakFile;
+				}
+				
+				List<String> lines = readFile(inputFile);
+				Node document = loadFile(inputFile);
+				
+				if (null!=document && null!=lines) {
+					parameterize(filename, document, lines, destFile, generateEnvVars);
+				}				
+				
+				if (inPlace) {// delete the original file as it's not needed any more.
+					inputFile.delete();
+				}
+			}catch(Exception e) {
+				logger.error(e.getMessage(), e);
 			}
 		}
 	}
@@ -205,7 +310,7 @@ public class YAMLFileParameterizer {
 			URL dirURL = getResourceURL(dir);
 			
 			if (null==dirURL) {
-				logger.error("cannot file {} in classpath.", dir);
+				logger.error("cannot locate file {} in classpath.", dir);
 				return result;
 			}
 			
@@ -253,14 +358,17 @@ public class YAMLFileParameterizer {
 	}
 	
 	protected static List<String> readResource(String resourceLocation) {
+		List<String> lines = new ArrayList<>();
+		
 		try (InputStream in = getResourceAsStream(resourceLocation);
 				InputStreamReader reader = new InputStreamReader(in, StandardCharsets.UTF_8)) {
-			return  IOUtils.readLines(reader);
+			lines.addAll(IOUtils.readLines(reader));
+			lines.add(StringUtils.EMPTY); // because trailing empty lines are ignored.
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 		}
 
-		return null;
+		return lines;
 	}
 	
 	protected static Node loadFile(File file) {
@@ -275,13 +383,16 @@ public class YAMLFileParameterizer {
 	}
 	
 	protected static List<String> readFile(File file) {
+		List<String> lines = new ArrayList<>();
+		
 		try {
-			return FileUtils.readLines(file, (String) null);
+			lines.addAll(FileUtils.readLines(file, (String) null));
+			lines.add(StringUtils.EMPTY); // because trailing empty lines are ignored.
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 		}
 
-		return null;
+		return lines;
 	}
 	
 	protected static void parameterize(String filename, Node document, List<String> srclines, File destFile, Map<String, Any> generateEnvVars) {
@@ -310,12 +421,30 @@ public class YAMLFileParameterizer {
 		
 		int pos = 0;
 		
-		for (NodeTuple tuple: tuples) {
+		int tupleNum = tuples.size();
+		
+		for (int i=0; i<tupleNum; ++i) {
+			NodeTuple tuple = tuples.get(i);
+			
+			NodeTuple nextTuple = null;
+			
+			if (i+1<tupleNum) {
+				nextTuple =  tuples.get(i+1);
+			}
+			
+			
 			Node k = tuple.getKeyNode();
 			Node v = tuple.getValueNode();
 			
 			int startLine = k.getStartMark().getLine();
 			int stopLine = v.getEndMark().getLine();
+			
+			// stop line can be:
+			//  1. the start line of the next node.
+			// 	2. last line of file (empty line or non-empty line).
+			if (null!=nextTuple && nextTuple.getKeyNode().getStartMark().getLine()==stopLine) {
+				stopLine -= 1;
+			}
 			
 			if (k instanceof ScalarNode) {
 				ScalarNode sk = (ScalarNode)k;
@@ -323,25 +452,19 @@ public class YAMLFileParameterizer {
 				if (v instanceof ScalarNode) {
 					ScalarNode sv = (ScalarNode)v;
 					
-					copy(srclines, destlines, pos, startLine);
+					copy(srclines, destlines, pos, startLine-1);
 					destlines.add(String.format("%s: ${%s%s%s:%s}", sk.getValue(), filename, KEY_SEPARATOR, sk.getValue(), sv.getValue()));
-					
-					pos = stopLine+1;
 				}else {
 					if (((v instanceof SequenceNode) && !skipArray) 
 							|| ((v instanceof MappingNode) && !skipMap)) {
-						copy(srclines, destlines, pos, startLine);
+						copy(srclines, destlines, pos, startLine-1);
 						destlines.add(String.format("%s: ${%s%s%s}", sk.getValue(), filename, KEY_SEPARATOR, sk.getValue()));
-						
-						pos = stopLine+1;
 					}else {
 						copy(srclines, destlines, pos, stopLine);
-						
-						pos = stopLine;
 					}
 				}		
 				
-				
+				pos = stopLine+1;
 			}else {
 				throw new UnsupportedNodeTypeException(k.getClass().getCanonicalName());
 			}
@@ -351,12 +474,12 @@ public class YAMLFileParameterizer {
 	}
 	
 	protected static void copy(List<String> srclines, List<String> destlines, int start, int end) {
-		if (end>srclines.size()) {
+		if (end>=srclines.size()) {
 			logger.error("attemp to read line {}. total length {}", end, srclines.size());
 			throw new IndexOutOfBoundsException();
 		}
 		
-		for (int i=start; i<end; ++i) {
+		for (int i=start; i<=end; ++i) {
 			destlines.add(srclines.get(i));
 		}
 	}
@@ -369,6 +492,86 @@ public class YAMLFileParameterizer {
         if (pos == -1) return str;
 
         return str.substring(0, pos);
+    }
+    
+    protected static Set<String> buildFileExcludeSet(String sourceDir, Map<String, Any> generateEnvVars) {
+    	if (generateEnvVars.containsKey(KEY_EXCLUDE)) {
+    		return buildFileExcludeSet(sourceDir, generateEnvVars.get(KEY_EXCLUDE).asList());
+    	}
+    	
+    	return Collections.emptySet();
+    }
+    
+	protected static Set<String> buildFileExcludeSet(String sourceDir, Collection<Any> excludes) {
+		return excludes.stream()
+				.map(Any::toString)
+				.filter(StringUtils::isNotBlank)
+				.map(s->sourceDir+normalizeFilename(s))
+				.collect(Collectors.toSet());
+	}
+	
+	protected static Set<String> buildResourceExcludeSet(String resourceLocation, Map<String, Any> generateEnvVars) {
+		if (generateEnvVars.containsKey(KEY_EXCLUDE)) {
+			return buildResourceExcludeSet(resourceLocation, generateEnvVars.get(KEY_EXCLUDE).asList());
+		}
+
+		return Collections.emptySet();
+	}
+	
+	protected static Set<String> buildResourceExcludeSet(String resourceLocation, Collection<Any> excludes) {
+		return excludes.stream()
+				.map(Any::toString)
+				.filter(StringUtils::isNotBlank)
+				.map(s->toNonNullString(getResourceURL(resourceLocation+s)))
+				.collect(Collectors.toSet());
+	}	
+    
+    protected static String normalizeFilename(String filename) {
+    	return StringUtils.trimToEmpty(filename).replaceAll("\\\\|/", File.separator);
+    }
+    
+    public static String toNonNullString(URL url) {
+    	return null==url?StringUtils.EMPTY:url.toString();
+    }
+    
+    public static String getAbsolutePath(File f) {
+    	try {
+    		String path = f.getCanonicalFile().getAbsolutePath();
+    		
+    		if (f.isDirectory() && !path.endsWith(File.separator)) {
+    			path = path+File.separator;
+    		}
+    		
+    		return path;
+    	}catch (Exception e) {
+    		logger.error(e.getMessage(), e);
+    	}
+    	
+    	return null;
+    }
+    
+	protected static boolean excludeFile(File f, Set<String> excludeSet) {
+		if (excludeSet.isEmpty()) {
+			return false;
+		}
+		
+		String filename = getAbsolutePath(f);
+
+		return null == filename ? true : excludeSet.contains(filename);
+	}
+    
+    protected static boolean excludeFile(File dir, String name, Set<String> excludeSet) {
+    	return excludeFile(new File(dir, name), excludeSet);
+    }
+    
+    protected static boolean excludeResource(String resourceLocation, String name, Set<String> excludeSet) {
+		if (excludeSet.isEmpty()) {
+			return false;
+		}
+		
+    	String url = toNonNullString(getResourceURL(resourceLocation+name));
+    
+    	return excludeSet.contains(url);
     }
 	
 	@SuppressWarnings("serial")

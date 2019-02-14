@@ -1,6 +1,0 @@
-# Default openapi-validator configuration
----
-# Enable request validation. Response validation is not done on the server but client.
-enabled: true
-# Log error message if validation error occurs
-logError: true

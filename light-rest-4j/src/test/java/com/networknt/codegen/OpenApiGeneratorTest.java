@@ -1,9 +1,6 @@
 package com.networknt.codegen;
 
-import static org.junit.Assert.assertTrue;
-
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
@@ -18,7 +15,6 @@ import org.junit.Test;
 import com.jsoniter.JsonIterator;
 import com.jsoniter.any.Any;
 import com.networknt.codegen.rest.OpenApiGenerator;
-import com.networknt.codegen.rest.YAMLFileParameterizer;
 import com.thoughtworks.qdox.JavaProjectBuilder;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaField;
@@ -137,46 +133,5 @@ public class OpenApiGeneratorTest {
                 Assert.assertFalse(field.getName().contains(" "));
             }
         }
-    }
-    
-    @Test
-    public void testResourceParameterizing() throws IOException {
-    	String destDirName = "/tmp/yml_param_test";
-    	File destDir = new File(destDirName);
-    	
-    	if (destDir.exists() && destDir.isDirectory()) {
-    		destDir.delete();
-    	}
-    	
-    	FilenameFilter filter = (dir, name)->name.toLowerCase().endsWith(".yml");
-    	
-    	Any anyConfig = JsonIterator.parse(OpenApiGeneratorTest.class.getResourceAsStream(configName), 1024).readAny();
-    	
-    	YAMLFileParameterizer.rewriteAll(YAMLFileParameterizer.DEFAULT_RESOURCE_LOCATION, destDirName, anyConfig.get(OpenApiGenerator.GENERATE_ENV_VARS).asMap());
-    	
-    	int destCount = destDir.list(filter).length;
-    	
-    	assertTrue(destCount>0);
-    }
-    
-    @Test
-    public void testFileParameterizing() throws IOException {
-    	String srcDirName = "src/main/resources/handlerconfig";
-    	String destDirName = "/tmp/yml_param_test";
-    	File destDir = new File(destDirName);
-    	
-    	if (destDir.exists() && destDir.isDirectory()) {
-    		destDir.delete();
-    	}
-    	
-    	FilenameFilter filter = (dir, name)->name.toLowerCase().endsWith(".yml");
-    	
-    	Any anyConfig = JsonIterator.parse(OpenApiGeneratorTest.class.getResourceAsStream(configName), 1024).readAny();
-    	
-    	YAMLFileParameterizer.rewriteAll(srcDirName, destDirName, anyConfig.get(OpenApiGenerator.GENERATE_ENV_VARS).asMap());
-    	
-    	int destCount = destDir.list(filter).length;
-    	
-    	assertTrue(destCount>0);
     }
 }

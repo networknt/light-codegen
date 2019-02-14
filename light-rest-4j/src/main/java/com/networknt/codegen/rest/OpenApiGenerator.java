@@ -51,8 +51,6 @@ import com.networknt.oas.model.impl.OpenApi3Impl;
 public class OpenApiGenerator implements Generator {
     private Map<String, String> typeMapping = new HashMap<>();
     
-    public static final String GENERATE_ENV_VARS="generateEnvVars";
-    
     // optional generation parameters. if not set, they use default values as 
     boolean prometheusMetrics =false;
     boolean skipHealthCheck = false;
@@ -189,8 +187,11 @@ public class OpenApiGenerator implements Generator {
 	            if(generateValuesYml)
 	            	transfer(targetPath, ("src.main.resources.config").replace(".", separator), "values.yml", templates.rest.openapi.values.template());
 	            
-	            if (config.keys().contains(GENERATE_ENV_VARS)) {
-            		YAMLFileParameterizer.rewriteAll(YAMLFileParameterizer.DEFAULT_RESOURCE_LOCATION, targetPath+separator+YAMLFileParameterizer.DEFAULT_DEST_DIR, config.get(GENERATE_ENV_VARS).asMap());
+	            //always copy resources
+	            YAMLFileParameterizer.copyResources(YAMLFileParameterizer.DEFAULT_RESOURCE_LOCATION, targetPath+separator+YAMLFileParameterizer.DEFAULT_DEST_DIR);
+	            
+	            if (config.keys().contains(YAMLFileParameterizer.GENERATE_ENV_VARS)) {
+            		YAMLFileParameterizer.rewriteAll(targetPath+separator+YAMLFileParameterizer.DEFAULT_DEST_DIR, config.get(YAMLFileParameterizer.GENERATE_ENV_VARS).asMap());
 	            }
 	        }
         }
