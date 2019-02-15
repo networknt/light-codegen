@@ -72,8 +72,8 @@ public class YAMLFileParameterizerTest {
         }
         
     	FilenameFilter filter = (dir, name)->name.toLowerCase().endsWith(".yml");
-    	
-    	int destCount = destDir.list(filter).length;
+    	File outputDestDir = new File(destDirName+separator+YAMLFileParameterizer.DEFAULT_DEST_DIR);
+    	int destCount = outputDestDir.list(filter).length;
     	
     	assertTrue(destCount>0);
     	
