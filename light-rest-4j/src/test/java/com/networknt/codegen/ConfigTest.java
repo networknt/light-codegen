@@ -27,4 +27,6 @@ public class ConfigTest {
     public void testDbSupport() {
         Assert.assertTrue(anyConfig.toBoolean("supportDb"));
     }
+    
+
 }

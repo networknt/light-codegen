@@ -1,15 +1,6 @@
 package com.networknt.codegen.rest;
 
-import com.jsoniter.JsonIterator;
-import com.jsoniter.ValueType;
-import com.jsoniter.any.Any;
-import com.jsoniter.output.JsonStream;
-import com.networknt.codegen.Generator;
-import com.networknt.codegen.Utils;
-import com.networknt.jsonoverlay.Overlay;
-import com.networknt.oas.OpenApiParser;
-import com.networknt.oas.model.*;
-import com.networknt.oas.model.impl.OpenApi3Impl;
+import static java.io.File.separator;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -20,11 +11,33 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import static java.io.File.separator;
+import com.jsoniter.JsonIterator;
+import com.jsoniter.ValueType;
+import com.jsoniter.any.Any;
+import com.jsoniter.output.JsonStream;
+import com.networknt.codegen.Generator;
+import com.networknt.codegen.Utils;
+import com.networknt.jsonoverlay.Overlay;
+import com.networknt.oas.OpenApiParser;
+import com.networknt.oas.model.Example;
+import com.networknt.oas.model.MediaType;
+import com.networknt.oas.model.OpenApi3;
+import com.networknt.oas.model.Operation;
+import com.networknt.oas.model.Parameter;
+import com.networknt.oas.model.Path;
+import com.networknt.oas.model.Response;
+import com.networknt.oas.model.Schema;
+import com.networknt.oas.model.Server;
+import com.networknt.oas.model.impl.OpenApi3Impl;
 
 /**
  * The input for OpenAPI 3.0 generator include config with json format
@@ -107,7 +120,7 @@ public class OpenApiGenerator implements Generator {
         enableParamDescription = config.toBoolean("enableParamDescription");
         
         generateValuesYml = config.toBoolean("generateValuesYml");
-
+        
         String version = config.toString("version").trim();
         String serviceId = config.get("groupId").toString().trim() + "." + config.get("artifactId").toString().trim() + "-" + config.get("version").toString().trim();
 
@@ -173,6 +186,13 @@ public class OpenApiGenerator implements Generator {
 	            // values.yml file, transfer only if explicitly set in the config.json
 	            if(generateValuesYml)
 	            	transfer(targetPath, ("src.main.resources.config").replace(".", separator), "values.yml", templates.rest.openapi.values.template());
+	            
+	            //always copy resources
+	            YAMLFileParameterizer.copyResources(YAMLFileParameterizer.DEFAULT_RESOURCE_LOCATION, targetPath+separator+YAMLFileParameterizer.DEFAULT_DEST_DIR);
+	            
+	            if (config.keys().contains(YAMLFileParameterizer.GENERATE_ENV_VARS)) {
+            		YAMLFileParameterizer.rewriteAll(targetPath+separator+YAMLFileParameterizer.DEFAULT_DEST_DIR, config.get(YAMLFileParameterizer.GENERATE_ENV_VARS).asMap());
+	            }
 	        }
         }
         

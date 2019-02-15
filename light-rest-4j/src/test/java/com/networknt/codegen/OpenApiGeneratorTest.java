@@ -1,16 +1,5 @@
 package com.networknt.codegen;
 
-import com.jsoniter.JsonIterator;
-import com.jsoniter.any.Any;
-import com.networknt.codegen.rest.OpenApiGenerator;
-import com.thoughtworks.qdox.JavaProjectBuilder;
-import com.thoughtworks.qdox.model.JavaClass;
-import com.thoughtworks.qdox.model.JavaField;
-import com.thoughtworks.qdox.model.JavaPackage;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -18,6 +7,18 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Scanner;
+
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import com.jsoniter.JsonIterator;
+import com.jsoniter.any.Any;
+import com.networknt.codegen.rest.OpenApiGenerator;
+import com.thoughtworks.qdox.JavaProjectBuilder;
+import com.thoughtworks.qdox.model.JavaClass;
+import com.thoughtworks.qdox.model.JavaField;
+import com.thoughtworks.qdox.model.JavaPackage;
 
 /**
  * @author Steve Hu
