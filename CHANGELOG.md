@@ -1,5 +1,39 @@
 # Change Log
 
+## [1.5.29](https://github.com/networknt/light-codegen/tree/1.5.29) (2019-02-16)
+[Full Changelog](https://github.com/networknt/light-codegen/compare/1.5.28...1.5.29)
+
+**Implemented enhancements:**
+
+- Codegen needs to trim Strings when read from the config files [\#212](https://github.com/networknt/light-codegen/issues/212)
+- Generate exclusion file for the Config module [\#207](https://github.com/networknt/light-codegen/issues/207)
+- Generate on-demand the values YML file for external configuration value injection  [\#206](https://github.com/networknt/light-codegen/issues/206)
+
+**Closed issues:**
+
+- change codegen to not re-generate TestServer class if config value specChangeCodeReGenOnly is true [\#227](https://github.com/networknt/light-codegen/issues/227)
+- add Kotlin OpenAPI generator [\#222](https://github.com/networknt/light-codegen/issues/222)
+- add JsonPathStartupHookProvider to service.yml [\#220](https://github.com/networknt/light-codegen/issues/220)
+- Explicitly set type in codegen when element is allOf [\#214](https://github.com/networknt/light-codegen/issues/214)
+- Unable to divide main yaml file into separate yamls [\#181](https://github.com/networknt/light-codegen/issues/181)
+
+**Merged pull requests:**
+
+- issue fixes \#227 [\#228](https://github.com/networknt/light-codegen/pull/228) ([chenyan71](https://github.com/chenyan71))
+- Fix/issue216 and 217 [\#226](https://github.com/networknt/light-codegen/pull/226) ([dz-1](https://github.com/dz-1))
+- fixes \#222 add Kotlin OpenAPI generator [\#223](https://github.com/networknt/light-codegen/pull/223) ([stevehu](https://github.com/stevehu))
+- Fix/\#375 config gaps [\#221](https://github.com/networknt/light-codegen/pull/221) ([jiachen1120](https://github.com/jiachen1120))
+- Fix/type missing in specification [\#219](https://github.com/networknt/light-codegen/pull/219) ([jiachen1120](https://github.com/jiachen1120))
+- Fixes \#212 and Fixes \#214 [\#218](https://github.com/networknt/light-codegen/pull/218) ([ddobrin](https://github.com/ddobrin))
+- Rename exclusions.yml to config.yml [\#215](https://github.com/networknt/light-codegen/pull/215) ([jiachen1120](https://github.com/jiachen1120))
+- Fixes \#206 - Generate on-demand the values YML file for external conf… [\#211](https://github.com/networknt/light-codegen/pull/211) ([ddobrin](https://github.com/ddobrin))
+- Fix/\#209 remove generex library due to BSD license [\#210](https://github.com/networknt/light-codegen/pull/210) ([BalloonWen](https://github.com/BalloonWen))
+- added feature to generate test cases based on specification [\#205](https://github.com/networknt/light-codegen/pull/205) ([BalloonWen](https://github.com/BalloonWen))
+- Fixed unexpected model generation bug. [\#204](https://github.com/networknt/light-codegen/pull/204) ([jiachen1120](https://github.com/jiachen1120))
+
+## [1.5.28](https://github.com/networknt/light-codegen/tree/1.5.28) (2019-01-12)
+[Full Changelog](https://github.com/networknt/light-codegen/compare/1.5.27...1.5.28)
+
 ## [1.5.27](https://github.com/networknt/light-codegen/tree/1.5.27) (2019-01-12)
 [Full Changelog](https://github.com/networknt/light-codegen/compare/1.5.25...1.5.27)
 
