@@ -40,7 +40,7 @@ public class Cli {
     @Parameter(names={"--help", "-h"}, help = true)
     private boolean help;
 
-    public static void main(String ... argv) {
+    public static void main(String ... argv) throws Exception {
         try {
             Cli cli = new Cli();
             JCommander jCommander = JCommander.newBuilder()
@@ -55,7 +55,7 @@ public class Cli {
         }
     }
 
-    public void run(JCommander jCommander) {
+    public void run(JCommander jCommander) throws Exception {
         if (help) {
             jCommander.usage();
             return;
@@ -98,7 +98,7 @@ public class Cli {
                 generator.generate(output, anyModel, anyConfig);
                 System.out.println("A project has been generated successfully in " + output + " folder. Have fun!!!");
             } catch (Exception e) {
-                e.printStackTrace();
+                throw e;
             }
         } else {
             System.out.printf("Invalid framework: %s\navaliable frameworks:\n", framework);
