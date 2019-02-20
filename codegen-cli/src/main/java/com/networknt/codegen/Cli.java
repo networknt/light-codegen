@@ -40,7 +40,7 @@ public class Cli {
     @Parameter(names={"--help", "-h"}, help = true)
     private boolean help;
 
-    public static void main(String ... argv) {
+    public static void main(String ... argv) throws Exception {
         try {
             Cli cli = new Cli();
             JCommander jCommander = JCommander.newBuilder()
@@ -55,7 +55,7 @@ public class Cli {
         }
     }
 
-    public void run(JCommander jCommander) {
+    public void run(JCommander jCommander) throws Exception {
         if (help) {
             jCommander.usage();
             return;
@@ -67,39 +67,35 @@ public class Cli {
         Set<String> frameworks = registry.getFrameworks();
         if(frameworks.contains(framework)) {
             Generator generator = registry.getGenerator(framework);
-            try {
-                Object anyModel = null;
-                // model can be empty in some cases.
-                if(model != null) {
-                    // check if model is json or not before loading.
-                    if(model.endsWith("json")) {
-                        if(isUrl(model)) {
-                            anyModel = JsonIterator.deserialize(urlToByteArray(new URL(model)));
-                        } else {
-                            anyModel = JsonIterator.deserialize(Files.readAllBytes(Paths.get(model)));
-                        }
+            Object anyModel = null;
+            // model can be empty in some cases.
+            if(model != null) {
+                // check if model is json or not before loading.
+                if(model.endsWith("json")) {
+                    if(isUrl(model)) {
+                        anyModel = JsonIterator.deserialize(urlToByteArray(new URL(model)));
                     } else {
-                        if(isUrl(model)) {
-                            anyModel = new String(urlToByteArray(new URL(model)), StandardCharsets.UTF_8);
-                        } else {
-                            anyModel = new String(Files.readAllBytes(Paths.get(model)), StandardCharsets.UTF_8);
-                        }
+                        anyModel = JsonIterator.deserialize(Files.readAllBytes(Paths.get(model)));
+                    }
+                } else {
+                    if(isUrl(model)) {
+                        anyModel = new String(urlToByteArray(new URL(model)), StandardCharsets.UTF_8);
+                    } else {
+                        anyModel = new String(Files.readAllBytes(Paths.get(model)), StandardCharsets.UTF_8);
                     }
                 }
-
-                Any anyConfig = null;
-                if(config != null) {
-                    if(isUrl(config)) {
-                        anyConfig = JsonIterator.deserialize(urlToByteArray(new URL(config)));
-                    } else {
-                        anyConfig = JsonIterator.deserialize(Files.readAllBytes(Paths.get(config)));
-                    }
-                }
-                generator.generate(output, anyModel, anyConfig);
-                System.out.println("A project has been generated successfully in " + output + " folder. Have fun!!!");
-            } catch (Exception e) {
-                e.printStackTrace();
             }
+
+            Any anyConfig = null;
+            if(config != null) {
+                if(isUrl(config)) {
+                    anyConfig = JsonIterator.deserialize(urlToByteArray(new URL(config)));
+                } else {
+                    anyConfig = JsonIterator.deserialize(Files.readAllBytes(Paths.get(config)));
+                }
+            }
+            generator.generate(output, anyModel, anyConfig);
+            System.out.println("A project has been generated successfully in " + output + " folder. Have fun!!!");
         } else {
             System.out.printf("Invalid framework: %s\navaliable frameworks:\n", framework);
             for(String frm : frameworks) {
