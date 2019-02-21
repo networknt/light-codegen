@@ -1,15 +1,6 @@
 package com.networknt.codegen.rest;
 
-import com.jsoniter.JsonIterator;
-import com.jsoniter.ValueType;
-import com.jsoniter.any.Any;
-import com.jsoniter.output.JsonStream;
-import com.networknt.codegen.Generator;
-import com.networknt.codegen.Utils;
-import com.networknt.jsonoverlay.Overlay;
-import com.networknt.oas.OpenApiParser;
-import com.networknt.oas.model.*;
-import com.networknt.oas.model.impl.OpenApi3Impl;
+import static java.io.File.separator;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -20,11 +11,33 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import static java.io.File.separator;
+import com.jsoniter.JsonIterator;
+import com.jsoniter.ValueType;
+import com.jsoniter.any.Any;
+import com.jsoniter.output.JsonStream;
+import com.networknt.codegen.Generator;
+import com.networknt.codegen.Utils;
+import com.networknt.jsonoverlay.Overlay;
+import com.networknt.oas.OpenApiParser;
+import com.networknt.oas.model.Example;
+import com.networknt.oas.model.MediaType;
+import com.networknt.oas.model.OpenApi3;
+import com.networknt.oas.model.Operation;
+import com.networknt.oas.model.Parameter;
+import com.networknt.oas.model.Path;
+import com.networknt.oas.model.Response;
+import com.networknt.oas.model.Schema;
+import com.networknt.oas.model.Server;
+import com.networknt.oas.model.impl.OpenApi3Impl;
 
 /**
  * The input for OpenAPI 3.0 generator include config with json format
@@ -82,9 +95,9 @@ public class OpenApiGenerator implements Generator {
     @Override
     public void generate(String targetPath, Object model, Any config) throws IOException {
         // whoever is calling this needs to make sure that model is converted to Map<String, Object>
-        String rootPackage = config.toString("rootPackage");
-        String modelPackage = config.toString("modelPackage");
-        String handlerPackage = config.toString("handlerPackage");
+        String rootPackage = config.toString("rootPackage").trim();
+        String modelPackage = config.toString("modelPackage").trim();
+        String handlerPackage = config.toString("handlerPackage").trim();
         
         boolean overwriteHandler = config.toBoolean("overwriteHandler");
         boolean overwriteHandlerTest = config.toBoolean("overwriteHandlerTest");
@@ -92,13 +105,13 @@ public class OpenApiGenerator implements Generator {
         generateModelOnly = config.toBoolean("generateModelOnly");
         
         boolean enableHttp = config.toBoolean("enableHttp");
-        String httpPort = config.toString("httpPort");
+        String httpPort = config.toString("httpPort").trim();
         boolean enableHttps = config.toBoolean("enableHttps");
-        String httpsPort = config.toString("httpsPort");
+        String httpsPort = config.toString("httpsPort").trim();
         
         boolean enableRegistry = config.toBoolean("enableRegistry");
         boolean supportClient = config.toBoolean("supportClient");
-        String dockerOrganization = config.toString("dockerOrganization");
+        String dockerOrganization = config.toString("dockerOrganization").trim();
         
         prometheusMetrics = config.toBoolean("prometheusMetrics");
         skipHealthCheck = config.toBoolean("skipHealthCheck");
@@ -107,9 +120,9 @@ public class OpenApiGenerator implements Generator {
         enableParamDescription = config.toBoolean("enableParamDescription");
         
         generateValuesYml = config.toBoolean("generateValuesYml");
-
-        String version = config.toString("version");
-        String serviceId = config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version");
+        
+        String version = config.toString("version").trim();
+        String serviceId = config.get("groupId").toString().trim() + "." + config.get("artifactId").toString().trim() + "-" + config.get("version").toString().trim();
 
         if(dockerOrganization == null || dockerOrganization.length() == 0) dockerOrganization = "networknt";
 
@@ -173,6 +186,13 @@ public class OpenApiGenerator implements Generator {
 	            // values.yml file, transfer only if explicitly set in the config.json
 	            if(generateValuesYml)
 	            	transfer(targetPath, ("src.main.resources.config").replace(".", separator), "values.yml", templates.rest.openapi.values.template());
+	            
+	            //always copy resources
+	            YAMLFileParameterizer.copyResources(YAMLFileParameterizer.DEFAULT_RESOURCE_LOCATION, targetPath+separator+YAMLFileParameterizer.DEFAULT_DEST_DIR);
+	            
+	            if (config.keys().contains(YAMLFileParameterizer.GENERATE_ENV_VARS)) {
+            		YAMLFileParameterizer.rewriteAll(targetPath+separator+YAMLFileParameterizer.DEFAULT_DEST_DIR, config.get(YAMLFileParameterizer.GENERATE_ENV_VARS).asMap());
+	            }
 	        }
         }
         
@@ -224,6 +244,8 @@ public class OpenApiGenerator implements Generator {
                             required = entrySchema.getValue().asList();
                         }
         		        if("allOf".equals(entrySchema.getKey())) {
+        		        	type = "object";
+        		        	
         				    // could be referred to as "$ref" references or listed in "properties"
         				    for(Any listItem : entrySchema.getValue().asList()) {
         				    	//Map<String, Any> allOfItem = (Map<String, Any>)listItem.asMap().entrySet();
@@ -248,9 +270,13 @@ public class OpenApiGenerator implements Generator {
                     // Check the type of current schema. Generation will be executed only if the type of the schema equals to object.
                     // Since generate a model for primitive types and arrays do not make sense, and an error class would be generated
                     // due to lack of properties if force to generate.
+                    if (type == null) {
+                        throw new RuntimeException("Cannot find the type of \"" + modelFileName + "\" in #/components/schemas/ of the specification file.");
+                    }
                     if (!"object".equals(type)) {
                         continue;
                     }
+
                     if(!overwriteModel && checkExist(targetPath, ("src.main.java." + modelPackage).replace(".", separator), modelFileName + ".java")) {
                         continue;
                     }
@@ -283,7 +309,10 @@ public class OpenApiGenerator implements Generator {
         }
 
         // handler test cases
-        transfer(targetPath, ("src.test.java." + handlerPackage + ".").replace(".", separator),  "TestServer.java", templates.rest.testServer.template(handlerPackage));
+        if (!regenerateCodeOnly) {
+            transfer(targetPath, ("src.test.java." + handlerPackage + ".").replace(".", separator),  "TestServer.java", templates.rest.testServer.template(handlerPackage));
+        }
+
         for(Map<String, Object> op : operationList){
             if(checkExist(targetPath, ("src.test.java." + handlerPackage).replace(".", separator), op.get("handlerName") + "Test.java") && !overwriteHandlerTest) {
                 continue;

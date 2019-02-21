@@ -1,0 +1,2 @@
+# suppress inspection "UnusedProperty"
+junit.jupiter.testinstance.lifecycle.default=per_class

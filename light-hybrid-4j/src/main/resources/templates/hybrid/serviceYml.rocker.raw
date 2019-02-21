@@ -9,6 +9,8 @@ singletons:
 - com.networknt.server.StartupHookProvider:
   # registry all service handlers by from annotations
   - com.networknt.rpc.router.RpcStartupHookProvider
+  # If you are using mask module to remove sensitive info before logging, uncomment the following line.
+  # - com.networknt.server.JsonPathStartupHookProvider
 
 # ShutdownHookProvider implementations, there are one to many and they are called in the same sequence defined.
 # - com.networknt.server.ShutdownHookProvider:

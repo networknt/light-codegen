@@ -1,0 +1,40 @@
+@import java.util.Map
+@import com.jsoniter.any.Any
+@import java.util.stream.Collectors
+@args (String handlerPackage, Map<String, Object> map)
+package @handlerPackage
+import assertk.all
+import assertk.assertThat
+import mu.KotlinLogging
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
+
+@with (className = map.get("handlerName") + "Test",
+       method = map.get("handlerName") + "Test()",
+       handlerName = map.get("handlerName"),
+       loggerName = map.get("handlerName") + "Test" + ".class",
+       httpMethod = map.get("method"),
+       hasBody = ("POST".equals(map.get("method").toString()) || "PUT".equals(map.get("method").toString()) || "PATCH".equals(map.get("method").toString())),
+       path = map.get("normalizedPath")) {
+@@ExtendWith(LightTestServer::class)
+class @className {
+    companion object {
+        val log = KotlinLogging.logger {}
+    }
+
+    @@Test
+    fun `test @method @handlerName success` () {
+        /*
+        @if(hasBody) {
+        val response = LightTestServer.makePostRequest("@path", "request body to be replaced")
+        } else {
+        val response = LightTestServer.makeGetRequest("@path")
+        }
+        assertThat(response).all {
+            rcIsEqualTo(200)
+            bodyContains("any string from the body to be replaced")
+        }
+        */
+    }
+}
+}

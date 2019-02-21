@@ -24,5 +24,14 @@
   },
   "supportH2ForTest": false,
   "supportClient": false,
-  "dockerOrganization": "networknt"
+  "dockerOrganization": "networknt",
+  "generateEnvVars": {
+  	"generate": true,
+  	"skipArray": true,
+  	"skipMap": true,
+  	"exclude": [
+  		"handerl.yml",
+  		"values.yml"
+  	]
+  }
 }
