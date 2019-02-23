@@ -29,6 +29,10 @@
     <packaging>jar</packaging>
     <description>light generator core.</description>
 
+    <build>
+        <finalName>${project.name}</finalName>
+    </build>
+
     <dependencies>
         <dependency>
             <groupId>org.slf4j</groupId>

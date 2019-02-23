@@ -29,6 +29,10 @@
     <packaging>jar</packaging>
     <description>light-generator framework.</description>
 
+    <build>
+        <finalName>${project.name}</finalName>
+    </build>
+
     <dependencies>
         <dependency>
             <groupId>com.networknt</groupId>
