@@ -429,6 +429,7 @@ public class OpenApiGenerator implements Generator {
 		            propMap.put("default", a);
 		        }
 		        if("enum".equals(entryElement.getKey())) {
+		            // different generate format for number enum
 		            if ("Integer".equals(type) || "Double".equals(type) || "Float".equals(type)
                             || "Long".equals(type) || "Short".equals(type) || "java.math.BigDecimal".equals(type)) {
 		                propMap.put("isNumEnum", Any.wrap(true));
@@ -611,6 +612,7 @@ public class OpenApiGenerator implements Generator {
         return basePath;
     }
 
+    // method used to generate valid enum keys for enum contents
     private static void attachValidEnumName(Map.Entry<String, Any> entryElement) {
         Iterator<Any> iterator = entryElement.getValue().iterator();
         Map<String, Any> map = new HashMap<>();
@@ -622,6 +624,10 @@ public class OpenApiGenerator implements Generator {
         entryElement.setValue(Any.wrap(map));
     }
 
+    // method used to convert string to valid java variable name
+    // 1. replace invalid character with '_'
+    // 2. prefix number with '_'
+    // 3. convert the first character of java keywords to upper case
     public static String convertToValidJavaVariableName(String string) {
         if (string == null || string.equals("")) {
             return string;
