@@ -622,7 +622,7 @@ public class OpenApiGenerator implements Generator {
         entryElement.setValue(Any.wrap(map));
     }
 
-    private static String convertToValidJavaVariableName(String string) {
+    public static String convertToValidJavaVariableName(String string) {
         if (string == null || string.equals("")) {
             return string;
         }
