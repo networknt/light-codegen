@@ -11,12 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
@@ -50,6 +45,13 @@ import com.networknt.oas.model.impl.OpenApi3Impl;
  */
 public class OpenApiGenerator implements Generator {
     private Map<String, String> typeMapping = new HashMap<>();
+
+    private static List<String> javaKeyWordList = new ArrayList<>(Arrays.asList("abstract", "continue", "for",	"new",
+            "switch", "assert", "default", "goto", "package", "synchronized", "boolean", "do", "if", "private", "this",
+            "break", "double", "implements", "protected", "throw", "byte", "else", "import", "public", "throws", "case",
+            "enum", "instanceof", "return", "transient", "catch", "extends", "int", "short", "try", "char", "final",
+            "interface", "static", "void", "class", "finally", "long", "strictfp", "volatile", "const", "float", "native",
+            "super", "while"));
     
     // optional generation parameters. if not set, they use default values as 
     boolean prometheusMetrics =false;
@@ -360,7 +362,7 @@ public class OpenApiGenerator implements Generator {
      * @param propMap The property map to add to, created in the caller
      */
 	private void initializePropertyMap(Entry<String, Any> entry, Map<String, Any> propMap) {
-	    String name = entry.getKey();
+	    String name = convertToValidJavaVariableName(entry.getKey());
 	    propMap.put("jsonProperty", Any.wrap(name));
 	    if(name.startsWith("@")) {
 	        name = name.substring(1);
@@ -371,6 +373,7 @@ public class OpenApiGenerator implements Generator {
 	    propMap.put("setter", Any.wrap("set" + name.substring(0, 1).toUpperCase() + name.substring(1)));
 	    // assume it is not enum unless it is overwritten
 	    propMap.put("isEnum", Any.wrap(false));
+	    propMap.put("isNumEnum", Any.wrap(false));
 	}
 
 	/**
@@ -389,12 +392,14 @@ public class OpenApiGenerator implements Generator {
 		    initializePropertyMap(entryProp, propMap);
 
 		    String name = entryProp.getKey();
+		    String type = null;
 		    boolean isArray = false;
 		    for(Map.Entry<String, Any> entryElement: entryProp.getValue().asMap().entrySet()) {
 		        //System.out.println("key = " + entryElement.getKey() + " value = " + entryElement.getValue());
 
 		        if("type".equals(entryElement.getKey())) {
 		            String t = typeMapping.get(entryElement.getValue().toString());
+		            type = t;
 		            if("java.util.List".equals(t)) {
 		                isArray = true;
 		            } else {
@@ -406,6 +411,7 @@ public class OpenApiGenerator implements Generator {
 		            if(a.get("$ref").valueType() != ValueType.INVALID && isArray) {
 		                String s = a.get("$ref").toString();
 		                s = s.substring(s.lastIndexOf('/') + 1);
+                        s = s.substring(0,1).toUpperCase() + (s.length() > 1 ? s.substring(1) : "");
 		                propMap.put("type", Any.wrap("java.util.List<" + s + ">"));
 		            }
 		            if(a.get("type").valueType() != ValueType.INVALID && isArray) {
@@ -415,6 +421,7 @@ public class OpenApiGenerator implements Generator {
 		        if("$ref".equals(entryElement.getKey())) {
 		            String s = entryElement.getValue().toString();
 		            s = s.substring(s.lastIndexOf('/') + 1);
+		            s = s.substring(0,1).toUpperCase() + (s.length() > 1 ? s.substring(1) : "");
 		            propMap.put("type", Any.wrap(s));
 		        }
 		        if("default".equals(entryElement.getKey())) {
@@ -422,10 +429,14 @@ public class OpenApiGenerator implements Generator {
 		            propMap.put("default", a);
 		        }
 		        if("enum".equals(entryElement.getKey())) {
+		            if ("Integer".equals(type) || "Double".equals(type) || "Float".equals(type)
+                            || "Long".equals(type) || "Short".equals(type) || "java.math.BigDecimal".equals(type)) {
+		                propMap.put("isNumEnum", Any.wrap(true));
+                    }
 		            propMap.put("isEnum", Any.wrap(true));
 		            propMap.put("nameWithEnum", Any.wrap(name.substring(0, 1).toUpperCase() + name.substring(1) + "Enum"));
-		            this.addUnderscores(entryElement);
-		            propMap.put("value", Any.wrap(entryElement.getValue()));
+		            this.attachValidEnumName(entryElement);
+		            propMap.put("value", entryElement.getValue());
 		        }
 		        if("format".equals(entryElement.getKey())) {
 		            String s = entryElement.getValue().toString();
@@ -589,25 +600,46 @@ public class OpenApiGenerator implements Generator {
             Server server = openApi3.getServer(0);
             url = server.getUrl();
         }
-        if(url != null) {
+        if (url != null) {
             // find "://" index
             int protocolIndex = url.indexOf("://");
             int pathIndex = url.indexOf('/', protocolIndex + 3);
-            if(pathIndex > 0) {
+            if (pathIndex > 0) {
                 basePath = url.substring(pathIndex);
             }
         }
         return basePath;
     }
 
-    private static void addUnderscores(Map.Entry<String, Any> entryElement) {
+    private static void attachValidEnumName(Map.Entry<String, Any> entryElement) {
         Iterator<Any> iterator = entryElement.getValue().iterator();
-        List<Any> list = new ArrayList<>();
+        Map<String, Any> map = new HashMap<>();
         while (iterator.hasNext()) {
-            Any any = iterator.next();
-            String value = any.toString().trim().replaceAll(" ", "_");
-            list.add(Any.wrap(value));
+            String string = iterator.next().toString().trim();
+            if (string.equals("")) continue;
+            map.put(convertToValidJavaVariableName(string).toUpperCase(), Any.wrap(string));
         }
-        entryElement.setValue(Any.wrap(list));
+        entryElement.setValue(Any.wrap(map));
+    }
+
+    private static String convertToValidJavaVariableName(String string) {
+        if (string == null || string.equals("")) {
+            return string;
+        }
+        if (javaKeyWordList.contains(string)) {
+            return string.substring(0, 1).toUpperCase() + string.substring(1);
+        }
+	    StringBuilder stringBuilder = new StringBuilder();
+        if (!Character.isJavaIdentifierStart(string.charAt(0))) {
+            stringBuilder.append('_');
+        }
+        for (char c : string.toCharArray()) {
+            if (!Character.isJavaIdentifierPart(c)) {
+                stringBuilder.append('_');
+            } else {
+                stringBuilder.append(c);
+            }
+        }
+        return stringBuilder.toString();
     }
 }
