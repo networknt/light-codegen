@@ -82,13 +82,24 @@
           }
         }
       },
+      "ContactType": {
+        "type": "string",
+        "enum": [
+          "Individual",
+          "Group"
+        ]
+      },
       "Contact": {
         "type": "object",
         "required": [
           "contactName",
-          "language"
+          "language",
+          "type"
         ],
         "properties": {
+          "type": {
+            "$ref": "#/components/schemas/ContactType"
+          },
           "contactId": {
             "type": "string",
             "minLength": 16,

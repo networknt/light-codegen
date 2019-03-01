@@ -287,82 +287,68 @@ public class OpenApiGenerator implements Generator {
                         throw new RuntimeException("Cannot find the type of \"" + modelFileName + "\" in #/components/schemas/ of the specification file.");
                     }
 
-                    if ("object".equals(type)) {
+                    if ("object".equals(type) || isEnumClass) {
                         if (!overwriteModel && checkExist(targetPath, ("src.main.java." + modelPackage).replace(".", separator), modelFileName + ".java")) {
                             continue;
                         }
 
-                        Runnable r;
-                        if (isEnumClass) {
-                            final String e = enums;
-                            r = () -> {
-                                try {
-                                    transfer(targetPath,
-                                            ("src.main.java." + modelPackage).replace(".", separator),
-                                            modelFileName + ".java",
-                                            templates.rest.enumClass.template(modelPackage, modelFileName, e));
-                                } catch (IOException ex) {
-                                    throw new RuntimeException(ex);
-                                }
-                            };
-                        } else {
-                            r = () -> {
-                                final int referencesCount = references.size();
-                                for (Map<String, Any> properties : props) {
-                                    Any any = properties.get("type");
-                                    if (any != null) {
-                                        if (any.valueType() == ValueType.STRING) {
-                                            Any resolved = references.get(any.toString());
-                                            if (resolved == null) {
-                                                continue;
-                                            }
-                                            any = new UnresolvedTypeHolderAny(resolved);
-                                            properties.put("type", any);
+                        final String enumsIfClass = isEnumClass ? enums : null;
+                        modelCreators.add(() -> {
+                            final int referencesCount = references.size();
+                            for (Map<String, Any> properties : props) {
+                                Any any = properties.get("type");
+                                if (any != null) {
+                                    if (any.valueType() == ValueType.STRING) {
+                                        Any resolved = references.get(any.toString());
+                                        if (resolved == null) {
+                                            continue;
+                                        }
+                                        any = new UnresolvedTypeHolderAny(resolved);
+                                        properties.put("type", any);
+                                    }
+
+                                    int iteration = 0;
+                                    do {
+                                        UnresolvedTypeAny previous = null;
+                                        while (any instanceof UnresolvedTypeAny) {
+                                            previous = (UnresolvedTypeAny)any;
+                                            any = ((UnresolvedTypeAny)any).get();
                                         }
 
-                                        int iteration = 0;
-                                        do {
-                                            UnresolvedTypeAny previous = null;
-                                            while (any instanceof UnresolvedTypeAny) {
-                                                previous = (UnresolvedTypeAny)any;
-                                                any = ((UnresolvedTypeAny)any).get();
-                                            }
+                                        if (any == null) {
+                                            break;
+                                        } else if (iteration++ > referencesCount) {
+                                            throw new TypeNotPresentException(any.toString(), null);
+                                        }
 
+                                        if (any.valueType() == ValueType.STRING) {
+                                            any = references.get(any.toString());
                                             if (any == null) {
                                                 break;
-                                            } else if (iteration++ > referencesCount) {
-                                                throw new TypeNotPresentException(any.toString(), null);
-                                            }
-
-                                            if (any.valueType() == ValueType.STRING) {
-                                                any = references.get(any.toString());
-                                                if (any == null) {
-                                                    break;
-                                                } else {
-                                                    previous.set(any);
-                                                }
                                             } else {
-                                                break;
+                                                previous.set(any);
                                             }
-                                        } while (true);
-                                    }
+                                        } else {
+                                            break;
+                                        }
+                                    } while (true);
                                 }
+                            }
 
-                                try {
-                                    transfer(targetPath,
-                                            ("src.main.java." + modelPackage).replace(".", separator),
-                                            modelFileName + ".java",
-                                            templates.rest.pojo.template(modelPackage, modelFileName, classVarName, props));
-
-                                } catch (IOException ex) {
-                                    throw new RuntimeException(ex);
-                                }
-                            };
-                        }
-                        modelCreators.add(r);
+                            try {
+                                transfer(targetPath,
+                                        ("src.main.java." + modelPackage).replace(".", separator),
+                                        modelFileName + ".java",
+                                        enumsIfClass == null
+                                                ? templates.rest.pojo.template(modelPackage, modelFileName, classVarName, props)
+                                                : templates.rest.enumClass.template(modelPackage, modelFileName, enumsIfClass));
+                            } catch (IOException ex) {
+                                throw new RuntimeException(ex);
+                            }
+                        });
                     } else {
                         HashMap<String, Any> map = new HashMap<>(1);
-                        map.put(type, Any.wrap(value));
+                        map.put(key, Any.wrap(value));
                         handleProperties(props, map);
                         if (props.isEmpty()) {
                             throw new IllegalStateException("Properties empty for " + classVarName + "!");

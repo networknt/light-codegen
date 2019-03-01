@@ -1,7 +1,6 @@
 package com.networknt.codegen;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -42,7 +41,7 @@ public class OpenApiArrayReferenceGeneratorTest {
                     delete(c);
             }
             if (!f.delete()) {
-                throw new FileNotFoundException("Failed to delete file: " + f);
+                throw new IOException("Failed to delete file: " + f);
             }
         }
     }
