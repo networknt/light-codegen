@@ -1,0 +1,194 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "version": "2.0.0",
+    "title": "e-Transfer Public API"
+  },
+  "paths": {
+    "/contacts": {
+      "get": {
+        "operationId": "getContacts",
+        "description": "Retrieves all the contacts for all the userids",
+        "parameters": [
+          {
+            "name": "userIds",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/UserIds"
+            }
+          }
+        ],
+        "tags": [
+          "Contact management"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response returns the array of contacts for each user id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Response"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/errorModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "UserIds": {
+        "type": "array",
+        "items": {
+          "type": "integer"
+        }
+      },
+      "NotificationPreference": {
+        "type": "object",
+        "required": [
+          "handle",
+          "handleType",
+          "active"
+        ],
+        "properties": {
+          "handle": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 64,
+            "description": "Email address (format a@b.ca) or mobile phone number ( format 123-222-7777 )"
+          },
+          "handleType": {
+            "type": "string",
+            "enum": [
+              "email",
+              "sms"
+            ]
+          },
+          "active": {
+            "type": "boolean",
+            "description": "specifies if notifications will not be sent"
+          }
+        }
+      },
+      "Contact": {
+        "type": "object",
+        "required": [
+          "contactName",
+          "language"
+        ],
+        "properties": {
+          "contactId": {
+            "type": "string",
+            "minLength": 16,
+            "maxLength": 16,
+            "description": "unique identifier for the contact; not required in POST request"
+          },
+          "contactName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80,
+            "description": "unique contact name to be provided for each contacts."
+          },
+          "contactHash": {
+            "type": "string",
+            "description": "unique hash value to identify version of contact, not required in POST request"
+          },
+          "language": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 2,
+            "enum": [
+              "en",
+              "fr"
+            ],
+            "description": "language used to notify this contact"
+          },
+          "notificationPreferences": {
+            "type": "array",
+            "description": "notification preferences for the contact",
+            "items": {
+              "$ref": "#/components/schemas/NotificationPreference"
+            }
+          },
+          "hardContactUser": {
+            "type": "object",
+            "required": [
+              "thirdPartyUserId"
+            ],
+            "properties": {
+              "thirdPartyUserId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 50,
+                "description": "unique third party partner defined user id in e-Transfer system"
+              },
+              "hardContactStatus": {
+                "type": "string",
+                "enum": [
+                  "active",
+                  "not active"
+                ],
+                "description": "status of hard contact, if customer is disabled or de reg"
+              }
+            }
+          },
+          "onUs": {
+            "type": "boolean",
+            "description": "the registered user and the coustomer associated with the direct deposit registration have the same financial institution"
+          }
+        }
+      },
+      "Contacts": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Contact"
+        }
+      },
+      "ArrayOfContacts": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Contacts"
+        }
+      },
+      "Response": {
+        "type": "object",
+        "properties": {
+          "ids": {
+            "$ref": "#/components/schemas/UserIds"
+          },
+          "contacts": {
+            "$ref": "#/components/schemas/ArrayOfContacts"
+          }
+        }
+      },
+      "errorModel": {
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

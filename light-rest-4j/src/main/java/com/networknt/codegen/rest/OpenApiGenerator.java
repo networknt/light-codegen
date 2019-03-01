@@ -320,6 +320,7 @@ public class OpenApiGenerator implements Generator {
                                             properties.put("type", any);
                                         }
 
+                                        int iteration = 0;
                                         do {
                                             UnresolvedTypeAny previous = null;
                                             while (any instanceof UnresolvedTypeAny) {
@@ -329,6 +330,8 @@ public class OpenApiGenerator implements Generator {
 
                                             if (any == null) {
                                                 break;
+                                            } else if (iteration++ > referencesCount) {
+                                                throw new TypeNotPresentException(any.toString(), null);
                                             }
 
                                             if (any.valueType() == ValueType.STRING) {
