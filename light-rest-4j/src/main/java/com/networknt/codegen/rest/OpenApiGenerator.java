@@ -600,7 +600,7 @@ public class OpenApiGenerator implements Generator {
     }
 
     private String populateRequestBodyExample(Operation operation) {
-	    String result = "{\\\"content\\\": \\\"request body to be replaced\\\"}";
+	    String result = "{\"content\": \"request body to be replaced\"}";
 	    RequestBody body = operation.getRequestBody();
 	    if(body != null) {
             MediaType mediaType = body.getContentMediaType("application/json");
