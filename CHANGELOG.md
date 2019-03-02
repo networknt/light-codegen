@@ -1,5 +1,13 @@
 # Change Log
 
+## [1.5.31](https://github.com/networknt/light-codegen/tree/1.5.31) (2019-03-02)
+[Full Changelog](https://github.com/networknt/light-codegen/compare/1.5.30...1.5.31)
+
+**Closed issues:**
+
+- update jar filename to make them easy to be deployed to light-portal [\#235](https://github.com/networknt/light-codegen/issues/235)
+- update client.yml to set the verifyHostname to true [\#233](https://github.com/networknt/light-codegen/issues/233)
+
 ## [1.5.30](https://github.com/networknt/light-codegen/tree/1.5.30) (2019-02-21)
 [Full Changelog](https://github.com/networknt/light-codegen/compare/1.5.29...1.5.30)
 
