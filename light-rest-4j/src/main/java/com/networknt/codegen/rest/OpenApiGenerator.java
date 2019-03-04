@@ -34,6 +34,8 @@ import com.networknt.oas.model.Schema;
 import com.networknt.oas.model.Server;
 import com.networknt.oas.model.impl.OpenApi3Impl;
 
+import javax.lang.model.SourceVersion;
+
 /**
  * The input for OpenAPI 3.0 generator include config with json format
  * and OpenAPI specification in yaml format.
@@ -45,13 +47,6 @@ import com.networknt.oas.model.impl.OpenApi3Impl;
  */
 public class OpenApiGenerator implements Generator {
     private Map<String, String> typeMapping = new HashMap<>();
-
-    private static List<String> javaKeyWordList = new ArrayList<>(Arrays.asList("abstract", "continue", "for",	"new",
-            "switch", "assert", "default", "goto", "package", "synchronized", "boolean", "do", "if", "private", "this",
-            "break", "double", "implements", "protected", "throw", "byte", "else", "import", "public", "throws", "case",
-            "enum", "instanceof", "return", "transient", "catch", "extends", "int", "short", "try", "char", "final",
-            "interface", "static", "void", "class", "finally", "long", "strictfp", "volatile", "const", "float", "native",
-            "super", "while"));
     
     // optional generation parameters. if not set, they use default values as 
     boolean prometheusMetrics =false;
@@ -629,12 +624,14 @@ public class OpenApiGenerator implements Generator {
     // 2. prefix number with '_'
     // 3. convert the first character of java keywords to upper case
     public static String convertToValidJavaVariableName(String string) {
-        if (string == null || string.equals("")) {
+        if (string == null || string.equals("") || SourceVersion.isName(string)) {
             return string;
         }
-        if (javaKeyWordList.contains(string)) {
+        // to validate whether the string is Java keyword
+        if (SourceVersion.isKeyword(string)) {
             return string.substring(0, 1).toUpperCase() + string.substring(1);
         }
+        // replace invalid characters with underscore
 	    StringBuilder stringBuilder = new StringBuilder();
         if (!Character.isJavaIdentifierStart(string.charAt(0))) {
             stringBuilder.append('_');
