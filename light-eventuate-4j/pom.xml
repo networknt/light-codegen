@@ -37,6 +37,11 @@
             <artifactId>rocker-runtime</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.fizzed</groupId>
+            <artifactId>rocker-compiler</artifactId>
+            <scope>provided</scope>
+        </dependency>         
+        <dependency>
             <groupId>com.jsoniter</groupId>
             <artifactId>jsoniter</artifactId>
         </dependency>

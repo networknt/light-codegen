@@ -269,6 +269,11 @@
                 <artifactId>rocker-runtime</artifactId>
                 <version>${version.rocker}</version>
             </dependency>
+	        <dependency>
+	            <groupId>com.fizzed</groupId>
+	            <artifactId>rocker-compiler</artifactId>
+	            <version>${version.rocker}</version>
+	        </dependency>            
             <dependency>
                 <groupId>com.beust</groupId>
                 <artifactId>jcommander</artifactId>
