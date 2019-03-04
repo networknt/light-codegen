@@ -23,7 +23,7 @@ if [ ! -f "$CURRENT_DIR/rocker-compiler.conf" ]; then
 fi
 
 if [ ! -d  "$CURRENT_DIR/target/classes" ]; then
-    echo "create class folder".
+    echo "create class folder"
 
     mkdir -p "$CURRENT_DIR/target/classes"
 fi
