@@ -5,7 +5,10 @@
 
 @args (String modelPackage, String className, String classVarName, List<Map<String, Any>> props)
 package @modelPackage;
+
+import java.util.Arrays;
 import java.util.Objects;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class @className {
@@ -27,6 +30,7 @@ public class @className {
     public void @prop.get("setter")(@prop.get("nameWithEnum") @prop.get("name")) {
         this.@prop.get("name") = @prop.get("name");
     }
+
     } else {
     @@JsonProperty("@prop.get("jsonProperty")")
     public @prop.get("type") @prop.get("getter")() {
@@ -36,10 +40,10 @@ public class @className {
     public void @prop.get("setter")(@prop.get("type") @prop.get("name")) {
         this.@prop.get("name") = @prop.get("name");
     }
+
     }
     }
     @if(props.size() > 0) {
-
     @@Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -48,15 +52,16 @@ public class @className {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
+
         @className @classVarName = (@className) o;
 
-        return @for ((i, prop): props) {@if (i.index() <  props.size() - 1) {Objects.equals(@prop.get("name"), @classVarName.@prop.get("name")) &&}
-        @if(i.index() == props.size() - 1){Objects.equals(@prop.get("name"), @classVarName.@prop.get("name"))}};
+        return @for ((i, prop): props) {@if (i.index() <  props.size() - 1) {@if(prop.get("isArray") == null){Objects}else{Arrays}.equals(@prop.get("name"), @classVarName.@prop.get("name")) &&}
+        @if(i.index() == props.size() - 1){@if(prop.get("isArray") == null){Objects}else{Arrays}.equals(@prop.get("name"), @classVarName.@prop.get("name"))}};
     }
 
     @@Override
     public int hashCode() {
-        return Objects.hash(@for((i, prop): props) {@if(i.index() < props.size() - 1) {@prop.get("name"),} @if(i.index() == props.size() - 1) {@prop.get("name"));}}
+        return Objects.hash(7@for((i, prop): props) {, @if (prop.get("isArray") == null){@prop.get("name")} else {Arrays.hashCode(@prop.get("name"))}});
     }
 
     }
