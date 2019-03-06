@@ -1,5 +1,40 @@
 # Change Log
 
+## [1.5.31](https://github.com/networknt/light-codegen/tree/1.5.31) (2019-03-02)
+[Full Changelog](https://github.com/networknt/light-codegen/compare/1.5.30...1.5.31)
+
+**Closed issues:**
+
+- update jar filename to make them easy to be deployed to light-portal [\#235](https://github.com/networknt/light-codegen/issues/235)
+- update client.yml to set the verifyHostname to true [\#233](https://github.com/networknt/light-codegen/issues/233)
+
+## [1.5.30](https://github.com/networknt/light-codegen/tree/1.5.30) (2019-02-21)
+[Full Changelog](https://github.com/networknt/light-codegen/compare/1.5.29...1.5.30)
+
+**Implemented enhancements:**
+
+- Generate environment-based variables or plain default values, via flag [\#217](https://github.com/networknt/light-codegen/issues/217)
+- Generate config file for each handler wired into the handler chain  [\#216](https://github.com/networknt/light-codegen/issues/216)
+- Generate environment variables with default values for configuration values [\#208](https://github.com/networknt/light-codegen/issues/208)
+
+**Closed issues:**
+
+- change verifyHostname to false in the generated client.yml [\#230](https://github.com/networknt/light-codegen/issues/230)
+- remove the newly introduced regex library as it depends on a BSD 2 clause licensed library [\#209](https://github.com/networknt/light-codegen/issues/209)
+- Exception thrown if servers not specified in openapi definition [\#184](https://github.com/networknt/light-codegen/issues/184)
+- Supporting JUnit 5 and back port the Kotlin Test Sever [\#178](https://github.com/networknt/light-codegen/issues/178)
+- generated OpenAPI petstore example is not shown up [\#175](https://github.com/networknt/light-codegen/issues/175)
+- Support basic auth or without security in OpenAPI generator [\#166](https://github.com/networknt/light-codegen/issues/166)
+- Binary Content [\#158](https://github.com/networknt/light-codegen/issues/158)
+- code generation fails from openapi/swagger yaml files [\#145](https://github.com/networknt/light-codegen/issues/145)
+- How to customize the generator to add new templates [\#6](https://github.com/networknt/light-codegen/issues/6)
+
+**Merged pull requests:**
+
+- Issue230 [\#232](https://github.com/networknt/light-codegen/pull/232) ([stevehu](https://github.com/stevehu))
+- fixes \#230 change verifyHostname to false in the generated client.yml [\#231](https://github.com/networknt/light-codegen/pull/231) ([stevehu](https://github.com/stevehu))
+- Propagate exception to impact return code of command [\#229](https://github.com/networknt/light-codegen/pull/229) ([NicholasAzar](https://github.com/NicholasAzar))
+
 ## [1.5.29](https://github.com/networknt/light-codegen/tree/1.5.29) (2019-02-16)
 [Full Changelog](https://github.com/networknt/light-codegen/compare/1.5.28...1.5.29)
 
