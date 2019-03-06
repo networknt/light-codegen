@@ -18,6 +18,7 @@ $compilerConf = "$workDir\rocker-compiler.conf"
 
 if (-not (Test-Path $compilerConf)) {
     Write-Host "$compilerConf cannot be found."
+	# Note: do not add quotation marks to the value of rocker.template.dir even if there are spaces in the path
     $escapedDir = $workDir -replace '\\', '/'
     Set-Content -Path $compilerConf -Value "rocker.template.dir=$escapedDir"
 }
@@ -29,6 +30,7 @@ if (-not (Test-Path -PathType Container $classDir)) {
     New-Item -ItemType Directory -Force -Path $classDir
 }
 
+# Note: please point JAVA_HOME to a JDK installation. JRE is not sufficient.
 $javaHome = (get-item env:JAVA_HOME).Value
 # Note: the order of the pathes in the classpath matters
 $classpath = ".;target\classes;codegen-cli.jar"

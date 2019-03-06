@@ -33,6 +33,7 @@ fi
 # You need to change the path separator to ';' in order to run this script in git bash
 JAVA_OPS="-cp .:target/classes/:codegen-cli.jar com.networknt.codegen.Cli"
 
+# Note: please point JAVA_HOME to a JDK installation. JRE is not sufficient.
 "$JAVA_HOME/bin/java" $JAVA_OPS "$@"
 
 exit 0
