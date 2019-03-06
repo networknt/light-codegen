@@ -5,7 +5,7 @@ set -ex
 CURRENT_DIR=$PWD
 
 if [ ! -f "$CURRENT_DIR/codegen-cli.jar" ]; then
-    echo "File codegen-cli.jar not found!"
+    echo "codegen-cli.jar cannot be found!"
 
     exit 1
 fi
@@ -17,13 +17,13 @@ if [ -z "$JAVA_HOME" ]; then
 fi
 
 if [ ! -f "$CURRENT_DIR/rocker-compiler.conf" ]; then
-    echo "File 'rocker-compiler.conf' not found! Generate default ..."
+    echo "generate config $CURRENT_DIR/rocker-compiler.conf"
 
     echo "rocker.template.dir=$CURRENT_DIR" > rocker-compiler.conf 
 fi
 
 if [ ! -d  "$CURRENT_DIR/target/classes" ]; then
-    echo "create class folder"
+    echo "create class folder $CURRENT_DIR/target/classes"
 
     mkdir -p "$CURRENT_DIR/target/classes"
 fi

@@ -17,7 +17,7 @@ if (-not (Test-Path env:JAVA_HOME)) {
 $compilerConf = "$workDir\rocker-compiler.conf"
 
 if (-not (Test-Path $compilerConf)) {
-    Write-Host "$compilerConf cannot be found."
+    Write-Host "generate config $compilerConf"
 	# Note: do not add quotation marks to the value of rocker.template.dir even if there are spaces in the path
     $escapedDir = $workDir -replace '\\', '/'
     Set-Content -Path $compilerConf -Value "rocker.template.dir=$escapedDir"
@@ -26,7 +26,7 @@ if (-not (Test-Path $compilerConf)) {
 $classDir = "$workDir\target\classes"
 
 if (-not (Test-Path -PathType Container $classDir)) {
-    Write-Host "$classDir cannot be found."
+    Write-Host "create class folder $classDir"
     New-Item -ItemType Directory -Force -Path $classDir
 }
 
