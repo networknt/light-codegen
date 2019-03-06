@@ -29,9 +29,10 @@ if [ ! -d  "$CURRENT_DIR/target/classes" ]; then
 fi
 
 
+# Note: the order of the pathes in the classpath matters
+# You need to change the path separator to ';' in order to run this script in git bash
+JAVA_OPS="-cp .:target/classes/:codegen-cli.jar com.networknt.codegen.Cli"
 
-JAVA_OPS="-cp target/classes/:./codegen-cli.jar com.networknt.codegen.Cli"
-
-$JAVA_HOME/bin/java $JAVA_OPS "$@"
+"$JAVA_HOME/bin/java" $JAVA_OPS "$@"
 
 exit 0
