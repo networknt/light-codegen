@@ -90,8 +90,8 @@ public class OpenApiGeneratorTest {
 
     @Test
     public void testConvertInvalidVariableName() {
-        String[] invalidVariableNames = {"na me", "new", "1", "1+1"};
-        String[] validVariableNames = {"na_me", "New", "_1", "_1_1"};
+        String[] invalidVariableNames = {"na me", "new", "1", "1+1", "n/a"};
+        String[] validVariableNames = {"na_me", "_new", "_1", "_1_1", "n_a"};
         for (int i = 0; i < invalidVariableNames.length; i++) {
             String string = OpenApiGenerator.convertToValidJavaVariableName(invalidVariableNames[i]);
             Assert.assertEquals(validVariableNames[i], string);
