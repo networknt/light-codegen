@@ -77,8 +77,6 @@ public class OpenApiGenerator implements Generator {
         typeMapping.put("double", "Double");
         typeMapping.put("object", "Object");
         typeMapping.put("integer", "Integer");
-        typeMapping.put("ByteArray", "byte[]");
-        typeMapping.put("binary", "byte[]");
     }
 
     @Override
@@ -533,7 +531,12 @@ public class OpenApiGenerator implements Generator {
 
                         case "binary":
                             ultimateType = "byte[]";
-                            propMap.put("isArray", Any.wrap(true));
+                            propMap.put(COMPARATOR, Any.wrap("Arrays"));
+                            propMap.put(HASHER, Any.wrap("Arrays"));
+                            break;
+
+                        case "byte":
+                            ultimateType = "byte";
                             break;
 
                         default:
@@ -588,6 +591,8 @@ public class OpenApiGenerator implements Generator {
             props.add(propMap);
         }
     }
+    public static final String HASHER = "hasher";
+    public static final String COMPARATOR = "comparator";
 
     private Any getListOf(String s) {
         return new UnresolvedTypeListAny(s);

@@ -49,19 +49,20 @@ public class @className {
         if (this == o) {
             return true;
         }
+
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
 
         @className @classVarName = (@className) o;
 
-        return @for ((i, prop): props) {@if (i.index() <  props.size() - 1) {@if(prop.get("isArray") == null){Objects}else{Arrays}.equals(@prop.get("name"), @classVarName.@prop.get("name")) &&}
-        @if(i.index() == props.size() - 1){@if(prop.get("isArray") == null){Objects}else{Arrays}.equals(@prop.get("name"), @classVarName.@prop.get("name"))}};
+        return @for ((i, prop): props) {@if (i.index() <  props.size() - 1) {@prop.get("comparator")?:"Objects".equals(@prop.get("name"), @classVarName.@prop.get("name")) &&
+               } else {@prop.get("comparator")?:"Objects".equals(@prop.get("name"), @classVarName.@prop.get("name"))}};
     }
 
     @@Override
     public int hashCode() {
-        return Objects.hash(7@for((i, prop): props) {, @if (prop.get("isArray") == null){@prop.get("name")} else {Arrays.hashCode(@prop.get("name"))}});
+        return Objects.hash(@for((i, prop): props) {@with(String hasher = prop.get("hasher"), String NULL = null){@if (i.index() <  props.size() - 1) {@if (hasher == null){@prop.get("name")} else {@hasher@NULL?:"".hashCode(@prop.get("name"))}, } else {@if (hasher == null){@prop.get("name")} else {@hasher@NULL?:"".hashCode(@prop.get("name"))}}}});
     }
 
     }
@@ -70,7 +71,8 @@ public class @className {
         StringBuilder sb = new StringBuilder();
         sb.append("class @className {\n");
         @for(prop: props) {
-        sb.append("    @prop.get("name"): ").append(toIndentedString(@prop.get("name"))).append("\n");}
+        sb.append("    @prop.get("name"): ").append(toIndentedString(@prop.get("name"))).append("\n");
+        }
         sb.append("}");
         return sb.toString();
     }
