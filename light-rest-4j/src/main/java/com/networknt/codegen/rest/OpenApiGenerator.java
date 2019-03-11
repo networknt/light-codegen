@@ -1,6 +1,15 @@
 package com.networknt.codegen.rest;
 
-import static java.io.File.separator;
+import com.jsoniter.JsonIterator;
+import com.jsoniter.ValueType;
+import com.jsoniter.any.Any;
+import com.jsoniter.output.JsonStream;
+import com.networknt.codegen.Generator;
+import com.networknt.codegen.Utils;
+import com.networknt.jsonoverlay.Overlay;
+import com.networknt.oas.OpenApiParser;
+import com.networknt.oas.model.*;
+import com.networknt.oas.model.impl.OpenApi3Impl;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -11,12 +20,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
@@ -40,6 +44,7 @@ import com.networknt.oas.model.Server;
 import com.networknt.oas.model.impl.OpenApi3Impl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import static java.io.File.separator;
 
 /**
  * The input for OpenAPI 3.0 generator include config with json format and OpenAPI specification in yaml format.
@@ -712,6 +717,7 @@ public class OpenApiGenerator implements Generator {
                         .filter(parameter -> parameter.getIn().equals("header"))
                         .collect(Collectors.toMap(k -> k.getName(), v -> UrlGenerator.generateValidParam(v)));
                 flattened.put("headerNameValueMap", headerNameValueMap);
+                flattened.put("requestBodyExample", populateRequestBodyExample(operation));
                 if (enableParamDescription) {
                     //get parameters info and put into result
                     List<Parameter> parameterRawList = operation.getParameters();
@@ -792,6 +798,30 @@ public class OpenApiGenerator implements Generator {
             list.add(Any.wrap(value));
         }
         entryElement.setValue(Any.wrap(list));
+    }
+
+    private String populateRequestBodyExample(Operation operation) {
+	    String result = "{\"content\": \"request body to be replaced\"}";
+	    RequestBody body = operation.getRequestBody();
+	    if(body != null) {
+            MediaType mediaType = body.getContentMediaType("application/json");
+            if(mediaType != null) {
+                Object valueToBeStringify = null;
+                if(mediaType.getExamples() != null && !mediaType.getExamples().isEmpty()) {
+                    for(Entry<String, Example> entry : mediaType.getExamples().entrySet()) {
+                        valueToBeStringify = entry.getValue().getValue();
+                    }
+                } else if(mediaType.getExample() != null) {
+                    valueToBeStringify = mediaType.getExample();
+                }
+                if(valueToBeStringify == null) return result;
+                result = JsonStream.serialize(valueToBeStringify);
+                if(result.startsWith("\"")) {
+                    result = result.substring(1, result.length() - 1);
+                }
+            }
+         }
+         return result;
     }
 
     private static final Logger logger = LoggerFactory.getLogger(OpenApiGenerator.class);

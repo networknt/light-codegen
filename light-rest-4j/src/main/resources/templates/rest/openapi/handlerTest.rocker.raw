@@ -1,6 +1,7 @@
 @import java.util.Map
 @import com.jsoniter.any.Any
 @import java.util.stream.Collectors
+@import org.apache.commons.text.StringEscapeUtils
 @args (String handlerPackage, Map<String, Object> map)
 package @handlerPackage;
 
@@ -38,6 +39,7 @@ import java.util.concurrent.atomic.AtomicReference;
        hasBody = ("POST".equals(map.get("method").toString()) || "PUT".equals(map.get("method").toString()) || "PATCH".equals(map.get("method").toString())),
        path = map.get("normalizedPath"),
        supportedStatusCodesStr = map.get("supportedStatusCodesStr"),
+       requestBodyExample = StringEscapeUtils.escapeJson((String)map.get("requestBodyExample")),
        headerNameValueMap = (Map)map.get("headerNameValueMap")) {
 @@Ignore
 public class @className {
@@ -73,7 +75,7 @@ public class @className {
             request.getRequestHeaders().put(Headers.TRANSFER_ENCODING, "chunked");
             //customized header parameters @for((String key, Object item): headerNameValueMap) {
             request.getRequestHeaders().put(new HttpString("@key"), "@item");}
-            connection.sendRequest(request, client.createClientCallback(reference, latch, "{\"content\": \"request body to be replaced\"}"));
+            connection.sendRequest(request, client.createClientCallback(reference, latch, "@requestBodyExample"));
             } else {
             //customized header parameters @for((String key, Object item): headerNameValueMap) {
             request.getRequestHeaders().put(new HttpString("@key"), "@item");}
