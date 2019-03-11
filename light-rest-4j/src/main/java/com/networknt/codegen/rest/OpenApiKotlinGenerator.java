@@ -384,7 +384,7 @@ public class OpenApiKotlinGenerator implements Generator {
                         propMap.put("type", Any.wrap("List<" + s + ">"));
                     }
                     if(a.get("type").valueType() != ValueType.INVALID && isArray) {
-                        propMap.put("type", Any.wrap("List<" + typeMapping.get(a.get("type").toString()) + ">"));
+                        propMap.put("type", Any.wrap("java.util.List<" + typeMapping.get(a.get("type").toString()) + ">"));
                     }
                 }
                 if("$ref".equals(entryElement.getKey())) {
