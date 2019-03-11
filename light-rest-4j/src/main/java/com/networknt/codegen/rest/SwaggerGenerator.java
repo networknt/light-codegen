@@ -6,6 +6,7 @@ import com.jsoniter.output.JsonStream;
 import com.networknt.codegen.Generator;
 import com.networknt.codegen.Utils;
 
+import javax.lang.model.SourceVersion;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,13 +32,6 @@ public class SwaggerGenerator implements Generator {
     //static ObjectMapper mapper = new ObjectMapper();
 
     private Map<String, String> typeMapping = new HashMap<>();
-
-    private static List<String> javaKeyWordList = new ArrayList<>(Arrays.asList("abstract", "continue", "for",	"new",
-            "switch", "assert", "default", "goto", "package", "synchronized", "boolean", "do", "if", "private", "this",
-            "break", "double", "implements", "protected", "throw", "byte", "else", "import", "public", "throws", "case",
-            "enum", "instanceof", "return", "transient", "catch", "extends", "int", "short", "try", "char", "final",
-            "interface", "static", "void", "class", "finally", "long", "strictfp", "volatile", "const", "float", "native",
-            "super", "while"));
 
     boolean prometheusMetrics =false;
     boolean skipHealthCheck = false;
@@ -388,13 +382,19 @@ public class SwaggerGenerator implements Generator {
         entryElement.setValue(Any.wrap(map));
     }
 
+    // method used to convert string to valid java variable name
+    // 1. replace invalid character with '_'
+    // 2. prefix number with '_'
+    // 3. convert the first character of java keywords to upper case
     public static String convertToValidJavaVariableName(String string) {
-        if (string == null || string.equals("")) {
+        if (string == null || string.equals("") || SourceVersion.isName(string)) {
             return string;
         }
-        if (javaKeyWordList.contains(string)) {
-            return string.substring(0, 1).toUpperCase() + string.substring(1);
+        // to validate whether the string is Java keyword
+        if (SourceVersion.isKeyword(string)) {
+            return "_" + string;
         }
+        // replace invalid characters with underscore
         StringBuilder stringBuilder = new StringBuilder();
         if (!Character.isJavaIdentifierStart(string.charAt(0))) {
             stringBuilder.append('_');
