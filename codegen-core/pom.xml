@@ -21,13 +21,17 @@
     <parent>
         <groupId>com.networknt</groupId>
         <artifactId>light-codegen</artifactId>
-        <version>1.5.31</version>
+        <version>1.5.32</version>
         <relativePath>..</relativePath>
     </parent>
 
     <artifactId>codegen-core</artifactId>
     <packaging>jar</packaging>
     <description>light generator core.</description>
+
+    <build>
+        <finalName>${project.name}</finalName>
+    </build>
 
     <dependencies>
         <dependency>

@@ -21,7 +21,7 @@
     <parent>
         <groupId>com.networknt</groupId>
         <artifactId>light-codegen</artifactId>
-        <version>1.5.31</version>
+        <version>1.5.32</version>
         <relativePath>..</relativePath>
     </parent>
 
@@ -116,7 +116,7 @@
     <build>
         <defaultGoal>install</defaultGoal>
         <directory>target</directory>
-        <finalName>${project.artifactId}-${project.version}</finalName>
+        <finalName>${project.artifactId}</finalName>
         <plugins>
             <!-- Google error-prone compiles -->
             <plugin>
