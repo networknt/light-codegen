@@ -89,49 +89,12 @@ public class OpenApiGeneratorTest {
     }
 
     @Test
-    public void testInvalidVaribleNameGeneratorYaml() throws IOException {
-        Any anyConfig = JsonIterator.parse(OpenApiGeneratorTest.class.getResourceAsStream(configName), 1024).readAny();
-        String strModel = new Scanner(OpenApiGeneratorTest.class.getResourceAsStream(openapiYaml), "UTF-8").useDelimiter("\\A").next();
-        OpenApiGenerator generator = new OpenApiGenerator();
-        generator.generate(targetPath, strModel, anyConfig);
-
-        File file = new File(targetPath);
-        JavaProjectBuilder javaProjectBuilder = new JavaProjectBuilder();
-        javaProjectBuilder.addSourceTree(file);
-        JavaPackage javaPackage = javaProjectBuilder.getPackageByName(packageName);
-
-        for (JavaClass javaClass : javaPackage.getClasses()) {
-            List<JavaField> fields = javaClass.getFields();
-            for (JavaClass javaNestedClass : javaClass.getNestedClasses()) {
-                fields.addAll(javaNestedClass.getFields());
-            }
-            for (JavaField field : fields) {
-                Assert.assertFalse(field.getName().contains(" "));
-            }
-        }
-    }
-
-    @Test
-    public void testInvalidVaribleNameGeneratorJson() throws IOException {
-        Any anyConfig = JsonIterator.parse(OpenApiGeneratorTest.class.getResourceAsStream(configName), 1024).readAny();
-        Any anyModel = JsonIterator.parse(OpenApiGeneratorTest.class.getResourceAsStream(openapiJson), 1024).readAny();
-
-        OpenApiGenerator generator = new OpenApiGenerator();
-        generator.generate(targetPath, anyModel, anyConfig);
-
-        File file = new File(targetPath);
-        JavaProjectBuilder javaProjectBuilder = new JavaProjectBuilder();
-        javaProjectBuilder.addSourceTree(file);
-        JavaPackage javaPackage = javaProjectBuilder.getPackageByName(packageName);
-
-        for (JavaClass javaClass : javaPackage.getClasses()) {
-            List<JavaField> fields = javaClass.getFields();
-            for (JavaClass javaNestedClass : javaClass.getNestedClasses()) {
-                fields.addAll(javaNestedClass.getFields());
-            }
-            for (JavaField field : fields) {
-                Assert.assertFalse(field.getName().contains(" "));
-            }
+    public void testConvertInvalidVariableName() {
+        String[] invalidVariableNames = {"na me", "new", "1", "1+1", "n/a"};
+        String[] validVariableNames = {"na_me", "_new", "_1", "_1_1", "n_a"};
+        for (int i = 0; i < invalidVariableNames.length; i++) {
+            String string = OpenApiGenerator.convertToValidJavaVariableName(invalidVariableNames[i]);
+            Assert.assertEquals(validVariableNames[i], string);
         }
     }
 }

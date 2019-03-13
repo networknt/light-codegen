@@ -11,12 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
@@ -40,6 +35,8 @@ import com.networknt.oas.model.Server;
 import com.networknt.oas.model.impl.OpenApi3Impl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.lang.model.SourceVersion;
 
 /**
  * The input for OpenAPI 3.0 generator include config with json format and OpenAPI specification in yaml format.
@@ -354,7 +351,7 @@ public class OpenApiGenerator implements Generator {
                             throw new IllegalStateException("Properties empty for " + classVarName + "!");
                         }
 
-                        references.put(classVarName, props.get(0).get("type"));
+                        references.put(modelFileName, props.get(0).get("type"));
                     }
                 }
 
@@ -438,7 +435,7 @@ public class OpenApiGenerator implements Generator {
      * @param propMap The property map to add to, created in the caller
      */
     private void initializePropertyMap(Entry<String, Any> entry, Map<String, Any> propMap) {
-        String name = entry.getKey();
+	    String name = convertToValidJavaVariableName(entry.getKey());
         propMap.put("jsonProperty", Any.wrap(name));
         if (name.startsWith("@")) {
             name = name.substring(1);
@@ -449,6 +446,7 @@ public class OpenApiGenerator implements Generator {
         propMap.put("setter", Any.wrap("set" + name.substring(0, 1).toUpperCase() + name.substring(1)));
         // assume it is not enum unless it is overwritten
         propMap.put("isEnum", Any.wrap(false));
+	    propMap.put("isNumEnum", Any.wrap(false));
     }
 
     /**
@@ -467,12 +465,14 @@ public class OpenApiGenerator implements Generator {
             initializePropertyMap(entryProp, propMap);
 
             String name = entryProp.getKey();
+		    String type = null;
             boolean isArray = false;
             for (Map.Entry<String, Any> entryElement : entryProp.getValue().asMap().entrySet()) {
                 //System.out.println("key = " + entryElement.getKey() + " value = " + entryElement.getValue());
 
                 if ("type".equals(entryElement.getKey())) {
                     String t = typeMapping.get(entryElement.getValue().toString());
+		            type = t;
                     if ("java.util.List".equals(t)) {
                         isArray = true;
                     } else {
@@ -484,7 +484,8 @@ public class OpenApiGenerator implements Generator {
                     if (a.get("$ref").valueType() != ValueType.INVALID && isArray) {
                         String s = a.get("$ref").toString();
                         s = s.substring(s.lastIndexOf('/') + 1);
-                        propMap.put("type", getListOf(s));
+                        s = s.substring(0,1).toUpperCase() + (s.length() > 1 ? s.substring(1) : "");
+		                propMap.put("type", getListOf(s));
                     }
                     if (a.get("type").valueType() != ValueType.INVALID && isArray) {
                         propMap.put("type", getListOf(typeMapping.get(a.get("type").toString())));
@@ -493,6 +494,7 @@ public class OpenApiGenerator implements Generator {
                 if ("$ref".equals(entryElement.getKey())) {
                     String s = entryElement.getValue().toString();
                     s = s.substring(s.lastIndexOf('/') + 1);
+		            s = s.substring(0,1).toUpperCase() + (s.length() > 1 ? s.substring(1) : "");
                     propMap.put("type", Any.wrap(s));
                 }
                 if ("default".equals(entryElement.getKey())) {
@@ -500,10 +502,15 @@ public class OpenApiGenerator implements Generator {
                     propMap.put("default", a);
                 }
                 if ("enum".equals(entryElement.getKey())) {
+		            // different generate format for number enum
+		            if ("Integer".equals(type) || "Double".equals(type) || "Float".equals(type)
+                            || "Long".equals(type) || "Short".equals(type) || "java.math.BigDecimal".equals(type)) {
+		                propMap.put("isNumEnum", Any.wrap(true));
+                    }
                     propMap.put("isEnum", Any.wrap(true));
                     propMap.put("nameWithEnum", Any.wrap(name.substring(0, 1).toUpperCase() + name.substring(1) + "Enum"));
-                    this.addUnderscores(entryElement);
-                    propMap.put("value", Any.wrap(entryElement.getValue()));
+		            this.attachValidEnumName(entryElement);
+		            propMap.put("value", entryElement.getValue());
                 }
                 if ("format".equals(entryElement.getKey())) {
                     String s = entryElement.getValue().toString();
@@ -783,15 +790,43 @@ public class OpenApiGenerator implements Generator {
         return basePath;
     }
 
-    private static void addUnderscores(Map.Entry<String, Any> entryElement) {
+    // method used to generate valid enum keys for enum contents
+    private static void attachValidEnumName(Map.Entry<String, Any> entryElement) {
         Iterator<Any> iterator = entryElement.getValue().iterator();
-        List<Any> list = new ArrayList<>();
+        Map<String, Any> map = new HashMap<>();
         while (iterator.hasNext()) {
-            Any any = iterator.next();
-            String value = any.toString().trim().replaceAll(" ", "_");
-            list.add(Any.wrap(value));
+            String string = iterator.next().toString().trim();
+            if (string.equals("")) continue;
+            map.put(convertToValidJavaVariableName(string).toUpperCase(), Any.wrap(string));
         }
-        entryElement.setValue(Any.wrap(list));
+        entryElement.setValue(Any.wrap(map));
+    }
+
+    // method used to convert string to valid java variable name
+    // 1. replace invalid character with '_'
+    // 2. prefix number with '_'
+    // 3. convert the first character of java keywords to upper case
+    public static String convertToValidJavaVariableName(String string) {
+        if (string == null || string.equals("") || SourceVersion.isName(string)) {
+            return string;
+        }
+        // to validate whether the string is Java keyword
+        if (SourceVersion.isKeyword(string)) {
+            return "_" + string;
+        }
+        // replace invalid characters with underscore
+	    StringBuilder stringBuilder = new StringBuilder();
+        if (!Character.isJavaIdentifierStart(string.charAt(0))) {
+            stringBuilder.append('_');
+        }
+        for (char c : string.toCharArray()) {
+            if (!Character.isJavaIdentifierPart(c)) {
+                stringBuilder.append('_');
+            } else {
+                stringBuilder.append(c);
+            }
+        }
+        return stringBuilder.toString();
     }
 
     private static final Logger logger = LoggerFactory.getLogger(OpenApiGenerator.class);

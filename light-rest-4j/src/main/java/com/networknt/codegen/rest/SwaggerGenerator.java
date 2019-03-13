@@ -6,6 +6,7 @@ import com.jsoniter.output.JsonStream;
 import com.networknt.codegen.Generator;
 import com.networknt.codegen.Utils;
 
+import javax.lang.model.SourceVersion;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,6 +32,7 @@ public class SwaggerGenerator implements Generator {
     //static ObjectMapper mapper = new ObjectMapper();
 
     private Map<String, String> typeMapping = new HashMap<>();
+
     boolean prometheusMetrics =false;
     boolean skipHealthCheck = false;
     boolean skipServerInfo = false;
@@ -175,6 +177,7 @@ public class SwaggerGenerator implements Generator {
                             propMap.put("setter", Any.wrap("set" + name.substring(0, 1).toUpperCase() + name.substring(1)));
                             // assume it is not enum unless it is overwritten
                             propMap.put("isEnum", Any.wrap(false));
+                            propMap.put("isNumEnum", Any.wrap(false));
 
                             boolean isArray = false;
                             for(Map.Entry<String, Any> entryElement: entryProp.getValue().asMap().entrySet()) {
@@ -182,6 +185,7 @@ public class SwaggerGenerator implements Generator {
 
                                 if("type".equals(entryElement.getKey())) {
                                     String t = typeMapping.get(entryElement.getValue().toString());
+                                    type = t;
                                     if("java.util.List".equals(t)) {
                                         isArray = true;
                                     } else {
@@ -193,6 +197,7 @@ public class SwaggerGenerator implements Generator {
                                     if(a.get("$ref").valueType() != ValueType.INVALID && isArray) {
                                         String s = a.get("$ref").toString();
                                         s = s.substring(s.lastIndexOf('/') + 1);
+                                        s = s.substring(0,1).toUpperCase() + (s.length() > 1 ? s.substring(1) : "");
                                         propMap.put("type", Any.wrap("java.util.List<" + s + ">"));
                                     }
                                     if(a.get("type").valueType() != ValueType.INVALID && isArray) {
@@ -202,6 +207,7 @@ public class SwaggerGenerator implements Generator {
                                 if("$ref".equals(entryElement.getKey())) {
                                     String s = entryElement.getValue().toString();
                                     s = s.substring(s.lastIndexOf('/') + 1);
+                                    s = s.substring(0,1).toUpperCase() + (s.length() > 1 ? s.substring(1) : "");
                                     propMap.put("type", Any.wrap(s));
                                 }
                                 if("default".equals(entryElement.getKey())) {
@@ -209,10 +215,14 @@ public class SwaggerGenerator implements Generator {
                                     propMap.put("default", a);
                                 }
                                 if("enum".equals(entryElement.getKey())) {
+                                    if ("Integer".equals(type) || "Double".equals(type) || "Float".equals(type)
+                                            || "Long".equals(type) || "Short".equals(type) || "java.math.BigDecimal".equals(type)) {
+                                        propMap.put("isNumEnum", Any.wrap(true));
+                                    }
                                     propMap.put("isEnum", Any.wrap(true));
                                     propMap.put("nameWithEnum", Any.wrap(name.substring(0, 1).toUpperCase() + name.substring(1) + "Enum"));
-                                    this.addUnderscores(entryElement);
-                                    propMap.put("value", Any.wrap(entryElement.getValue()));
+                                    this.attachValidEnumName(entryElement);
+                                    propMap.put("value", entryElement.getValue());
                                 }
                                 if("format".equals(entryElement.getKey())) {
                                     String s = entryElement.getValue().toString();
@@ -361,14 +371,41 @@ public class SwaggerGenerator implements Generator {
         }
         return result;
     }
-    private static void addUnderscores(Map.Entry<String, Any> entryElement) {
+    private static void attachValidEnumName(Map.Entry<String, Any> entryElement) {
         Iterator<Any> iterator = entryElement.getValue().iterator();
-        List<Any> list = new ArrayList<>();
+        Map<String, Any> map = new HashMap<>();
         while (iterator.hasNext()) {
-            Any any = iterator.next();
-            String value = any.toString().trim().replaceAll(" ", "_");
-            list.add(Any.wrap(value));
+            String string = iterator.next().toString().trim();
+            if (string.equals("")) continue;
+            map.put(convertToValidJavaVariableName(string).toUpperCase(), Any.wrap(string));
         }
-        entryElement.setValue(Any.wrap(list));
+        entryElement.setValue(Any.wrap(map));
+    }
+
+    // method used to convert string to valid java variable name
+    // 1. replace invalid character with '_'
+    // 2. prefix number with '_'
+    // 3. convert the first character of java keywords to upper case
+    public static String convertToValidJavaVariableName(String string) {
+        if (string == null || string.equals("") || SourceVersion.isName(string)) {
+            return string;
+        }
+        // to validate whether the string is Java keyword
+        if (SourceVersion.isKeyword(string)) {
+            return "_" + string;
+        }
+        // replace invalid characters with underscore
+        StringBuilder stringBuilder = new StringBuilder();
+        if (!Character.isJavaIdentifierStart(string.charAt(0))) {
+            stringBuilder.append('_');
+        }
+        for (char c : string.toCharArray()) {
+            if (!Character.isJavaIdentifierPart(c)) {
+                stringBuilder.append('_');
+            } else {
+                stringBuilder.append(c);
+            }
+        }
+        return stringBuilder.toString();
     }
 }

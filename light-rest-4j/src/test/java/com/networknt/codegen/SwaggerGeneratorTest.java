@@ -71,28 +71,4 @@ public class SwaggerGeneratorTest {
         Assert.assertNotNull(bf);
         System.out.println(bf.toString());
     }
-
-    @Test
-    public void testInvalidVaribleNameGeneratorJson() throws IOException {
-        Any anyConfig = JsonIterator.parse(SwaggerGeneratorTest.class.getResourceAsStream(configName), 1024).readAny();
-        Any anyModel = JsonIterator.parse(SwaggerGeneratorTest.class.getResourceAsStream(swaggerName), 1024).readAny();
-
-        SwaggerGenerator generator = new SwaggerGenerator();
-        generator.generate(targetPath, anyModel, anyConfig);
-
-        File file = new File(targetPath);
-        JavaProjectBuilder javaProjectBuilder = new JavaProjectBuilder();
-        javaProjectBuilder.addSourceTree(file);
-        JavaPackage javaPackage = javaProjectBuilder.getPackageByName(packageName);
-
-        for (JavaClass javaClass : javaPackage.getClasses()) {
-            List<JavaField> fields = javaClass.getFields();
-            for (JavaClass javaNestedClass : javaClass.getNestedClasses()) {
-                fields.addAll(javaNestedClass.getFields());
-            }
-            for (JavaField field : fields) {
-                Assert.assertFalse(field.getName().contains(" "));
-            }
-        }
-    }
 }
