@@ -173,23 +173,6 @@
           "$ref": "#/components/schemas/Contacts"
         }
       },
-      "Signature": {
-        "type": "object",
-        "required": [
-          "type",
-          "data"
-        ],
-        "properties": {
-          "type": {
-            "type": "string",
-            "format": "byte"
-          },
-          "data": {
-            "type": "string",
-            "format": "binary"
-          }
-        }
-      },
       "Response": {
         "type": "object",
         "properties": {
@@ -198,9 +181,6 @@
           },
           "contacts": {
             "$ref": "#/components/schemas/ArrayOfContacts"
-          },
-          "signature": {
-            "$ref": "#/components/schemas/Signature"
           }
         }
       },
