@@ -28,14 +28,10 @@ public class OpenApiArrayReferenceGeneratorTest {
     public static String openapiJson = "/array_ref-oa3.json";
     public static String packageName = "com.networknt.petstore.model";
 
-    static JavaPackage javaPackage;
-
     @BeforeClass
     public static void setUp() throws IOException {
         delete(Paths.get(targetPath).toFile());
         Files.createDirectories(Paths.get(targetPath));
-
-        javaPackage = prepareJavaPackage(targetPath, packageName);
     }
 
     static void delete(File f) throws IOException {
@@ -50,7 +46,8 @@ public class OpenApiArrayReferenceGeneratorTest {
         }
     }
 
-    public static JavaPackage prepareJavaPackage(String targetPath, String packageName) throws IOException {
+    @Test
+    public void testInvalidVaribleNameGeneratorJson() throws IOException {
         Any anyConfig = JsonIterator.parse(OpenApiGeneratorTest.class.getResourceAsStream(OpenApiArrayReferenceGeneratorTest.configName), 1024).readAny();
         Any anyModel = JsonIterator.parse(OpenApiGeneratorTest.class.getResourceAsStream(OpenApiArrayReferenceGeneratorTest.openapiJson), 1024).readAny();
 
@@ -60,15 +57,12 @@ public class OpenApiArrayReferenceGeneratorTest {
         File file = new File(targetPath);
         JavaProjectBuilder javaProjectBuilder = new JavaProjectBuilder();
         javaProjectBuilder.addSourceTree(file);
-        return javaProjectBuilder.getPackageByName(packageName);
-    }
+        JavaPackage javaPackage = javaProjectBuilder.getPackageByName(packageName);
 
-    @Test
-    public void testTypeReferences() {
         JavaClass classResponse = javaPackage.getClassByName("Response");
-        Assert.assertEquals("Count of fields", 3, classResponse.getFields().size());
+        Assert.assertEquals("Count of fields", 2, classResponse.getFields().size());
 
-        logger.debug("The test is to check that the type of contacts is List<List<Contact>> and not ArrayofContacts");
+        logger.debug("The test is to check that the type of contacts  is List<List<Contact> and not ArrayofContacts");
         JavaField contacts = classResponse.getFieldByName("contacts");
         Assert.assertTrue("Data structure for contacts type", contacts.getType() instanceof JavaParameterizedType);
 
@@ -82,22 +76,6 @@ public class OpenApiArrayReferenceGeneratorTest {
 
         type = (JavaParameterizedType)type.getActualTypeArguments().get(0);
         Assert.assertEquals("Type of generic of generic", String.format("%s.Contact", packageName), type.getFullyQualifiedName());
-    }
-
-    @Test
-    public void testStringFormats() {
-        JavaClass classSignature = javaPackage.getClassByName("Signature");
-        Assert.assertEquals("Count of fields", 2, classSignature.getFields().size());
-
-        logger.debug("The test is to check that the type of contacts  is List<List<Contact> and not ArrayofContacts");
-        JavaField fieldType = classSignature.getFieldByName("type");
-        JavaField fieldData = classSignature.getFieldByName("data");
-
-        JavaClass type = fieldType.getType();
-        Assert.assertEquals("Type of type", "byte", type.getFullyQualifiedName());
-
-        JavaClass data = fieldData.getType();
-        Assert.assertEquals("Type of type", "byte[]", data.getFullyQualifiedName());
     }
 
     private static final Logger logger = LoggerFactory.getLogger(OpenApiArrayReferenceGeneratorTest.class);
