@@ -74,8 +74,6 @@ public class OpenApiGenerator implements Generator {
         typeMapping.put("double", "Double");
         typeMapping.put("object", "Object");
         typeMapping.put("integer", "Integer");
-        typeMapping.put("ByteArray", "byte[]");
-        typeMapping.put("binary", "byte[]");
     }
 
     @Override
@@ -512,24 +510,51 @@ public class OpenApiGenerator implements Generator {
 		            this.attachValidEnumName(entryElement);
 		            propMap.put("value", entryElement.getValue());
                 }
+
                 if ("format".equals(entryElement.getKey())) {
                     String s = entryElement.getValue().toString();
-                    if ("date-time".equals(s)) {
-                        propMap.put("type", Any.wrap("java.time.LocalDateTime"));
+
+                    String ultimateType;
+                    switch (s) {
+                        case "date-time":
+                            ultimateType = "java.time.LocalDateTime";
+                            break;
+
+                        case "date":
+                            ultimateType = "java.time.LocalDate";
+                            break;
+
+                        case "double":
+                            ultimateType = "java.lang.Double";
+                            break;
+
+                        case "float":
+                            ultimateType = "java.lang.Float";
+                            break;
+
+                        case "int64":
+                            ultimateType = "java.lang.Long";
+                            break;
+
+                        case "binary":
+                            ultimateType = "byte[]";
+                            propMap.put(COMPARATOR, Any.wrap("Arrays"));
+                            propMap.put(HASHER, Any.wrap("Arrays"));
+                            break;
+
+                        case "byte":
+                            ultimateType = "byte";
+                            break;
+
+                        default:
+                            ultimateType = null;
                     }
-                    if ("date".equals(s)) {
-                        propMap.put("type", Any.wrap("java.time.LocalDate"));
-                    }
-                    if ("double".equals(s)) {
-                        propMap.put("type", Any.wrap("java.lang.Double"));
-                    }
-                    if ("float".equals(s)) {
-                        propMap.put("type", Any.wrap("java.lang.Float"));
-                    }
-                    if ("int64".equals(s)) {
-                        propMap.put("type", Any.wrap("java.lang.Long"));
+
+                    if (ultimateType != null) {
+                        propMap.put("type", Any.wrap(ultimateType));
                     }
                 }
+
                 if ("oneOf".equals(entryElement.getKey())) {
                     List<Any> list = entryElement.getValue().asList();
                     Any t = list.get(0).asMap().get("type");
@@ -573,6 +598,8 @@ public class OpenApiGenerator implements Generator {
             props.add(propMap);
         }
     }
+    public static final String HASHER = "hasher";
+    public static final String COMPARATOR = "comparator";
 
     private Any getListOf(String s) {
         return new UnresolvedTypeListAny(s);
