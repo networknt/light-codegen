@@ -134,6 +134,7 @@ public class OpenApiGenerator implements Generator {
             if (!regenerateCodeOnly) {
                 // generate configurations, project, masks, certs, etc
                 transfer(targetPath, "", "pom.xml", templates.rest.openapi.pom.template(config));
+                transferMaven(targetPath);
                 // There is only one port that should be exposed in Dockerfile, otherwise, the service
                 // discovery will be so confused. If https is enabled, expose the https port. Otherwise http port.
                 String expose = "";
