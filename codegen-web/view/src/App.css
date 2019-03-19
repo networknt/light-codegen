@@ -1,36 +1,33 @@
-@import "~highlight.js/styles/github.css";
-.logo {
-  float: left;
-  width: 120px;
-  height: 31px;
-  line-height: 31px;
-  margin: 16px 28px 16px 0;
-  border-radius: 6px;
+.App {
   text-align: center;
-  color: #fff;
-  font-size: 1.5rem;
-  font-weight: 700;
 }
-.root-content {
-  padding: 0 70px;
+
+.App-logo {
+  animation: App-logo-spin infinite 20s linear;
+  height: 40vmin;
+  pointer-events: none;
 }
-.primary-paper {
-  border-radius: 15px;
-  padding: 24px 0;
-  background: #fff;
-  -webkit-box-shadow: 0 0 7px 0 rgba(0, 0, 0, 0.5);
-  -moz-box-shadow: 0 0 7px 0 rgba(0, 0, 0, 0.5);
-  box-shadow: 0 0 7px 0 rgba(0, 0, 0, 0.5);
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
 }
-.nav-button {
-  width: 50px !important;
-  height: 50px !important;
-  border: none !important;
-  -webkit-box-shadow: 0 0 12px 0 rgba(0, 0, 0, 0.12), -3px 5px 12px 0 rgba(0, 0, 0, 0.24);
-  -moz-box-shadow: 0 0 12px 0 rgba(0, 0, 0, 0.12), -3px 5px 12px 0 rgba(0, 0, 0, 0.24);
-  box-shadow: 0 0 12px 0 rgba(0, 0, 0, 0.12), -3px 5px 12px 0 rgba(0, 0, 0, 0.24);
+
+.App-link {
+  color: #61dafb;
 }
-.nav-button.prev {
-  background: #FFFFFF !important;
-  color: rgba(99, 99, 99, 0.9);
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }

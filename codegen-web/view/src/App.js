@@ -1,25 +1,17 @@
-import React, {Component} from 'react';
-import {Layout, LocaleProvider} from 'antd';
+import React, { Component } from 'react';
+import Header from './Header';
+import Form from './Form';
 import './App.css';
-import enUs from 'antd/lib/locale-provider/en_US'
-import AppHeader from "./app-header/AppHeader";
-import AppContent from "./app-content/AppContent";
-import AppFooter from "./app-footer/AppFooter";
-
-
 
 class App extends Component {
-    render() {
-        return (
-            <LocaleProvider locale={enUs}>
-                <Layout>
-                    <AppHeader/>
-                    <AppContent/>
-                    <AppFooter/>
-                </Layout>
-            </LocaleProvider>
-        );
-    }
+  render() {
+    return (
+      <div className="App">
+        <Header/>
+        <Form/>
+      </div>
+    );
+  }
 }
 
 export default App;

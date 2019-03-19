@@ -1,0 +1,172 @@
+{
+  "codeGenForm": {
+    "formId": "codeGenForm",
+    "actions": [
+      {
+        "host": "lightapi.net",
+        "service": "codegen",
+        "action": "generate",
+        "version": "0.0.1",
+        "title": "Generate",
+        "success": "/"
+      }
+    ],
+    "schema": {
+      "type": "object",
+      "title": "Generator",
+      "required": [
+        "generators"
+      ],
+      "properties": {
+        "generators": {
+          "type": "array",
+          "title": "generators",
+          "maxItems": 2,
+          "items": {
+            "type": "object",
+            "properties": {
+              "framework": {
+                "title": "Framework",
+                "type": "string",
+                "enum": [
+                  "openapi",
+                  "openapikotlin",
+                  "swagger",
+                  "light-graphql-4j",
+                  "light-hybrid-4j"
+                ]
+              },
+              "modelType": {
+                "title": "Select model option",
+                "type": "string",
+                "default": "C"
+              },
+              "modelText": {
+                "title": "Model Text",
+                "type": "string"
+              },
+              "modelUrl": {
+                "title": "Model URL",
+                "type": "string"
+              },
+              "configType": {
+                "title": "Select config option",
+                "type": "string",
+                "default": "C"
+              },
+              "configText": {
+                "title": "Config Text",
+                "type": "string"
+              },
+              "configUrl": {
+                "title": "Config URL",
+                "type": "string"
+              }
+            },
+            "required": [
+              "framework",
+              "modelType",
+              "configType"
+            ]
+          }
+        }
+      }
+    },
+    "form": [
+      {
+        "type": "help",
+        "description": "Click the NEW button to add one or more services",
+        "variant": "h6",
+        "align": "left",
+        "color": "secondary"
+      },
+      {
+        "key": "generators",
+        "add": "New",
+        "style": {
+          "add": "btn-success"
+        },
+        "items": [
+          {
+            "key": "generators[].framework",
+            "type": "select",
+            "titleMap": [
+              {
+                "name": "OpenAPI",
+                "value": "openapi"
+              },
+              {
+                "name": "OpenAPI Kotlin",
+                "value": "openapikotlin"
+              },
+              {
+                "name": "Swagger",
+                "value": "swagger"
+              },
+              {
+                "name": "GraqphQL",
+                "value": "light-grahql-4j"
+              },
+              {
+                "name": "Hybrid",
+                "value": "light-hybrid-4j"
+              }
+            ]
+          },
+          {
+            "key": "generators[].modelType",
+            "type": "radios",
+            "titleMap": [
+              {
+                "value": "C",
+                "name": "Copy/Paste"
+              },
+              {
+                "value": "U",
+                "name": "Online URL"
+              }
+            ]
+          },
+          {
+            "key": "generators[].modelText",
+            "condition": "model.generators[form.key[1]].modelType === 'C'",
+            "type": "textarea",
+            "placeholder": "Paste the specification here"
+          },
+          {
+            "key": "generators[].modelUrl",
+            "condition": "model.generators[form.key[1]].modelType === 'U'"
+          },
+          {
+            "key": "generators[].configType",
+            "type": "radios",
+            "titleMap": [
+              {
+                "value": "C",
+                "name": "Copy/Paste"
+              },
+              {
+                "value": "U",
+                "name": "Online URL"
+              },
+              {
+                "value": "F",
+                "name": "Form Data"
+              }
+            ]
+          },
+          {
+            "key": "generators[].configText",
+            "condition": "model.generators[form.key[1]].configType === 'C'",
+            "type": "textarea",
+            "placeholder": "Paste the config json here"
+          },
+          {
+            "key": "generators[].configUrl",
+            "condition": "model.generators[form.key[1]].configType === 'U'"
+          }
+        ]
+      }
+    ]
+  }
+}
