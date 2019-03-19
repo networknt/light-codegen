@@ -129,7 +129,7 @@ if $cygwin ; then
     fi
     # Now convert the arguments - kludge to limit ourselves to /bin/sh
     i=0
-    for arg in "$@@" ; do
+    for arg in "$@" ; do
         CHECK=`echo "$arg"|egrep -c "$OURCYGPATTERN" -`
         CHECK2=`echo "$arg"|egrep -c "^-"`                                 ### Determine if an option
 
@@ -156,7 +156,7 @@ fi
 
 # Split up the JVM_OPTS And GRADLE_OPTS values into an array, following the shell quoting and substitution rules
 function splitJvmOpts() {
-    JVM_OPTS=("$@@")
+    JVM_OPTS=("$@")
 }
 eval splitJvmOpts $DEFAULT_JVM_OPTS $JAVA_OPTS $GRADLE_OPTS
 JVM_OPTS[${#JVM_OPTS[*]}]="-Dorg.gradle.appname=$APP_BASE_NAME"
@@ -166,4 +166,4 @@ if [[ "$(uname)" == "Darwin" ]] && [[ "$HOME" == "$PWD" ]]; then
   cd "$(dirname "$0")"
 fi
 
-exec "$JAVACMD" "${JVM_OPTS[@@]}" -classpath "$CLASSPATH" org.gradle.wrapper.GradleWrapperMain "$@@"
+exec "$JAVACMD" "${JVM_OPTS[@]}" -classpath "$CLASSPATH" org.gradle.wrapper.GradleWrapperMain "$@"
