@@ -44,6 +44,7 @@ public class HybridServiceGenerator implements Generator {
         String version = config.toString("version");
 
         transfer(targetPath, "", "pom.xml", templates.hybrid.service.pom.template(config));
+        transferMaven(targetPath);
         //transfer(targetPath, "", "Dockerfile", templates.dockerfile.template(config));
         transfer(targetPath, "", ".gitignore", templates.hybrid.gitignore.template());
         transfer(targetPath, "", "README.md", templates.hybrid.service.README.template());

@@ -60,8 +60,8 @@ public class OpenApiKotlinGenerator implements Generator {
         typeMapping.put("short", "Short");
         typeMapping.put("char", "String");
         typeMapping.put("double", "Double");
-        typeMapping.put("object", "Object");
-        typeMapping.put("integer", "Integer");
+        typeMapping.put("object", "Any");
+        typeMapping.put("integer", "Int");
         typeMapping.put("ByteArray", "byte[]");
         typeMapping.put("binary", "byte[]");
     }
@@ -137,14 +137,9 @@ public class OpenApiKotlinGenerator implements Generator {
                 transfer(targetPath, "", "LICENSE", templates.restkotlin.LICENSE.template());
                 transfer(targetPath, "", "build.gradle.kts", templates.restkotlin.buildGradleKts.template(config));
                 transfer(targetPath, "", "gradle.properties", templates.restkotlin.gradleProperties.template(config));
-                transfer(targetPath, "", "gradlew", templates.restkotlin.gradlew.template());
-                transfer(targetPath, "", "gradlew.bat", templates.restkotlin.gradlewBat.template());
                 transfer(targetPath, "", "settings.gradle.kts", templates.restkotlin.settingsGradleKts.template(config));
 
-                transfer(targetPath, "gradle" + separator + "wrapper", "gradle-wrapper.properties", templates.restkotlin.gradleWrapperProperties.template());
-                try (InputStream is = OpenApiGenerator.class.getResourceAsStream("/binaries/gradle-wrapper.jar")) {
-                    Files.copy(is, Paths.get(targetPath, ("gradle.wrapper").replace(".", separator), "gradle-wrapper.jar"), StandardCopyOption.REPLACE_EXISTING);
-                }
+                transferGradle(targetPath);
 
                 // config
                 transfer(targetPath, ("src.main.resources.config").replace(".", separator), "service.yml", templates.restkotlin.openapi.service.template(config));
@@ -386,7 +381,7 @@ public class OpenApiKotlinGenerator implements Generator {
                     if(a.get("$ref").valueType() != ValueType.INVALID && isArray) {
                         String s = a.get("$ref").toString();
                         s = s.substring(s.lastIndexOf('/') + 1);
-                        propMap.put("type", Any.wrap("java.util.List<" + s + ">"));
+                        propMap.put("type", Any.wrap("List<" + s + ">"));
                     }
                     if(a.get("type").valueType() != ValueType.INVALID && isArray) {
                         propMap.put("type", Any.wrap("java.util.List<" + typeMapping.get(a.get("type").toString()) + ">"));
