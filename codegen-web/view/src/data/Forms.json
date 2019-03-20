@@ -1,6 +1,6 @@
 {
-  "codeGenForm": {
-    "formId": "codeGenForm",
+  "codeGenMultipleForm": {
+    "formId": "codeGenMultipleForm",
     "actions": [
       {
         "host": "lightapi.net",
@@ -166,6 +166,147 @@
             "condition": "model.generators[form.key[1]].configType === 'U'"
           }
         ]
+      }
+    ]
+  },
+  "codeGenSingleForm": {
+    "formId": "codeGenSingleForm",
+    "actions": [
+      {
+        "host": "lightapi.net",
+        "service": "codegen",
+        "action": "generate",
+        "version": "0.0.1",
+        "title": "Generate",
+        "success": "/"
+      }
+    ],
+    "schema": {
+      "type": "object",
+      "title": "Generator",
+      "required": [
+        "framework",
+        "modelType",
+        "configType"
+      ],
+      "properties": {
+        "framework": {
+          "title": "Framework",
+          "type": "string",
+          "enum": [
+            "openapi",
+            "openapikotlin",
+            "swagger",
+            "light-graphql-4j",
+            "light-hybrid-4j"
+          ]
+        },
+        "modelType": {
+          "title": "Select model option",
+          "type": "string",
+          "default": "C"
+        },
+        "modelText": {
+          "title": "Model Text",
+          "type": "string"
+        },
+        "modelUrl": {
+          "title": "Model URL",
+          "type": "string"
+        },
+        "configType": {
+          "title": "Select config option",
+          "type": "string",
+          "default": "C"
+        },
+        "configText": {
+          "title": "Config Text",
+          "type": "string"
+        },
+        "configUrl": {
+          "title": "Config URL",
+          "type": "string"
+        }
+      }
+    },
+    "form": [
+      {
+        "key": "framework",
+        "type": "select",
+        "titleMap": [
+          {
+            "name": "OpenAPI",
+            "value": "openapi"
+          },
+          {
+            "name": "OpenAPI Kotlin",
+            "value": "openapikotlin"
+          },
+          {
+            "name": "Swagger",
+            "value": "swagger"
+          },
+          {
+            "name": "GraqphQL",
+            "value": "light-grahql-4j"
+          },
+          {
+            "name": "Hybrid",
+            "value": "light-hybrid-4j"
+          }
+        ]
+      },
+      {
+        "key": "modelType",
+        "type": "radios",
+        "titleMap": [
+          {
+            "value": "C",
+            "name": "Copy/Paste"
+          },
+          {
+            "value": "U",
+            "name": "Online URL"
+          }
+        ]
+      },
+      {
+        "key": "modelText",
+        "condition": "model.modelType === 'C'",
+        "type": "textarea",
+        "placeholder": "Paste the specification here"
+      },
+      {
+        "key": "modelUrl",
+        "condition": "model.modelType === 'U'"
+      },
+      {
+        "key": "configType",
+        "type": "radios",
+        "titleMap": [
+          {
+            "value": "C",
+            "name": "Copy/Paste"
+          },
+          {
+            "value": "U",
+            "name": "Online URL"
+          },
+          {
+            "value": "F",
+            "name": "Form Data"
+          }
+        ]
+      },
+      {
+        "key": "configText",
+        "condition": "model.configType === 'C'",
+        "type": "textarea",
+        "placeholder": "Paste the config json here"
+      },
+      {
+        "key": "configUrl",
+        "condition": "model.configType === 'U'"
       }
     ]
   }

@@ -1,9 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+import { Provider } from 'react-redux';
+import { createStore, applyMiddleware } from 'redux';
+import rootReducer from './reducers';
+import thunk from 'redux-thunk';
+import logger from 'redux-logger';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 
 const theme = createMuiTheme({
     typography: {
@@ -11,11 +16,14 @@ const theme = createMuiTheme({
     },
 });
 
+const store = createStore(rootReducer, applyMiddleware(thunk, logger));
 
 ReactDOM.render(
-    <MuiThemeProvider theme={theme}>
-        <App />
-    </MuiThemeProvider>,
+    <Provider store={store}>
+        <MuiThemeProvider theme={theme}>
+            <App/>
+        </MuiThemeProvider>
+    </Provider>,
     document.getElementById('root')
 );
 

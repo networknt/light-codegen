@@ -1,12 +1,12 @@
 import React, {Component} from 'react';
 import { withStyles } from '@material-ui/core/styles';
+import { submitForm} from "../actions";
+import connect from "react-redux/es/connect/connect";
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Button from '@material-ui/core/Button';
 import SchemaForm from 'react-schema-form/lib/SchemaForm';
 import utils from 'react-schema-form/lib/utils';
-import forms from './forms';
-
-const formId = 'codeGenForm';
+import forms from '../data/Forms';
 
 const styles = theme => ({
     root: {
@@ -32,21 +32,44 @@ class Form extends Component {
 
     constructor(props) {
         super(props);
-        let formData = forms[formId];
         this.state = {
-            formId: formId,
+            fetching: false,
+            error: null,
+            formId: null,
+            schema: null,
+            form: null,
+            actions: null,
+            model: {}
+        }
+    }
+
+    componentWillUpdate(nextProps, nextState, nextContext) {
+        if(this.state.formId !== nextProps.match.params.formId) {
+            let formData = forms[this.props.match.params.formId];
+            this.setState({
+                formId: nextProps.match.params.formId,
+                schema: formData.schema,
+                form: formData.form,
+                actions: formData.actions,
+                model: formData.model || {}
+            });
+        }
+    }
+
+    componentDidMount() {
+        let formData = forms[this.props.match.params.formId];
+        this.setState({
+            formId: this.props.match.params.formId,
             schema: formData.schema,
             form: formData.form,
             actions: formData.actions,
             model: formData.model || {}
-        }
+        });
     }
 
     onModelChange = (key, val) => {
-        const { model } = this.state;
-        const newModel = model;
+        //console.log(this.state.model);
         utils.selectOrSet(key, this.state.model, val);
-        this.setState({ model: newModel });
     };
 
     onButtonClick(action) {
@@ -63,6 +86,7 @@ class Form extends Component {
 
     render() {
         const { classes } = this.props;
+        //console.log(this.state.actions);
         if(this.state.schema) {
             var actions = [];
             this.state.actions.map((item, index) => {
@@ -71,7 +95,7 @@ class Form extends Component {
             });
             let wait;
             if(this.state.fetching) {
-                console.log('fetching is true');
+                //console.log('fetching is true');
                 wait = <div><CircularProgress className={classes.progress} /></div>;
             } else {
                 //console.log("fetching is false");
@@ -94,4 +118,14 @@ class Form extends Component {
     }
 }
 
-export default withStyles(styles)(Form);
+const mapStateToProps = state => ({
+});
+
+const mapDispatchToProps = dispatch => ({
+    submitForm: action => dispatch(submitForm(action))
+});
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(withStyles(styles)(Form));

@@ -1,0 +1,4 @@
+export const LOAD_MENU = 'load_menu';
+export const SUBMIT_FORM_STARTED = 'SUBMIT_FORM_STARTED';
+export const SUBMIT_FORM_SUCCESS = 'SUBMIT_FORM_SUCCESS';
+export const SUBMIT_FORM_FAILURE = 'SUBMIT_FORM_FAILURE';
