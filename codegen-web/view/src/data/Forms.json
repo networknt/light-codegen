@@ -203,8 +203,7 @@
         },
         "modelType": {
           "title": "Select model option",
-          "type": "string",
-          "default": "C"
+          "type": "string"
         },
         "modelText": {
           "title": "Model Text",
@@ -216,8 +215,7 @@
         },
         "configType": {
           "title": "Select config option",
-          "type": "string",
-          "default": "C"
+          "type": "string"
         },
         "configText": {
           "title": "Config Text",
