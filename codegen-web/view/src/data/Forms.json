@@ -5,7 +5,7 @@
       {
         "host": "lightapi.net",
         "service": "codegen",
-        "action": "generate",
+        "action": "multiple",
         "version": "0.0.1",
         "title": "Generate",
         "success": "/"
@@ -175,7 +175,7 @@
       {
         "host": "lightapi.net",
         "service": "codegen",
-        "action": "generate",
+        "action": "single",
         "version": "0.0.1",
         "title": "Generate",
         "success": "/"
