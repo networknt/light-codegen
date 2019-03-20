@@ -69,7 +69,10 @@ class Form extends Component {
 
     onModelChange = (key, val) => {
         //console.log(this.state.model);
+        const { model } = this.state;
+        const newModel = model;
         utils.selectOrSet(key, this.state.model, val);
+        this.setState({ model: newModel });
     };
 
     onButtonClick(action) {
