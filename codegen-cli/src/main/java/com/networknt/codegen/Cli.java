@@ -72,14 +72,14 @@ public class Cli {
             if(model != null) {
                 // check if model is json or not before loading.
                 if(model.endsWith("json")) {
-                    if(isUrl(model)) {
-                        anyModel = JsonIterator.deserialize(urlToByteArray(new URL(model)));
+                    if(Utils.isUrl(model)) {
+                        anyModel = JsonIterator.deserialize(Utils.urlToByteArray(new URL(model)));
                     } else {
                         anyModel = JsonIterator.deserialize(Files.readAllBytes(Paths.get(model)));
                     }
                 } else {
-                    if(isUrl(model)) {
-                        anyModel = new String(urlToByteArray(new URL(model)), StandardCharsets.UTF_8);
+                    if(Utils.isUrl(model)) {
+                        anyModel = new String(Utils.urlToByteArray(new URL(model)), StandardCharsets.UTF_8);
                     } else {
                         anyModel = new String(Files.readAllBytes(Paths.get(model)), StandardCharsets.UTF_8);
                     }
@@ -88,8 +88,8 @@ public class Cli {
 
             Any anyConfig = null;
             if(config != null) {
-                if(isUrl(config)) {
-                    anyConfig = JsonIterator.deserialize(urlToByteArray(new URL(config)));
+                if(Utils.isUrl(config)) {
+                    anyConfig = JsonIterator.deserialize(Utils.urlToByteArray(new URL(config)));
                 } else {
                     anyConfig = JsonIterator.deserialize(Files.readAllBytes(Paths.get(config)));
                 }
@@ -104,18 +104,4 @@ public class Cli {
         }
     }
 
-    private boolean isUrl(String location) {
-        return location.startsWith("http://") || location.startsWith("https://");
-    }
-
-    private byte[] urlToByteArray(URL url) throws IOException{
-        try (BufferedInputStream in = new BufferedInputStream(url.openStream()); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-            byte data[] = new byte[1024];
-            int count;
-            while ((count = in.read(data, 0, 1024)) != -1) {
-                out.write(data, 0, count);
-            }
-            return out.toByteArray();
-        }
-    }
 }

@@ -31,17 +31,31 @@
           "type" : "array",
           "items": {
             "properties": {
-              "model": {
-                "type": "object"
+              "modelType": {
+                "type": "string",
+                "enum": ["C", "U"]
               },
-              "config" : {
-                "type" : "object"
+              "modelText": {
+                "type": "string"
+              },
+              "modelUrl": {
+                "type": "string"
+              },
+              "configType": {
+                "type": "string",
+                "enum": ["C", "U"]
+              },
+              "configText" : {
+                "type": "string"
+              },
+              "configUrl": {
+                "type": "string"
               },
               "framework": {
-                "type" : "string"
+                "type": "string"
               }
             },
-            "required": ["config", "framework"]
+            "required": ["configType", "modelType", "framework"]
           },
           "maxItems": 5,
           "minItems": 1

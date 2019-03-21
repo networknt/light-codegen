@@ -1,9 +1,11 @@
 package com.networknt.codegen.handler;
 
+import com.jsoniter.JsonIterator;
 import com.jsoniter.any.Any;
 import com.networknt.codegen.CodegenWebConfig;
 import com.networknt.codegen.FrameworkRegistry;
 import com.networknt.codegen.Generator;
+import com.networknt.codegen.Utils;
 import com.networknt.config.Config;
 import com.networknt.rpc.Handler;
 import com.networknt.rpc.router.JsonHandler;
@@ -12,13 +14,14 @@ import com.networknt.status.Status;
 import com.networknt.utility.HashUtil;
 import com.networknt.utility.NioUtils;
 import io.undertow.server.HttpServerExchange;
-import io.undertow.server.handlers.form.FormData;
 import io.undertow.util.HttpString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.net.URL;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -29,9 +32,8 @@ import java.util.*;
 import static java.io.File.separator;
 
 /**
- * This is the handler that does the code generation for consumer request. There
- * might multiple generator objects in the request as an array. It loops each
- * generator object to generate projects into the same folder.
+ * This is the handler that does the code generation for consumer request with multiple projects. It is used to generate a folder with
+ * more than one project. For example, generate query side and command side projects for CQRS.
  *
  * @author Steve Hu
  */
@@ -40,8 +42,13 @@ public class CodegenMultipleHandler implements Handler {
     static private final String CONFIG_NAME = "codegen-web";
     static private final String STATUS_INVALID_FRAMEWORK = "ERR11100";
     static private final String STATUS_MISSING_GENERATOR_ITEM = "ERR11101";
+    static private final String STATUS_INVALID_MODEL_URL = "ERR11103";
+    static private final String STATUS_INVALID_CONFIG_JSON = "ERR11104";
+    static private final String STATUS_INVALID_CONFIG_URL_EXTENSION = "ERR11105";
+    static private final String STATUS_GENERATOR_EXCEPTION = "ERR11106";
+    static private final String STATUS_COMPRESSION_EXCEPTION = "ERR11107";
 
-    static private final Logger logger = LoggerFactory.getLogger(GeneratorServiceHandler.class);
+    static private final Logger logger = LoggerFactory.getLogger(CodegenMultipleHandler.class);
 
     static private CodegenWebConfig codegenWebConfig = (CodegenWebConfig) Config.getInstance().getJsonObjectConfig(CONFIG_NAME, CodegenWebConfig.class);
 
@@ -53,30 +60,74 @@ public class CodegenMultipleHandler implements Handler {
         String zipFile = output + ".zip";
         String projectFolder = codegenWebConfig.getTmpFolder() + separator + output;
 
-        List<Map<String, Object>> generators = (List<Map<String, Object>>)input;
+        List<Map<String, Object>> generators = (List<Map<String, Object>>)((Map<String, Object>)input).get("generators");
 
         if(generators == null || generators.size() == 0) {
-            logger.error("Did not receive any generators in the request.");
-            Status status = new Status(STATUS_MISSING_GENERATOR_ITEM);
-            exchange.getResponseHeaders().add(new HttpString("Content-Type"), "application/json");
-            return NioUtils.toByteBuffer(status.toString());
+            return NioUtils.toByteBuffer(getStatus(exchange, STATUS_MISSING_GENERATOR_ITEM));
         }
-        for(Map<String, Object> generatorMap: generators) {
-            String framework = (String)generatorMap.get("framework");
-            Object model = Any.wrap(generatorMap.get("model"));  // should be a JSON of spec or IDL
-            Map<String, Object> config = (Map<String, Object>) generatorMap.get("config");
-            if(!FrameworkRegistry.getInstance().getFrameworks().contains(framework)) {
-                Status status = new Status(STATUS_INVALID_FRAMEWORK, framework);
-                return NioUtils.toByteBuffer(status.toString());
-            }
-            // TODO validate the model and config with json schema
-            try {
+
+        try {
+            for(Map<String, Object> generatorMap: generators) {
+                String framework = (String)generatorMap.get("framework");
+                if(!FrameworkRegistry.getInstance().getFrameworks().contains(framework)) {
+                    return NioUtils.toByteBuffer(getStatus(exchange, STATUS_INVALID_FRAMEWORK, framework));
+                }
+                String modelType = (String)generatorMap.get("modelType");
+                Object model = null; // the model can be Any or String depending on the framework
+                if("C".equals(modelType)) {
+                    String modelText = (String)generatorMap.get("modelText");
+                    // json or yaml?
+                    modelText = modelText.trim();
+                    if(modelText.startsWith("{") || modelText.startsWith("[")) {
+                        // This is a json string.
+                        model = JsonIterator.deserialize(modelText);
+                    } else {
+                        model = modelText;
+                    }
+                } else if("U".equals(modelType)) {
+                    String modelUrl = (String)generatorMap.get("modelUrl");
+                    // make sure it is a valid URL.
+                    if(Utils.isUrl(modelUrl)) {
+                        // if it is a json file.
+                        if(modelUrl.endsWith(".json")) {
+                            model = JsonIterator.deserialize(Utils.urlToByteArray(new URL(modelUrl)));
+                        } else {
+                            model = new String(Utils.urlToByteArray(new URL(modelUrl)), StandardCharsets.UTF_8);
+                        }
+                    } else {
+                        // return an error here for invalid model URL.
+                        return NioUtils.toByteBuffer(getStatus(exchange, STATUS_INVALID_MODEL_URL, modelUrl));
+                    }
+                }
+
+                String configType = (String)generatorMap.get("configType");
+                Any config = null;
+                if("C".equals(configType)) {
+                    String configText = (String)generatorMap.get("configText");
+                    configText = configText.trim();
+                    // the config must be json.
+                    if(configText.startsWith("{") || configText.startsWith("[")) {
+                        config = JsonIterator.deserialize(configText);
+                    } else {
+                        return NioUtils.toByteBuffer(getStatus(exchange, STATUS_INVALID_CONFIG_JSON));
+                    }
+                } else if("U".equals(configType)) {
+                    String configUrl = (String)generatorMap.get("configUrl");
+                    configUrl = configUrl.trim();
+                    // make sure that the file extension is .json
+                    if(configUrl.endsWith(".json")) {
+                        config = JsonIterator.deserialize(Utils.urlToByteArray(new URL(configUrl)));
+                    } else {
+                        return NioUtils.toByteBuffer(getStatus(exchange, STATUS_INVALID_CONFIG_URL_EXTENSION, configUrl));
+                    }
+                }
+
                 Generator generator = FrameworkRegistry.getInstance().getGenerator(framework);
                 generator.generate(projectFolder, model, Any.wrap(config));
-            } catch (Exception e) {
-                e.printStackTrace();
-                logger.error("Exception:", e);
             }
+        } catch (Exception e) {
+            logger.error("Exception:", e);
+            return NioUtils.toByteBuffer(getStatus(exchange, STATUS_GENERATOR_EXCEPTION, e.getMessage()));
         }
 
         try {
@@ -91,8 +142,8 @@ public class CodegenMultipleHandler implements Handler {
             // check if any zip file that needs to be deleted from zipFolder
             NioUtils.deleteOldFiles(codegenWebConfig.getZipFolder(), codegenWebConfig.getZipKeptMinute());
         } catch (Exception e) {
-            e.printStackTrace();
             logger.error("Exception:", e);
+            return NioUtils.toByteBuffer(getStatus(exchange, STATUS_COMPRESSION_EXCEPTION, e.getMessage()));
         }
 
         exchange.getResponseHeaders()
@@ -102,44 +153,6 @@ public class CodegenMultipleHandler implements Handler {
         // return the zip file
         File file = new File(codegenWebConfig.getZipFolder() + separator + zipFile);
         return NioUtils.toByteBuffer(file);
-    }
-
-    /**
-     * Will return a list of generator maps, each of which contain a framework, model, and config.
-     * This is a bit of a pain since undertow doesn't do the most perfect job in returning a map structured
-     * data set when matching a form field's name. But rather 3 distinct arrays. May be normal, not sure.
-     * @param formData
-     * @return
-     */
-    private List<Map<String, Object>> getGeneratorListFromFormData(FormData formData) {
-        List<Map<String, Object>> generatorsList = new ArrayList<>();
-
-        // Get each array of items.
-        Deque<FormData.FormValue> frameworks = formData.get("generator.framework");
-        Deque<FormData.FormValue> models = formData.get("generator.model");
-        Deque<FormData.FormValue> configs = formData.get("generator.config");
-
-        // If any are smaller or bigger then the others, fail.
-        if (frameworks == null || models == null || configs == null) {
-            return null;
-        } else if (frameworks.size() != models.size() && models.size() != configs.size()) {
-            throw new InvalidParameterException("Received un-matching form fields in request: " + frameworks.size() + ":" + models.size() + ":" + configs.size());
-        }
-
-        Iterator<FormData.FormValue> frameworksIterator = frameworks.iterator();
-        Iterator<FormData.FormValue> modelsIterator = models.iterator();
-        Iterator<FormData.FormValue> configsIterator = configs.iterator();
-
-        // Add each generator to the list.
-        for (int i = 0; i < frameworks.size(); i++) {
-            Map<String, Object> generator = new HashMap<>();
-            generator.put("framework", frameworksIterator.next().getValue());
-            generator.put("model", modelsIterator.next().getValue());
-            generator.put("config", configsIterator.next().getValue());
-            generatorsList.add(generator);
-        }
-
-        return generatorsList;
     }
 
     @Override
@@ -157,5 +170,4 @@ public class CodegenMultipleHandler implements Handler {
         logger.debug("Skipping validation on generator request for now.");
         return null;
     }
-
 }

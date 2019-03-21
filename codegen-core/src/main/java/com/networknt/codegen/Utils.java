@@ -99,4 +99,18 @@ public class Utils {
         return word;
     }
 
+    public static boolean isUrl(String location) {
+        return location.startsWith("http://") || location.startsWith("https://");
+    }
+
+    public static byte[] urlToByteArray(URL url) throws IOException{
+        try (BufferedInputStream in = new BufferedInputStream(url.openStream()); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            byte data[] = new byte[1024];
+            int count;
+            while ((count = in.read(data, 0, 1024)) != -1) {
+                out.write(data, 0, count);
+            }
+            return out.toByteArray();
+        }
+    }
 }

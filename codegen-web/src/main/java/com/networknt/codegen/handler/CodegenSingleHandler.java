@@ -42,6 +42,11 @@ public class CodegenSingleHandler implements Handler {
     static private final String CONFIG_NAME = "codegen-web";
     static private final String STATUS_INVALID_FRAMEWORK = "ERR11100";
     static private final String STATUS_MISSING_GENERATOR_ITEM = "ERR11101";
+    static private final String STATUS_INVALID_MODEL_URL = "ERR11103";
+    static private final String STATUS_INVALID_CONFIG_JSON = "ERR11104";
+    static private final String STATUS_INVALID_CONFIG_URL_EXTENSION = "ERR11105";
+    static private final String STATUS_GENERATOR_EXCEPTION = "ERR11106";
+    static private final String STATUS_COMPRESSION_EXCEPTION = "ERR11107";
 
     static private final Logger logger = LoggerFactory.getLogger(CodegenSingleHandler.class);
 
@@ -59,25 +64,22 @@ public class CodegenSingleHandler implements Handler {
         if(logger.isDebugEnabled()) logger.debug("dataMap = " + JsonMapper.toJson(generatorMap));
 
         if(generatorMap == null) {
-            logger.error("Generator object is missing in the request.");
-            Status status = new Status(STATUS_MISSING_GENERATOR_ITEM);
-            exchange.getResponseHeaders().add(new HttpString("Content-Type"), "application/json");
-            return NioUtils.toByteBuffer(status.toString());
+            return NioUtils.toByteBuffer(getStatus(exchange, STATUS_MISSING_GENERATOR_ITEM));
         }
         String framework = (String)generatorMap.get("framework");
         if(!FrameworkRegistry.getInstance().getFrameworks().contains(framework)) {
-            Status status = new Status(STATUS_INVALID_FRAMEWORK, framework);
-            return NioUtils.toByteBuffer(status.toString());
+            return NioUtils.toByteBuffer(getStatus(exchange, STATUS_INVALID_FRAMEWORK, framework));
         }
         try {
             String modelType = (String)generatorMap.get("modelType");
             Object model = null; // the model can be Any or String depending on the framework
             if("C".equals(modelType)) {
                 String modelText = (String)generatorMap.get("modelText");
+                modelText = modelText.trim();
                 // json or yaml?
                 if(modelText.startsWith("{") || modelText.startsWith("[")) {
                     // This is a json string.
-                    model = Any.wrap(modelText);
+                    model = JsonIterator.deserialize(modelText);
                 } else {
                     model = modelText;
                 }
@@ -92,7 +94,7 @@ public class CodegenSingleHandler implements Handler {
                         model = new String(Utils.urlToByteArray(new URL(modelUrl)), StandardCharsets.UTF_8);
                     }
                 } else {
-                    // return an error here for invalid model URL.
+                    return NioUtils.toByteBuffer(getStatus(exchange, STATUS_INVALID_MODEL_URL, modelUrl));
                 }
             }
 
@@ -100,20 +102,21 @@ public class CodegenSingleHandler implements Handler {
             Any config = null;
             if("C".equals(configType)) {
                 String configText = (String)generatorMap.get("configText");
+                configText = configText.trim();
                 // the config must be json.
                 if(configText.startsWith("{") || configText.startsWith("[")) {
                     config = JsonIterator.deserialize(configText);
                 } else {
-                    // error invalid json file
+                    return NioUtils.toByteBuffer(getStatus(exchange, STATUS_INVALID_CONFIG_JSON));
                 }
             } else if("U".equals(configType)) {
                 String configUrl = (String)generatorMap.get("configUrl");
+                configUrl = configUrl.trim();
                 // make sure that the file extension is .json
                 if(configUrl.endsWith(".json")) {
                     config = JsonIterator.deserialize(Utils.urlToByteArray(new URL(configUrl)));
                 } else {
-                    // error invalid file extension.
-
+                    return NioUtils.toByteBuffer(getStatus(exchange, STATUS_INVALID_CONFIG_URL_EXTENSION, configUrl));
                 }
             }
 
@@ -123,11 +126,10 @@ public class CodegenSingleHandler implements Handler {
         } catch (Exception e) {
             logger.error("Exception:", e);
             // return an error status to the user.
-
+            return NioUtils.toByteBuffer(getStatus(exchange, STATUS_GENERATOR_EXCEPTION, e.getMessage()));
         }
 
         try {
-            // TODO generated code is in tmp folder, zip and move to the target folder
             NioUtils.create(codegenWebConfig.getZipFolder() + separator + zipFile, projectFolder);
             // delete the project folder.
             Files.walk(Paths.get(projectFolder), FileVisitOption.FOLLOW_LINKS)
@@ -138,8 +140,8 @@ public class CodegenSingleHandler implements Handler {
             // check if any zip file that needs to be deleted from zipFolder
             NioUtils.deleteOldFiles(codegenWebConfig.getZipFolder(), codegenWebConfig.getZipKeptMinute());
         } catch (Exception e) {
-            e.printStackTrace();
             logger.error("Exception:", e);
+            return NioUtils.toByteBuffer(getStatus(exchange, STATUS_COMPRESSION_EXCEPTION, e.getMessage()));
         }
 
         exchange.getResponseHeaders()
