@@ -189,7 +189,10 @@ public class OpenApiGenerator implements Generator {
 	            
 	            //always copy resources
 	            YAMLFileParameterizer.copyResources(YAMLFileParameterizer.DEFAULT_RESOURCE_LOCATION, targetPath+separator+YAMLFileParameterizer.DEFAULT_DEST_DIR);
-	            
+
+	            // copy test resources
+	            YAMLFileParameterizer.copyResources(YAMLFileParameterizer.DEFAULT_TEST_RESOURCE_LOCATION, targetPath+separator+YAMLFileParameterizer.DEFAULT_TEST_DEST_DIR);
+
 	            if (config.keys().contains(YAMLFileParameterizer.GENERATE_ENV_VARS)) {
             		YAMLFileParameterizer.rewriteAll(targetPath+separator+YAMLFileParameterizer.DEFAULT_DEST_DIR, config.get(YAMLFileParameterizer.GENERATE_ENV_VARS).asMap());
 	            }

@@ -50,7 +50,9 @@ public class YAMLFileParameterizer {
 	public static final String GENERATE_ENV_VARS="generateEnvVars";
 	public static final String CLASS_PATH_PREFIX="classpath:";
 	public static final String DEFAULT_RESOURCE_LOCATION = CLASS_PATH_PREFIX+"handlerconfig/";
+	public static final String DEFAULT_TEST_RESOURCE_LOCATION = CLASS_PATH_PREFIX+"handlertestconfig/";
 	public static final String DEFAULT_DEST_DIR = "src/main/resources/config";
+	public static final String DEFAULT_TEST_DEST_DIR = "src/test/resources/config";
 	
 	protected static final String KEY_GENERATE="generate";
 	protected static final String KEY_SKIP_ARRAY="skipArray";

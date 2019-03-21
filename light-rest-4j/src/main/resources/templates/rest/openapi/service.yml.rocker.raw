@@ -2,6 +2,18 @@
 @args (Any config)
 # Singleton service factory configuration/IoC injection
 singletons:
+
+# Decryptor
+- com.networknt.utility.Decryptor:
+  - com.networknt.decrypt.AESDecryptor
+
+# ECIS API specific status serializer
+- com.networknt.status.StatusSerializer:
+  - com.cibc.apifoundation.party.status.PartyStatusSerializer
+
+# DataSource configuration - using service initializer
+- javax.sql.DataSource: com.cibc.apifoundation.dataaccess.OracleDataSource::getDataSource
+
 # StartupHookProvider implementations, there are one to many and they are called in the same sequence defined.
 # - com.networknt.server.StartupHookProvider:
   # If you are using mask module to remove sensitive info before logging, uncomment the following line.

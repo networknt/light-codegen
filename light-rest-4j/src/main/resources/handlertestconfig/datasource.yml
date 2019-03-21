@@ -1,0 +1,14 @@
+# datasource.yml
+
+OracleDataSource:
+  DriverClassName: oracle.jdbc.pool.OracleDataSource
+  jdbcUrl: ${datasource.jdbcUrl:jdbc:oracle:thin:@localhost:1521:XE}
+  username: ${datasource.username:SYSTEM}
+  parameters:
+    maximumPoolSize: ${datasource.maximumPoolSize:10}
+    useServerPrepStmts: 'true'
+    cachePrepStmts: 'true'
+    cacheCallableStmts: 'true'
+    prepStmtCacheSize: ${datasource.prepStmtCacheSize:10}
+    prepStmtCacheSqlLimit: ${datasource.prepStmtCacheSqlLimit:2048}
+    connectionTimeout: ${datasource.conectionTimeout:5000}

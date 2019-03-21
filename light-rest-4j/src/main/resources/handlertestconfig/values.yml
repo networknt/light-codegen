@@ -1,0 +1,38 @@
+service.com.networknt.registry.URL:
+  - com.networknt.registry.URLImpl:
+      protocol: https
+      host: localhost
+      port: 8088
+      path: direct
+      parameters:
+        party.reference-2.01.00: https://localhost:8444
+service.com.networknt.registry.Registry:
+  - com.networknt.registry.support.DirectRegistry   
+  
+##Consul registration
+#service.com.networknt.registry.URL:
+# - com.networknt.registry.URL:
+#   - com.networknt.registry.URLImpl:
+#       protocol: light
+#       host: localhost
+#       port: 8080
+#       path: consul
+#       parameters:
+#         registryRetryPeriod: '30000'
+service.com.networknt.consul.client.ConsulClient:
+  - com.networknt.consul.client.ConsulClientImpl:
+    - java.lang.String: http
+    - java.lang.String: localhost
+    - int: 8500
+
+consul.consulUrl: http://localhost:8500
+consul.maxReqPerConn: 1000000
+consul.deregisterAfter: 2m
+consul.checkInterval: 10s
+consul.tcpCheck: false
+consul.httpCheck: true
+consul.ttlCheck: false
+
+reference-startup.enableSecurityforOAuth2ServerCall: false
+reference-startup.enableHttp2forReferenceCall: true
+  
