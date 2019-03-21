@@ -5,6 +5,7 @@ import com.fizzed.rocker.runtime.DefaultRockerModel;
 import com.jsoniter.any.Any;
 import org.apache.commons.io.IOUtils;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,8 +13,12 @@ import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.PosixFilePermission;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import static java.io.File.separator;
 
@@ -83,6 +88,67 @@ public interface Generator {
             ReadableByteChannel rbc = rockerModel.render(ArrayOfByteArraysOutput.FACTORY).asReadableByteChannel()) {
             fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
         }
+    }
+
+    /**
+     * This is a default method used by all generators to transfer a static file into the right location.
+     *
+     * @param srcPath The source path and name relative from src/main/resources
+     * @param destFolder The destination project folder
+     * @param destPath The destination path relative from the generated project folder
+     * @param destName The destination filename
+     * @throws IOException throws IOException
+     */
+    default void transfer(String srcPath, String destFolder, String destPath, String destName) throws IOException {
+        String absPath = destFolder + (destPath.isEmpty()? "" : separator + destPath);
+        if(Files.notExists(Paths.get(absPath))) {
+            Files.createDirectories(Paths.get(absPath));
+        }
+        try(InputStream ins = Generator.class.getResourceAsStream(srcPath); FileOutputStream fos = new FileOutputStream(absPath + separator + destName)) {
+            Files.copy(ins, Paths.get(destFolder, destPath, destName), StandardCopyOption.REPLACE_EXISTING);
+        }
+    }
+
+    /**
+     * This is a default method to update the path with executable permission for owner, group and other
+     *
+     * @param path The target file with path
+     * @throws IOException IOException
+     */
+    default void setExecutable(String path) throws IOException {
+        File file = new File(path);
+        if(file.exists()) {
+            file.setExecutable(true, false);
+        }
+    }
+
+    /**
+     * Transfer the mvnw and wrapper to the target project folder from generator resources
+     *
+     * @param targetPath the target folder the maven commands and wrapper that need to write to
+     * @throws IOException IOException
+     */
+    default void transferMaven(final String targetPath) throws IOException {
+        transfer("/maven/mvnw", targetPath, "", "mvnw");
+        setExecutable(Paths.get(targetPath, "mvnw").toString());
+        transfer("/maven/mvnw.cmd", targetPath, "", "mvnw.cmd");
+        transfer("/maven/mvn/wrapper/maven-wrapper.jar", targetPath, ".mvn/wrapper", "maven-wrapper.jar");
+        transfer("/maven/mvn/wrapper/maven-wrapper.properties", targetPath, ".mvn/wrapper", "maven-wrapper.properties");
+        transfer("/maven/mvn/wrapper/MavenWrapperDownloader.java", targetPath, ".mvn/wrapper", "MavenWrapperDownloader.java");
+    }
+
+    /**
+     * Transfer the gradlew and wrapper to the target project folder from generator resources
+     *
+     * @param targetPath the target folder the gradlew commands and wrapper that need to write to
+     * @throws IOException IOException
+     */
+    default void transferGradle(final String targetPath) throws IOException {
+        transfer("/gradle/gradlew", targetPath, "", "gradlew");
+        setExecutable(Paths.get(targetPath, "gradlew").toString());
+        transfer("/gradle/gradlew.bat", targetPath, "", "gradlew.bat");
+        transfer("/gradle/gradle/wrapper/gradle-wrapper.jar", targetPath, "gradle/wrapper", "gradle-wrapper.jar");
+        transfer("/gradle/gradle/wrapper/gradle-wrapper.properties", targetPath, "gradle/wrapper", "gradle-wrapper.properties");
     }
 
     /**

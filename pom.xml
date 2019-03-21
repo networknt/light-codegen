@@ -19,7 +19,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.networknt</groupId>
     <artifactId>light-codegen</artifactId>
-    <version>1.5.31</version>
+    <version>1.5.32</version>
     <packaging>pom</packaging>
     <name>Parent POM</name>
     <description>Light Code Generator</description>
@@ -66,10 +66,10 @@
     <properties>
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <version.light-4j>1.5.31</version.light-4j>
-        <version.light-hybrid-4j>1.5.31</version.light-hybrid-4j>
-        <version.light-rest-4j>1.5.31</version.light-rest-4j>
-        <version.openapi-parser>1.5.31</version.openapi-parser>
+        <version.light-4j>1.5.32</version.light-4j>
+        <version.light-hybrid-4j>1.5.32</version.light-hybrid-4j>
+        <version.light-rest-4j>1.5.32</version.light-rest-4j>
+        <version.openapi-parser>1.5.32</version.openapi-parser>
         <version.jsoniter>0.9.15</version.jsoniter>
         <version.javassist>3.21.0-GA</version.javassist>
         <version.slf4j>1.7.25</version.slf4j>
@@ -87,13 +87,13 @@
         <version.assertj>3.8.0</version.assertj>
         <version.hdrhistogram>2.1.10</version.hdrhistogram>
         <version.jsr305>3.0.2</version.jsr305>
-        <version.json-schema-validator>1.0.3</version.json-schema-validator>
+        <version.json-schema-validator>1.0.4</version.json-schema-validator>
         <version.consul>1.2.4</version.consul>
         <version.zookeeper>3.5.3-beta</version.zookeeper>
         <version.zkclient>0.3</version.zkclient>
         <version.curator>4.0.0</version.curator>
         <version.snakeyaml>1.20</version.snakeyaml>
-        <version.rocker>0.22.0</version.rocker>
+        <version.rocker>1.2.1</version.rocker>
         <version.jcommander>1.72</version.jcommander>
         <version.fastscanner>2.18.1</version.fastscanner>
         <version.graphql>8.0</version.graphql>
