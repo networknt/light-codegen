@@ -1,0 +1,4 @@
+---
+description: RPC router description
+handlerPackage: 'net.lightapi.portal'
+jsonPath: /portal/query
