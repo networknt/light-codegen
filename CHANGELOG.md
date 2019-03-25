@@ -1,5 +1,27 @@
 # Change Log
 
+## [1.5.33](https://github.com/networknt/light-codegen/tree/1.5.33) (2019-03-25)
+[Full Changelog](https://github.com/networknt/light-codegen/compare/1.5.32...1.5.33)
+
+**Implemented enhancements:**
+
+- Feat/\#239 when generate test cases for handler, now will use example of request body to test. [\#240](https://github.com/networknt/light-codegen/pull/240) ([BalloonWen](https://github.com/BalloonWen))
+
+**Fixed bugs:**
+
+- Reference type error results in non compiling code [\#234](https://github.com/networknt/light-codegen/issues/234)
+
+**Closed issues:**
+
+- update directory name for restkotlin templates [\#256](https://github.com/networknt/light-codegen/issues/256)
+- Make pom.xml developer friendly by seggragating shading, javadoc, sources into a non-default profile [\#242](https://github.com/networknt/light-codegen/issues/242)
+- Uncompilable code generation caused by invalid variable name [\#236](https://github.com/networknt/light-codegen/issues/236)
+- Binary Content [\#158](https://github.com/networknt/light-codegen/issues/158)
+
+**Merged pull requests:**
+
+- sync codegen branches - 1.5.32 [\#257](https://github.com/networknt/light-codegen/pull/257) ([ddobrin](https://github.com/ddobrin))
+
 ## [1.5.32](https://github.com/networknt/light-codegen/tree/1.5.32) (2019-03-19)
 [Full Changelog](https://github.com/networknt/light-codegen/compare/1.5.31...1.5.32)
 
