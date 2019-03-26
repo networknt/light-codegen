@@ -22,7 +22,8 @@ public class @className implements LightHttpHandler {
     public void handleRequest(HttpServerExchange exchange) throws Exception {
         @if(example != null) {
         exchange.getResponseHeaders().add(new HttpString("Content-Type"), "application/json");
-        @with (e = StringEscapeUtils.escapeJson(example)) {exchange.getResponseSender().send("@e");}
+        @with (String statusCode = ((String)example).split(",", 2)[0]) {@if (!statusCode.equals("default")) {exchange.setStatusCode(@statusCode);} else {exchange.setStatusCode(-1);}}
+        @with (e = StringEscapeUtils.escapeJson(((String)example).split(",", 2)[1])) {exchange.getResponseSender().send("@e");}
         } else {
         exchange.endExchange();
         }
