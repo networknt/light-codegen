@@ -33,5 +33,9 @@
   		"handerl.yml",
   		"values.yml"
   	]
+  },
+  "specGeneration": {
+  	"basePackages": "com.networknt.petstore.model",
+  	"mergeTo": ""
   }
 }

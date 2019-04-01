@@ -92,13 +92,15 @@
         <version.zookeeper>3.5.3-beta</version.zookeeper>
         <version.zkclient>0.3</version.zkclient>
         <version.curator>4.0.0</version.curator>
-        <version.snakeyaml>1.20</version.snakeyaml>
+        <version.snakeyaml>1.24</version.snakeyaml>
         <version.rocker>1.2.1</version.rocker>
         <version.jcommander>1.72</version.jcommander>
         <version.fastscanner>2.18.1</version.fastscanner>
         <version.graphql>8.0</version.graphql>
         <version.qdox>2.0-M9</version.qdox>
         <versions.maven-version>2.4</versions.maven-version>
+        <versions.classgraph>4.8.22</versions.classgraph>
+        <version.swagger>2.0.7</version.swagger>
         <argLine>-Xmx512m -XX:MaxPermSize=256m</argLine>
     </properties>
 
@@ -294,6 +296,16 @@
                 <artifactId>qdox</artifactId>
                 <version>${version.qdox}</version>
             </dependency>
+			<dependency>
+			    <groupId>io.github.classgraph</groupId>
+			    <artifactId>classgraph</artifactId>
+			    <version>${versions.classgraph}</version>
+			</dependency>
+			<dependency>
+			    <groupId>io.swagger.core.v3</groupId>
+			    <artifactId>swagger-core</artifactId>
+			    <version>${version.swagger}</version>
+			</dependency>			            
 
             <!-- Test dependencies -->
             <dependency>
