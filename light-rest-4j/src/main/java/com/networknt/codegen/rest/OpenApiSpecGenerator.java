@@ -29,14 +29,18 @@ public class OpenApiSpecGenerator implements Generator {
 	
 	private static final String FRAMEWORK="openapi-spec";
 	private static final String CONFIG_SPECGENERATION ="specGeneration";
-	private static final String CONFIG_BASEPACKAGES ="basePackages";
+	// comma delimited package names
+	private static final String CONFIG_MODELPACKAGES ="modelPackages";
 	private static final String CONFIG_MERGETO ="mergeTo";
+	// comma delimited formats, currently support json, yml, or yaml
 	private static final String CONFIG_OUTPUTFORMAT="outputFormat";
+	// the output file name without extension
 	private static final String CONFIG_OUTPUTFILENAME="outputFilename";
+	private static final String DOT = ".";
 	private static final String COMMA = ",";
 	private static final String JSON="json";
 	private static final String YAML="yaml";
-	private static final String YML="y l";
+	private static final String YML="yml";
 	private static final String DEFAULT_OUTPUT_NAME="openapi_generated";
 	
 
@@ -59,7 +63,7 @@ public class OpenApiSpecGenerator implements Generator {
 		}
 		
 		Map<String, Any> genConfig = config.get(CONFIG_SPECGENERATION).asMap();
-		String basePackages = genConfig.get(CONFIG_BASEPACKAGES).toString();
+		String modelPackages = genConfig.get(CONFIG_MODELPACKAGES).toString();
 		String mergeTo = genConfig.get(CONFIG_MERGETO).toString();
 		String outputFormat = genConfig.get(CONFIG_OUTPUTFORMAT).toString();
 		String outputFilename = genConfig.get(CONFIG_OUTPUTFILENAME).toString();
@@ -70,9 +74,7 @@ public class OpenApiSpecGenerator implements Generator {
 			output_dir.mkdirs();
 		}
 		
-		File outputFile = new File(output_dir, StringUtils.isBlank(outputFilename)?DEFAULT_OUTPUT_NAME:outputFilename);
-		
-		String[] basePackageArray = basePackages.split(COMMA);
+		String[] basePackageArray = modelPackages.split(COMMA);
 		
 		Map<String, Schema> schemas = new HashMap<>();
 		
@@ -97,15 +99,27 @@ public class OpenApiSpecGenerator implements Generator {
 		
 		openApi = merge(openApi, mergeTo);
 		
+		String[] formats = outputFormat.split(COMMA);
+		
+		String filename = StringUtils.isBlank(outputFilename)?DEFAULT_OUTPUT_NAME:outputFilename;
+		
+		for (String format: formats) {
+			dump(openApi, format, new File(output_dir, filename + DOT + format));
+		}
+	}
+	
+	private void dump(OpenAPI openApi, String format, File outputFile) throws IOException {
 		String specStr=StringUtils.EMPTY;
 		
-		if (StringUtils.equalsIgnoreCase(outputFormat, JSON)) {
+		if (StringUtils.equalsIgnoreCase(format, JSON)) {
 			specStr = Json.pretty(openApi);
-		}else {
+		}else if (StringUtils.equalsIgnoreCase(format, YML) || StringUtils.equalsIgnoreCase(format, YAML)){
 			specStr = Yaml.pretty(openApi);
+		}else {
+			throw new UnsupportedOperationException("Unknow output format " + format);
 		}
 		
-		Files.write(Paths.get(outputFile.toURI()), specStr.getBytes());
+		Files.write(Paths.get(outputFile.toURI()), specStr.getBytes());		
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -122,7 +136,7 @@ public class OpenApiSpecGenerator implements Generator {
 					}else if (StringUtils.equalsIgnoreCase(ext, YML)||StringUtils.equalsIgnoreCase(ext, YAML)) {
 						openAPI = Yaml.mapper().readValue(destFile, OpenAPI.class);
 					}else {
-						logger.error("unknow file format: {}", ext);
+						throw new UnsupportedOperationException("Unknow file format " + ext);
 					}
 					
 					if (null!=openAPI) {
@@ -156,9 +170,9 @@ public class OpenApiSpecGenerator implements Generator {
 	
 	private String getFileExtension(File file) {
 	    String name = file.getName();
-	    int lastIndexOf = name.lastIndexOf(".");
-	    if (lastIndexOf == -1) {
-	        return ""; // empty extension
+	    int lastIndexOf = name.lastIndexOf(DOT);
+	    if (lastIndexOf < 0) {
+	        return StringUtils.EMPTY;
 	    }
 	    return name.substring(lastIndexOf);
 	}

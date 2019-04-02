@@ -18,7 +18,5 @@ public class OpenApiSpecGeneratorTest {
 		OpenApiSpecGenerator generator = new OpenApiSpecGenerator();
 		
 		generator.generate(null, null, anyConfig);
-		
-		
 	}
 }
