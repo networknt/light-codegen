@@ -47,6 +47,11 @@
             <artifactId>rocker-runtime</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.fizzed</groupId>
+            <artifactId>rocker-compiler</artifactId>
+            <scope>provided</scope>
+        </dependency>         
+        <dependency>
             <groupId>com.graphql-java</groupId>
             <artifactId>graphql-java</artifactId>
         </dependency>
