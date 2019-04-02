@@ -36,6 +36,8 @@
   },
   "specGeneration": {
   	"basePackages": "com.networknt.petstore.model",
-  	"mergeTo": ""
+  	"mergeTo": "",
+  	"outputFormat": "yaml",
+  	"outputFilename": ""
   }
 }

@@ -103,7 +103,7 @@
         <version.swagger>2.0.7</version.swagger>
         <argLine>-Xmx512m -XX:MaxPermSize=256m</argLine>
     </properties>
-
+    
     <modules>
         <module>codegen-core</module>
         <module>light-rest-4j</module>
@@ -305,7 +305,7 @@
 			    <groupId>io.swagger.core.v3</groupId>
 			    <artifactId>swagger-core</artifactId>
 			    <version>${version.swagger}</version>
-			</dependency>			            
+			</dependency>		
 
             <!-- Test dependencies -->
             <dependency>
