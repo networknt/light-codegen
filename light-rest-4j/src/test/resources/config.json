@@ -36,8 +36,8 @@
   },
   "specGeneration": {
   	"modelPackages": "com.networknt.petstore.model",
-  	"mergeTo": "",
-  	"outputFormat": "yaml",
-  	"outputFilename": ""
+  	"mergeTo": "/tmp/codegen/openapi.json",
+  	"outputFormat": "yaml, json",
+  	"outputFilename": "openapi_gen_test"
   }
 }

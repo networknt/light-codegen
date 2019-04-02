@@ -28,16 +28,21 @@ public class OpenApiSpecGenerator implements Generator {
 	private static final Logger logger = LoggerFactory.getLogger(OpenApiSpecGenerator.class);
 	
 	private static final String FRAMEWORK="openapi-spec";
+	
+	/** -- configuration items begin  -- */
 	private static final String CONFIG_SPECGENERATION ="specGeneration";
 	// comma delimited package names
 	private static final String CONFIG_MODELPACKAGES ="modelPackages";
+	// absolute path of an existing spec file. If this is specified, the generated models (a.k.a. components) will be added to this file and override existing schemas, if any.
 	private static final String CONFIG_MERGETO ="mergeTo";
 	// comma delimited formats, currently support json, yml, or yaml
 	private static final String CONFIG_OUTPUTFORMAT="outputFormat";
 	// the output file name without extension
 	private static final String CONFIG_OUTPUTFILENAME="outputFilename";
+	/** -- configuration items end  -- */
+	
 	private static final String DOT = ".";
-	private static final String COMMA = ",";
+	private static final String COMMA_SPACE = ",\\s";
 	private static final String JSON="json";
 	private static final String YAML="yaml";
 	private static final String YML="yml";
@@ -74,7 +79,7 @@ public class OpenApiSpecGenerator implements Generator {
 			output_dir.mkdirs();
 		}
 		
-		String[] basePackageArray = modelPackages.split(COMMA);
+		String[] basePackageArray = modelPackages.split(COMMA_SPACE);
 		
 		Map<String, Schema> schemas = new HashMap<>();
 		
@@ -99,7 +104,7 @@ public class OpenApiSpecGenerator implements Generator {
 		
 		openApi = merge(openApi, mergeTo);
 		
-		String[] formats = outputFormat.split(COMMA);
+		String[] formats = outputFormat.split(COMMA_SPACE);
 		
 		String filename = StringUtils.isBlank(outputFilename)?DEFAULT_OUTPUT_NAME:outputFilename;
 		
@@ -174,6 +179,6 @@ public class OpenApiSpecGenerator implements Generator {
 	    if (lastIndexOf < 0) {
 	        return StringUtils.EMPTY;
 	    }
-	    return name.substring(lastIndexOf);
+	    return name.substring(lastIndexOf+1);
 	}
 }
