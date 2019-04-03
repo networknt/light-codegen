@@ -139,7 +139,7 @@ public class OpenApiKotlinGenerator implements Generator {
                 transfer(targetPath, "", "gradle.properties", templates.restkotlin.gradleProperties.template(config));
                 transfer(targetPath, "", "settings.gradle.kts", templates.restkotlin.settingsGradleKts.template(config));
 
-                transferGradle(targetPath);
+                // transferGradle(targetPath); TODO fix it.
 
                 // config
                 transfer(targetPath, ("src.main.resources.config").replace(".", separator), "service.yml", templates.restkotlin.openapi.service.template(config));
