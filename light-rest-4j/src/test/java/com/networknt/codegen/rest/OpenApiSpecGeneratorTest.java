@@ -2,13 +2,14 @@ package com.networknt.codegen.rest;
 
 import java.io.IOException;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.jsoniter.JsonIterator;
 import com.jsoniter.any.Any;
 import com.networknt.codegen.OpenApiGeneratorTest;
 
-//@Ignore
+@Ignore
 public class OpenApiSpecGeneratorTest {
 	private static final String configName = "/config.json";
 	private static final String outputDir = "/tmp/codegen/";
