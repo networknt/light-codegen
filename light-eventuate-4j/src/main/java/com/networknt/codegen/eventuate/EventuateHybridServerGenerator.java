@@ -42,7 +42,7 @@ public class EventuateHybridServerGenerator implements Generator {
         boolean eventuateQueryModule = config.toBoolean("eventuateQueryModule");
         boolean eventuateCommandModule = config.toBoolean("eventuateCommandModule");
         transfer(targetPath, "", "pom.xml", templates.eventuate.hybrid.server.pom.template(config));
-        transferMaven(targetPath);
+        //transferMaven(targetPath); TODO fix it.
 
         // There is only one port that should be exposed in Dockerfile, otherwise, the service
         // discovery will be so confused. If https is enabled, expose the https port. Otherwise http port.

@@ -43,7 +43,7 @@ public class HybridServerGenerator implements Generator {
         boolean supportClient = config.toBoolean("supportClient");
 
         transfer(targetPath, "", "pom.xml", templates.hybrid.server.pom.template(config));
-        transferMaven(targetPath);
+        // transferMaven(targetPath); TODO fix it.
 
         // There is only one port that should be exposed in Dockerfile, otherwise, the service
         // discovery will be so confused. If https is enabled, expose the https port. Otherwise http port.
