@@ -42,7 +42,7 @@ public class OpenApiSpecGenerator implements Generator {
 	/** -- configuration items end  -- */
 	
 	private static final String DOT = ".";
-	private static final String COMMA_SPACE = ",\\s";
+	private static final String COMMA_SPACE = "\\s*,\\s*";
 	private static final String JSON="json";
 	private static final String YAML="yaml";
 	private static final String YML="yml";
@@ -68,10 +68,10 @@ public class OpenApiSpecGenerator implements Generator {
 		}
 		
 		Map<String, Any> genConfig = config.get(CONFIG_SPECGENERATION).asMap();
-		String modelPackages = genConfig.get(CONFIG_MODELPACKAGES).toString();
-		String mergeTo = genConfig.get(CONFIG_MERGETO).toString();
-		String outputFormat = genConfig.get(CONFIG_OUTPUTFORMAT).toString();
-		String outputFilename = genConfig.get(CONFIG_OUTPUTFILENAME).toString();
+		String modelPackages = StringUtils.trimToEmpty(genConfig.get(CONFIG_MODELPACKAGES).toString());
+		String mergeTo = StringUtils.trimToEmpty(genConfig.get(CONFIG_MERGETO).toString());
+		String outputFormat = StringUtils.trimToEmpty(genConfig.get(CONFIG_OUTPUTFORMAT).toString());
+		String outputFilename = StringUtils.trimToEmpty(genConfig.get(CONFIG_OUTPUTFILENAME).toString());
 		
 		File output_dir = new File(targetPath);
 		
