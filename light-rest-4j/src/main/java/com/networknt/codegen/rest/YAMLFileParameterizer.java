@@ -527,7 +527,7 @@ public class YAMLFileParameterizer {
 	}	
     
     protected static String normalizeFilename(String filename) {
-    	return StringUtils.trimToEmpty(filename).replaceAll("\\\\|/", File.separator);
+    	return StringUtils.trimToEmpty(filename).replaceAll("\\\\|/", "\\"+File.separator);
     }
     
     public static String toNonNullString(URL url) {
