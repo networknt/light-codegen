@@ -95,7 +95,7 @@ public class SwaggerGenerator implements Generator {
         if(dockerOrganization == null || dockerOrganization.length() == 0) dockerOrganization = "networknt";
 
         transfer(targetPath, "", "pom.xml", templates.rest.swagger.pom.template(config));
-        transferMaven(targetPath);
+        // transferMaven(targetPath); TODO fix it.
         // There is only one port that should be exposed in Dockerfile, otherwise, the service
         // discovery will be so confused. If https is enabled, expose the https port. Otherwise http port.
         String expose = "";
