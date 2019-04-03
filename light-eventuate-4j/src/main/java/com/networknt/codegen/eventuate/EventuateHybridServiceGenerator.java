@@ -40,7 +40,7 @@ public class EventuateHybridServiceGenerator implements Generator {
         String version = config.toString("version");
         
         transfer(targetPath, "", "pom.xml", templates.eventuate.hybrid.service.pom.template(config));
-        transferMaven(targetPath);
+        // transferMaven(targetPath); TODO fix it.
         //transfer(targetPath, "", "Dockerfile", templates.dockerfile.template(config));
         transfer(targetPath, "", ".gitignore", templates.eventuate.hybrid.gitignore.template());
         transfer(targetPath, "", "README.md", templates.eventuate.hybrid.service.README.template());

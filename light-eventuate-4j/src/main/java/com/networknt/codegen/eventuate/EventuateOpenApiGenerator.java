@@ -87,7 +87,7 @@ public class EventuateOpenApiGenerator implements Generator {
 
         // files for root project
         transfer(projectPath, "", "pom.xml", templates.eventuate.rest.openapi.pom.template(config));
-        transferMaven(targetPath);
+        // transferMaven(targetPath); TODO fix it.
         transfer(projectPath, "", "build.sh", templates.eventuate.rest.buildSh.template(dockerOrganization, config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version")));
         transfer(projectPath, "", ".gitignore", templates.eventuate.rest.gitignore.template());
         transfer(projectPath, "", "README.md", templates.eventuate.rest.README.template());
