@@ -1,5 +1,13 @@
 # Change Log
 
+## [1.5.34](https://github.com/networknt/light-codegen/tree/1.5.34) (2019-04-07)
+
+
+**Merged pull requests:**
+
+
+- generate code on win10 got error [\#272](https://github.com/networknt/light-codegen/pull/272) ([stevehu](https://github.com/stevehu))
+- fix escaping - \#265 [\#270](https://github.com/networknt/light-codegen/pull/270) ([dz-1](https://github.com/dz-1))
 ## [1.5.33](https://github.com/networknt/light-codegen/tree/1.5.33) (2019-03-25)
 [Full Changelog](https://github.com/networknt/light-codegen/compare/1.5.32...1.5.33)
 
