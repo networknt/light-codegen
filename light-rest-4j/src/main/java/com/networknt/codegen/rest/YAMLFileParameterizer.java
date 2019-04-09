@@ -1,16 +1,10 @@
 package com.networknt.codegen.rest;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -39,6 +33,8 @@ import org.yaml.snakeyaml.reader.StreamReader;
 import org.yaml.snakeyaml.resolver.Resolver;
 
 import com.jsoniter.any.Any;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class YAMLFileParameterizer {
 	private static final Logger logger = LoggerFactory.getLogger(YAMLFileParameterizer.class);
@@ -347,7 +343,7 @@ public class YAMLFileParameterizer {
 	
 	protected static Node loadResource(String resourceLocation) {
 		try (InputStream in = getResourceAsStream(resourceLocation);
-				BufferedReader inputReader = new BufferedReader(new InputStreamReader(in))) {
+				BufferedReader inputReader = new BufferedReader(new InputStreamReader(in, UTF_8))) {
 			Composer composer = new Composer(new ParserImpl(new StreamReader(inputReader)), new Resolver());
 			return composer.getSingleNode();
 		} catch (Exception e) {
@@ -361,7 +357,7 @@ public class YAMLFileParameterizer {
 		List<String> lines = new ArrayList<>();
 		
 		try (InputStream in = getResourceAsStream(resourceLocation);
-				InputStreamReader reader = new InputStreamReader(in, StandardCharsets.UTF_8)) {
+				InputStreamReader reader = new InputStreamReader(in, UTF_8)) {
 			lines.addAll(IOUtils.readLines(reader));
 			lines.add(StringUtils.EMPTY); // because trailing empty lines are ignored.
 		} catch (Exception e) {
@@ -372,7 +368,7 @@ public class YAMLFileParameterizer {
 	}
 	
 	protected static Node loadFile(File file) {
-		try (FileReader inputReader = new FileReader(file)) {
+		try (Reader inputReader = Files.newBufferedReader(file.toPath(), UTF_8)) {
 			Composer composer = new Composer(new ParserImpl(new StreamReader(inputReader)), new Resolver());
 			return composer.getSingleNode();
 		} catch (Exception e) {
@@ -396,7 +392,7 @@ public class YAMLFileParameterizer {
 	}
 	
 	protected static void parameterize(String filename, Node document, List<String> srclines, File destFile, Map<String, Any> generateEnvVars) {
-		try (FileWriter writer = new FileWriter(destFile)) {
+		try (Writer writer = Files.newBufferedWriter(destFile.toPath(), UTF_8)) {
 			if (document instanceof MappingNode) {
 				List<String> destlines = parameterize(filename, srclines, (MappingNode) document, generateEnvVars);
 
