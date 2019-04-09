@@ -18,6 +18,7 @@ import java.nio.file.Files;
  * @author Nicholas Azar
  * Created on July 8, 2017.
  */
+@Deprecated
 @ServiceHandler(id="lightapi.net/codegen/validateUploadFile/0.0.1")
 public class ValidateUploadFileHandler implements Handler {
     static private final Logger logger = LoggerFactory.getLogger(ValidateUploadFileHandler.class);
