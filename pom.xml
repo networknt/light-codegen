@@ -67,9 +67,6 @@
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <version.light-4j>1.6.0</version.light-4j>
-        <version.light-hybrid-4j>1.6.0</version.light-hybrid-4j>
-        <version.light-rest-4j>1.6.0</version.light-rest-4j>
-        <version.openapi-parser>1.6.0</version.openapi-parser>
         <version.jsoniter>0.9.15</version.jsoniter>
         <version.javassist>3.21.0-GA</version.javassist>
         <version.slf4j>1.7.25</version.slf4j>
@@ -161,7 +158,7 @@
             <dependency>
                 <groupId>com.networknt</groupId>
                 <artifactId>rpc-router</artifactId>
-                <version>${version.light-hybrid-4j}</version>
+                <version>${version.light-4j}</version>
             </dependency>
             <dependency>
                 <groupId>com.networknt</groupId>
@@ -211,7 +208,7 @@
             <dependency>
                 <groupId>com.networknt</groupId>
                 <artifactId>openapi-parser</artifactId>
-                <version>${version.openapi-parser}</version>
+                <version>${version.light-4j}</version>
             </dependency>
 
             <dependency>
