@@ -445,7 +445,8 @@
                             <version>2.3.3</version>
                         </path>
                     </annotationProcessorPaths>
-                </configuration>            </plugin>
+                </configuration>
+            </plugin>
         </plugins>
         <pluginManagement>
         	<plugins>
