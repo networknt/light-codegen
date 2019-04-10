@@ -1,16 +1,13 @@
 package com.networknt.codegen.hybrid;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jsoniter.any.Any;
 import com.networknt.codegen.Generator;
-import sun.nio.cs.Surrogate;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.Map;
 
 import static java.io.File.separator;
 
