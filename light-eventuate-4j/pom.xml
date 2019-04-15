@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.networknt</groupId>
         <artifactId>light-codegen</artifactId>
-        <version>1.5.33</version>
+        <version>1.6.1-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>
 
@@ -36,6 +36,11 @@
             <groupId>com.fizzed</groupId>
             <artifactId>rocker-runtime</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.fizzed</groupId>
+            <artifactId>rocker-compiler</artifactId>
+            <scope>provided</scope>
+        </dependency>         
         <dependency>
             <groupId>com.jsoniter</groupId>
             <artifactId>jsoniter</artifactId>

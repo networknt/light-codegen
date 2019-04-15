@@ -19,7 +19,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.networknt</groupId>
     <artifactId>light-codegen</artifactId>
-    <version>1.5.33</version>
+    <version>1.6.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Parent POM</name>
     <description>Light Code Generator</description>
@@ -65,11 +65,9 @@
 
     <properties>
         <java.version>1.8</java.version>
+        <javac.version>9+181-r4173-1</javac.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <version.light-4j>1.5.33</version.light-4j>
-        <version.light-hybrid-4j>1.5.33</version.light-hybrid-4j>
-        <version.light-rest-4j>1.5.33</version.light-rest-4j>
-        <version.openapi-parser>1.5.33</version.openapi-parser>
+        <version.light-4j>1.6.1-SNAPSHOT</version.light-4j>
         <version.jsoniter>0.9.15</version.jsoniter>
         <version.javassist>3.21.0-GA</version.javassist>
         <version.slf4j>1.7.25</version.slf4j>
@@ -87,7 +85,7 @@
         <version.assertj>3.8.0</version.assertj>
         <version.hdrhistogram>2.1.10</version.hdrhistogram>
         <version.jsr305>3.0.2</version.jsr305>
-        <version.json-schema-validator>1.0.5</version.json-schema-validator>
+        <version.json-schema-validator>1.0.6</version.json-schema-validator>
         <version.consul>1.2.4</version.consul>
         <version.zookeeper>3.5.3-beta</version.zookeeper>
         <version.zkclient>0.3</version.zkclient>
@@ -163,7 +161,7 @@
             <dependency>
                 <groupId>com.networknt</groupId>
                 <artifactId>rpc-router</artifactId>
-                <version>${version.light-hybrid-4j}</version>
+                <version>${version.light-4j}</version>
             </dependency>
             <dependency>
                 <groupId>com.networknt</groupId>
@@ -213,7 +211,7 @@
             <dependency>
                 <groupId>com.networknt</groupId>
                 <artifactId>openapi-parser</artifactId>
-                <version>${version.openapi-parser}</version>
+                <version>${version.light-4j}</version>
             </dependency>
 
             <dependency>
@@ -271,6 +269,11 @@
                 <artifactId>rocker-runtime</artifactId>
                 <version>${version.rocker}</version>
             </dependency>
+	        <dependency>
+	            <groupId>com.fizzed</groupId>
+	            <artifactId>rocker-compiler</artifactId>
+	            <version>${version.rocker}</version>
+	        </dependency>            
             <dependency>
                 <groupId>com.beust</groupId>
                 <artifactId>jcommander</artifactId>
@@ -439,35 +442,22 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.6.1</version>
+                <version>3.8.0</version>
                 <configuration>
-                    <compilerId>javac-with-errorprone</compilerId>
-                    <showWarnings>true</showWarnings>
-                    <showDeprecation>true</showDeprecation>
+                    <source>8</source>
+                    <target>8</target>
                     <compilerArgs>
-                        <!-- add command line validation here -->
+                        <arg>-XDcompilePolicy=simple</arg>
+                        <arg>-Xplugin:ErrorProne</arg>
                     </compilerArgs>
-                    <forceJavacCompilerUse>true</forceJavacCompilerUse>
-                    <!-- maven-compiler-plugin defaults to targeting Java 5, but our javac
-                         only supports >=6 -->
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
-                </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.codehaus.plexus</groupId>
-                        <artifactId>plexus-compiler-javac-errorprone</artifactId>
-                        <version>2.8</version>
-                    </dependency>
-                    <!-- override plexus-compiler-javac-errorprone's dependency on
-                         Error Prone with the latest version -->
-                    <dependency>
-                        <groupId>com.google.errorprone</groupId>
-                        <artifactId>error_prone_core</artifactId>
-                        <version>2.0.15</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>com.google.errorprone</groupId>
+                            <artifactId>error_prone_core</artifactId>
+                            <version>2.3.3</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>            </plugin>
         </plugins>
         <pluginManagement>
         	<plugins>
@@ -558,6 +548,26 @@
                                 </goals>
                             </execution>
                         </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>jdk8</id>
+            <activation>
+                <jdk>1.8</jdk>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <configuration>
+                            <fork>true</fork>
+                            <compilerArgs combine.children="append">
+                                <arg>-J-Xbootclasspath/p:${settings.localRepository}/com/google/errorprone/javac/${javac.version}/javac-${javac.version}.jar</arg>
+                            </compilerArgs>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>

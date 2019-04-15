@@ -1,5 +1,21 @@
 # Change Log
 
+## [1.6.0](https://github.com/networknt/light-codegen/tree/1.6.0) (2019-04-05)
+
+
+**Merged pull requests:**
+
+
+- fixes \#273 add maven wrapper to light-codegen [\#274](https://github.com/networknt/light-codegen/pull/274) ([stevehu](https://github.com/stevehu))
+- generate code on win10 got error [\#272](https://github.com/networknt/light-codegen/pull/272) ([stevehu](https://github.com/stevehu))
+- fixes \#265 Failed test cases on Windows [\#271](https://github.com/networknt/light-codegen/pull/271) ([stevehu](https://github.com/stevehu))
+- fix escaping - \#265 [\#270](https://github.com/networknt/light-codegen/pull/270) ([dz-1](https://github.com/dz-1))
+- Issue266 [\#269](https://github.com/networknt/light-codegen/pull/269) ([stevehu](https://github.com/stevehu))
+- fixes \#266 disable the failed test cases for Windows [\#267](https://github.com/networknt/light-codegen/pull/267) ([stevehu](https://github.com/stevehu))
+- fixes \#263 comment out kotlin and swagger wrappers as test cases fail [\#264](https://github.com/networknt/light-codegen/pull/264) ([stevehu](https://github.com/stevehu))
+- fixes \#261 temporary disable the maven wrapper for OpenAPI [\#262](https://github.com/networknt/light-codegen/pull/262) ([stevehu](https://github.com/stevehu))
+- enable rocker hot reloading - \#225 [\#241](https://github.com/networknt/light-codegen/pull/241) ([dz-1](https://github.com/dz-1))
+- Feat/\#239 when generate test cases for handler, now will use example of request body to test. [\#240](https://github.com/networknt/light-codegen/pull/240) ([BalloonWen](https://github.com/BalloonWen))
 ## [1.5.32](https://github.com/networknt/light-codegen/tree/1.5.32) (2019-03-19)
 [Full Changelog](https://github.com/networknt/light-codegen/compare/1.5.31...1.5.32)
 
