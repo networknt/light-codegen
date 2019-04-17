@@ -83,6 +83,7 @@ public class SwaggerGenerator implements Generator {
         boolean enableHttps = config.toBoolean("enableHttps");
         String httpsPort = config.toString("httpsPort");
         boolean enableRegistry = config.toBoolean("enableRegistry");
+        boolean eclipseIDE = config.toBoolean("eclipseIDE");
         boolean supportClient = config.toBoolean("supportClient");
         String dockerOrganization = config.toString("dockerOrganization");
         prometheusMetrics = config.toBoolean("prometheusMetrics");
@@ -111,9 +112,10 @@ public class SwaggerGenerator implements Generator {
         transfer(targetPath, "", ".gitignore", templates.rest.gitignore.template());
         transfer(targetPath, "", "README.md", templates.rest.README.template());
         transfer(targetPath, "", "LICENSE", templates.rest.LICENSE.template());
-        transfer(targetPath, "", ".classpath", templates.rest.classpath.template());
-        transfer(targetPath, "", ".project", templates.rest.project.template(config));
-
+        if(eclipseIDE) {
+            transfer(targetPath, "", ".classpath", templates.rest.classpath.template());
+            transfer(targetPath, "", ".project", templates.rest.project.template(config));
+        }
         // config
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "service.yml", templates.rest.swagger.service.template(config));
 

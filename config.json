@@ -1,0 +1,39 @@
+{
+  "name": "api-customers",
+  "version": "1.0.0",
+  "groupId": "com.cibc.api",
+  "artifactId": "api-customers",
+  "rootPackage": "com.cibc.apif.customers",
+  "handlerPackage":"com.cibc.apif.customers.handler",
+  "modelPackage":"com.cibc.apif.customers.model",
+  "overwriteHandler": false,
+  "overwriteHandlerTest": false,
+  "overwriteModel": true,
+  "httpPort": 8080,
+  "enableHttp": false,
+  "httpsPort": 9443,
+  "enableHttps": true,
+  "enableRegistry": false,
+  "eclipseIDE": false,
+  "supportDb": false,
+  "dbInfo": {
+    "name": "mysql",
+    "driverClassName": "com.mysql.jdbc.Driver",
+    "jdbcUrl": "jdbc:mysql://mysqldb:3306/oauth2?useSSL=false",
+    "username": "root",
+    "password": "my-secret-pw"
+  },
+  "supportH2ForTest": false,
+  "supportClient": true,
+  "dockerOrganization": "cibc-api",
+  "generateEnvVars": {
+  	"generate": true,
+  	"skipArray": true,
+  	"skipMap": true,
+  	"exclude": [
+        "service.yml",
+  		"handerl.yml",
+  		"values.yml"
+  	]
+  }
+}
