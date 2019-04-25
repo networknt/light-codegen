@@ -58,6 +58,7 @@ public class OpenApiGenerator implements Generator {
     boolean enableParamDescription = true;
     boolean generateModelOnly = false;
     boolean generateValuesYml = false;
+    boolean regeneratePomFile = true;
 
     public OpenApiGenerator() {
         typeMapping.put("array", "java.util.List");
@@ -116,6 +117,7 @@ public class OpenApiGenerator implements Generator {
         skipServerInfo = config.toBoolean("skipServerInfo");
         regenerateCodeOnly = config.toBoolean("specChangeCodeReGenOnly");
         enableParamDescription = config.toBoolean("enableParamDescription");
+        boolean regeneratePomFile = config.toBoolean("regeneratePomFile");
 
         generateValuesYml = config.toBoolean("generateValuesYml");
 
@@ -134,7 +136,10 @@ public class OpenApiGenerator implements Generator {
             // if set to true, regenerate the code only (handlers, model and the handler.yml, potentially affected by operation changes
             if (!regenerateCodeOnly) {
                 // generate configurations, project, masks, certs, etc
-                transfer(targetPath, "", "pom.xml", templates.rest.openapi.pom.template(config));
+                if (regeneratePomFile) {
+                    transfer(targetPath, "", "pom.xml", templates.rest.openapi.pom.template(config));
+                }
+
 
                 transferMaven(targetPath);
                 // There is only one port that should be exposed in Dockerfile, otherwise, the service
@@ -181,10 +186,6 @@ public class OpenApiGenerator implements Generator {
                 transfer(targetPath, ("src.main.resources").replace(".", separator), "logback.xml", templates.rest.logback.template());
                 transfer(targetPath, ("src.test.resources").replace(".", separator), "logback-test.xml", templates.rest.logback.template());
 
-                // routing handler
-                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "handler.yml",
-                        templates.rest.openapi.handlerYml.template(serviceId, handlerPackage, operationList, prometheusMetrics, !skipHealthCheck, !skipServerInfo));
-
                 // exclusion list for Config module
                 transfer(targetPath, ("src.main.resources.config").replace(".", separator), "config.yml", templates.rest.openapi.config.template());
 
@@ -200,6 +201,10 @@ public class OpenApiGenerator implements Generator {
                     YAMLFileParameterizer.rewriteAll(targetPath + separator + YAMLFileParameterizer.DEFAULT_DEST_DIR, config.get(YAMLFileParameterizer.GENERATE_ENV_VARS).asMap());
                 }
             }
+            // routing handler
+            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "handler.yml",
+                    templates.rest.openapi.handlerYml.template(serviceId, handlerPackage, operationList, prometheusMetrics, !skipHealthCheck, !skipServerInfo));
+
         }
 
         // model
