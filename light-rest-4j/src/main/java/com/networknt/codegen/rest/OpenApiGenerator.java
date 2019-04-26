@@ -117,7 +117,7 @@ public class OpenApiGenerator implements Generator {
         skipServerInfo = config.toBoolean("skipServerInfo");
         regenerateCodeOnly = config.toBoolean("specChangeCodeReGenOnly");
         enableParamDescription = config.toBoolean("enableParamDescription");
-        boolean regeneratePomFile = config.toBoolean("regeneratePomFile");
+        regeneratePomFile = config.toBoolean("regeneratePomFile");
 
         generateValuesYml = config.toBoolean("generateValuesYml");
 
