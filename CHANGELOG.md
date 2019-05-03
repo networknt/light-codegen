@@ -1,5 +1,17 @@
 # Change Log
 
+## [1.6.1](https://github.com/networknt/light-codegen/tree/1.6.1) (2019-05-03)
+
+
+**Merged pull requests:**
+
+
+- Issue 287 [\#289](https://github.com/networknt/light-codegen/pull/289) ([chenyan71](https://github.com/chenyan71))
+- add openAPI spec generator - \#197 [\#260](https://github.com/networknt/light-codegen/pull/260) ([dz-1](https://github.com/dz-1))
+- fixed NPE for param description feature [\#285](https://github.com/networknt/light-codegen/pull/285) ([BalloonWen](https://github.com/BalloonWen))
+- fixes \#159 ensure light-codegen can be compile on both jdk8 and jdk11 [\#281](https://github.com/networknt/light-codegen/pull/281) ([stevehu](https://github.com/stevehu))
+- fixes \#278 resolve error prone warnings [\#279](https://github.com/networknt/light-codegen/pull/279) ([stevehu](https://github.com/stevehu))
+- fixes \#276 upgrade pom.xml template to have only one light-4j version [\#277](https://github.com/networknt/light-codegen/pull/277) ([stevehu](https://github.com/stevehu))
 ## [1.6.0](https://github.com/networknt/light-codegen/tree/1.6.0) (2019-04-05)
 
 
