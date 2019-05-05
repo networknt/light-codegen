@@ -9,3 +9,4 @@ singletons:
   - com.networknt.codegen.graphql.GraphqlGenerator
   - com.networknt.codegen.eventuate.EventuateOpenApiGenerator
   - com.networknt.codegen.rest.OpenApiKotlinGenerator
+  - com.networknt.codegen.rest.OpenApiSpecGenerator

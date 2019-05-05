@@ -33,5 +33,11 @@
   		"handerl.yml",
   		"values.yml"
   	]
+  },
+  "specGeneration": {
+  	"modelPackages": "com.networknt.petstore.model",
+  	"mergeTo": "/tmp/codegen/openapi.json",
+  	"outputFormat": "yaml, json",
+  	"outputFilename": "openapi_gen_test"
   }
 }

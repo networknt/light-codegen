@@ -1,12 +1,10 @@
 package com.networknt.codegen.hybrid;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jsoniter.ValueType;
 import com.jsoniter.any.Any;
 import com.jsoniter.output.JsonStream;
 import com.networknt.codegen.Generator;
-import com.networknt.utility.NioUtils;
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
