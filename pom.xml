@@ -19,7 +19,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.networknt</groupId>
     <artifactId>light-codegen</artifactId>
-    <version>1.6.0</version>
+    <version>1.6.2-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Parent POM</name>
     <description>Light Code Generator</description>
@@ -85,21 +85,23 @@
         <version.assertj>3.8.0</version.assertj>
         <version.hdrhistogram>2.1.10</version.hdrhistogram>
         <version.jsr305>3.0.2</version.jsr305>
-        <version.json-schema-validator>1.0.6</version.json-schema-validator>
+        <version.json-schema-validator>1.0.7</version.json-schema-validator>
         <version.consul>1.2.4</version.consul>
         <version.zookeeper>3.5.3-beta</version.zookeeper>
         <version.zkclient>0.3</version.zkclient>
         <version.curator>4.0.0</version.curator>
-        <version.snakeyaml>1.20</version.snakeyaml>
+        <version.snakeyaml>1.24</version.snakeyaml>
         <version.rocker>1.2.1</version.rocker>
         <version.jcommander>1.72</version.jcommander>
         <version.fastscanner>2.18.1</version.fastscanner>
         <version.graphql>8.0</version.graphql>
         <version.qdox>2.0-M9</version.qdox>
         <versions.maven-version>2.4</versions.maven-version>
+        <versions.classgraph>4.8.22</versions.classgraph>
+        <version.swagger>2.0.7</version.swagger>
         <argLine>-Xmx512m -XX:MaxPermSize=256m</argLine>
     </properties>
-
+    
     <modules>
         <module>codegen-core</module>
         <module>light-rest-4j</module>
@@ -297,6 +299,16 @@
                 <artifactId>qdox</artifactId>
                 <version>${version.qdox}</version>
             </dependency>
+			<dependency>
+			    <groupId>io.github.classgraph</groupId>
+			    <artifactId>classgraph</artifactId>
+			    <version>${versions.classgraph}</version>
+			</dependency>
+			<dependency>
+			    <groupId>io.swagger.core.v3</groupId>
+			    <artifactId>swagger-core</artifactId>
+			    <version>${version.swagger}</version>
+			</dependency>		
 
             <!-- Test dependencies -->
             <dependency>

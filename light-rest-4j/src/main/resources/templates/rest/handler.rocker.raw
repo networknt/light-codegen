@@ -15,7 +15,7 @@ public class @className implements LightHttpHandler {
     @if(parameters != null && !parameters.isEmpty()) {/**@for (parameter : parameters) {
      * @@param @?parameter.get("name") @if(parameter.get("type") != null)
      { @with (String typeStr = ((String)parameter.get("type")).substring(0, 1).toUpperCase()+((String)parameter.get("type")).substring(1))
-       { @?typeStr  }} @if ( parameter.get("required").equals("true") ) {@@Required } else{@@Optional }@if(parameter.get("minLength") != null){minLength:@parameter.get("minLength");}@if(parameter.get("maxLength") != null) {maxLength:@parameter.get("maxLength");}@if(parameter.get("description") != null ){
+       { @?typeStr  }} @if ( parameter.get("required") != null && parameter.get("required").equals("true") ) {@@Required } else{@@Optional }@if(parameter.get("minLength") != null){minLength:@parameter.get("minLength");}@if(parameter.get("maxLength") != null) {maxLength:@parameter.get("maxLength");}@if(parameter.get("description") != null ){
      *           @parameter.get("description")}}
      */}
     @@Override
