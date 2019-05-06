@@ -67,7 +67,7 @@
         <java.version>1.8</java.version>
         <javac.version>9+181-r4173-1</javac.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <version.light-4j>1.6.0</version.light-4j>
+        <version.light-4j>1.6.2-SNAPSHOT</version.light-4j>
         <version.jsoniter>0.9.15</version.jsoniter>
         <version.javassist>3.21.0-GA</version.javassist>
         <version.slf4j>1.7.25</version.slf4j>
