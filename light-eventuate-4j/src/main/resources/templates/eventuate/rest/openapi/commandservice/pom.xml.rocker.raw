@@ -10,7 +10,9 @@
 
     <properties>
         <java.version>1.8</java.version>
+        @if(config.toBoolean("enableErrorProne")) {
         <javac.version>9+181-r4173-1</javac.version>
+        }
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.main.class>com.networknt.server.Server</project.main.class>
         <version.light-4j>1.6.2-SNAPSHOT</version.light-4j>
@@ -398,6 +400,7 @@
                 <configuration>
                     <source>8</source>
                     <target>8</target>
+                    @if(config.toBoolean("enableErrorProne")) {
                     <compilerArgs>
                         <arg>-XDcompilePolicy=simple</arg>
                         <arg>-Xplugin:ErrorProne</arg>
@@ -409,6 +412,7 @@
                             <version>2.3.3</version>
                         </path>
                     </annotationProcessorPaths>
+                    }
                 </configuration>
             </plugin>
             <!-- end Google error-proce compiles -->
@@ -572,6 +576,7 @@
                 </plugins>
             </build>
         </profile>
+        @if(config.toBoolean("enableErrorProne")) {
         <profile>
             <id>jdk8</id>
             <activation>
@@ -592,6 +597,7 @@
                 </plugins>
             </build>
         </profile>
+        }
     </profiles>
 
 </project>
