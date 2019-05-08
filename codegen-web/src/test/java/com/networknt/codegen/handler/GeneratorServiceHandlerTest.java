@@ -43,8 +43,23 @@ public class GeneratorServiceHandlerTest {
     static final int httpsPort = server.getServerConfig().getHttpsPort();
     static final String url = enableHttp2 || enableHttps ? "https://localhost:" + httpsPort : "http://localhost:" + httpPort;
 
+    // please note that the modelText and configText are strings not json objects
+    static String single = "{\"host\":\"lightapi.net\",\"service\":\"codegen\",\"action\":\"single\",\"version\":\"0.0.1\",\"data\":{\"framework\":\"openapi\",\"modelType\":\"C\",\"modelText\":\"{\\\"openapi\\\":\\\"3.0.0\\\",\\\"info\\\":{\\\"version\\\":\\\"1.0.0\\\",\\\"title\\\":\\\"Swagger Petstore\\\",\\\"license\\\":{\\\"name\\\":\\\"MIT\\\"}},\\\"servers\\\":[{\\\"url\\\":\\\"http://petstore.swagger.io/v1\\\"}],\\\"paths\\\":{\\\"/pets\\\":{\\\"get\\\":{\\\"summary\\\":\\\"List all pets\\\",\\\"operationId\\\":\\\"listPets\\\",\\\"tags\\\":[\\\"pets\\\"],\\\"parameters\\\":[{\\\"name\\\":\\\"limit\\\",\\\"in\\\":\\\"query\\\",\\\"description\\\":\\\"How many items to return at one time (max 100)\\\",\\\"required\\\":false,\\\"schema\\\":{\\\"type\\\":\\\"integer\\\",\\\"format\\\":\\\"int32\\\"}}],\\\"security\\\":[{\\\"petstore_auth\\\":[\\\"read:pets\\\"]}],\\\"responses\\\":{\\\"200\\\":{\\\"description\\\":\\\"An paged array of pets\\\",\\\"headers\\\":{\\\"x-next\\\":{\\\"description\\\":\\\"A link to the next page of responses\\\",\\\"schema\\\":{\\\"type\\\":\\\"string\\\"}}},\\\"content\\\":{\\\"application/json\\\":{\\\"schema\\\":{\\\"type\\\":\\\"array\\\",\\\"items\\\":{\\\"$ref\\\":\\\"#/components/schemas/Pet\\\"}},\\\"example\\\":[{\\\"id\\\":1,\\\"name\\\":\\\"catten\\\",\\\"tag\\\":\\\"cat\\\"},{\\\"id\\\":2,\\\"name\\\":\\\"doggy\\\",\\\"tag\\\":\\\"dog\\\"}]}}},\\\"default\\\":{\\\"description\\\":\\\"unexpected error\\\",\\\"content\\\":{\\\"application/json\\\":{\\\"schema\\\":{\\\"$ref\\\":\\\"#/components/schemas/Error\\\"}}}}}},\\\"post\\\":{\\\"summary\\\":\\\"Create a pet\\\",\\\"operationId\\\":\\\"createPets\\\",\\\"requestBody\\\":{\\\"description\\\":\\\"Pet to add to the store\\\",\\\"required\\\":true,\\\"content\\\":{\\\"application/json\\\":{\\\"schema\\\":{\\\"$ref\\\":\\\"#/components/schemas/Pet\\\"}}}},\\\"tags\\\":[\\\"pets\\\"],\\\"security\\\":[{\\\"petstore_auth\\\":[\\\"read:pets\\\",\\\"write:pets\\\"]}],\\\"responses\\\":{\\\"201\\\":{\\\"description\\\":\\\"Null response\\\"},\\\"default\\\":{\\\"description\\\":\\\"unexpected error\\\",\\\"content\\\":{\\\"application/json\\\":{\\\"schema\\\":{\\\"$ref\\\":\\\"#/components/schemas/Error\\\"}}}}}}},\\\"/pets/{petId}\\\":{\\\"get\\\":{\\\"summary\\\":\\\"Info for a specific pet\\\",\\\"operationId\\\":\\\"showPetById\\\",\\\"tags\\\":[\\\"pets\\\"],\\\"parameters\\\":[{\\\"name\\\":\\\"petId\\\",\\\"in\\\":\\\"path\\\",\\\"required\\\":true,\\\"description\\\":\\\"The id of the pet to retrieve\\\",\\\"schema\\\":{\\\"type\\\":\\\"string\\\"}}],\\\"security\\\":[{\\\"petstore_auth\\\":[\\\"read:pets\\\"]}],\\\"responses\\\":{\\\"200\\\":{\\\"description\\\":\\\"Expected response to a valid request\\\",\\\"content\\\":{\\\"application/json\\\":{\\\"schema\\\":{\\\"$ref\\\":\\\"#/components/schemas/Pet\\\"},\\\"example\\\":{\\\"id\\\":1,\\\"name\\\":\\\"Jessica Right\\\",\\\"tag\\\":\\\"pet\\\"}}}},\\\"default\\\":{\\\"description\\\":\\\"unexpected error\\\",\\\"content\\\":{\\\"application/json\\\":{\\\"schema\\\":{\\\"$ref\\\":\\\"#/components/schemas/Error\\\"}}}}}},\\\"delete\\\":{\\\"summary\\\":\\\"Delete a specific pet\\\",\\\"operationId\\\":\\\"deletePetById\\\",\\\"tags\\\":[\\\"pets\\\"],\\\"parameters\\\":[{\\\"name\\\":\\\"petId\\\",\\\"in\\\":\\\"path\\\",\\\"required\\\":true,\\\"description\\\":\\\"The id of the pet to delete\\\",\\\"schema\\\":{\\\"type\\\":\\\"string\\\"}},{\\\"name\\\":\\\"key\\\",\\\"in\\\":\\\"header\\\",\\\"required\\\":true,\\\"description\\\":\\\"The key header\\\",\\\"schema\\\":{\\\"type\\\":\\\"string\\\"}}],\\\"security\\\":[{\\\"petstore_auth\\\":[\\\"write:pets\\\"]}],\\\"responses\\\":{\\\"200\\\":{\\\"description\\\":\\\"Expected response to a valid request\\\",\\\"content\\\":{\\\"application/json\\\":{\\\"schema\\\":{\\\"$ref\\\":\\\"#/components/schemas/Pet\\\"},\\\"examples\\\":{\\\"response\\\":{\\\"value\\\":{\\\"id\\\":1,\\\"name\\\":\\\"Jessica Right\\\",\\\"tag\\\":\\\"pet\\\"}}}}}},\\\"default\\\":{\\\"description\\\":\\\"unexpected error\\\",\\\"content\\\":{\\\"application/json\\\":{\\\"schema\\\":{\\\"$ref\\\":\\\"#/components/schemas/Error\\\"}}}}}}}},\\\"components\\\":{\\\"securitySchemes\\\":{\\\"petstore_auth\\\":{\\\"type\\\":\\\"oauth2\\\",\\\"description\\\":\\\"This API uses OAuth 2 with the client credential grant flow.\\\",\\\"flows\\\":{\\\"clientCredentials\\\":{\\\"tokenUrl\\\":\\\"https://localhost:6882/token\\\",\\\"scopes\\\":{\\\"write:pets\\\":\\\"modify pets in your account\\\",\\\"read:pets\\\":\\\"read your pets\\\"}}}}},\\\"schemas\\\":{\\\"Pet\\\":{\\\"type\\\":\\\"object\\\",\\\"required\\\":[\\\"id\\\",\\\"name\\\"],\\\"properties\\\":{\\\"id\\\":{\\\"type\\\":\\\"integer\\\",\\\"format\\\":\\\"int64\\\"},\\\"name\\\":{\\\"type\\\":\\\"string\\\"},\\\"tag\\\":{\\\"type\\\":\\\"string\\\"}}},\\\"Error\\\":{\\\"type\\\":\\\"object\\\",\\\"required\\\":[\\\"code\\\",\\\"message\\\"],\\\"properties\\\":{\\\"code\\\":{\\\"type\\\":\\\"integer\\\",\\\"format\\\":\\\"int32\\\"},\\\"message\\\":{\\\"type\\\":\\\"string\\\"}}}}}}\",\"configType\":\"C\",\"configText\":\"{\\\"name\\\":\\\"petstore\\\",\\\"version\\\":\\\"3.0.1\\\",\\\"groupId\\\":\\\"com.networknt\\\",\\\"artifactId\\\":\\\"petstore\\\",\\\"rootPackage\\\":\\\"com.networknt.petstore\\\",\\\"handlerPackage\\\":\\\"com.networknt.petstore.handler\\\",\\\"modelPackage\\\":\\\"com.networknt.petstore.model\\\",\\\"overwriteHandler\\\":true,\\\"overwriteHandlerTest\\\":true,\\\"overwriteModel\\\":true,\\\"httpPort\\\":8080,\\\"enableHttp\\\":false,\\\"httpsPort\\\":8443,\\\"enableHttps\\\":true,\\\"enableHttp2\\\":true,\\\"enableRegistry\\\":false,\\\"supportDb\\\":false,\\\"supportH2ForTest\\\":false,\\\"supportClient\\\":false,\\\"dockerOrganization\\\":\\\"networknt\\\"}\"}}";
+    static String multiple = "{\"host\":\"lightapi.net\",\"service\":\"codegen\",\"action\":\"multiple\",\"version\":\"0.0.1\",\"data\":{\"generators\":[{\"framework\":\"openapi\",\"modelType\":\"C\",\"modelText\":\"{\\\"openapi\\\":\\\"3.0.0\\\",\\\"info\\\":{\\\"version\\\":\\\"1.0.0\\\",\\\"title\\\":\\\"Swagger Petstore\\\",\\\"license\\\":{\\\"name\\\":\\\"MIT\\\"}},\\\"servers\\\":[{\\\"url\\\":\\\"http://petstore.swagger.io/v1\\\"}],\\\"paths\\\":{\\\"/pets\\\":{\\\"get\\\":{\\\"summary\\\":\\\"List all pets\\\",\\\"operationId\\\":\\\"listPets\\\",\\\"tags\\\":[\\\"pets\\\"],\\\"parameters\\\":[{\\\"name\\\":\\\"limit\\\",\\\"in\\\":\\\"query\\\",\\\"description\\\":\\\"How many items to return at one time (max 100)\\\",\\\"required\\\":false,\\\"schema\\\":{\\\"type\\\":\\\"integer\\\",\\\"format\\\":\\\"int32\\\"}}],\\\"security\\\":[{\\\"petstore_auth\\\":[\\\"read:pets\\\"]}],\\\"responses\\\":{\\\"200\\\":{\\\"description\\\":\\\"An paged array of pets\\\",\\\"headers\\\":{\\\"x-next\\\":{\\\"description\\\":\\\"A link to the next page of responses\\\",\\\"schema\\\":{\\\"type\\\":\\\"string\\\"}}},\\\"content\\\":{\\\"application/json\\\":{\\\"schema\\\":{\\\"type\\\":\\\"array\\\",\\\"items\\\":{\\\"$ref\\\":\\\"#/components/schemas/Pet\\\"}},\\\"example\\\":[{\\\"id\\\":1,\\\"name\\\":\\\"catten\\\",\\\"tag\\\":\\\"cat\\\"},{\\\"id\\\":2,\\\"name\\\":\\\"doggy\\\",\\\"tag\\\":\\\"dog\\\"}]}}},\\\"default\\\":{\\\"description\\\":\\\"unexpected error\\\",\\\"content\\\":{\\\"application/json\\\":{\\\"schema\\\":{\\\"$ref\\\":\\\"#/components/schemas/Error\\\"}}}}}},\\\"post\\\":{\\\"summary\\\":\\\"Create a pet\\\",\\\"operationId\\\":\\\"createPets\\\",\\\"requestBody\\\":{\\\"description\\\":\\\"Pet to add to the store\\\",\\\"required\\\":true,\\\"content\\\":{\\\"application/json\\\":{\\\"schema\\\":{\\\"$ref\\\":\\\"#/components/schemas/Pet\\\"}}}},\\\"tags\\\":[\\\"pets\\\"],\\\"security\\\":[{\\\"petstore_auth\\\":[\\\"read:pets\\\",\\\"write:pets\\\"]}],\\\"responses\\\":{\\\"201\\\":{\\\"description\\\":\\\"Null response\\\"},\\\"default\\\":{\\\"description\\\":\\\"unexpected error\\\",\\\"content\\\":{\\\"application/json\\\":{\\\"schema\\\":{\\\"$ref\\\":\\\"#/components/schemas/Error\\\"}}}}}}},\\\"/pets/{petId}\\\":{\\\"get\\\":{\\\"summary\\\":\\\"Info for a specific pet\\\",\\\"operationId\\\":\\\"showPetById\\\",\\\"tags\\\":[\\\"pets\\\"],\\\"parameters\\\":[{\\\"name\\\":\\\"petId\\\",\\\"in\\\":\\\"path\\\",\\\"required\\\":true,\\\"description\\\":\\\"The id of the pet to retrieve\\\",\\\"schema\\\":{\\\"type\\\":\\\"string\\\"}}],\\\"security\\\":[{\\\"petstore_auth\\\":[\\\"read:pets\\\"]}],\\\"responses\\\":{\\\"200\\\":{\\\"description\\\":\\\"Expected response to a valid request\\\",\\\"content\\\":{\\\"application/json\\\":{\\\"schema\\\":{\\\"$ref\\\":\\\"#/components/schemas/Pet\\\"},\\\"example\\\":{\\\"id\\\":1,\\\"name\\\":\\\"Jessica Right\\\",\\\"tag\\\":\\\"pet\\\"}}}},\\\"default\\\":{\\\"description\\\":\\\"unexpected error\\\",\\\"content\\\":{\\\"application/json\\\":{\\\"schema\\\":{\\\"$ref\\\":\\\"#/components/schemas/Error\\\"}}}}}},\\\"delete\\\":{\\\"summary\\\":\\\"Delete a specific pet\\\",\\\"operationId\\\":\\\"deletePetById\\\",\\\"tags\\\":[\\\"pets\\\"],\\\"parameters\\\":[{\\\"name\\\":\\\"petId\\\",\\\"in\\\":\\\"path\\\",\\\"required\\\":true,\\\"description\\\":\\\"The id of the pet to delete\\\",\\\"schema\\\":{\\\"type\\\":\\\"string\\\"}},{\\\"name\\\":\\\"key\\\",\\\"in\\\":\\\"header\\\",\\\"required\\\":true,\\\"description\\\":\\\"The key header\\\",\\\"schema\\\":{\\\"type\\\":\\\"string\\\"}}],\\\"security\\\":[{\\\"petstore_auth\\\":[\\\"write:pets\\\"]}],\\\"responses\\\":{\\\"200\\\":{\\\"description\\\":\\\"Expected response to a valid request\\\",\\\"content\\\":{\\\"application/json\\\":{\\\"schema\\\":{\\\"$ref\\\":\\\"#/components/schemas/Pet\\\"},\\\"examples\\\":{\\\"response\\\":{\\\"value\\\":{\\\"id\\\":1,\\\"name\\\":\\\"Jessica Right\\\",\\\"tag\\\":\\\"pet\\\"}}}}}},\\\"default\\\":{\\\"description\\\":\\\"unexpected error\\\",\\\"content\\\":{\\\"application/json\\\":{\\\"schema\\\":{\\\"$ref\\\":\\\"#/components/schemas/Error\\\"}}}}}}}},\\\"components\\\":{\\\"securitySchemes\\\":{\\\"petstore_auth\\\":{\\\"type\\\":\\\"oauth2\\\",\\\"description\\\":\\\"This API uses OAuth 2 with the client credential grant flow.\\\",\\\"flows\\\":{\\\"clientCredentials\\\":{\\\"tokenUrl\\\":\\\"https://localhost:6882/token\\\",\\\"scopes\\\":{\\\"write:pets\\\":\\\"modify pets in your account\\\",\\\"read:pets\\\":\\\"read your pets\\\"}}}}},\\\"schemas\\\":{\\\"Pet\\\":{\\\"type\\\":\\\"object\\\",\\\"required\\\":[\\\"id\\\",\\\"name\\\"],\\\"properties\\\":{\\\"id\\\":{\\\"type\\\":\\\"integer\\\",\\\"format\\\":\\\"int64\\\"},\\\"name\\\":{\\\"type\\\":\\\"string\\\"},\\\"tag\\\":{\\\"type\\\":\\\"string\\\"}}},\\\"Error\\\":{\\\"type\\\":\\\"object\\\",\\\"required\\\":[\\\"code\\\",\\\"message\\\"],\\\"properties\\\":{\\\"code\\\":{\\\"type\\\":\\\"integer\\\",\\\"format\\\":\\\"int32\\\"},\\\"message\\\":{\\\"type\\\":\\\"string\\\"}}}}}}\",\"configType\":\"C\",\"configText\":\"{\\\"name\\\":\\\"petstore\\\",\\\"version\\\":\\\"3.0.1\\\",\\\"groupId\\\":\\\"com.networknt\\\",\\\"artifactId\\\":\\\"petstore\\\",\\\"rootPackage\\\":\\\"com.networknt.petstore\\\",\\\"handlerPackage\\\":\\\"com.networknt.petstore.handler\\\",\\\"modelPackage\\\":\\\"com.networknt.petstore.model\\\",\\\"overwriteHandler\\\":true,\\\"overwriteHandlerTest\\\":true,\\\"overwriteModel\\\":true,\\\"httpPort\\\":8080,\\\"enableHttp\\\":false,\\\"httpsPort\\\":8443,\\\"enableHttps\\\":true,\\\"enableHttp2\\\":true,\\\"enableRegistry\\\":false,\\\"supportDb\\\":false,\\\"supportH2ForTest\\\":false,\\\"supportClient\\\":false,\\\"dockerOrganization\\\":\\\"networknt\\\"}\"}]}}";
+    // keep the modelText and configText here for constructing the single and multiple strings above.
+    static String modelText = "{\"openapi\":\"3.0.0\",\"info\":{\"version\":\"1.0.0\",\"title\":\"Swagger Petstore\",\"license\":{\"name\":\"MIT\"}},\"servers\":[{\"url\":\"http://petstore.swagger.io/v1\"}],\"paths\":{\"/pets\":{\"get\":{\"summary\":\"List all pets\",\"operationId\":\"listPets\",\"tags\":[\"pets\"],\"parameters\":[{\"name\":\"limit\",\"in\":\"query\",\"description\":\"How many items to return at one time (max 100)\",\"required\":false,\"schema\":{\"type\":\"integer\",\"format\":\"int32\"}}],\"security\":[{\"petstore_auth\":[\"read:pets\"]}],\"responses\":{\"200\":{\"description\":\"An paged array of pets\",\"headers\":{\"x-next\":{\"description\":\"A link to the next page of responses\",\"schema\":{\"type\":\"string\"}}},\"content\":{\"application/json\":{\"schema\":{\"type\":\"array\",\"items\":{\"$ref\":\"#/components/schemas/Pet\"}},\"example\":[{\"id\":1,\"name\":\"catten\",\"tag\":\"cat\"},{\"id\":2,\"name\":\"doggy\",\"tag\":\"dog\"}]}}},\"default\":{\"description\":\"unexpected error\",\"content\":{\"application/json\":{\"schema\":{\"$ref\":\"#/components/schemas/Error\"}}}}}},\"post\":{\"summary\":\"Create a pet\",\"operationId\":\"createPets\",\"requestBody\":{\"description\":\"Pet to add to the store\",\"required\":true,\"content\":{\"application/json\":{\"schema\":{\"$ref\":\"#/components/schemas/Pet\"}}}},\"tags\":[\"pets\"],\"security\":[{\"petstore_auth\":[\"read:pets\",\"write:pets\"]}],\"responses\":{\"201\":{\"description\":\"Null response\"},\"default\":{\"description\":\"unexpected error\",\"content\":{\"application/json\":{\"schema\":{\"$ref\":\"#/components/schemas/Error\"}}}}}}},\"/pets/{petId}\":{\"get\":{\"summary\":\"Info for a specific pet\",\"operationId\":\"showPetById\",\"tags\":[\"pets\"],\"parameters\":[{\"name\":\"petId\",\"in\":\"path\",\"required\":true,\"description\":\"The id of the pet to retrieve\",\"schema\":{\"type\":\"string\"}}],\"security\":[{\"petstore_auth\":[\"read:pets\"]}],\"responses\":{\"200\":{\"description\":\"Expected response to a valid request\",\"content\":{\"application/json\":{\"schema\":{\"$ref\":\"#/components/schemas/Pet\"},\"example\":{\"id\":1,\"name\":\"Jessica Right\",\"tag\":\"pet\"}}}},\"default\":{\"description\":\"unexpected error\",\"content\":{\"application/json\":{\"schema\":{\"$ref\":\"#/components/schemas/Error\"}}}}}},\"delete\":{\"summary\":\"Delete a specific pet\",\"operationId\":\"deletePetById\",\"tags\":[\"pets\"],\"parameters\":[{\"name\":\"petId\",\"in\":\"path\",\"required\":true,\"description\":\"The id of the pet to delete\",\"schema\":{\"type\":\"string\"}},{\"name\":\"key\",\"in\":\"header\",\"required\":true,\"description\":\"The key header\",\"schema\":{\"type\":\"string\"}}],\"security\":[{\"petstore_auth\":[\"write:pets\"]}],\"responses\":{\"200\":{\"description\":\"Expected response to a valid request\",\"content\":{\"application/json\":{\"schema\":{\"$ref\":\"#/components/schemas/Pet\"},\"examples\":{\"response\":{\"value\":{\"id\":1,\"name\":\"Jessica Right\",\"tag\":\"pet\"}}}}}},\"default\":{\"description\":\"unexpected error\",\"content\":{\"application/json\":{\"schema\":{\"$ref\":\"#/components/schemas/Error\"}}}}}}}},\"components\":{\"securitySchemes\":{\"petstore_auth\":{\"type\":\"oauth2\",\"description\":\"This API uses OAuth 2 with the client credential grant flow.\",\"flows\":{\"clientCredentials\":{\"tokenUrl\":\"https://localhost:6882/token\",\"scopes\":{\"write:pets\":\"modify pets in your account\",\"read:pets\":\"read your pets\"}}}}},\"schemas\":{\"Pet\":{\"type\":\"object\",\"required\":[\"id\",\"name\"],\"properties\":{\"id\":{\"type\":\"integer\",\"format\":\"int64\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}}},\"Error\":{\"type\":\"object\",\"required\":[\"code\",\"message\"],\"properties\":{\"code\":{\"type\":\"integer\",\"format\":\"int32\"},\"message\":{\"type\":\"string\"}}}}}}";
+    static String configText = "{\"name\":\"petstore\",\"version\":\"3.0.1\",\"groupId\":\"com.networknt\",\"artifactId\":\"petstore\",\"rootPackage\":\"com.networknt.petstore\",\"handlerPackage\":\"com.networknt.petstore.handler\",\"modelPackage\":\"com.networknt.petstore.model\",\"overwriteHandler\":true,\"overwriteHandlerTest\":true,\"overwriteModel\":true,\"httpPort\":8080,\"enableHttp\":false,\"httpsPort\":8443,\"enableHttps\":true,\"enableHttp2\":true,\"enableRegistry\":false,\"supportDb\":false,\"supportH2ForTest\":false,\"supportClient\":false,\"dockerOrganization\":\"networknt\"}";
+
+    static String singleWithModelUrl = "{\"host\":\"lightapi.net\",\"service\":\"codegen\",\"action\":\"single\",\"version\":\"0.0.1\",\"data\":{\"framework\":\"openapi\",\"modelType\":\"U\",\"modelUrl\":\"https://raw.githubusercontent.com/networknt/model-config/master/rest/openapi/petstore/1.0.0/openapi.json\",\"configType\":\"C\",\"configText\":\"{\\\"name\\\":\\\"petstore\\\",\\\"version\\\":\\\"3.0.1\\\",\\\"groupId\\\":\\\"com.networknt\\\",\\\"artifactId\\\":\\\"petstore\\\",\\\"rootPackage\\\":\\\"com.networknt.petstore\\\",\\\"handlerPackage\\\":\\\"com.networknt.petstore.handler\\\",\\\"modelPackage\\\":\\\"com.networknt.petstore.model\\\",\\\"overwriteHandler\\\":true,\\\"overwriteHandlerTest\\\":true,\\\"overwriteModel\\\":true,\\\"httpPort\\\":8080,\\\"enableHttp\\\":false,\\\"httpsPort\\\":8443,\\\"enableHttps\\\":true,\\\"enableHttp2\\\":true,\\\"enableRegistry\\\":false,\\\"supportDb\\\":false,\\\"supportH2ForTest\\\":false,\\\"supportClient\\\":false,\\\"dockerOrganization\\\":\\\"networknt\\\"}\"}}";
+    static String multipleWithAllUrl = "{\"host\":\"lightapi.net\",\"service\":\"codegen\",\"action\":\"multiple\",\"version\":\"0.0.1\",\"data\":{\"generators\":[{\"framework\":\"openapi\",\"modelType\":\"U\",\"modelUrl\":\"https://raw.githubusercontent.com/networknt/model-config/master/rest/openapi/petstore/1.0.0/openapi.json\",\"configType\":\"U\",\"configUrl\":\"https://raw.githubusercontent.com/networknt/model-config/master/rest/openapi/petstore/1.0.0/config.json\"}]}}";
+
     static final Logger logger = LoggerFactory.getLogger(GeneratorServiceHandlerTest.class);
 
+    /**
+     * The original generate action is removed and single and multiple are added. This is to ensure that the old
+     * action will return an error message.
+     * @throws ClientException
+     */
     @Test
     public void testMissingGeneratorItem() throws ClientException {
         Map<String, String> params = new HashMap<>();
@@ -87,20 +102,25 @@ public class GeneratorServiceHandlerTest {
         }
         int statusCode = reference.get().getResponseCode();
         String body = reference.get().getAttachment(Http2Client.RESPONSE_BODY);
-        Assert.assertEquals(200, statusCode);
-        if(statusCode == 200) {
-            Assert.assertTrue(body.contains("ERR11101"));
+        Assert.assertEquals(400, statusCode);
+        if(statusCode == 400) {
+            Assert.assertTrue(body.contains("ERR11200"));
         }
     }
 
+    /**
+     * This is the multiple generators endpoint with an invalid framework.
+     * @throws ClientException
+     * @throws IOException
+     */
     @Test
-    public void testInvalidFramework() throws ClientException, IOException {
+    public void testInvalidFrameworkMultiple() throws ClientException, IOException {
         Map<String, Object> params = new HashMap<>();
         params.put("host", "lightapi.net");
         params.put("service", "codegen");
-        params.put("action", "generate");
+        params.put("action", "multiple");
         params.put("version", "0.0.1");
-        params.put("data", new ObjectMapper().readValue("[{\"framework\": \"invalid\", \"model\": {\"key\":\"value\"}, \"config\": {\"key\":\"value\"}}]", List.class));
+        params.put("data", new ObjectMapper().readValue("{\"generators\":[{\"framework\":\"invalid\",\"modelType\":\"C\",\"modelText\":{\"key\":\"value\"},\"configType\":\"C\",\"configText\":{\"key\":\"value\"}}]}", Map.class));
 
         final AtomicReference<ClientResponse> reference = new AtomicReference<>();
         final Http2Client client = Http2Client.getInstance();
@@ -134,1089 +154,72 @@ public class GeneratorServiceHandlerTest {
         }
         int statusCode = reference.get().getResponseCode();
         String body = reference.get().getAttachment(Http2Client.RESPONSE_BODY);
-        Assert.assertEquals(200, statusCode);
-        if(statusCode == 200) {
+        Assert.assertEquals(400, statusCode);
+        if(statusCode == 400) {
             Assert.assertTrue(body.contains("ERR11100"));
         }
     }
 
-
+    /**
+     * This is the multiple generators endpoint with an invalid framework.
+     * @throws ClientException
+     * @throws IOException
+     */
     @Test
-    public void testGenerator() throws ClientException, ApiException, IOException {
+    public void testInvalidFrameworkSingle() throws ClientException, IOException {
         Map<String, Object> params = new HashMap<>();
         params.put("host", "lightapi.net");
         params.put("service", "codegen");
-        params.put("action", "generate");
+        params.put("action", "single");
         params.put("version", "0.0.1");
+        params.put("data", new ObjectMapper().readValue("{\"framework\":\"invalid\",\"modelType\":\"C\",\"modelText\":{\"key\":\"value\"},\"configType\":\"C\",\"configText\":{\"key\":\"value\"}}", Map.class));
 
-        String model = "{\n" +
-                "        \"swagger\": \"2.0\",\n" +
-                "        \"info\": {\n" +
-                "          \"description\": \"This is a sample server Petstore server.  You can find out more about Swagger at [http://swagger.io](http://swagger.io) or on [irc.freenode.net, #swagger](http://swagger.io/irc/).  For this sample, you can use the api key `special-key` to test the authorization filters.\",\n" +
-                "          \"version\": \"1.0.0\",\n" +
-                "          \"title\": \"Swagger Petstore\",\n" +
-                "          \"termsOfService\": \"http://swagger.io/terms/\",\n" +
-                "          \"contact\": {\n" +
-                "            \"email\": \"apiteam@swagger.io\"\n" +
-                "          },\n" +
-                "          \"license\": {\n" +
-                "            \"name\": \"Apache 2.0\",\n" +
-                "            \"url\": \"http://www.apache.org/licenses/LICENSE-2.0.html\"\n" +
-                "          }\n" +
-                "        },\n" +
-                "        \"host\": \"petstore.swagger.io\",\n" +
-                "        \"basePath\": \"/v2\",\n" +
-                "        \"tags\": [\n" +
-                "          {\n" +
-                "            \"name\": \"pet\",\n" +
-                "            \"description\": \"Everything about your Pets\",\n" +
-                "            \"externalDocs\": {\n" +
-                "              \"description\": \"Find out more\",\n" +
-                "              \"url\": \"http://swagger.io\"\n" +
-                "            }\n" +
-                "          },\n" +
-                "          {\n" +
-                "            \"name\": \"store\",\n" +
-                "            \"description\": \"Access to Petstore orders\"\n" +
-                "          },\n" +
-                "          {\n" +
-                "            \"name\": \"user\",\n" +
-                "            \"description\": \"Operations about user\",\n" +
-                "            \"externalDocs\": {\n" +
-                "              \"description\": \"Find out more about our store\",\n" +
-                "              \"url\": \"http://swagger.io\"\n" +
-                "            }\n" +
-                "          }\n" +
-                "        ],\n" +
-                "        \"schemes\": [\n" +
-                "          \"http\"\n" +
-                "        ],\n" +
-                "        \"paths\": {\n" +
-                "          \"/pet\": {\n" +
-                "            \"post\": {\n" +
-                "              \"tags\": [\n" +
-                "                \"pet\"\n" +
-                "              ],\n" +
-                "              \"summary\": \"Add a new pet to the store\",\n" +
-                "              \"description\": \"\",\n" +
-                "              \"operationId\": \"addPet\",\n" +
-                "              \"consumes\": [\n" +
-                "                \"application/json\",\n" +
-                "                \"application/xml\"\n" +
-                "              ],\n" +
-                "              \"produces\": [\n" +
-                "                \"application/xml\",\n" +
-                "                \"application/json\"\n" +
-                "              ],\n" +
-                "              \"parameters\": [\n" +
-                "                {\n" +
-                "                  \"in\": \"body\",\n" +
-                "                  \"name\": \"body\",\n" +
-                "                  \"description\": \"Pet object that needs to be added to the store\",\n" +
-                "                  \"required\": true,\n" +
-                "                  \"schema\": {\n" +
-                "                    \"$ref\": \"#/definitions/Pet\"\n" +
-                "                  }\n" +
-                "                }\n" +
-                "              ],\n" +
-                "              \"responses\": {\n" +
-                "                \"405\": {\n" +
-                "                  \"description\": \"Invalid input\"\n" +
-                "                }\n" +
-                "              },\n" +
-                "              \"security\": [\n" +
-                "                {\n" +
-                "                  \"petstore_auth\": [\n" +
-                "                    \"write:pets\",\n" +
-                "                    \"read:pets\"\n" +
-                "                  ]\n" +
-                "                }\n" +
-                "              ]\n" +
-                "            },\n" +
-                "            \"put\": {\n" +
-                "              \"tags\": [\n" +
-                "                \"pet\"\n" +
-                "              ],\n" +
-                "              \"summary\": \"Update an existing pet\",\n" +
-                "              \"description\": \"\",\n" +
-                "              \"operationId\": \"updatePet\",\n" +
-                "              \"consumes\": [\n" +
-                "                \"application/json\",\n" +
-                "                \"application/xml\"\n" +
-                "              ],\n" +
-                "              \"produces\": [\n" +
-                "                \"application/xml\",\n" +
-                "                \"application/json\"\n" +
-                "              ],\n" +
-                "              \"parameters\": [\n" +
-                "                {\n" +
-                "                  \"in\": \"body\",\n" +
-                "                  \"name\": \"body\",\n" +
-                "                  \"description\": \"Pet object that needs to be added to the store\",\n" +
-                "                  \"required\": true,\n" +
-                "                  \"schema\": {\n" +
-                "                    \"$ref\": \"#/definitions/Pet\"\n" +
-                "                  }\n" +
-                "                }\n" +
-                "              ],\n" +
-                "              \"responses\": {\n" +
-                "                \"400\": {\n" +
-                "                  \"description\": \"Invalid ID supplied\"\n" +
-                "                },\n" +
-                "                \"404\": {\n" +
-                "                  \"description\": \"Pet not found\"\n" +
-                "                },\n" +
-                "                \"405\": {\n" +
-                "                  \"description\": \"Validation exception\"\n" +
-                "                }\n" +
-                "              },\n" +
-                "              \"security\": [\n" +
-                "                {\n" +
-                "                  \"petstore_auth\": [\n" +
-                "                    \"write:pets\",\n" +
-                "                    \"read:pets\"\n" +
-                "                  ]\n" +
-                "                }\n" +
-                "              ]\n" +
-                "            }\n" +
-                "          },\n" +
-                "          \"/pet/findByStatus\": {\n" +
-                "            \"get\": {\n" +
-                "              \"tags\": [\n" +
-                "                \"pet\"\n" +
-                "              ],\n" +
-                "              \"summary\": \"Finds Pets by status\",\n" +
-                "              \"description\": \"Multiple status values can be provided with comma separated strings\",\n" +
-                "              \"operationId\": \"findPetsByStatus\",\n" +
-                "              \"produces\": [\n" +
-                "                \"application/xml\",\n" +
-                "                \"application/json\"\n" +
-                "              ],\n" +
-                "              \"parameters\": [\n" +
-                "                {\n" +
-                "                  \"name\": \"status\",\n" +
-                "                  \"in\": \"query\",\n" +
-                "                  \"description\": \"Status values that need to be considered for filter\",\n" +
-                "                  \"required\": true,\n" +
-                "                  \"type\": \"array\",\n" +
-                "                  \"items\": {\n" +
-                "                    \"type\": \"string\",\n" +
-                "                    \"enum\": [\n" +
-                "                      \"available\",\n" +
-                "                      \"pending\",\n" +
-                "                      \"sold\"\n" +
-                "                    ],\n" +
-                "                    \"default\": \"available\"\n" +
-                "                  },\n" +
-                "                  \"collectionFormat\": \"multi\"\n" +
-                "                }\n" +
-                "              ],\n" +
-                "              \"responses\": {\n" +
-                "                \"200\": {\n" +
-                "                  \"description\": \"successful operation\",\n" +
-                "                  \"schema\": {\n" +
-                "                    \"type\": \"array\",\n" +
-                "                    \"items\": {\n" +
-                "                      \"$ref\": \"#/definitions/Pet\"\n" +
-                "                    }\n" +
-                "                  }\n" +
-                "                },\n" +
-                "                \"400\": {\n" +
-                "                  \"description\": \"Invalid status value\"\n" +
-                "                }\n" +
-                "              },\n" +
-                "              \"security\": [\n" +
-                "                {\n" +
-                "                  \"petstore_auth\": [\n" +
-                "                    \"write:pets\",\n" +
-                "                    \"read:pets\"\n" +
-                "                  ]\n" +
-                "                }\n" +
-                "              ]\n" +
-                "            }\n" +
-                "          },\n" +
-                "          \"/pet/findByTags\": {\n" +
-                "            \"get\": {\n" +
-                "              \"tags\": [\n" +
-                "                \"pet\"\n" +
-                "              ],\n" +
-                "              \"summary\": \"Finds Pets by tags\",\n" +
-                "              \"description\": \"Muliple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing.\",\n" +
-                "              \"operationId\": \"findPetsByTags\",\n" +
-                "              \"produces\": [\n" +
-                "                \"application/xml\",\n" +
-                "                \"application/json\"\n" +
-                "              ],\n" +
-                "              \"parameters\": [\n" +
-                "                {\n" +
-                "                  \"name\": \"tags\",\n" +
-                "                  \"in\": \"query\",\n" +
-                "                  \"description\": \"Tags to filter by\",\n" +
-                "                  \"required\": true,\n" +
-                "                  \"type\": \"array\",\n" +
-                "                  \"items\": {\n" +
-                "                    \"type\": \"string\"\n" +
-                "                  },\n" +
-                "                  \"collectionFormat\": \"multi\"\n" +
-                "                }\n" +
-                "              ],\n" +
-                "              \"responses\": {\n" +
-                "                \"200\": {\n" +
-                "                  \"description\": \"successful operation\",\n" +
-                "                  \"schema\": {\n" +
-                "                    \"type\": \"array\",\n" +
-                "                    \"items\": {\n" +
-                "                      \"$ref\": \"#/definitions/Pet\"\n" +
-                "                    }\n" +
-                "                  }\n" +
-                "                },\n" +
-                "                \"400\": {\n" +
-                "                  \"description\": \"Invalid tag value\"\n" +
-                "                }\n" +
-                "              },\n" +
-                "              \"security\": [\n" +
-                "                {\n" +
-                "                  \"petstore_auth\": [\n" +
-                "                    \"write:pets\",\n" +
-                "                    \"read:pets\"\n" +
-                "                  ]\n" +
-                "                }\n" +
-                "              ],\n" +
-                "              \"deprecated\": true\n" +
-                "            }\n" +
-                "          },\n" +
-                "          \"/pet/{petId}\": {\n" +
-                "            \"get\": {\n" +
-                "              \"tags\": [\n" +
-                "                \"pet\"\n" +
-                "              ],\n" +
-                "              \"summary\": \"Find pet by ID\",\n" +
-                "              \"description\": \"Returns a single pet\",\n" +
-                "              \"operationId\": \"getPetById\",\n" +
-                "              \"produces\": [\n" +
-                "                \"application/xml\",\n" +
-                "                \"application/json\"\n" +
-                "              ],\n" +
-                "              \"parameters\": [\n" +
-                "                {\n" +
-                "                  \"name\": \"petId\",\n" +
-                "                  \"in\": \"path\",\n" +
-                "                  \"description\": \"ID of pet to return\",\n" +
-                "                  \"required\": true,\n" +
-                "                  \"type\": \"integer\",\n" +
-                "                  \"format\": \"int64\"\n" +
-                "                }\n" +
-                "              ],\n" +
-                "              \"responses\": {\n" +
-                "                \"200\": {\n" +
-                "                  \"description\": \"successful operation\",\n" +
-                "                  \"schema\": {\n" +
-                "                    \"$ref\": \"#/definitions/Pet\"\n" +
-                "                  },\n" +
-                "                  \"examples\": {\n" +
-                "                    \"application/json\": {\n" +
-                "                      \"photoUrls\": [\n" +
-                "                        \"aeiou\"\n" +
-                "                      ],\n" +
-                "                      \"name\": \"doggie\",\n" +
-                "                      \"id\": 123456789,\n" +
-                "                      \"category\": {\n" +
-                "                        \"name\": \"aeiou\",\n" +
-                "                        \"id\": 123456789\n" +
-                "                      },\n" +
-                "                      \"tags\": [\n" +
-                "                        {\n" +
-                "                          \"name\": \"aeiou\",\n" +
-                "                          \"id\": 123456789\n" +
-                "                        }\n" +
-                "                      ],\n" +
-                "                      \"status\": \"aeiou\"\n" +
-                "                    }\n" +
-                "                  }\n" +
-                "                },\n" +
-                "                \"400\": {\n" +
-                "                  \"description\": \"Invalid ID supplied\"\n" +
-                "                },\n" +
-                "                \"404\": {\n" +
-                "                  \"description\": \"Pet not found\"\n" +
-                "                }\n" +
-                "              },\n" +
-                "              \"security\": [\n" +
-                "                {\n" +
-                "                  \"api_key\": []\n" +
-                "                }\n" +
-                "              ]\n" +
-                "            },\n" +
-                "            \"post\": {\n" +
-                "              \"tags\": [\n" +
-                "                \"pet\"\n" +
-                "              ],\n" +
-                "              \"summary\": \"Updates a pet in the store with form data\",\n" +
-                "              \"description\": \"\",\n" +
-                "              \"operationId\": \"updatePetWithForm\",\n" +
-                "              \"consumes\": [\n" +
-                "                \"application/x-www-form-urlencoded\"\n" +
-                "              ],\n" +
-                "              \"produces\": [\n" +
-                "                \"application/xml\",\n" +
-                "                \"application/json\"\n" +
-                "              ],\n" +
-                "              \"parameters\": [\n" +
-                "                {\n" +
-                "                  \"name\": \"petId\",\n" +
-                "                  \"in\": \"path\",\n" +
-                "                  \"description\": \"ID of pet that needs to be updated\",\n" +
-                "                  \"required\": true,\n" +
-                "                  \"type\": \"integer\",\n" +
-                "                  \"format\": \"int64\"\n" +
-                "                },\n" +
-                "                {\n" +
-                "                  \"name\": \"name\",\n" +
-                "                  \"in\": \"formData\",\n" +
-                "                  \"description\": \"Updated name of the pet\",\n" +
-                "                  \"required\": false,\n" +
-                "                  \"type\": \"string\"\n" +
-                "                },\n" +
-                "                {\n" +
-                "                  \"name\": \"status\",\n" +
-                "                  \"in\": \"formData\",\n" +
-                "                  \"description\": \"Updated status of the pet\",\n" +
-                "                  \"required\": false,\n" +
-                "                  \"type\": \"string\"\n" +
-                "                }\n" +
-                "              ],\n" +
-                "              \"responses\": {\n" +
-                "                \"405\": {\n" +
-                "                  \"description\": \"Invalid input\"\n" +
-                "                }\n" +
-                "              },\n" +
-                "              \"security\": [\n" +
-                "                {\n" +
-                "                  \"petstore_auth\": [\n" +
-                "                    \"write:pets\",\n" +
-                "                    \"read:pets\"\n" +
-                "                  ]\n" +
-                "                }\n" +
-                "              ]\n" +
-                "            },\n" +
-                "            \"delete\": {\n" +
-                "              \"tags\": [\n" +
-                "                \"pet\"\n" +
-                "              ],\n" +
-                "              \"summary\": \"Deletes a pet\",\n" +
-                "              \"description\": \"\",\n" +
-                "              \"operationId\": \"deletePet\",\n" +
-                "              \"produces\": [\n" +
-                "                \"application/xml\",\n" +
-                "                \"application/json\"\n" +
-                "              ],\n" +
-                "              \"parameters\": [\n" +
-                "                {\n" +
-                "                  \"name\": \"api_key\",\n" +
-                "                  \"in\": \"header\",\n" +
-                "                  \"required\": false,\n" +
-                "                  \"type\": \"string\"\n" +
-                "                },\n" +
-                "                {\n" +
-                "                  \"name\": \"petId\",\n" +
-                "                  \"in\": \"path\",\n" +
-                "                  \"description\": \"Pet id to delete\",\n" +
-                "                  \"required\": true,\n" +
-                "                  \"type\": \"integer\",\n" +
-                "                  \"format\": \"int64\"\n" +
-                "                }\n" +
-                "              ],\n" +
-                "              \"responses\": {\n" +
-                "                \"400\": {\n" +
-                "                  \"description\": \"Invalid ID supplied\"\n" +
-                "                },\n" +
-                "                \"404\": {\n" +
-                "                  \"description\": \"Pet not found\"\n" +
-                "                }\n" +
-                "              },\n" +
-                "              \"security\": [\n" +
-                "                {\n" +
-                "                  \"petstore_auth\": [\n" +
-                "                    \"write:pets\",\n" +
-                "                    \"read:pets\"\n" +
-                "                  ]\n" +
-                "                }\n" +
-                "              ]\n" +
-                "            }\n" +
-                "          },\n" +
-                "          \"/pet/{petId}/uploadImage\": {\n" +
-                "            \"post\": {\n" +
-                "              \"tags\": [\n" +
-                "                \"pet\"\n" +
-                "              ],\n" +
-                "              \"summary\": \"uploads an image\",\n" +
-                "              \"description\": \"\",\n" +
-                "              \"operationId\": \"uploadFile\",\n" +
-                "              \"consumes\": [\n" +
-                "                \"multipart/form-data\"\n" +
-                "              ],\n" +
-                "              \"produces\": [\n" +
-                "                \"application/json\"\n" +
-                "              ],\n" +
-                "              \"parameters\": [\n" +
-                "                {\n" +
-                "                  \"name\": \"petId\",\n" +
-                "                  \"in\": \"path\",\n" +
-                "                  \"description\": \"ID of pet to update\",\n" +
-                "                  \"required\": true,\n" +
-                "                  \"type\": \"integer\",\n" +
-                "                  \"format\": \"int64\"\n" +
-                "                },\n" +
-                "                {\n" +
-                "                  \"name\": \"additionalMetadata\",\n" +
-                "                  \"in\": \"formData\",\n" +
-                "                  \"description\": \"Additional data to pass to server\",\n" +
-                "                  \"required\": false,\n" +
-                "                  \"type\": \"string\"\n" +
-                "                },\n" +
-                "                {\n" +
-                "                  \"name\": \"file\",\n" +
-                "                  \"in\": \"formData\",\n" +
-                "                  \"description\": \"file to upload\",\n" +
-                "                  \"required\": false,\n" +
-                "                  \"type\": \"file\"\n" +
-                "                }\n" +
-                "              ],\n" +
-                "              \"responses\": {\n" +
-                "                \"200\": {\n" +
-                "                  \"description\": \"successful operation\",\n" +
-                "                  \"schema\": {\n" +
-                "                    \"$ref\": \"#/definitions/ApiResponse\"\n" +
-                "                  }\n" +
-                "                }\n" +
-                "              },\n" +
-                "              \"security\": [\n" +
-                "                {\n" +
-                "                  \"petstore_auth\": [\n" +
-                "                    \"write:pets\",\n" +
-                "                    \"read:pets\"\n" +
-                "                  ]\n" +
-                "                }\n" +
-                "              ]\n" +
-                "            }\n" +
-                "          },\n" +
-                "          \"/store/inventory\": {\n" +
-                "            \"get\": {\n" +
-                "              \"tags\": [\n" +
-                "                \"store\"\n" +
-                "              ],\n" +
-                "              \"summary\": \"Returns pet inventories by status\",\n" +
-                "              \"description\": \"Returns a map of status codes to quantities\",\n" +
-                "              \"operationId\": \"getInventory\",\n" +
-                "              \"produces\": [\n" +
-                "                \"application/json\"\n" +
-                "              ],\n" +
-                "              \"parameters\": [],\n" +
-                "              \"responses\": {\n" +
-                "                \"200\": {\n" +
-                "                  \"description\": \"successful operation\",\n" +
-                "                  \"schema\": {\n" +
-                "                    \"type\": \"object\",\n" +
-                "                    \"additionalProperties\": {\n" +
-                "                      \"type\": \"integer\",\n" +
-                "                      \"format\": \"int32\"\n" +
-                "                    }\n" +
-                "                  }\n" +
-                "                }\n" +
-                "              },\n" +
-                "              \"security\": [\n" +
-                "                {\n" +
-                "                  \"api_key\": []\n" +
-                "                }\n" +
-                "              ]\n" +
-                "            }\n" +
-                "          },\n" +
-                "          \"/store/order\": {\n" +
-                "            \"post\": {\n" +
-                "              \"tags\": [\n" +
-                "                \"store\"\n" +
-                "              ],\n" +
-                "              \"summary\": \"Place an order for a pet\",\n" +
-                "              \"description\": \"\",\n" +
-                "              \"operationId\": \"placeOrder\",\n" +
-                "              \"produces\": [\n" +
-                "                \"application/xml\",\n" +
-                "                \"application/json\"\n" +
-                "              ],\n" +
-                "              \"parameters\": [\n" +
-                "                {\n" +
-                "                  \"in\": \"body\",\n" +
-                "                  \"name\": \"body\",\n" +
-                "                  \"description\": \"order placed for purchasing the pet\",\n" +
-                "                  \"required\": true,\n" +
-                "                  \"schema\": {\n" +
-                "                    \"$ref\": \"#/definitions/Order\"\n" +
-                "                  }\n" +
-                "                }\n" +
-                "              ],\n" +
-                "              \"responses\": {\n" +
-                "                \"200\": {\n" +
-                "                  \"description\": \"successful operation\",\n" +
-                "                  \"schema\": {\n" +
-                "                    \"$ref\": \"#/definitions/Order\"\n" +
-                "                  }\n" +
-                "                },\n" +
-                "                \"400\": {\n" +
-                "                  \"description\": \"Invalid Order\"\n" +
-                "                }\n" +
-                "              }\n" +
-                "            }\n" +
-                "          },\n" +
-                "          \"/store/order/{orderId}\": {\n" +
-                "            \"get\": {\n" +
-                "              \"tags\": [\n" +
-                "                \"store\"\n" +
-                "              ],\n" +
-                "              \"summary\": \"Find purchase order by ID\",\n" +
-                "              \"description\": \"For valid response try integer IDs with value >= 1 and <= 10. Other values will generated exceptions\",\n" +
-                "              \"operationId\": \"getOrderById\",\n" +
-                "              \"produces\": [\n" +
-                "                \"application/xml\",\n" +
-                "                \"application/json\"\n" +
-                "              ],\n" +
-                "              \"parameters\": [\n" +
-                "                {\n" +
-                "                  \"name\": \"orderId\",\n" +
-                "                  \"in\": \"path\",\n" +
-                "                  \"description\": \"ID of pet that needs to be fetched\",\n" +
-                "                  \"required\": true,\n" +
-                "                  \"type\": \"integer\",\n" +
-                "                  \"maximum\": 10,\n" +
-                "                  \"minimum\": 1,\n" +
-                "                  \"format\": \"int64\"\n" +
-                "                }\n" +
-                "              ],\n" +
-                "              \"responses\": {\n" +
-                "                \"200\": {\n" +
-                "                  \"description\": \"successful operation\",\n" +
-                "                  \"schema\": {\n" +
-                "                    \"$ref\": \"#/definitions/Order\"\n" +
-                "                  }\n" +
-                "                },\n" +
-                "                \"400\": {\n" +
-                "                  \"description\": \"Invalid ID supplied\"\n" +
-                "                },\n" +
-                "                \"404\": {\n" +
-                "                  \"description\": \"Order not found\"\n" +
-                "                }\n" +
-                "              }\n" +
-                "            },\n" +
-                "            \"delete\": {\n" +
-                "              \"tags\": [\n" +
-                "                \"store\"\n" +
-                "              ],\n" +
-                "              \"summary\": \"Delete purchase order by ID\",\n" +
-                "              \"description\": \"For valid response try integer IDs with positive integer value. Negative or non-integer values will generate API errors\",\n" +
-                "              \"operationId\": \"deleteOrder\",\n" +
-                "              \"produces\": [\n" +
-                "                \"application/xml\",\n" +
-                "                \"application/json\"\n" +
-                "              ],\n" +
-                "              \"parameters\": [\n" +
-                "                {\n" +
-                "                  \"name\": \"orderId\",\n" +
-                "                  \"in\": \"path\",\n" +
-                "                  \"description\": \"ID of the order that needs to be deleted\",\n" +
-                "                  \"required\": true,\n" +
-                "                  \"type\": \"integer\",\n" +
-                "                  \"minimum\": 1,\n" +
-                "                  \"format\": \"int64\"\n" +
-                "                }\n" +
-                "              ],\n" +
-                "              \"responses\": {\n" +
-                "                \"400\": {\n" +
-                "                  \"description\": \"Invalid ID supplied\"\n" +
-                "                },\n" +
-                "                \"404\": {\n" +
-                "                  \"description\": \"Order not found\"\n" +
-                "                }\n" +
-                "              }\n" +
-                "            }\n" +
-                "          },\n" +
-                "          \"/user\": {\n" +
-                "            \"post\": {\n" +
-                "              \"tags\": [\n" +
-                "                \"user\"\n" +
-                "              ],\n" +
-                "              \"summary\": \"Create user\",\n" +
-                "              \"description\": \"This can only be done by the logged in user.\",\n" +
-                "              \"operationId\": \"createUser\",\n" +
-                "              \"produces\": [\n" +
-                "                \"application/xml\",\n" +
-                "                \"application/json\"\n" +
-                "              ],\n" +
-                "              \"parameters\": [\n" +
-                "                {\n" +
-                "                  \"in\": \"body\",\n" +
-                "                  \"name\": \"body\",\n" +
-                "                  \"description\": \"Created user object\",\n" +
-                "                  \"required\": true,\n" +
-                "                  \"schema\": {\n" +
-                "                    \"$ref\": \"#/definitions/User\"\n" +
-                "                  }\n" +
-                "                }\n" +
-                "              ],\n" +
-                "              \"responses\": {\n" +
-                "                \"default\": {\n" +
-                "                  \"description\": \"successful operation\"\n" +
-                "                }\n" +
-                "              }\n" +
-                "            }\n" +
-                "          },\n" +
-                "          \"/user/createWithArray\": {\n" +
-                "            \"post\": {\n" +
-                "              \"tags\": [\n" +
-                "                \"user\"\n" +
-                "              ],\n" +
-                "              \"summary\": \"Creates list of users with given input array\",\n" +
-                "              \"description\": \"\",\n" +
-                "              \"operationId\": \"createUsersWithArrayInput\",\n" +
-                "              \"produces\": [\n" +
-                "                \"application/xml\",\n" +
-                "                \"application/json\"\n" +
-                "              ],\n" +
-                "              \"parameters\": [\n" +
-                "                {\n" +
-                "                  \"in\": \"body\",\n" +
-                "                  \"name\": \"body\",\n" +
-                "                  \"description\": \"List of user object\",\n" +
-                "                  \"required\": true,\n" +
-                "                  \"schema\": {\n" +
-                "                    \"type\": \"array\",\n" +
-                "                    \"items\": {\n" +
-                "                      \"$ref\": \"#/definitions/User\"\n" +
-                "                    }\n" +
-                "                  }\n" +
-                "                }\n" +
-                "              ],\n" +
-                "              \"responses\": {\n" +
-                "                \"default\": {\n" +
-                "                  \"description\": \"successful operation\"\n" +
-                "                }\n" +
-                "              }\n" +
-                "            }\n" +
-                "          },\n" +
-                "          \"/user/createWithList\": {\n" +
-                "            \"post\": {\n" +
-                "              \"tags\": [\n" +
-                "                \"user\"\n" +
-                "              ],\n" +
-                "              \"summary\": \"Creates list of users with given input array\",\n" +
-                "              \"description\": \"\",\n" +
-                "              \"operationId\": \"createUsersWithListInput\",\n" +
-                "              \"produces\": [\n" +
-                "                \"application/xml\",\n" +
-                "                \"application/json\"\n" +
-                "              ],\n" +
-                "              \"parameters\": [\n" +
-                "                {\n" +
-                "                  \"in\": \"body\",\n" +
-                "                  \"name\": \"body\",\n" +
-                "                  \"description\": \"List of user object\",\n" +
-                "                  \"required\": true,\n" +
-                "                  \"schema\": {\n" +
-                "                    \"type\": \"array\",\n" +
-                "                    \"items\": {\n" +
-                "                      \"$ref\": \"#/definitions/User\"\n" +
-                "                    }\n" +
-                "                  }\n" +
-                "                }\n" +
-                "              ],\n" +
-                "              \"responses\": {\n" +
-                "                \"default\": {\n" +
-                "                  \"description\": \"successful operation\"\n" +
-                "                }\n" +
-                "              }\n" +
-                "            }\n" +
-                "          },\n" +
-                "          \"/user/login\": {\n" +
-                "            \"get\": {\n" +
-                "              \"tags\": [\n" +
-                "                \"user\"\n" +
-                "              ],\n" +
-                "              \"summary\": \"Logs user into the system\",\n" +
-                "              \"description\": \"\",\n" +
-                "              \"operationId\": \"loginUser\",\n" +
-                "              \"produces\": [\n" +
-                "                \"application/xml\",\n" +
-                "                \"application/json\"\n" +
-                "              ],\n" +
-                "              \"parameters\": [\n" +
-                "                {\n" +
-                "                  \"name\": \"username\",\n" +
-                "                  \"in\": \"query\",\n" +
-                "                  \"description\": \"The user name for login\",\n" +
-                "                  \"required\": true,\n" +
-                "                  \"type\": \"string\"\n" +
-                "                },\n" +
-                "                {\n" +
-                "                  \"name\": \"password\",\n" +
-                "                  \"in\": \"query\",\n" +
-                "                  \"description\": \"The password for login in clear text\",\n" +
-                "                  \"required\": true,\n" +
-                "                  \"type\": \"string\"\n" +
-                "                }\n" +
-                "              ],\n" +
-                "              \"responses\": {\n" +
-                "                \"200\": {\n" +
-                "                  \"description\": \"successful operation\",\n" +
-                "                  \"schema\": {\n" +
-                "                    \"type\": \"string\"\n" +
-                "                  },\n" +
-                "                  \"headers\": {\n" +
-                "                    \"X-Rate-Limit\": {\n" +
-                "                      \"type\": \"integer\",\n" +
-                "                      \"format\": \"int32\",\n" +
-                "                      \"description\": \"calls per hour allowed by the user\"\n" +
-                "                    },\n" +
-                "                    \"X-Expires-After\": {\n" +
-                "                      \"type\": \"string\",\n" +
-                "                      \"format\": \"date-time\",\n" +
-                "                      \"description\": \"date in UTC when token expires\"\n" +
-                "                    }\n" +
-                "                  }\n" +
-                "                },\n" +
-                "                \"400\": {\n" +
-                "                  \"description\": \"Invalid username/password supplied\"\n" +
-                "                }\n" +
-                "              }\n" +
-                "            }\n" +
-                "          },\n" +
-                "          \"/user/logout\": {\n" +
-                "            \"get\": {\n" +
-                "              \"tags\": [\n" +
-                "                \"user\"\n" +
-                "              ],\n" +
-                "              \"summary\": \"Logs out current logged in user session\",\n" +
-                "              \"description\": \"\",\n" +
-                "              \"operationId\": \"logoutUser\",\n" +
-                "              \"produces\": [\n" +
-                "                \"application/xml\",\n" +
-                "                \"application/json\"\n" +
-                "              ],\n" +
-                "              \"parameters\": [],\n" +
-                "              \"responses\": {\n" +
-                "                \"default\": {\n" +
-                "                  \"description\": \"successful operation\"\n" +
-                "                }\n" +
-                "              }\n" +
-                "            }\n" +
-                "          },\n" +
-                "          \"/user/{username}\": {\n" +
-                "            \"get\": {\n" +
-                "              \"tags\": [\n" +
-                "                \"user\"\n" +
-                "              ],\n" +
-                "              \"summary\": \"Get user by user name\",\n" +
-                "              \"description\": \"\",\n" +
-                "              \"operationId\": \"getUserByName\",\n" +
-                "              \"produces\": [\n" +
-                "                \"application/xml\",\n" +
-                "                \"application/json\"\n" +
-                "              ],\n" +
-                "              \"parameters\": [\n" +
-                "                {\n" +
-                "                  \"name\": \"username\",\n" +
-                "                  \"in\": \"path\",\n" +
-                "                  \"description\": \"The name that needs to be fetched. Use user1 for testing. \",\n" +
-                "                  \"required\": true,\n" +
-                "                  \"type\": \"string\"\n" +
-                "                }\n" +
-                "              ],\n" +
-                "              \"responses\": {\n" +
-                "                \"200\": {\n" +
-                "                  \"description\": \"successful operation\",\n" +
-                "                  \"schema\": {\n" +
-                "                    \"$ref\": \"#/definitions/User\"\n" +
-                "                  }\n" +
-                "                },\n" +
-                "                \"400\": {\n" +
-                "                  \"description\": \"Invalid username supplied\"\n" +
-                "                },\n" +
-                "                \"404\": {\n" +
-                "                  \"description\": \"User not found\"\n" +
-                "                }\n" +
-                "              }\n" +
-                "            },\n" +
-                "            \"put\": {\n" +
-                "              \"tags\": [\n" +
-                "                \"user\"\n" +
-                "              ],\n" +
-                "              \"summary\": \"Updated user\",\n" +
-                "              \"description\": \"This can only be done by the logged in user.\",\n" +
-                "              \"operationId\": \"updateUser\",\n" +
-                "              \"produces\": [\n" +
-                "                \"application/xml\",\n" +
-                "                \"application/json\"\n" +
-                "              ],\n" +
-                "              \"parameters\": [\n" +
-                "                {\n" +
-                "                  \"name\": \"username\",\n" +
-                "                  \"in\": \"path\",\n" +
-                "                  \"description\": \"name that need to be updated\",\n" +
-                "                  \"required\": true,\n" +
-                "                  \"type\": \"string\"\n" +
-                "                },\n" +
-                "                {\n" +
-                "                  \"in\": \"body\",\n" +
-                "                  \"name\": \"body\",\n" +
-                "                  \"description\": \"Updated user object\",\n" +
-                "                  \"required\": true,\n" +
-                "                  \"schema\": {\n" +
-                "                    \"$ref\": \"#/definitions/User\"\n" +
-                "                  }\n" +
-                "                }\n" +
-                "              ],\n" +
-                "              \"responses\": {\n" +
-                "                \"400\": {\n" +
-                "                  \"description\": \"Invalid user supplied\"\n" +
-                "                },\n" +
-                "                \"404\": {\n" +
-                "                  \"description\": \"User not found\"\n" +
-                "                }\n" +
-                "              }\n" +
-                "            },\n" +
-                "            \"delete\": {\n" +
-                "              \"tags\": [\n" +
-                "                \"user\"\n" +
-                "              ],\n" +
-                "              \"summary\": \"Delete user\",\n" +
-                "              \"description\": \"This can only be done by the logged in user.\",\n" +
-                "              \"operationId\": \"deleteUser\",\n" +
-                "              \"produces\": [\n" +
-                "                \"application/xml\",\n" +
-                "                \"application/json\"\n" +
-                "              ],\n" +
-                "              \"parameters\": [\n" +
-                "                {\n" +
-                "                  \"name\": \"username\",\n" +
-                "                  \"in\": \"path\",\n" +
-                "                  \"description\": \"The name that needs to be deleted\",\n" +
-                "                  \"required\": true,\n" +
-                "                  \"type\": \"string\"\n" +
-                "                }\n" +
-                "              ],\n" +
-                "              \"responses\": {\n" +
-                "                \"400\": {\n" +
-                "                  \"description\": \"Invalid username supplied\"\n" +
-                "                },\n" +
-                "                \"404\": {\n" +
-                "                  \"description\": \"User not found\"\n" +
-                "                }\n" +
-                "              }\n" +
-                "            }\n" +
-                "          }\n" +
-                "        },\n" +
-                "        \"securityDefinitions\": {\n" +
-                "          \"petstore_auth\": {\n" +
-                "            \"type\": \"oauth2\",\n" +
-                "            \"authorizationUrl\": \"http://petstore.swagger.io/oauth/dialog\",\n" +
-                "            \"flow\": \"implicit\",\n" +
-                "            \"scopes\": {\n" +
-                "              \"write:pets\": \"modify pets in your account\",\n" +
-                "              \"read:pets\": \"read your pets\"\n" +
-                "            }\n" +
-                "          },\n" +
-                "          \"api_key\": {\n" +
-                "            \"type\": \"apiKey\",\n" +
-                "            \"name\": \"api_key\",\n" +
-                "            \"in\": \"header\"\n" +
-                "          }\n" +
-                "        },\n" +
-                "        \"definitions\": {\n" +
-                "          \"Order\": {\n" +
-                "            \"type\": \"object\",\n" +
-                "            \"properties\": {\n" +
-                "              \"id\": {\n" +
-                "                \"type\": \"integer\",\n" +
-                "                \"format\": \"int64\"\n" +
-                "              },\n" +
-                "              \"petId\": {\n" +
-                "                \"type\": \"integer\",\n" +
-                "                \"format\": \"int64\"\n" +
-                "              },\n" +
-                "              \"quantity\": {\n" +
-                "                \"type\": \"integer\",\n" +
-                "                \"format\": \"int32\"\n" +
-                "              },\n" +
-                "              \"shipDate\": {\n" +
-                "                \"type\": \"string\",\n" +
-                "                \"format\": \"date-time\"\n" +
-                "              },\n" +
-                "              \"status\": {\n" +
-                "                \"type\": \"string\",\n" +
-                "                \"description\": \"Order Status\",\n" +
-                "                \"enum\": [\n" +
-                "                  \"placed\",\n" +
-                "                  \"approved\",\n" +
-                "                  \"delivered\"\n" +
-                "                ]\n" +
-                "              },\n" +
-                "              \"complete\": {\n" +
-                "                \"type\": \"boolean\",\n" +
-                "                \"default\": false\n" +
-                "              }\n" +
-                "            },\n" +
-                "            \"xml\": {\n" +
-                "              \"name\": \"Order\"\n" +
-                "            }\n" +
-                "          },\n" +
-                "          \"Category\": {\n" +
-                "            \"type\": \"object\",\n" +
-                "            \"properties\": {\n" +
-                "              \"id\": {\n" +
-                "                \"type\": \"integer\",\n" +
-                "                \"format\": \"int64\"\n" +
-                "              },\n" +
-                "              \"name\": {\n" +
-                "                \"type\": \"string\"\n" +
-                "              }\n" +
-                "            },\n" +
-                "            \"xml\": {\n" +
-                "              \"name\": \"Category\"\n" +
-                "            }\n" +
-                "          },\n" +
-                "          \"User\": {\n" +
-                "            \"type\": \"object\",\n" +
-                "            \"properties\": {\n" +
-                "              \"id\": {\n" +
-                "                \"type\": \"integer\",\n" +
-                "                \"format\": \"int64\"\n" +
-                "              },\n" +
-                "              \"username\": {\n" +
-                "                \"type\": \"string\"\n" +
-                "              },\n" +
-                "              \"firstName\": {\n" +
-                "                \"type\": \"string\"\n" +
-                "              },\n" +
-                "              \"lastName\": {\n" +
-                "                \"type\": \"string\"\n" +
-                "              },\n" +
-                "              \"email\": {\n" +
-                "                \"type\": \"string\"\n" +
-                "              },\n" +
-                "              \"password\": {\n" +
-                "                \"type\": \"string\"\n" +
-                "              },\n" +
-                "              \"phone\": {\n" +
-                "                \"type\": \"string\"\n" +
-                "              },\n" +
-                "              \"userStatus\": {\n" +
-                "                \"type\": \"integer\",\n" +
-                "                \"format\": \"int32\",\n" +
-                "                \"description\": \"User Status\"\n" +
-                "              }\n" +
-                "            },\n" +
-                "            \"xml\": {\n" +
-                "              \"name\": \"User\"\n" +
-                "            }\n" +
-                "          },\n" +
-                "          \"Tag\": {\n" +
-                "            \"type\": \"object\",\n" +
-                "            \"properties\": {\n" +
-                "              \"id\": {\n" +
-                "                \"type\": \"integer\",\n" +
-                "                \"format\": \"int64\"\n" +
-                "              },\n" +
-                "              \"name\": {\n" +
-                "                \"type\": \"string\"\n" +
-                "              }\n" +
-                "            },\n" +
-                "            \"xml\": {\n" +
-                "              \"name\": \"Tag\"\n" +
-                "            }\n" +
-                "          },\n" +
-                "          \"Pet\": {\n" +
-                "            \"type\": \"object\",\n" +
-                "            \"required\": [\n" +
-                "              \"name\",\n" +
-                "              \"photoUrls\"\n" +
-                "            ],\n" +
-                "            \"properties\": {\n" +
-                "              \"id\": {\n" +
-                "                \"type\": \"integer\",\n" +
-                "                \"format\": \"int64\"\n" +
-                "              },\n" +
-                "              \"category\": {\n" +
-                "                \"$ref\": \"#/definitions/Category\"\n" +
-                "              },\n" +
-                "              \"name\": {\n" +
-                "                \"type\": \"string\",\n" +
-                "                \"example\": \"doggie\"\n" +
-                "              },\n" +
-                "              \"photoUrls\": {\n" +
-                "                \"type\": \"array\",\n" +
-                "                \"xml\": {\n" +
-                "                  \"name\": \"photoUrl\",\n" +
-                "                  \"wrapped\": true\n" +
-                "                },\n" +
-                "                \"items\": {\n" +
-                "                  \"type\": \"string\"\n" +
-                "                }\n" +
-                "              },\n" +
-                "              \"tags\": {\n" +
-                "                \"type\": \"array\",\n" +
-                "                \"xml\": {\n" +
-                "                  \"name\": \"tag\",\n" +
-                "                  \"wrapped\": true\n" +
-                "                },\n" +
-                "                \"items\": {\n" +
-                "                  \"$ref\": \"#/definitions/Tag\"\n" +
-                "                }\n" +
-                "              },\n" +
-                "              \"status\": {\n" +
-                "                \"type\": \"string\",\n" +
-                "                \"description\": \"pet status in the store\",\n" +
-                "                \"enum\": [\n" +
-                "                  \"available\",\n" +
-                "                  \"pending\",\n" +
-                "                  \"sold\"\n" +
-                "                ]\n" +
-                "              }\n" +
-                "            },\n" +
-                "            \"xml\": {\n" +
-                "              \"name\": \"Pet\"\n" +
-                "            }\n" +
-                "          },\n" +
-                "          \"ApiResponse\": {\n" +
-                "            \"type\": \"object\",\n" +
-                "            \"properties\": {\n" +
-                "              \"code\": {\n" +
-                "                \"type\": \"integer\",\n" +
-                "                \"format\": \"int32\"\n" +
-                "              },\n" +
-                "              \"type\": {\n" +
-                "                \"type\": \"string\"\n" +
-                "              },\n" +
-                "              \"message\": {\n" +
-                "                \"type\": \"string\"\n" +
-                "              }\n" +
-                "            }\n" +
-                "          }\n" +
-                "        },\n" +
-                "        \"externalDocs\": {\n" +
-                "          \"description\": \"Find out more about Swagger\",\n" +
-                "          \"url\": \"http://swagger.io\"\n" +
-                "        }\n" +
-                "      }";
-        String config = "{\n" +
-                "        \"rootPackage\": \"com.networknt.petstore\",\n" +
-                "        \"handlerPackage\": \"com.networknt.petstore.handler\",\n" +
-                "        \"modelPackage\": \"com.networknt.petstore.model\",\n" +
-                "        \"artifactId\": \"petstore\",\n" +
-                "        \"groupId\": \"com.networknt\",\n" +
-                "        \"name\": \"petstore\",\n" +
-                "        \"version\": \"1.0.1\",\n" +
-                "        \"overwriteHandler\": false,\n" +
-                "        \"overwriteHandlerTest\": false\n" +
-                "      }";
+        final AtomicReference<ClientResponse> reference = new AtomicReference<>();
+        final Http2Client client = Http2Client.getInstance();
+        final CountDownLatch latch = new CountDownLatch(1);
+        final ClientConnection connection;
+        try {
+            connection = client.connect(new URI(url), Http2Client.WORKER, Http2Client.SSL, Http2Client.BUFFER_POOL, OptionMap.EMPTY).get();
+        } catch (Exception e) {
+            throw new ClientException(e);
+        }
+        try {
+            connection.getIoThread().execute(() -> {
+                final ClientRequest request = new ClientRequest().setMethod(Methods.POST).setPath("/api/json");
+                request.getRequestHeaders().put(Headers.HOST, "localhost");
+                request.getRequestHeaders().put(Headers.AUTHORIZATION, auth);
+                request.getRequestHeaders().put(Headers.CONTENT_TYPE, "application/json");
+                request.getRequestHeaders().put(Headers.TRANSFER_ENCODING, "chunked");
+                try {
+                    connection.sendRequest(request, client.createClientCallback(reference, latch, new ObjectMapper().writeValueAsString(params)));
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
+            });
 
-        params.put("data", new ObjectMapper().readValue("[{\"framework\": \"swagger\", \"model\": " + model + ", \"config\": "+ config + "}]", List.class));
+            latch.await(10, TimeUnit.SECONDS);
+        } catch (Exception e) {
+            logger.error("IOException: ", e);
+            throw new ClientException(e);
+        } finally {
+            IoUtils.safeClose(connection);
+        }
+        int statusCode = reference.get().getResponseCode();
+        String body = reference.get().getAttachment(Http2Client.RESPONSE_BODY);
+        Assert.assertEquals(400, statusCode);
+        if(statusCode == 400) {
+            Assert.assertTrue(body.contains("ERR11100"));
+        }
+    }
+
+    /**
+     * Test multiple generators with both model and config as strings.
+     * @throws ClientException
+     * @throws ApiException
+     * @throws IOException
+     */
+    @Test
+    public void testGeneratorMultipleText() throws ClientException, ApiException, IOException {
 
         final AtomicReference<ClientResponse> reference = new AtomicReference<>();
         final Http2Client client = Http2Client.getInstance();
@@ -1236,11 +239,7 @@ public class GeneratorServiceHandlerTest {
                     request.getRequestHeaders().put(Headers.AUTHORIZATION, auth);
                     request.getRequestHeaders().put(Headers.CONTENT_TYPE, "application/json");
                     request.getRequestHeaders().put(Headers.TRANSFER_ENCODING, "chunked");
-                    try {
-                        connection.sendRequest(request, client.createClientCallback(reference, latch, new ObjectMapper().writeValueAsString(params)));
-                    } catch (JsonProcessingException e) {
-                        e.printStackTrace();
-                    }
+                    connection.sendRequest(request, client.createClientCallback(reference, latch, multiple));
                 }
             });
 
@@ -1254,8 +253,139 @@ public class GeneratorServiceHandlerTest {
         int statusCode = reference.get().getResponseCode();
         String body = reference.get().getAttachment(Http2Client.RESPONSE_BODY);
         Assert.assertEquals(200, statusCode);
-        if(statusCode == 200) {
-            Assert.assertFalse(body.contains("ERR111"));
-        }
+        Assert.assertNotNull(body);
     }
+
+    /**
+     * Test with a single generator with both model and config as strings.
+     * @throws ClientException
+     * @throws ApiException
+     * @throws IOException
+     */
+    @Test
+    public void testGeneratorSingleText() throws ClientException, ApiException, IOException {
+
+        final AtomicReference<ClientResponse> reference = new AtomicReference<>();
+        final Http2Client client = Http2Client.getInstance();
+        final CountDownLatch latch = new CountDownLatch(1);
+        final ClientConnection connection;
+        try {
+            connection = client.connect(new URI(url), Http2Client.WORKER, Http2Client.SSL, Http2Client.BUFFER_POOL, OptionMap.EMPTY).get();
+        } catch (Exception e) {
+            throw new ClientException(e);
+        }
+        try {
+            connection.getIoThread().execute(new Runnable() {
+                @Override
+                public void run() {
+                    final ClientRequest request = new ClientRequest().setMethod(Methods.POST).setPath("/api/json");
+                    request.getRequestHeaders().put(Headers.HOST, "localhost");
+                    request.getRequestHeaders().put(Headers.AUTHORIZATION, auth);
+                    request.getRequestHeaders().put(Headers.CONTENT_TYPE, "application/json");
+                    request.getRequestHeaders().put(Headers.TRANSFER_ENCODING, "chunked");
+                    connection.sendRequest(request, client.createClientCallback(reference, latch, single));
+                }
+            });
+
+            latch.await(10, TimeUnit.SECONDS);
+        } catch (Exception e) {
+            logger.error("IOException: ", e);
+            throw new ClientException(e);
+        } finally {
+            IoUtils.safeClose(connection);
+        }
+        int statusCode = reference.get().getResponseCode();
+        String body = reference.get().getAttachment(Http2Client.RESPONSE_BODY);
+        Assert.assertEquals(200, statusCode);
+        Assert.assertNotNull(body);
+    }
+
+    /**
+     * Test multiple generators with model from github.com and config with the content as a string.
+     * @throws ClientException
+     * @throws ApiException
+     * @throws IOException
+     */
+    @Test
+    public void testGeneratorMultipleAllUrl() throws ClientException, ApiException, IOException {
+
+        final AtomicReference<ClientResponse> reference = new AtomicReference<>();
+        final Http2Client client = Http2Client.getInstance();
+        final CountDownLatch latch = new CountDownLatch(1);
+        final ClientConnection connection;
+        try {
+            connection = client.connect(new URI(url), Http2Client.WORKER, Http2Client.SSL, Http2Client.BUFFER_POOL, OptionMap.EMPTY).get();
+        } catch (Exception e) {
+            throw new ClientException(e);
+        }
+        try {
+            connection.getIoThread().execute(new Runnable() {
+                @Override
+                public void run() {
+                    final ClientRequest request = new ClientRequest().setMethod(Methods.POST).setPath("/api/json");
+                    request.getRequestHeaders().put(Headers.HOST, "localhost");
+                    request.getRequestHeaders().put(Headers.AUTHORIZATION, auth);
+                    request.getRequestHeaders().put(Headers.CONTENT_TYPE, "application/json");
+                    request.getRequestHeaders().put(Headers.TRANSFER_ENCODING, "chunked");
+                    connection.sendRequest(request, client.createClientCallback(reference, latch, multipleWithAllUrl));
+                }
+            });
+
+            latch.await(10, TimeUnit.SECONDS);
+        } catch (Exception e) {
+            logger.error("IOException: ", e);
+            throw new ClientException(e);
+        } finally {
+            IoUtils.safeClose(connection);
+        }
+        int statusCode = reference.get().getResponseCode();
+        String body = reference.get().getAttachment(Http2Client.RESPONSE_BODY);
+        Assert.assertEquals(200, statusCode);
+        Assert.assertNotNull(body);
+    }
+
+    /**
+     * Test with single generator with both model and config from github.com
+     * @throws ClientException
+     * @throws ApiException
+     * @throws IOException
+     */
+    @Test
+    public void testGeneratorSingleModelUrl() throws ClientException, ApiException, IOException {
+
+        final AtomicReference<ClientResponse> reference = new AtomicReference<>();
+        final Http2Client client = Http2Client.getInstance();
+        final CountDownLatch latch = new CountDownLatch(1);
+        final ClientConnection connection;
+        try {
+            connection = client.connect(new URI(url), Http2Client.WORKER, Http2Client.SSL, Http2Client.BUFFER_POOL, OptionMap.EMPTY).get();
+        } catch (Exception e) {
+            throw new ClientException(e);
+        }
+        try {
+            connection.getIoThread().execute(new Runnable() {
+                @Override
+                public void run() {
+                    final ClientRequest request = new ClientRequest().setMethod(Methods.POST).setPath("/api/json");
+                    request.getRequestHeaders().put(Headers.HOST, "localhost");
+                    request.getRequestHeaders().put(Headers.AUTHORIZATION, auth);
+                    request.getRequestHeaders().put(Headers.CONTENT_TYPE, "application/json");
+                    request.getRequestHeaders().put(Headers.TRANSFER_ENCODING, "chunked");
+                    connection.sendRequest(request, client.createClientCallback(reference, latch, singleWithModelUrl));
+                }
+            });
+
+            latch.await(10, TimeUnit.SECONDS);
+        } catch (Exception e) {
+            logger.error("IOException: ", e);
+            throw new ClientException(e);
+        } finally {
+            IoUtils.safeClose(connection);
+        }
+        int statusCode = reference.get().getResponseCode();
+        String body = reference.get().getAttachment(Http2Client.RESPONSE_BODY);
+        Assert.assertEquals(200, statusCode);
+        Assert.assertNotNull(body);
+    }
+
 }

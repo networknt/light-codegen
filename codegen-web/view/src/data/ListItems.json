@@ -1,0 +1,65 @@
+[
+  {
+    "depth":0,
+    "children":[
+
+    ],
+    "_styles":{
+      "root":{
+        "paddingLeft":-16,
+        "backgroundColor":null,
+        "height":"48px",
+        "cursor":"pointer",
+        "color":"rgba(0,0,0,0.87)",
+        "overflow":"hidden",
+        "transform":"translateZ(0)"
+      }
+    },
+    "_shouldRender":false
+  },
+  {
+    "title":"Generator",
+    "depth":1,
+    "parentIndex":0,
+    "children":[
+      2,
+      5
+    ],
+    "disabled":false
+  },
+  {
+    "title":"Single Project",
+    "depth":2,
+    "parentIndex":1,
+    "disabled":false,
+    "link":"/form/codeGenSingleForm"
+  },
+  {
+    "title":"Multiple Project",
+    "depth":2,
+    "parentIndex":1,
+    "disabled":false,
+    "link":"/form/codeGenMultipleForm"
+  },
+  {
+    "title":"Document",
+    "depth":1,
+    "parentIndex":0,
+    "disabled":false,
+    "link":"/document"
+  },
+  {
+    "title":"GitHub",
+    "depth":1,
+    "parentIndex":0,
+    "disabled":false,
+    "link":"/github"
+  },
+  {
+    "title":"About",
+    "depth":1,
+    "parentIndex":0,
+    "disabled":false,
+    "link":"/about"
+  }
+]
