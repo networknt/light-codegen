@@ -1,6 +1,15 @@
 package com.networknt.codegen.rest;
 
-import static java.io.File.separator;
+import com.jsoniter.JsonIterator;
+import com.jsoniter.ValueType;
+import com.jsoniter.any.Any;
+import com.jsoniter.output.JsonStream;
+import com.networknt.codegen.Generator;
+import com.networknt.codegen.Utils;
+import com.networknt.jsonoverlay.Overlay;
+import com.networknt.oas.OpenApiParser;
+import com.networknt.oas.model.*;
+import com.networknt.oas.model.impl.OpenApi3Impl;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -15,14 +24,6 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import com.jsoniter.JsonIterator;
-import com.jsoniter.ValueType;
-import com.jsoniter.any.Any;
-import com.jsoniter.output.JsonStream;
-import com.networknt.codegen.Generator;
-import com.networknt.codegen.Utils;
-import com.networknt.jsonoverlay.Overlay;
-import com.networknt.oas.OpenApiParser;
 import com.networknt.oas.model.Example;
 import com.networknt.oas.model.MediaType;
 import com.networknt.oas.model.OpenApi3;
@@ -32,9 +33,9 @@ import com.networknt.oas.model.Path;
 import com.networknt.oas.model.Response;
 import com.networknt.oas.model.Schema;
 import com.networknt.oas.model.Server;
-import com.networknt.oas.model.impl.OpenApi3Impl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import static java.io.File.separator;
 
 import javax.lang.model.SourceVersion;
 
@@ -57,6 +58,7 @@ public class OpenApiGenerator implements Generator {
     boolean enableParamDescription = true;
     boolean generateModelOnly = false;
     boolean generateValuesYml = false;
+    boolean skipPomFile = false;
 
     public OpenApiGenerator() {
         typeMapping.put("array", "java.util.List");
@@ -107,6 +109,7 @@ public class OpenApiGenerator implements Generator {
         String httpsPort = config.toString("httpsPort").trim();
 
         boolean enableRegistry = config.toBoolean("enableRegistry");
+        boolean eclipseIDE = config.toBoolean("eclipseIDE");
         boolean supportClient = config.toBoolean("supportClient");
         String dockerOrganization = config.toString("dockerOrganization").trim();
 
@@ -115,6 +118,7 @@ public class OpenApiGenerator implements Generator {
         skipServerInfo = config.toBoolean("skipServerInfo");
         regenerateCodeOnly = config.toBoolean("specChangeCodeReGenOnly");
         enableParamDescription = config.toBoolean("enableParamDescription");
+        skipPomFile = config.toBoolean("skipPomFile");
 
         generateValuesYml = config.toBoolean("generateValuesYml");
 
@@ -133,7 +137,11 @@ public class OpenApiGenerator implements Generator {
             // if set to true, regenerate the code only (handlers, model and the handler.yml, potentially affected by operation changes
             if (!regenerateCodeOnly) {
                 // generate configurations, project, masks, certs, etc
-                transfer(targetPath, "", "pom.xml", templates.rest.openapi.pom.template(config));
+                if (!skipPomFile) {
+                    transfer(targetPath, "", "pom.xml", templates.rest.openapi.pom.template(config));
+                }
+
+
                 transferMaven(targetPath);
                 // There is only one port that should be exposed in Dockerfile, otherwise, the service
                 // discovery will be so confused. If https is enabled, expose the https port. Otherwise http port.
@@ -150,9 +158,10 @@ public class OpenApiGenerator implements Generator {
                 transfer(targetPath, "", ".gitignore", templates.rest.gitignore.template());
                 transfer(targetPath, "", "README.md", templates.rest.README.template());
                 transfer(targetPath, "", "LICENSE", templates.rest.LICENSE.template());
-                transfer(targetPath, "", ".classpath", templates.rest.classpath.template());
-                transfer(targetPath, "", ".project", templates.rest.project.template(config));
-
+                if(eclipseIDE) {
+                    transfer(targetPath, "", ".classpath", templates.rest.classpath.template());
+                    transfer(targetPath, "", ".project", templates.rest.project.template(config));
+                }
                 // config
                 transfer(targetPath, ("src.main.resources.config").replace(".", separator), "service.yml", templates.rest.openapi.service.template(config));
 
@@ -179,10 +188,6 @@ public class OpenApiGenerator implements Generator {
                 transfer(targetPath, ("src.main.resources").replace(".", separator), "logback.xml", templates.rest.logback.template());
                 transfer(targetPath, ("src.test.resources").replace(".", separator), "logback-test.xml", templates.rest.logback.template());
 
-                // routing handler
-                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "handler.yml",
-                        templates.rest.openapi.handlerYml.template(serviceId, handlerPackage, operationList, prometheusMetrics, !skipHealthCheck, !skipServerInfo));
-
                 // exclusion list for Config module
                 transfer(targetPath, ("src.main.resources.config").replace(".", separator), "config.yml", templates.rest.openapi.config.template());
 
@@ -198,6 +203,10 @@ public class OpenApiGenerator implements Generator {
                     YAMLFileParameterizer.rewriteAll(targetPath + separator + YAMLFileParameterizer.DEFAULT_DEST_DIR, config.get(YAMLFileParameterizer.GENERATE_ENV_VARS).asMap());
                 }
             }
+            // routing handler
+            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "handler.yml",
+                    templates.rest.openapi.handlerYml.template(serviceId, handlerPackage, operationList, prometheusMetrics, !skipHealthCheck, !skipServerInfo));
+
         }
 
         // model
@@ -371,9 +380,9 @@ public class OpenApiGenerator implements Generator {
             String example = null;
             @SuppressWarnings("unchecked")
             List<Map> parameters = (List<Map>)op.get("parameters");
-            if (op.get("example") != null) {
-                //example = mapper.writeValueAsString(op.get("example"));
-                example = JsonStream.serialize(op.get("example"));
+            Object responseExample = op.get("responseExample");
+            if (responseExample != null) {
+                example = (String)responseExample;
             }
             if (checkExist(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), className + ".java") && !overwriteHandler) {
                 continue;
@@ -747,6 +756,8 @@ public class OpenApiGenerator implements Generator {
                         .filter(parameter -> parameter.getIn().equals("header"))
                         .collect(Collectors.toMap(k -> k.getName(), v -> UrlGenerator.generateValidParam(v)));
                 flattened.put("headerNameValueMap", headerNameValueMap);
+                flattened.put("requestBodyExample", populateRequestBodyExample(operation));
+                flattened.put("responseExample", populateResponseExample(operation));
                 if (enableParamDescription) {
                     //get parameters info and put into result
                     List<Parameter> parameterRawList = operation.getParameters();
@@ -771,28 +782,6 @@ public class OpenApiGenerator implements Generator {
                         parametersResultList.add(parameterMap);
                     });
                     flattened.put("parameters", parametersResultList);
-                }
-                Response response = operation.getResponse("200");
-                if (response != null) {
-                    MediaType mediaType = response.getContentMediaType("application/json");
-                    if (mediaType != null) {
-                        // first check if there is a single example defined.
-                        Object example = mediaType.getExample();
-                        if (example != null) {
-                            flattened.put("example", example);
-                        } else {
-                            // check if there are multiple examples
-                            Map<String, Example> exampleMap = mediaType.getExamples();
-                            // use the first example if there are multiple
-                            if (exampleMap.size() > 0) {
-                                Map.Entry<String, Example> entry = exampleMap.entrySet().iterator().next();
-                                Example e = entry.getValue();
-                                if (e != null) {
-                                    flattened.put("example", e.getValue());
-                                }
-                            }
-                        }
-                    }
                 }
                 result.add(flattened);
             }
@@ -855,6 +844,60 @@ public class OpenApiGenerator implements Generator {
             }
         }
         return stringBuilder.toString();
+    }
+
+        private String populateRequestBodyExample(Operation operation) {
+	    String result = "{\"content\": \"request body to be replaced\"}";
+	    RequestBody body = operation.getRequestBody();
+	    if(body != null) {
+            MediaType mediaType = body.getContentMediaType("application/json");
+            if(mediaType != null) {
+                Object valueToBeStringify = null;
+                if(mediaType.getExamples() != null && !mediaType.getExamples().isEmpty()) {
+                    for(Entry<String, Example> entry : mediaType.getExamples().entrySet()) {
+                        valueToBeStringify = entry.getValue().getValue();
+                    }
+                } else if(mediaType.getExample() != null) {
+                    valueToBeStringify = mediaType.getExample();
+                }
+                if(valueToBeStringify == null) return result;
+                result = JsonStream.serialize(valueToBeStringify);
+                if(result.startsWith("\"")) {
+                    result = result.substring(1, result.length() - 1);
+                }
+            }
+         }
+	    return result;
+    }
+
+    private String populateResponseExample(Operation operation) {
+        String result = null;
+        Object example;
+        for (String statusCode : operation.getResponses().keySet()) {
+            Optional<Response> response = Optional.ofNullable(operation.getResponse(String.valueOf(statusCode)));
+            if (response.get().getContentMediaTypes().size() == 0) {
+                result = statusCode + ",{}";
+            }
+            for (String mediaTypeStr : response.get().getContentMediaTypes().keySet()) {
+                Optional<MediaType> mediaType = Optional.ofNullable(response.get().getContentMediaType(mediaTypeStr));
+                example = mediaType.get().getExample();
+                if (example != null) {
+                    result = statusCode + "," + JsonStream.serialize(example);
+                } else {
+                    // check if there are multiple examples
+                    Map<String, Example> exampleMap = mediaType.get().getExamples();
+                    // use the first example if there are multiple
+                    if (exampleMap.size() > 0) {
+                        Map.Entry<String, Example> entry = exampleMap.entrySet().iterator().next();
+                        Example e = entry.getValue();
+                        if (e != null) {
+                            result = statusCode + "," + JsonStream.serialize(e.getValue());
+                        }
+                    }
+                }
+            }
+        }
+        return result;
     }
 
     private static final Logger logger = LoggerFactory.getLogger(OpenApiGenerator.class);

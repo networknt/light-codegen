@@ -1,5 +1,59 @@
 # Change Log
 
+## [1.6.1](https://github.com/networknt/light-codegen/tree/1.6.1) (2019-05-03)
+
+
+**Merged pull requests:**
+
+
+- Issue 287 [\#289](https://github.com/networknt/light-codegen/pull/289) ([chenyan71](https://github.com/chenyan71))
+- add openAPI spec generator - \#197 [\#260](https://github.com/networknt/light-codegen/pull/260) ([dz-1](https://github.com/dz-1))
+- fixed NPE for param description feature [\#285](https://github.com/networknt/light-codegen/pull/285) ([BalloonWen](https://github.com/BalloonWen))
+- fixes \#159 ensure light-codegen can be compile on both jdk8 and jdk11 [\#281](https://github.com/networknt/light-codegen/pull/281) ([stevehu](https://github.com/stevehu))
+- fixes \#278 resolve error prone warnings [\#279](https://github.com/networknt/light-codegen/pull/279) ([stevehu](https://github.com/stevehu))
+- fixes \#276 upgrade pom.xml template to have only one light-4j version [\#277](https://github.com/networknt/light-codegen/pull/277) ([stevehu](https://github.com/stevehu))
+## [1.6.0](https://github.com/networknt/light-codegen/tree/1.6.0) (2019-04-05)
+
+
+**Merged pull requests:**
+
+
+- fixes \#273 add maven wrapper to light-codegen [\#274](https://github.com/networknt/light-codegen/pull/274) ([stevehu](https://github.com/stevehu))
+- generate code on win10 got error [\#272](https://github.com/networknt/light-codegen/pull/272) ([stevehu](https://github.com/stevehu))
+- fixes \#265 Failed test cases on Windows [\#271](https://github.com/networknt/light-codegen/pull/271) ([stevehu](https://github.com/stevehu))
+- fix escaping - \#265 [\#270](https://github.com/networknt/light-codegen/pull/270) ([dz-1](https://github.com/dz-1))
+- Issue266 [\#269](https://github.com/networknt/light-codegen/pull/269) ([stevehu](https://github.com/stevehu))
+- fixes \#266 disable the failed test cases for Windows [\#267](https://github.com/networknt/light-codegen/pull/267) ([stevehu](https://github.com/stevehu))
+- fixes \#263 comment out kotlin and swagger wrappers as test cases fail [\#264](https://github.com/networknt/light-codegen/pull/264) ([stevehu](https://github.com/stevehu))
+- fixes \#261 temporary disable the maven wrapper for OpenAPI [\#262](https://github.com/networknt/light-codegen/pull/262) ([stevehu](https://github.com/stevehu))
+- enable rocker hot reloading - \#225 [\#241](https://github.com/networknt/light-codegen/pull/241) ([dz-1](https://github.com/dz-1))
+- Feat/\#239 when generate test cases for handler, now will use example of request body to test. [\#240](https://github.com/networknt/light-codegen/pull/240) ([BalloonWen](https://github.com/BalloonWen))
+## [1.5.32](https://github.com/networknt/light-codegen/tree/1.5.32) (2019-03-19)
+[Full Changelog](https://github.com/networknt/light-codegen/compare/1.5.31...1.5.32)
+
+**Implemented enhancements:**
+
+- change shell script to executable on Linux and Mac [\#224](https://github.com/networknt/light-codegen/issues/224)
+
+**Closed issues:**
+
+- add skipBodyValidation flag to the openapi-validator.yml [\#245](https://github.com/networknt/light-codegen/issues/245)
+
+**Merged pull requests:**
+
+- \#158 binary format string - fix the handling of binary and byte forma… [\#254](https://github.com/networknt/light-codegen/pull/254) ([stevehu](https://github.com/stevehu))
+- Revert "\#158 binary format string - fix the handling of binary and byte forma…" [\#253](https://github.com/networknt/light-codegen/pull/253) ([stevehu](https://github.com/stevehu))
+- \#158 binary format string - fix the handling of binary and byte forma… [\#252](https://github.com/networknt/light-codegen/pull/252) ([stevehu](https://github.com/stevehu))
+- 242 devel friendly pom to separate release tasks into release profile [\#251](https://github.com/networknt/light-codegen/pull/251) ([243826](https://github.com/243826))
+- Revert Make pom.xml developer friendly by seggragating shading, java… [\#250](https://github.com/networknt/light-codegen/pull/250) ([stevehu](https://github.com/stevehu))
+- fixes \#224 add maven and gradle wrapper and make the script executable [\#249](https://github.com/networknt/light-codegen/pull/249) ([stevehu](https://github.com/stevehu))
+- \#158 binary format string - fix the handling of binary and byte formats of strings [\#248](https://github.com/networknt/light-codegen/pull/248) ([243826](https://github.com/243826))
+- fixes \#245 add skipBodyValidation flag to the openapi-validator.yml [\#246](https://github.com/networknt/light-codegen/pull/246) ([stevehu](https://github.com/stevehu))
+- sync codegen branches [\#244](https://github.com/networknt/light-codegen/pull/244) ([ddobrin](https://github.com/ddobrin))
+- Make pom.xml developer friendly by seggragating shading, javadoc, sources into a non-default profile [\#243](https://github.com/networknt/light-codegen/pull/243) ([243826](https://github.com/243826))
+- \#234 support for references for arrays [\#238](https://github.com/networknt/light-codegen/pull/238) ([243826](https://github.com/243826))
+- Fix/\#236 Uncompilable code generation caused by invalid variable name [\#237](https://github.com/networknt/light-codegen/pull/237) ([jiachen1120](https://github.com/jiachen1120))
+
 ## [1.5.31](https://github.com/networknt/light-codegen/tree/1.5.31) (2019-03-02)
 [Full Changelog](https://github.com/networknt/light-codegen/compare/1.5.30...1.5.31)
 
@@ -25,7 +79,6 @@
 - Supporting JUnit 5 and back port the Kotlin Test Sever [\#178](https://github.com/networknt/light-codegen/issues/178)
 - generated OpenAPI petstore example is not shown up [\#175](https://github.com/networknt/light-codegen/issues/175)
 - Support basic auth or without security in OpenAPI generator [\#166](https://github.com/networknt/light-codegen/issues/166)
-- Binary Content [\#158](https://github.com/networknt/light-codegen/issues/158)
 - code generation fails from openapi/swagger yaml files [\#145](https://github.com/networknt/light-codegen/issues/145)
 - How to customize the generator to add new templates [\#6](https://github.com/networknt/light-codegen/issues/6)
 

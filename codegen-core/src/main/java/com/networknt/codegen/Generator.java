@@ -105,7 +105,7 @@ public interface Generator {
             Files.createDirectories(Paths.get(absPath));
         }
         try(InputStream ins = Generator.class.getResourceAsStream(srcPath); FileOutputStream fos = new FileOutputStream(absPath + separator + destName)) {
-            Files.copy(ins, Paths.get(destFolder, destPath, destName), StandardCopyOption.REPLACE_EXISTING);
+            IOUtils.copy(ins, fos);
         }
     }
 

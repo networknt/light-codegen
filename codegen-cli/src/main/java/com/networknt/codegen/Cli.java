@@ -4,6 +4,7 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fizzed.rocker.runtime.RockerRuntime;
 import com.jsoniter.JsonIterator;
 import com.jsoniter.any.Any;
 
@@ -39,6 +40,10 @@ public class Cli {
 
     @Parameter(names={"--help", "-h"}, help = true)
     private boolean help;
+    
+    @Parameter(names={"--reload", "-r"}, description = "Specifies whether rocker hot-reloading should be enabled or not. Default is false."+
+    "If this is set to true, the file 'rocker-compiler.conf' must be available in the classpath.")
+    private boolean reload;    
 
     public static void main(String ... argv) throws Exception {
         try {
@@ -60,6 +65,8 @@ public class Cli {
             jCommander.usage();
             return;
         }
+        
+        RockerRuntime.getInstance().setReloading(reload);
 
         System.out.printf("%s %s %s %s\n", framework, model, config, output);
 
