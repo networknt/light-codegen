@@ -58,7 +58,7 @@ public class OpenApiGenerator implements Generator {
     boolean enableParamDescription = true;
     boolean generateModelOnly = false;
     boolean generateValuesYml = false;
-    boolean regeneratePomFile = true;
+    boolean skipPomFile = false;
 
     public OpenApiGenerator() {
         typeMapping.put("array", "java.util.List");
@@ -117,7 +117,7 @@ public class OpenApiGenerator implements Generator {
         skipServerInfo = config.toBoolean("skipServerInfo");
         regenerateCodeOnly = config.toBoolean("specChangeCodeReGenOnly");
         enableParamDescription = config.toBoolean("enableParamDescription");
-        regeneratePomFile = config.toBoolean("regeneratePomFile");
+        skipPomFile = config.toBoolean("skipPomFile");
 
         generateValuesYml = config.toBoolean("generateValuesYml");
 
@@ -136,7 +136,7 @@ public class OpenApiGenerator implements Generator {
             // if set to true, regenerate the code only (handlers, model and the handler.yml, potentially affected by operation changes
             if (!regenerateCodeOnly) {
                 // generate configurations, project, masks, certs, etc
-                if (regeneratePomFile) {
+                if (!skipPomFile) {
                     transfer(targetPath, "", "pom.xml", templates.rest.openapi.pom.template(config));
                 }
 
