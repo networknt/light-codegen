@@ -189,7 +189,7 @@ public class OpenApiGenerator implements Generator {
                 transfer(targetPath, ("src.test.resources").replace(".", separator), "logback-test.xml", templates.rest.logback.template());
 
                 // exclusion list for Config module
-                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "config.yml", templates.rest.openapi.config.template());
+                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "config.yml", templates.rest.openapi.config.template(config));
 
                 // values.yml file, transfer only if explicitly set in the config.json
                 if (generateValuesYml) {
