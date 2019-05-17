@@ -1,5 +1,16 @@
 # Change Log
 
+## [1.6.2](https://github.com/networknt/light-codegen/tree/1.6.2) (2019-05-17)
+
+
+**Merged pull requests:**
+
+
+- Generate decryption methods [\#297](https://github.com/networknt/light-codegen/pull/297) ([jiachen1120](https://github.com/jiachen1120))
+- switch codegen web to react schema form for the UI and upgrade to the latest react [\#294](https://github.com/networknt/light-codegen/pull/294) ([stevehu](https://github.com/stevehu))
+- Fix/API-86: generate eclipse files based on the config flag [\#286](https://github.com/networknt/light-codegen/pull/286) ([santoshaherkar](https://github.com/santoshaherkar))
+- fixes \#282 update pom.xml template for error-prone [\#283](https://github.com/networknt/light-codegen/pull/283) ([stevehu](https://github.com/stevehu))
+- fixes \#291 update regeneratePomFile to skipPomFile with default value… [\#293](https://github.com/networknt/light-codegen/pull/293) ([stevehu](https://github.com/stevehu))
 ## [1.6.1](https://github.com/networknt/light-codegen/tree/1.6.1) (2019-05-03)
 
 
