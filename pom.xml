@@ -517,15 +517,27 @@
 
     <repositories>
         <repository>
-            <id>sonatype-snapshots</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <id>central</id>
+            <url>
+                https://oss.sonatype.org/content/repositories/releases
+            </url>
             <snapshots>
-                <enabled>true</enabled>
+                <enabled>false</enabled>
             </snapshots>
         </repository>
         <repository>
-            <id>codelds</id>
-            <url>https://code.lds.org/nexus/content/groups/main-repo</url>
+            <id>snapshots</id>
+            <url>
+                https://oss.sonatype.org/content/repositories/snapshots
+            </url>
+            <snapshots>
+                <enabled>true</enabled>
+                <!-- never, daily, interval:X (where X is in minutes) or always -->
+                <!--<updatePolicy>daily</updatePolicy> -->
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
         </repository>
     </repositories>
 
