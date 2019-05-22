@@ -4,8 +4,8 @@
 singletons:
 
 # Decryptor
-- com.networknt.utility.Decryptor:
-  - com.networknt.decrypt.AESDecryptor
+#- com.networknt.utility.Decryptor:
+#  - com.networknt.decrypt.AESDecryptor
 
 # ECIS API specific status serializer
 - com.networknt.status.StatusSerializer:

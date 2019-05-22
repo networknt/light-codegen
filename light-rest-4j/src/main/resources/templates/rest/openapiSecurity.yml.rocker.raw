@@ -7,7 +7,7 @@
 enableVerifyJwt: false
 
 # Enable JWT scope verification. Only valid when enableVerifyJwt is true.
-enableVerifyScope: true
+enableVerifyScope: false
 
 # User for test only. should be always be false on official environment.
 enableMockJwt: false
