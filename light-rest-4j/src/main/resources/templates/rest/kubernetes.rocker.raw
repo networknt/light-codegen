@@ -1,0 +1,35 @@
+@args (String org, String serviceId, String artifact, String expose)
+#change the image tag before you deploy, if using minikube, please use any tag other than "latest"
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: @artifact-deployment
+  labels:
+    app: @artifact
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: @artifact
+  template:
+    metadata:
+      labels:
+        app: @artifact
+    spec:
+      containers:
+        - name: @artifact
+          image: @org/@serviceId:test
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: @artifact-service
+  labels:
+    app: @artifact
+spec:
+  selector:
+    app: @artifact
+  type: NodePort
+  ports:
+      - protocol: TCP
+        port: @expose
