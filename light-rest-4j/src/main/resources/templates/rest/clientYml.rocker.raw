@@ -31,23 +31,29 @@ oauth:
     # the following section defines uri and parameters for authorization code grant type
     authorization_code:
       # token endpoint for authorization code grant
-      uri: "/cibc/auth/v2/getToken"
+      uri: "/token/v3"
       # client_id for authorization code grant flow. client_secret is in secret.yml
       client_id: ${client.client_id:58f8fdd8-0e79-46a1-9b03-76218e3f2966}
       # the web server uri that will receive the redirected authorization code
       redirect_uri: https://localhost:8080/authorization_code
       # optional scope, default scope in the client registration will be used if not defined.
       scope:
-
+      - party
+      custom_claims:
+        consumer_application_id: '375'
+        request_transit: '2112'
     # the following section defines uri and parameters for client credentials grant type
     client_credentials:
       # token endpoint for client credentials grant
-      uri: "/cibc/auth/v2/getToken"
+      uri: "/token/v3"
       # client_id for client credentials grant flow. client_secret is in secret.yml
       client_id: ${client.client_id:58f8fdd8-0e79-46a1-9b03-76218e3f2966}
       # optional scope, default scope in the client registration will be used if not defined.
       scope:
-
+      - party
+      custom_claims:
+        consumer_application_id: '375'
+        request_transit: '2112'
   # light-oauth2 key distribution endpoint configuration
   key:
     # key distribution server url

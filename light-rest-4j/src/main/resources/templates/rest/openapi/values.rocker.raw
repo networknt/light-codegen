@@ -93,5 +93,8 @@ secret.consulToken: set-real-value-here
 secret.emailPassword: set-real-value-here
 
 # Database Section
-secret.mysqlDatabasePassword: set-real-value-here
+# secret.mysqlDatabasePassword: set-real-value-here
 secret.oracleDatabasePassword: set-real-value-here
+
+# Service Singletons
+service.singletons:

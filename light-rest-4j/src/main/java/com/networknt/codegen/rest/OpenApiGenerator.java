@@ -109,6 +109,7 @@ public class OpenApiGenerator implements Generator {
         String httpsPort = config.toString("httpsPort").trim();
 
         boolean enableRegistry = config.toBoolean("enableRegistry");
+        boolean eclipseIDE = config.toBoolean("eclipseIDE");
         boolean supportClient = config.toBoolean("supportClient");
         String dockerOrganization = config.toString("dockerOrganization").trim();
 
@@ -153,13 +154,15 @@ public class OpenApiGenerator implements Generator {
 
                 transfer(targetPath, "docker", "Dockerfile", templates.rest.dockerfile.template(config, expose));
                 transfer(targetPath, "docker", "Dockerfile-Redhat", templates.rest.dockerfileredhat.template(config, expose));
+                transfer(targetPath, "docker", "Dockerfile-ECIF-API", templates.rest.dockerfileecif.template(config, expose));
                 transfer(targetPath, "", "build.sh", templates.rest.buildSh.template(dockerOrganization, serviceId));
                 transfer(targetPath, "", ".gitignore", templates.rest.gitignore.template());
                 transfer(targetPath, "", "README.md", templates.rest.README.template());
                 transfer(targetPath, "", "LICENSE", templates.rest.LICENSE.template());
-                transfer(targetPath, "", ".classpath", templates.rest.classpath.template());
-                transfer(targetPath, "", ".project", templates.rest.project.template(config));
-
+                if(eclipseIDE) {
+                    transfer(targetPath, "", ".classpath", templates.rest.classpath.template());
+                    transfer(targetPath, "", ".project", templates.rest.project.template(config));
+                }
                 // config
                 transfer(targetPath, ("src.main.resources.config").replace(".", separator), "service.yml", templates.rest.openapi.service.template(config));
 
@@ -187,7 +190,7 @@ public class OpenApiGenerator implements Generator {
                 transfer(targetPath, ("src.test.resources").replace(".", separator), "logback-test.xml", templates.rest.logback.template());
 
                 // exclusion list for Config module
-                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "config.yml", templates.rest.openapi.config.template());
+                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "config.yml", templates.rest.openapi.config.template(config));
 
                 // values.yml file, transfer only if explicitly set in the config.json
                 if (generateValuesYml) {
