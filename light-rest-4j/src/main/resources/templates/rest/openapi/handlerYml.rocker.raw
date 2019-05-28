@@ -69,8 +69,8 @@ chains:
     - security
     - body
     - audit
-#    - dump
-    - sanitizer
+    #- dump
+    #- sanitizer
     - validator
 
 paths:
