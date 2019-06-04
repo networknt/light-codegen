@@ -196,9 +196,21 @@ public class OpenApiGenerator implements Generator {
                 if (generateValuesYml) {
                     transfer(targetPath, ("src.main.resources.config").replace(".", separator), "values.yml", templates.rest.openapi.values.template());
                 }
-
+                
+                // transfer framework files
+                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "audit.yml", templates.rest.auditYml.template());
+                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "body.yml", templates.rest.bodyYml.template());
+                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "consul.yml", templates.rest.consulYml.template());
+                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "info.yml", templates.rest.infoYml.template());
+                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "correlation.yml", templates.rest.correlationYml.template());
+                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "metrics.yml", templates.rest.metricsYml.template());
+                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "sanitizer.yml", templates.rest.sanitizerYml.template());
+                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "traceability.yml", templates.rest.traceabilityYml.template());
+                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "health.yml", templates.rest.healthYml.template());
+                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "datasource.yml", templates.rest.datasourceYml.template(config));
+                
                 //always copy resources
-                YAMLFileParameterizer.copyResources(YAMLFileParameterizer.DEFAULT_RESOURCE_LOCATION, targetPath + separator + YAMLFileParameterizer.DEFAULT_DEST_DIR);
+                //YAMLFileParameterizer.copyResources(YAMLFileParameterizer.DEFAULT_RESOURCE_LOCATION, targetPath + separator + YAMLFileParameterizer.DEFAULT_DEST_DIR);
 
 	            // copy test resources
 	            YAMLFileParameterizer.copyResources(YAMLFileParameterizer.DEFAULT_TEST_RESOURCE_LOCATION, targetPath+separator+YAMLFileParameterizer.DEFAULT_TEST_DEST_DIR);

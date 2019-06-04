@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.jsoniter.JsonIterator;
@@ -44,6 +45,7 @@ public class YAMLFileParameterizerTest {
     }
     
     @Test
+    @Ignore
     public void testResourceExcludeSet() {
     	List<Any> excludes = Arrays.asList(Any.wrap("audit.yml"), Any.wrap("body.yml"));
     	
@@ -53,6 +55,7 @@ public class YAMLFileParameterizerTest {
     }
     
     @Test
+    @Ignore
     public void testParameterizing() throws IOException {
     	String destDirName = "/tmp/yml_param_test";
     	File destDir = new File(destDirName);

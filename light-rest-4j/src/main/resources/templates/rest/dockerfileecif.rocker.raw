@@ -3,5 +3,5 @@
 
 FROM docker-registry-default.apps-np.caas.cibc.com/certified-mw/cibc-openjdk18-openshift
 #EXPOSE  8443
-@with (name = config.get("artifactId") + "-" + config.get("version") + ".jar") {ADD /target/@name server.jar}
-CMD ["/bin/sh","-c","java +UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:MaxRAMFraction=1 -XX:+UseG1GC -Xms1024m -Xmx1024m -Dlight-4j-config-dir=/config -Dlogback.configurationFile=/config/logback.xml -jar server.jar"]
+@with (name = config.get("artifactId") + "-" + config.get("version") + ".jar") {ADD @name server.jar}
+CMD ["/bin/sh","-c","java -XX:+UseG1GC -Xms1024m -Xmx1024m -Dlight-4j-config-dir=/config -Dlogback.configurationFile=/config/logback.xml -jar server.jar"]
