@@ -191,17 +191,26 @@ public class OpenApiGenerator implements Generator {
                 // exclusion list for Config module
                 transfer(targetPath, ("src.main.resources.config").replace(".", separator), "config.yml", templates.rest.openapi.config.template(config));
 
+                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "audit.yml", templates.rest.auditYml.template());
+                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "body.yml", templates.rest.bodyYml.template());
+                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "info.yml", templates.rest.infoYml.template());
+                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "correlation.yml", templates.rest.correlationYml.template());
+                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "metrics.yml", templates.rest.metricsYml.template());
+                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "sanitizer.yml", templates.rest.sanitizerYml.template());
+                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "traceability.yml", templates.rest.traceabilityYml.template());
+                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "health.yml", templates.rest.healthYml.template());
+
                 // values.yml file, transfer only if explicitly set in the config.json
                 if (generateValuesYml) {
                     transfer(targetPath, ("src.main.resources.config").replace(".", separator), "values.yml", templates.rest.openapi.values.template());
                 }
 
-                //always copy resources
-                YAMLFileParameterizer.copyResources(YAMLFileParameterizer.DEFAULT_RESOURCE_LOCATION, targetPath + separator + YAMLFileParameterizer.DEFAULT_DEST_DIR);
-
-                if (config.keys().contains(YAMLFileParameterizer.GENERATE_ENV_VARS)) {
-                    YAMLFileParameterizer.rewriteAll(targetPath + separator + YAMLFileParameterizer.DEFAULT_DEST_DIR, config.get(YAMLFileParameterizer.GENERATE_ENV_VARS).asMap());
-                }
+//                //always copy resources
+//                YAMLFileParameterizer.copyResources(YAMLFileParameterizer.DEFAULT_RESOURCE_LOCATION, targetPath + separator + YAMLFileParameterizer.DEFAULT_DEST_DIR);
+//
+//                if (config.keys().contains(YAMLFileParameterizer.GENERATE_ENV_VARS)) {
+//                    YAMLFileParameterizer.rewriteAll(targetPath + separator + YAMLFileParameterizer.DEFAULT_DEST_DIR, config.get(YAMLFileParameterizer.GENERATE_ENV_VARS).asMap());
+//                }
             }
             // routing handler
             transfer(targetPath, ("src.main.resources.config").replace(".", separator), "handler.yml",
