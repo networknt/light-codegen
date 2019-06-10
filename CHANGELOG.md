@@ -1,5 +1,16 @@
 # Change Log
 
+## [1.6.4](https://github.com/networknt/light-codegen/tree/1.6.4) (2019-06-10)
+
+
+**Merged pull requests:**
+
+
+- fixes \#312 update openapi readme template for maven command line [\#313](https://github.com/networknt/light-codegen/pull/313) ([stevehu](https://github.com/stevehu))
+- fixes \#308 add both release and snapshot repositories [\#309](https://github.com/networknt/light-codegen/pull/309) ([stevehu](https://github.com/stevehu))
+- fixes \#304 update values.yml to ensure that the newly generated proje… [\#305](https://github.com/networknt/light-codegen/pull/305) ([stevehu](https://github.com/stevehu))
+- fixes \#301 service running error caused by config.yml file [\#303](https://github.com/networknt/light-codegen/pull/303) ([stevehu](https://github.com/stevehu))
+- fixes \#300 decryptor module is missing in the generated pom.xml file [\#302](https://github.com/networknt/light-codegen/pull/302) ([stevehu](https://github.com/stevehu))
 ## [1.6.2](https://github.com/networknt/light-codegen/tree/1.6.2) (2019-05-17)
 
 
