@@ -145,7 +145,7 @@ public class OpenApiGenerator implements Generator {
                 transfer(targetPath, "docker", "Dockerfile", templates.rest.dockerfile.template(config, expose));
                 transfer(targetPath, "docker", "Dockerfile-Redhat", templates.rest.dockerfileredhat.template(config, expose));
                 transfer(targetPath, "", "build.sh", templates.rest.buildSh.template(dockerOrganization, serviceId));
-                transfer(targetPath, "", "kubernetes.yml", templates.rest.kubernetes.template(dockerOrganization, serviceId, config.get("artifactId").toString().trim(), expose));
+                transfer(targetPath, "", "kubernetes.yml", templates.rest.kubernetes.template(dockerOrganization, serviceId, config.get("artifactId").toString().trim(), expose, version));
                 transfer(targetPath, "", ".gitignore", templates.rest.gitignore.template());
                 transfer(targetPath, "", "README.md", templates.rest.README.template());
                 transfer(targetPath, "", "LICENSE", templates.rest.LICENSE.template());

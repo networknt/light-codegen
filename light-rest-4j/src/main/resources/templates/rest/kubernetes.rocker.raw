@@ -1,4 +1,4 @@
-@args (String org, String serviceId, String artifact, String expose)
+@args (String org, String serviceId, String artifact, String expose, String version)
 #change the image tag before you deploy, if using minikube, please use any tag other than "latest"
 apiVersion: apps/v1
 kind: Deployment
@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: @artifact
-          image: @org/@serviceId:test
+          image: @org/@serviceId:@version
 ---
 apiVersion: v1
 kind: Service
