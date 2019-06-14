@@ -1,5 +1,49 @@
 # Change Log
 
+## [2.0.1](https://github.com/networknt/light-codegen/tree/2.0.1) (2019-06-13)
+
+
+**Merged pull requests:**
+
+
+- fixes \#312 update openapi readme template for maven command line [\#313](https://github.com/networknt/light-codegen/pull/313) ([stevehu](https://github.com/stevehu))
+- fixes \#308 add both release and snapshot repositories [\#309](https://github.com/networknt/light-codegen/pull/309) ([stevehu](https://github.com/stevehu))
+- fixes \#304 update values.yml to ensure that the newly generated proje… [\#305](https://github.com/networknt/light-codegen/pull/305) ([stevehu](https://github.com/stevehu))
+- fixes \#301 service running error caused by config.yml file [\#303](https://github.com/networknt/light-codegen/pull/303) ([stevehu](https://github.com/stevehu))
+- fixes \#300 decryptor module is missing in the generated pom.xml file [\#302](https://github.com/networknt/light-codegen/pull/302) ([stevehu](https://github.com/stevehu))
+- Generate decryption methods [\#297](https://github.com/networknt/light-codegen/pull/297) ([jiachen1120](https://github.com/jiachen1120))
+- switch codegen web to react schema form for the UI and upgrade to the latest react [\#294](https://github.com/networknt/light-codegen/pull/294) ([stevehu](https://github.com/stevehu))
+- Fix/API-86: generate eclipse files based on the config flag [\#286](https://github.com/networknt/light-codegen/pull/286) ([santoshaherkar](https://github.com/santoshaherkar))
+- fixes \#282 update pom.xml template for error-prone [\#283](https://github.com/networknt/light-codegen/pull/283) ([stevehu](https://github.com/stevehu))
+- fixes \#291 update regeneratePomFile to skipPomFile with default value… [\#293](https://github.com/networknt/light-codegen/pull/293) ([stevehu](https://github.com/stevehu))
+- fixes \#291 update regeneratePomFile to skipPomFile with default value… [\#293](https://github.com/networknt/light-codegen/pull/293) ([stevehu](https://github.com/stevehu))
+- Issue 287 [\#289](https://github.com/networknt/light-codegen/pull/289) ([chenyan71](https://github.com/chenyan71))
+- add openAPI spec generator - \#197 [\#260](https://github.com/networknt/light-codegen/pull/260) ([dz-1](https://github.com/dz-1))
+- fixed NPE for param description feature [\#285](https://github.com/networknt/light-codegen/pull/285) ([BalloonWen](https://github.com/BalloonWen))
+- fixes \#159 ensure light-codegen can be compile on both jdk8 and jdk11 [\#281](https://github.com/networknt/light-codegen/pull/281) ([stevehu](https://github.com/stevehu))
+- fixes \#278 resolve error prone warnings [\#279](https://github.com/networknt/light-codegen/pull/279) ([stevehu](https://github.com/stevehu))
+- fixes \#276 upgrade pom.xml template to have only one light-4j version [\#277](https://github.com/networknt/light-codegen/pull/277) ([stevehu](https://github.com/stevehu))
+- fixes \#273 add maven wrapper to light-codegen [\#274](https://github.com/networknt/light-codegen/pull/274) ([stevehu](https://github.com/stevehu))
+- generate code on win10 got error [\#272](https://github.com/networknt/light-codegen/pull/272) ([stevehu](https://github.com/stevehu))
+- fixes \#265 Failed test cases on Windows [\#271](https://github.com/networknt/light-codegen/pull/271) ([stevehu](https://github.com/stevehu))
+- fix escaping - \#265 [\#270](https://github.com/networknt/light-codegen/pull/270) ([dz-1](https://github.com/dz-1))
+- Issue266 [\#269](https://github.com/networknt/light-codegen/pull/269) ([stevehu](https://github.com/stevehu))
+- fixes \#266 disable the failed test cases for Windows [\#267](https://github.com/networknt/light-codegen/pull/267) ([stevehu](https://github.com/stevehu))
+- fixes \#263 comment out kotlin and swagger wrappers as test cases fail [\#264](https://github.com/networknt/light-codegen/pull/264) ([stevehu](https://github.com/stevehu))
+- fixes \#261 temporary disable the maven wrapper for OpenAPI [\#262](https://github.com/networknt/light-codegen/pull/262) ([stevehu](https://github.com/stevehu))
+- enable rocker hot reloading - \#225 [\#241](https://github.com/networknt/light-codegen/pull/241) ([dz-1](https://github.com/dz-1))
+- Feat/\#239 when generate test cases for handler, now will use example of request body to test. [\#240](https://github.com/networknt/light-codegen/pull/240) ([BalloonWen](https://github.com/BalloonWen))
+## [1.6.4](https://github.com/networknt/light-codegen/tree/1.6.4) (2019-06-10)
+
+
+**Merged pull requests:**
+
+
+- fixes \#312 update openapi readme template for maven command line [\#313](https://github.com/networknt/light-codegen/pull/313) ([stevehu](https://github.com/stevehu))
+- fixes \#308 add both release and snapshot repositories [\#309](https://github.com/networknt/light-codegen/pull/309) ([stevehu](https://github.com/stevehu))
+- fixes \#304 update values.yml to ensure that the newly generated proje… [\#305](https://github.com/networknt/light-codegen/pull/305) ([stevehu](https://github.com/stevehu))
+- fixes \#301 service running error caused by config.yml file [\#303](https://github.com/networknt/light-codegen/pull/303) ([stevehu](https://github.com/stevehu))
+- fixes \#300 decryptor module is missing in the generated pom.xml file [\#302](https://github.com/networknt/light-codegen/pull/302) ([stevehu](https://github.com/stevehu))
 ## [1.6.2](https://github.com/networknt/light-codegen/tree/1.6.2) (2019-05-17)
 
 
