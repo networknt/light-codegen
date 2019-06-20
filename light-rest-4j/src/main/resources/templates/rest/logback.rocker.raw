@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+@args(String rootPackage)<?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Copyright (c) 2016 Network New Technologies Inc.
   ~
@@ -78,7 +78,7 @@
         </triggeringPolicy>
     </appender>
 
-    <root level="error">
+    <root level="debug">
         <appender-ref ref="stdout"/>
     </root>
 
@@ -92,6 +92,10 @@
 
     <logger name="com.networknt.dump" level="info" additivity="false">
         <appender-ref ref="dump"/>
+    </logger>
+
+    <logger name="@rootPackage" level="debug" additivity="false">
+        <appender-ref ref="stdout"/>
     </logger>
 
 </configuration>

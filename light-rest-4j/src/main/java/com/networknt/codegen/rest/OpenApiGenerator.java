@@ -10,7 +10,10 @@ import com.networknt.jsonoverlay.Overlay;
 import com.networknt.oas.OpenApiParser;
 import com.networknt.oas.model.*;
 import com.networknt.oas.model.impl.OpenApi3Impl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.lang.model.SourceVersion;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,20 +27,7 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import com.networknt.oas.model.Example;
-import com.networknt.oas.model.MediaType;
-import com.networknt.oas.model.OpenApi3;
-import com.networknt.oas.model.Operation;
-import com.networknt.oas.model.Parameter;
-import com.networknt.oas.model.Path;
-import com.networknt.oas.model.Response;
-import com.networknt.oas.model.Schema;
-import com.networknt.oas.model.Server;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import static java.io.File.separator;
-
-import javax.lang.model.SourceVersion;
 
 /**
  * The input for OpenAPI 3.0 generator include config with json format and OpenAPI specification in yaml format.
@@ -185,8 +175,8 @@ public class OpenApiGenerator implements Generator {
                 // mask
                 transfer(targetPath, ("src.main.resources.config").replace(".", separator), "mask.yml", templates.rest.maskYml.template());
                 // logging
-                transfer(targetPath, ("src.main.resources").replace(".", separator), "logback.xml", templates.rest.logback.template());
-                transfer(targetPath, ("src.test.resources").replace(".", separator), "logback-test.xml", templates.rest.logback.template());
+                transfer(targetPath, ("src.main.resources").replace(".", separator), "logback.xml", templates.rest.logback.template(rootPackage));
+                transfer(targetPath, ("src.test.resources").replace(".", separator), "logback-test.xml", templates.rest.logback.template(rootPackage));
 
                 // exclusion list for Config module
                 transfer(targetPath, ("src.main.resources.config").replace(".", separator), "config.yml", templates.rest.openapi.config.template(config));
