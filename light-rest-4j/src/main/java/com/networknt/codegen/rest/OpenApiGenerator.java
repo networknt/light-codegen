@@ -10,7 +10,10 @@ import com.networknt.jsonoverlay.Overlay;
 import com.networknt.oas.OpenApiParser;
 import com.networknt.oas.model.*;
 import com.networknt.oas.model.impl.OpenApi3Impl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.lang.model.SourceVersion;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,20 +27,7 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import com.networknt.oas.model.Example;
-import com.networknt.oas.model.MediaType;
-import com.networknt.oas.model.OpenApi3;
-import com.networknt.oas.model.Operation;
-import com.networknt.oas.model.Parameter;
-import com.networknt.oas.model.Path;
-import com.networknt.oas.model.Response;
-import com.networknt.oas.model.Schema;
-import com.networknt.oas.model.Server;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import static java.io.File.separator;
-
-import javax.lang.model.SourceVersion;
 
 /**
  * The input for OpenAPI 3.0 generator include config with json format and OpenAPI specification in yaml format.
@@ -155,6 +145,7 @@ public class OpenApiGenerator implements Generator {
                 transfer(targetPath, "docker", "Dockerfile", templates.rest.dockerfile.template(config, expose));
                 transfer(targetPath, "docker", "Dockerfile-Redhat", templates.rest.dockerfileredhat.template(config, expose));
                 transfer(targetPath, "", "build.sh", templates.rest.buildSh.template(dockerOrganization, serviceId));
+                transfer(targetPath, "", "kubernetes.yml", templates.rest.kubernetes.template(dockerOrganization, serviceId, config.get("artifactId").toString().trim(), expose, version));
                 transfer(targetPath, "", ".gitignore", templates.rest.gitignore.template());
                 transfer(targetPath, "", "README.md", templates.rest.README.template());
                 transfer(targetPath, "", "LICENSE", templates.rest.LICENSE.template());
