@@ -204,13 +204,6 @@ public class OpenApiGenerator implements Generator {
                 if (generateValuesYml) {
                     transfer(targetPath, ("src.main.resources.config").replace(".", separator), "values.yml", templates.rest.openapi.values.template());
                 }
-
-//                //always copy resources
-//                YAMLFileParameterizer.copyResources(YAMLFileParameterizer.DEFAULT_RESOURCE_LOCATION, targetPath + separator + YAMLFileParameterizer.DEFAULT_DEST_DIR);
-//
-//                if (config.keys().contains(YAMLFileParameterizer.GENERATE_ENV_VARS)) {
-//                    YAMLFileParameterizer.rewriteAll(targetPath + separator + YAMLFileParameterizer.DEFAULT_DEST_DIR, config.get(YAMLFileParameterizer.GENERATE_ENV_VARS).asMap());
-//                }
             }
             // routing handler
             transfer(targetPath, ("src.main.resources.config").replace(".", separator), "handler.yml",
