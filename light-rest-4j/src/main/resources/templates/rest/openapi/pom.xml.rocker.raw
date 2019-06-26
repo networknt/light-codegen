@@ -15,7 +15,7 @@
         }
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.main.class>com.networknt.server.Server</project.main.class>
-        <version.light-4j>1.6.1</version.light-4j>
+        <version.light-4j>1.6.4</version.light-4j>
         <version.logback>1.2.3</version.logback>
         <version.junit>4.12</version.junit>
         <version.undertow>2.0.16.Final</version.undertow>
