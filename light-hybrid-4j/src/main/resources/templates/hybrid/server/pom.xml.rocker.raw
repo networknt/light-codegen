@@ -366,10 +366,6 @@
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
-            <properties>
-                <java.debug.argument>-Xdebug</java.debug.argument>
-                <java.debug.agent>-Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n</java.debug.agent>
-            </properties>
             <build>
                 <plugins>
                     <plugin>
@@ -382,8 +378,6 @@
                             <arguments>
                                 <argument>-cp</argument>
                                 <classpath />
-                                <argument>${java.debug.argument}</argument>
-                                <argument>${java.debug.agent}</argument>
                                 <argument>${project.main.class}</argument>
                             </arguments>
                         </configuration>
