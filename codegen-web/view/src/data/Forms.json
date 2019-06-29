@@ -25,6 +25,14 @@
           "items": {
             "type": "object",
             "properties": {
+              "release": {
+                "title": "Release",
+                "type": "string",
+                "enum": [
+                  "1.6.x",
+                  "2.0.x"
+                ]
+              },
               "framework": {
                 "title": "Framework",
                 "type": "string",
@@ -64,6 +72,7 @@
               }
             },
             "required": [
+              "release",
               "framework",
               "modelType",
               "configType"
@@ -87,6 +96,20 @@
           "add": "btn-success"
         },
         "items": [
+          {
+            "key": "generators[].release",
+            "type": "select",
+            "titleMap": [
+              {
+                "name": "1.6.x",
+                "value": "1.6.x"
+              },
+              {
+                "name": "2.0.x",
+                "value": "2.0.x"
+              }
+            ]
+          },
           {
             "key": "generators[].framework",
             "type": "select",
@@ -185,11 +208,20 @@
       "type": "object",
       "title": "Generator",
       "required": [
+        "release",
         "framework",
         "modelType",
         "configType"
       ],
       "properties": {
+        "release": {
+          "title": "Release",
+          "type": "string",
+          "enum": [
+            "1.6.x",
+            "2.0.x"
+          ]
+        },
         "framework": {
           "title": "Framework",
           "type": "string",
@@ -228,6 +260,20 @@
       }
     },
     "form": [
+      {
+        "key": "release",
+        "type": "select",
+        "titleMap": [
+          {
+            "name": "1.6.x",
+            "value": "1.6.x"
+          },
+          {
+            "name": "2.0.x",
+            "value": "2.0.x"
+          }
+        ]
+      },
       {
         "key": "framework",
         "type": "select",
