@@ -53,9 +53,12 @@
               },
               "framework": {
                 "type": "string"
+              },
+              "release": {
+                "type": "string"
               }
             },
-            "required": ["configType", "modelType", "framework"]
+            "required": ["configType", "modelType", "framework", "release"]
           },
           "maxItems": 5,
           "minItems": 1
@@ -91,9 +94,12 @@
         },
         "framework": {
           "type" : "string"
+        },
+        "release": {
+          "type" : "string"
         }
       },
-      "required": ["configType", "modelType", "framework"]
+      "required": ["configType", "modelType", "framework", "release"]
     },
     "scope": "codegen.w"
   }
