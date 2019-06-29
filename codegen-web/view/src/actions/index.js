@@ -16,10 +16,11 @@ export function submitForm(action) {
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
+                'env_tag': action.data.release
             },
             body: JSON.stringify(action)
         };
-        //console.log(request);
+        console.log(action.data.release);
         try {
             const response = await fetch('/codegen', request);
             const data = await response.blob();
