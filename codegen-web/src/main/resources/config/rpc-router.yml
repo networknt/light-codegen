@@ -1,0 +1,4 @@
+---
+description: RPC router description
+handlerPackage: 'com.networknt.codegen'
+jsonPath: /codegen

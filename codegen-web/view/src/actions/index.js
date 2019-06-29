@@ -21,7 +21,7 @@ export function submitForm(action) {
         };
         //console.log(request);
         try {
-            const response = await fetch('/portal/query', request);
+            const response = await fetch('/codegen', request);
             const data = await response.blob();
             const filename = 'light-project.zip';
             if (typeof window.navigator.msSaveBlob !== 'undefined') {

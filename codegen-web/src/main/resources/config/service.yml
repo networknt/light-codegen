@@ -11,20 +11,7 @@ singletons:
 # - com.networknt.server.ShutdownHookProvider:
   # - com.networknt.server.Test1ShutdownHook
   # - com.networknt.server.Test2ShutdownHook
-# MiddlewareHandler implementations
-- com.networknt.handler.MiddlewareHandler:
-  # Exception Global exception handler that needs to be called first.
-  - com.networknt.exception.ExceptionHandler
-  # Metrics In order to calculate response time accurately, this needs to be the second.
-  - com.networknt.metrics.MetricsHandler
-  # Traceability Put traceabilityId into response header from request header if it exists
-  - com.networknt.traceability.TraceabilityHandler
-  # Correlation Create correlationId if it doesn't exist in the request header and put it into the request header
-  - com.networknt.correlation.CorrelationHandler
-  # Cors handler to handler post/put pre-flight
-  - com.networknt.cors.CorsHttpHandler
-  # SimpleAudit Log important info about the request into audit log
-  - com.networknt.audit.AuditHandler
+
 # Generator interface implementations
 - com.networknt.codegen.Generator:
   - com.networknt.codegen.rest.OpenApiGenerator
