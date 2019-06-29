@@ -78,7 +78,7 @@ public class GeneratorServiceHandlerTest {
         }
         try {
             connection.getIoThread().execute(() -> {
-                final ClientRequest request = new ClientRequest().setMethod(Methods.POST).setPath("/api/json");
+                final ClientRequest request = new ClientRequest().setMethod(Methods.POST).setPath("/codegen");
 
                 request.getRequestHeaders().put(Headers.HOST, "localhost");
                 request.getRequestHeaders().put(Headers.AUTHORIZATION, auth);
@@ -131,7 +131,7 @@ public class GeneratorServiceHandlerTest {
         }
         try {
             connection.getIoThread().execute(() -> {
-                final ClientRequest request = new ClientRequest().setMethod(Methods.POST).setPath("/api/json");
+                final ClientRequest request = new ClientRequest().setMethod(Methods.POST).setPath("/codegen");
                 request.getRequestHeaders().put(Headers.HOST, "localhost");
                 request.getRequestHeaders().put(Headers.AUTHORIZATION, auth);
                 request.getRequestHeaders().put(Headers.CONTENT_TYPE, "application/json");
@@ -183,7 +183,7 @@ public class GeneratorServiceHandlerTest {
         }
         try {
             connection.getIoThread().execute(() -> {
-                final ClientRequest request = new ClientRequest().setMethod(Methods.POST).setPath("/api/json");
+                final ClientRequest request = new ClientRequest().setMethod(Methods.POST).setPath("/codegen");
                 request.getRequestHeaders().put(Headers.HOST, "localhost");
                 request.getRequestHeaders().put(Headers.AUTHORIZATION, auth);
                 request.getRequestHeaders().put(Headers.CONTENT_TYPE, "application/json");
@@ -232,7 +232,7 @@ public class GeneratorServiceHandlerTest {
             connection.getIoThread().execute(new Runnable() {
                 @Override
                 public void run() {
-                    final ClientRequest request = new ClientRequest().setMethod(Methods.POST).setPath("/api/json");
+                    final ClientRequest request = new ClientRequest().setMethod(Methods.POST).setPath("/codegen");
                     request.getRequestHeaders().put(Headers.HOST, "localhost");
                     request.getRequestHeaders().put(Headers.AUTHORIZATION, auth);
                     request.getRequestHeaders().put(Headers.CONTENT_TYPE, "application/json");
@@ -276,7 +276,7 @@ public class GeneratorServiceHandlerTest {
             connection.getIoThread().execute(new Runnable() {
                 @Override
                 public void run() {
-                    final ClientRequest request = new ClientRequest().setMethod(Methods.POST).setPath("/api/json");
+                    final ClientRequest request = new ClientRequest().setMethod(Methods.POST).setPath("/codegen");
                     request.getRequestHeaders().put(Headers.HOST, "localhost");
                     request.getRequestHeaders().put(Headers.AUTHORIZATION, auth);
                     request.getRequestHeaders().put(Headers.CONTENT_TYPE, "application/json");
@@ -320,7 +320,7 @@ public class GeneratorServiceHandlerTest {
             connection.getIoThread().execute(new Runnable() {
                 @Override
                 public void run() {
-                    final ClientRequest request = new ClientRequest().setMethod(Methods.POST).setPath("/api/json");
+                    final ClientRequest request = new ClientRequest().setMethod(Methods.POST).setPath("/codegen");
                     request.getRequestHeaders().put(Headers.HOST, "localhost");
                     request.getRequestHeaders().put(Headers.AUTHORIZATION, auth);
                     request.getRequestHeaders().put(Headers.CONTENT_TYPE, "application/json");
@@ -364,7 +364,7 @@ public class GeneratorServiceHandlerTest {
             connection.getIoThread().execute(new Runnable() {
                 @Override
                 public void run() {
-                    final ClientRequest request = new ClientRequest().setMethod(Methods.POST).setPath("/api/json");
+                    final ClientRequest request = new ClientRequest().setMethod(Methods.POST).setPath("/codegen");
                     request.getRequestHeaders().put(Headers.HOST, "localhost");
                     request.getRequestHeaders().put(Headers.AUTHORIZATION, auth);
                     request.getRequestHeaders().put(Headers.CONTENT_TYPE, "application/json");
