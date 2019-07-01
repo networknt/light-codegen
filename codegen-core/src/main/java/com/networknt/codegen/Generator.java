@@ -1,11 +1,7 @@
 package com.networknt.codegen;
 
-import com.fizzed.rocker.runtime.ArrayOfByteArraysOutput;
-import com.fizzed.rocker.runtime.DefaultRockerModel;
-import com.jsoniter.any.Any;
-import org.apache.commons.io.IOUtils;
-
 import java.io.File;
+import static java.io.File.separator;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,13 +10,14 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.nio.file.attribute.PosixFilePermission;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
-import static java.io.File.separator;
+import com.fizzed.rocker.runtime.ArrayOfByteArraysOutput;
+import com.fizzed.rocker.runtime.DefaultRockerModel;
+import com.jsoniter.any.Any;
+
+import org.apache.commons.io.IOUtils;
 
 /**
  * This is the interface that every generator needs to implement. There are three methods
@@ -163,6 +160,15 @@ public interface Generator {
     default boolean checkExist(String folder, String path, String filename) throws IOException {
         String absPath = folder + (path.isEmpty()? "" : separator + path) + separator + filename;
         return Files.exists(Paths.get(absPath));
+    }
+
+    static void copyFile(final InputStream is, final java.nio.file.Path folder) throws IOException {
+        java.nio.file.Path parent = folder.getParent();
+        if (!Files.isDirectory(parent)) {
+            Files.createDirectories(parent);
+        }
+
+        Files.copy(is, folder, StandardCopyOption.REPLACE_EXISTING);
     }
 
 }

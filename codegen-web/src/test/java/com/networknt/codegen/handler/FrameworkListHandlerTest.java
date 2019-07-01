@@ -56,7 +56,7 @@ public class FrameworkListHandlerTest {
             connection.getIoThread().execute(new Runnable() {
                 @Override
                 public void run() {
-                    final ClientRequest request = new ClientRequest().setMethod(Methods.POST).setPath("/api/json");
+                    final ClientRequest request = new ClientRequest().setMethod(Methods.POST).setPath("/codegen");
                     request.getRequestHeaders().put(Headers.HOST, "localhost");
                     request.getRequestHeaders().put(Headers.CONTENT_TYPE, "application/json");
                     request.getRequestHeaders().put(Headers.TRANSFER_ENCODING, "chunked");

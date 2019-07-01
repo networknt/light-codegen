@@ -11,7 +11,6 @@ import com.networknt.config.JsonMapper;
 import com.networknt.rpc.Handler;
 import com.networknt.rpc.router.JsonHandler;
 import com.networknt.rpc.router.ServiceHandler;
-import com.networknt.status.Status;
 import com.networknt.utility.HashUtil;
 import com.networknt.utility.NioUtils;
 import io.undertow.server.HttpServerExchange;
