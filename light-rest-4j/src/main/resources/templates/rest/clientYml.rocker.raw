@@ -16,17 +16,17 @@ tls:
   # trust store contains certifictes that server needs. Enable if tls is used.
   loadTrustStore: true
   # trust store location can be specified here or system properties javax.net.ssl.trustStore and password javax.net.ssl.trustStorePassword
-  trustStore: client.truststore
+  trustStore: ${client.trustStore:client.truststore}
   # trust store password
-  trustStorePass: password
+  trustStorePass: ${client.trustStorePass:password}
   # key store contains client key and it should be loaded if two-way ssl is uesed.
   loadKeyStore: false
   # key store location
-  keyStore: client.keystore
+  keyStore: ${client.keyStore:client.keystore}
   # key store password
-  keyStorePass: password
+  keyStorePass: ${client.keyStorePass:password}
   # private key password
-  keyPass: password
+  keyPass: ${client.keyPass:password}
 # settings for OAuth2 server communication
 oauth:
   # OAuth 2.0 token endpoint configuration
@@ -41,7 +41,7 @@ oauth:
     # if scope token is not expired but in renew windown, we need slow retry delay.
     earlyRefreshRetryDelay: 4000
     # token server url. The default port number for token service is 6882.
-    server_url: https://localhost:6882
+    server_url: ${client.server_url:https://localhost:6882}
     # token service unique id for OAuth 2.0 provider
     serviceId: com.networknt.oauth2-token-1.0.0
     # set to true if the oauth2 provider supports HTTP/2
@@ -51,9 +51,9 @@ oauth:
       # token endpoint for authorization code grant
       uri: "/oauth2/token"
       # client_id for authorization code grant flow.
-      client_id: f7d42348-c647-4efb-a52d-4c5787421e72
+      client_id: ${client.client_id:f7d42348-c647-4efb-a52d-4c5787421e72}
       # client_secret for authorization code grant flow.
-      client_secret: f6h1FTI8Q3-7UScPZDzfXA
+      client_secret: ${client.client_secret:f6h1FTI8Q3-7UScPZDzfXA}
       # the web server uri that will receive the redirected authorization code
       redirect_uri: https://localhost:8080/authorization_code
       # optional scope, default scope in the client registration will be used if not defined.
@@ -65,9 +65,9 @@ oauth:
       # token endpoint for client credentials grant
       uri: "/oauth2/token"
       # client_id for client credentials grant flow. client_secret is in secret.yml
-      client_id: f7d42348-c647-4efb-a52d-4c5787421e72
+      client_id: ${client.client_id:f7d42348-c647-4efb-a52d-4c5787421e72}
       # client_secret for client credentials grant flow.
-      client_secret: f6h1FTI8Q3-7UScPZDzfXA
+      client_secret: ${client.client_secret:f6h1FTI8Q3-7UScPZDzfXA}
       # optional scope, default scope in the client registration will be used if not defined.
       scope:
       - petstore.r
@@ -76,9 +76,9 @@ oauth:
       # token endpoint for refresh token grant
       uri: "/oauth2/token"
       # client_id for refresh token grant flow. client_secret is in secret.yml
-      client_id: f7d42348-c647-4efb-a52d-4c5787421e72
+      client_id: ${client.client_id:f7d42348-c647-4efb-a52d-4c5787421e72}
       # client_secret for refresh token
-      client_secret: f6h1FTI8Q3-7UScPZDzfXA
+      client_secret: ${client.client_secret:f6h1FTI8Q3-7UScPZDzfXA}
       # optional scope, default scope in the client registration will be used if not defined.
       scope:
       - petstore.r
