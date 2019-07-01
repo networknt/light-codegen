@@ -3,19 +3,17 @@ package com.networknt.codegen;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fizzed.rocker.runtime.RockerRuntime;
 import com.jsoniter.JsonIterator;
 import com.jsoniter.any.Any;
+import com.networknt.codegen.rest.YAMLFileParameterizer;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Set;
+import static java.io.File.separator;
 
 /**
  * Created by steve on 24/04/17.
@@ -40,10 +38,13 @@ public class Cli {
 
     @Parameter(names={"--help", "-h"}, help = true)
     private boolean help;
-    
+
     @Parameter(names={"--reload", "-r"}, description = "Specifies whether rocker hot-reloading should be enabled or not. Default is false."+
-    "If this is set to true, the file 'rocker-compiler.conf' must be available in the classpath.")
-    private boolean reload;    
+            "If this is set to true, the file 'rocker-compiler.conf' must be available in the classpath.")
+    private boolean reload;
+
+    @Parameter(names={"--parameterize", "-p"}, description = "The location of configuration files that need to be parameterized.")
+    String parameterizationDir;
 
     public static void main(String ... argv) throws Exception {
         try {
@@ -65,7 +66,7 @@ public class Cli {
             jCommander.usage();
             return;
         }
-        
+
         RockerRuntime.getInstance().setReloading(reload);
 
         System.out.printf("%s %s %s %s\n", framework, model, config, output);
@@ -101,6 +102,9 @@ public class Cli {
                     anyConfig = JsonIterator.deserialize(Files.readAllBytes(Paths.get(config)));
                 }
             }
+            if(parameterizationDir != null) {
+                YAMLFileParameterizer.rewriteAll(parameterizationDir, output + separator + YAMLFileParameterizer.DEFAULT_DEST_DIR, anyConfig.asMap().get(YAMLFileParameterizer.GENERATE_ENV_VARS).asMap());
+            }
             generator.generate(output, anyModel, anyConfig);
             System.out.println("A project has been generated successfully in " + output + " folder. Have fun!!!");
         } else {
@@ -112,3 +116,4 @@ public class Cli {
     }
 
 }
+

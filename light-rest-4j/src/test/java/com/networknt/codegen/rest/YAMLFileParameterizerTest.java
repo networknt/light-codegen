@@ -11,12 +11,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.jsoniter.JsonIterator;
 import com.jsoniter.any.Any;
 import com.networknt.codegen.OpenApiGeneratorTest;
 
+@Ignore
 public class YAMLFileParameterizerTest {
 	private static String configName = "/config.json";
 
