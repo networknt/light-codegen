@@ -12,7 +12,7 @@ tls:
   # key store contains client key and it should be loaded if two-way ssl is uesed.
   loadKeyStore: false
   # key store location
-  keyStore: ${client.keyStore:server.keystore}
+  keyStore: ${client.keyStore:client.keystore}
 # settings for OAuth2 server communication
 oauth:
   # OAuth 2.0 token endpoint configuration
