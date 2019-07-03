@@ -1,50 +1,32 @@
 package com.networknt.codegen.rest;
 
+import com.jsoniter.JsonIterator;
+import com.jsoniter.ValueType;
+import com.jsoniter.any.Any;
+import com.jsoniter.output.JsonStream;
+import com.networknt.codegen.Generator;
+import com.networknt.codegen.Utils;
+import com.networknt.jsonoverlay.Overlay;
+import com.networknt.oas.OpenApiParser;
+import com.networknt.oas.model.*;
+import com.networknt.oas.model.impl.OpenApi3Impl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.lang.model.SourceVersion;
 import java.io.ByteArrayInputStream;
-import static java.io.File.separator;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.lang.model.SourceVersion;
-
-import com.jsoniter.JsonIterator;
-import com.jsoniter.ValueType;
-import com.jsoniter.any.Any;
-import com.jsoniter.output.JsonStream;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.networknt.jsonoverlay.Overlay;
-import com.networknt.oas.OpenApiParser;
-import com.networknt.oas.model.Example;
-import com.networknt.oas.model.MediaType;
-import com.networknt.oas.model.OpenApi3;
-import com.networknt.oas.model.Operation;
-import com.networknt.oas.model.Parameter;
-import com.networknt.oas.model.Path;
-import com.networknt.oas.model.RequestBody;
-import com.networknt.oas.model.Response;
-import com.networknt.oas.model.Schema;
-import com.networknt.oas.model.Server;
-import com.networknt.oas.model.impl.OpenApi3Impl;
-
-import com.networknt.codegen.Generator;
 import static com.networknt.codegen.Generator.copyFile;
-import com.networknt.codegen.Utils;
+import static java.io.File.separator;
 
 /**
  * The input for OpenAPI 3.0 generator include config with json format and OpenAPI specification in yaml format.
@@ -162,6 +144,7 @@ public class OpenApiGenerator implements Generator {
                 transfer(targetPath, "docker", "Dockerfile", templates.rest.dockerfile.template(config, expose));
                 transfer(targetPath, "docker", "Dockerfile-Redhat", templates.rest.dockerfileredhat.template(config, expose));
                 transfer(targetPath, "", "build.sh", templates.rest.buildSh.template(dockerOrganization, serviceId));
+                transfer(targetPath, "", "kubernetes.yml", templates.rest.kubernetes.template(dockerOrganization, serviceId, config.get("artifactId").toString().trim(), expose, version));
                 transfer(targetPath, "", ".gitignore", templates.rest.gitignore.template());
                 transfer(targetPath, "", "README.md", templates.rest.README.template());
                 transfer(targetPath, "", "LICENSE", templates.rest.LICENSE.template());

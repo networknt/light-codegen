@@ -1,0 +1,58 @@
+@args (String org, String serviceId, String artifact, String expose, String version)
+#change the image tag before you deploy, if using minikube, please use any tag other than "latest"
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: @artifact-deployment
+  labels:
+    app: @artifact
+    environment: dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: @artifact
+  template:
+    metadata:
+      labels:
+        app: @artifact
+    spec:
+      containers:
+        - name: @artifact
+          image: @org/@serviceId:@version
+          ports:
+            - containerPort: @expose
+          resources:
+            requests:
+              memory: "64Mi"
+              #0.25 cpu
+              cpu: "250m"
+            limits:
+              #0.5 cpu
+              memory: "128Mi"
+              cpu: "500m"
+          #cannot use httpcheck due to the server can be https
+          readinessProbe:
+            tcpSocket:
+              port: @expose
+            initialDelaySeconds: 3
+            periodSeconds: 3
+          livenessProbe:
+            tcpSocket:
+              port: @expose
+            initialDelaySeconds: 5
+            periodSeconds: 20
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: @artifact-service
+  labels:
+    app: @artifact
+spec:
+  selector:
+    app: @artifact
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: @expose
