@@ -20,13 +20,12 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import static com.networknt.codegen.Generator.copyFile;
 import static java.io.File.separator;
 
 /**
@@ -44,7 +43,7 @@ public class OpenApiGenerator implements Generator {
     boolean prometheusMetrics = false;
     boolean skipHealthCheck = false;
     boolean skipServerInfo = false;
-    boolean regenerateCodeOnly = false;
+    boolean specChangeCodeReGenOnly = false;
     boolean enableParamDescription = true;
     boolean generateModelOnly = false;
     boolean generateValuesYml = false;
@@ -106,7 +105,7 @@ public class OpenApiGenerator implements Generator {
         prometheusMetrics = config.toBoolean("prometheusMetrics");
         skipHealthCheck = config.toBoolean("skipHealthCheck");
         skipServerInfo = config.toBoolean("skipServerInfo");
-        regenerateCodeOnly = config.toBoolean("specChangeCodeReGenOnly");
+        specChangeCodeReGenOnly = config.toBoolean("specChangeCodeReGenOnly");
         enableParamDescription = config.toBoolean("enableParamDescription");
         skipPomFile = config.toBoolean("skipPomFile");
 
@@ -125,7 +124,7 @@ public class OpenApiGenerator implements Generator {
         // bypass project generation if the mode is the only one requested to be built
         if (!generateModelOnly) {
             // if set to true, regenerate the code only (handlers, model and the handler.yml, potentially affected by operation changes
-            if (!regenerateCodeOnly) {
+            if (!specChangeCodeReGenOnly) {
                 // generate configurations, project, masks, certs, etc
                 if (!skipPomFile) {
                     transfer(targetPath, "", "pom.xml", templates.rest.openapi.pom.template(config));
@@ -182,16 +181,18 @@ public class OpenApiGenerator implements Generator {
                 // exclusion list for Config module
                 transfer(targetPath, ("src.main.resources.config").replace(".", separator), "config.yml", templates.rest.openapi.config.template(config));
 
+                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "audit.yml", templates.rest.auditYml.template());
+                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "body.yml", templates.rest.bodyYml.template());
+                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "info.yml", templates.rest.infoYml.template());
+                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "correlation.yml", templates.rest.correlationYml.template());
+                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "metrics.yml", templates.rest.metricsYml.template());
+                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "sanitizer.yml", templates.rest.sanitizerYml.template());
+                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "traceability.yml", templates.rest.traceabilityYml.template());
+                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "health.yml", templates.rest.healthYml.template());
+
                 // values.yml file, transfer only if explicitly set in the config.json
                 if (generateValuesYml) {
                     transfer(targetPath, ("src.main.resources.config").replace(".", separator), "values.yml", templates.rest.openapi.values.template());
-                }
-
-                //always copy resources
-                YAMLFileParameterizer.copyResources(YAMLFileParameterizer.DEFAULT_RESOURCE_LOCATION, targetPath + separator + YAMLFileParameterizer.DEFAULT_DEST_DIR);
-
-                if (config.keys().contains(YAMLFileParameterizer.GENERATE_ENV_VARS)) {
-                    YAMLFileParameterizer.rewriteAll(targetPath + separator + YAMLFileParameterizer.DEFAULT_DEST_DIR, config.get(YAMLFileParameterizer.GENERATE_ENV_VARS).asMap());
                 }
             }
             // routing handler
@@ -382,7 +383,7 @@ public class OpenApiGenerator implements Generator {
         }
 
         // handler test cases
-        if (!regenerateCodeOnly) {
+        if (!specChangeCodeReGenOnly) {
             transfer(targetPath, ("src.test.java." + handlerPackage + ".").replace(".", separator), "TestServer.java", templates.rest.testServer.template(handlerPackage));
         }
 
@@ -395,34 +396,34 @@ public class OpenApiGenerator implements Generator {
 
         // transfer binary files without touching them.
         try (InputStream is = OpenApiGenerator.class.getResourceAsStream("/binaries/server.keystore")) {
-            Files.copy(is, Paths.get(targetPath, ("src.main.resources.config").replace(".", separator), "server.keystore"), StandardCopyOption.REPLACE_EXISTING);
+            copyFile(is, Paths.get(targetPath, ("src.main.resources.config").replace(".", separator), "server.keystore"));
         }
         try (InputStream is = OpenApiGenerator.class.getResourceAsStream("/binaries/server.truststore")) {
-            Files.copy(is, Paths.get(targetPath, ("src.main.resources.config").replace(".", separator), "server.truststore"), StandardCopyOption.REPLACE_EXISTING);
+            copyFile(is, Paths.get(targetPath, ("src.main.resources.config").replace(".", separator), "server.truststore"));
         }
         if (supportClient) {
             try (InputStream is = OpenApiGenerator.class.getResourceAsStream("/binaries/client.keystore")) {
-                Files.copy(is, Paths.get(targetPath, ("src.main.resources.config").replace(".", separator), "client.keystore"), StandardCopyOption.REPLACE_EXISTING);
+                copyFile(is, Paths.get(targetPath, ("src.main.resources.config").replace(".", separator), "client.keystore"));
             }
             try (InputStream is = OpenApiGenerator.class.getResourceAsStream("/binaries/client.truststore")) {
-                Files.copy(is, Paths.get(targetPath, ("src.main.resources.config").replace(".", separator), "client.truststore"), StandardCopyOption.REPLACE_EXISTING);
+                copyFile(is, Paths.get(targetPath, ("src.main.resources.config").replace(".", separator), "client.truststore"));
             }
         } else {
             try (InputStream is = OpenApiGenerator.class.getResourceAsStream("/binaries/client.keystore")) {
-                Files.copy(is, Paths.get(targetPath, ("src.test.resources.config").replace(".", separator), "client.keystore"), StandardCopyOption.REPLACE_EXISTING);
+                copyFile(is, Paths.get(targetPath, ("src.test.resources.config").replace(".", separator), "client.keystore"));
             }
             try (InputStream is = OpenApiGenerator.class.getResourceAsStream("/binaries/client.truststore")) {
-                Files.copy(is, Paths.get(targetPath, ("src.test.resources.config").replace(".", separator), "client.truststore"), StandardCopyOption.REPLACE_EXISTING);
+                copyFile(is, Paths.get(targetPath, ("src.test.resources.config").replace(".", separator), "client.truststore"));
             }
         }
 
         if (model instanceof Any) {
             try (InputStream is = new ByteArrayInputStream(model.toString().getBytes(StandardCharsets.UTF_8))) {
-                Files.copy(is, Paths.get(targetPath, ("src.main.resources.config").replace(".", separator), "openapi.json"), StandardCopyOption.REPLACE_EXISTING);
+                copyFile(is, Paths.get(targetPath, ("src.main.resources.config").replace(".", separator), "openapi.json"));
             }
         } else if (model instanceof String) {
             try (InputStream is = new ByteArrayInputStream(((String)model).getBytes(StandardCharsets.UTF_8))) {
-                Files.copy(is, Paths.get(targetPath, ("src.main.resources.config").replace(".", separator), "openapi.yaml"), StandardCopyOption.REPLACE_EXISTING);
+                copyFile(is, Paths.get(targetPath, ("src.main.resources.config").replace(".", separator), "openapi.yaml"));
             }
         }
     }
@@ -606,7 +607,7 @@ public class OpenApiGenerator implements Generator {
         return new UnresolvedTypeListAny(s);
     }
 
-    private static abstract class UnresolvedTypeAny extends Any {
+  private static abstract class UnresolvedTypeAny extends Any {
 
         Any type;
 
@@ -837,28 +838,30 @@ public class OpenApiGenerator implements Generator {
         return stringBuilder.toString();
     }
 
-        private String populateRequestBodyExample(Operation operation) {
-	    String result = "{\"content\": \"request body to be replaced\"}";
-	    RequestBody body = operation.getRequestBody();
-	    if(body != null) {
+    private String populateRequestBodyExample(Operation operation) {
+        String result = "{\"content\": \"request body to be replaced\"}";
+        RequestBody body = operation.getRequestBody();
+        if (body != null) {
             MediaType mediaType = body.getContentMediaType("application/json");
-            if(mediaType != null) {
+            if (mediaType != null) {
                 Object valueToBeStringify = null;
-                if(mediaType.getExamples() != null && !mediaType.getExamples().isEmpty()) {
-                    for(Entry<String, Example> entry : mediaType.getExamples().entrySet()) {
+                if (mediaType.getExamples() != null && !mediaType.getExamples().isEmpty()) {
+                    for (Entry<String, Example> entry : mediaType.getExamples().entrySet()) {
                         valueToBeStringify = entry.getValue().getValue();
                     }
-                } else if(mediaType.getExample() != null) {
+                } else if (mediaType.getExample() != null) {
                     valueToBeStringify = mediaType.getExample();
                 }
-                if(valueToBeStringify == null) return result;
+                if (valueToBeStringify == null) {
+                    return result;
+                }
                 result = JsonStream.serialize(valueToBeStringify);
-                if(result.startsWith("\"")) {
+                if (result.startsWith("\"")) {
                     result = result.substring(1, result.length() - 1);
                 }
             }
-         }
-	    return result;
+        }
+        return result;
     }
 
     private String populateResponseExample(Operation operation) {
