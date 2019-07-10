@@ -175,8 +175,8 @@ public class OpenApiGenerator implements Generator {
                 // mask
                 transfer(targetPath, ("src.main.resources.config").replace(".", separator), "mask.yml", templates.rest.maskYml.template());
                 // logging
-                transfer(targetPath, ("src.main.resources").replace(".", separator), "logback.xml", templates.rest.logback.template());
-                transfer(targetPath, ("src.test.resources").replace(".", separator), "logback-test.xml", templates.rest.logback.template());
+                transfer(targetPath, ("src.main.resources").replace(".", separator), "logback.xml", templates.rest.logback.template(rootPackage));
+                transfer(targetPath, ("src.test.resources").replace(".", separator), "logback-test.xml", templates.rest.logback.template(rootPackage));
 
                 // exclusion list for Config module
                 transfer(targetPath, ("src.main.resources.config").replace(".", separator), "config.yml", templates.rest.openapi.config.template(config));
