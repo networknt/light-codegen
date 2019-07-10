@@ -1,5 +1,19 @@
 # Change Log
 
+## [2.0.2](https://github.com/networknt/light-codegen/tree/2.0.2) (2019-07-10)
+
+
+**Merged pull requests:**
+
+
+- fixes \#348 add injectOpenTracing flag into the client.yml template [\#349](https://github.com/networknt/light-codegen/pull/349) ([stevehu](https://github.com/stevehu))
+- fixes \#342 add release to the codegen-web form for the env_tag [\#343](https://github.com/networknt/light-codegen/pull/343) ([stevehu](https://github.com/stevehu))
+- fixes \#338 update codegen-web to handler.yml and change the path to c… [\#339](https://github.com/networknt/light-codegen/pull/339) ([stevehu](https://github.com/stevehu))
+- fixes \#328 The debug agent in exec-maven prevents from starting multi… [\#336](https://github.com/networknt/light-codegen/pull/336) ([stevehu](https://github.com/stevehu))
+- Feat/\#299 kube deployment [\#311](https://github.com/networknt/light-codegen/pull/311) ([BalloonWen](https://github.com/BalloonWen))
+- fixes \#326 update server.yml template for keystore and truststore pas… [\#327](https://github.com/networknt/light-codegen/pull/327) ([stevehu](https://github.com/stevehu))
+- fixes \#324 update client.yml template to sync with the latest changes [\#325](https://github.com/networknt/light-codegen/pull/325) ([stevehu](https://github.com/stevehu))
+- fixes \#322 update dockerfile to use oepnjdk11 as base image [\#323](https://github.com/networknt/light-codegen/pull/323) ([stevehu](https://github.com/stevehu))
 ## [2.0.1](https://github.com/networknt/light-codegen/tree/2.0.1) (2019-06-13)
 
 
