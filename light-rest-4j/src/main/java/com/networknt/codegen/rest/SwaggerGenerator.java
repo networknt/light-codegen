@@ -107,7 +107,7 @@ public class SwaggerGenerator implements Generator {
         }
 
         transfer(targetPath, "docker", "Dockerfile", templates.rest.dockerfile.template(config, expose));
-        transfer(targetPath, "docker", "Dockerfile-Redhat", templates.rest.dockerfileredhat.template(config, expose));
+        transfer(targetPath, "docker", "Dockerfile-Slim", templates.rest.dockerfileslim.template(config, expose));
         transfer(targetPath, "", "build.sh", templates.rest.buildSh.template(dockerOrganization, serviceId));
         transfer(targetPath, "", ".gitignore", templates.rest.gitignore.template());
         transfer(targetPath, "", "README.md", templates.rest.README.template());

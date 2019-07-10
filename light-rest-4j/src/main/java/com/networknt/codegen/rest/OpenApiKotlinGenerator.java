@@ -130,7 +130,7 @@ public class OpenApiKotlinGenerator implements Generator {
                 }
 
                 transfer(targetPath, "docker", "Dockerfile", templates.restkotlin.dockerfile.template(config, expose));
-                transfer(targetPath, "docker", "Dockerfile-Redhat", templates.restkotlin.dockerfileredhat.template(config, expose));
+                transfer(targetPath, "docker", "Dockerfile-Slim", templates.restkotlin.dockerfileslim.template(config, expose));
                 transfer(targetPath, "", "build.sh", templates.restkotlin.buildSh.template(dockerOrganization, serviceId));
                 transfer(targetPath, "", ".gitignore", templates.restkotlin.gitignore.template());
                 transfer(targetPath, "", "README.md", templates.restkotlin.README.template());

@@ -58,7 +58,7 @@ public class GraphqlGenerator implements Generator {
             expose = httpPort;
         }
         transfer(targetPath, "docker", "Dockerfile", templates.graphql.dockerfile.template(config, expose));
-        transfer(targetPath, "docker", "Dockerfile-Redhat", templates.graphql.dockerfileredhat.template(config, expose));
+        transfer(targetPath, "docker", "Dockerfile-Slim", templates.graphql.dockerfileslim.template(config, expose));
         transfer(targetPath, "", "build.sh", templates.graphql.buildSh.template(dockerOrganization, config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version")));
         transfer(targetPath, "", ".gitignore", templates.graphql.gitignore.template());
         transfer(targetPath, "", "README.md", templates.graphql.README.template());

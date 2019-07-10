@@ -158,7 +158,7 @@ public class EventuateOpenApiGenerator implements Generator {
         if(dockerOrganization == null || dockerOrganization.length() == 0) dockerOrganization = "networknt";
 
         transfer(commandService, "docker", "Dockerfile", templates.eventuate.rest.openapi.commandservice.dockerfile.template(config));
-        transfer(commandService, "docker", "Dockerfile-Redhat", templates.eventuate.rest.openapi.commandservice.dockerfileredhat.template(config));
+        transfer(commandService, "docker", "Dockerfile-Slim", templates.eventuate.rest.openapi.commandservice.dockerfileslim.template(config));
         transfer(commandService, "", "build.sh", templates.eventuate.rest.buildSh.template(dockerOrganization, config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version")));
         transfer(commandService, "", ".gitignore", templates.eventuate.rest.gitignore.template());
         transfer(commandService, "", "README.md", templates.eventuate.rest.openapi.commandservice.README.template());
@@ -267,7 +267,7 @@ public class EventuateOpenApiGenerator implements Generator {
         if(dockerOrganization == null || dockerOrganization.length() == 0) dockerOrganization = "networknt";
 
         transfer(queryService, "docker", "Dockerfile", templates.eventuate.rest.openapi.queryservice.dockerfile.template(config));
-        transfer(queryService, "docker", "Dockerfile-Redhat", templates.eventuate.rest.openapi.queryservice.dockerfileredhat.template(config));
+        transfer(queryService, "docker", "Dockerfile-Slim", templates.eventuate.rest.openapi.queryservice.dockerfileslim.template(config));
         transfer(queryService, "", "build.sh", templates.eventuate.rest.buildSh.template(dockerOrganization, config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version")));
         transfer(queryService, "", ".gitignore", templates.eventuate.rest.gitignore.template());
         transfer(queryService, "", "README.md", templates.eventuate.rest.openapi.queryservice.README.template());
