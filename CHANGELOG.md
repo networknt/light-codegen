@@ -1,5 +1,17 @@
 # Change Log
 
+## [1.6.5](https://github.com/networknt/light-codegen/tree/1.6.5) (2019-07-12)
+
+
+**Merged pull requests:**
+
+
+- added appender in logback.xml for the package defined in codegen config [\#330](https://github.com/networknt/light-codegen/pull/330) ([BalloonWen](https://github.com/BalloonWen))
+- fixes \#345 fix a typo in the client.yml template [\#346](https://github.com/networknt/light-codegen/pull/346) ([stevehu](https://github.com/stevehu))
+- Config parameterization fix [\#317](https://github.com/networknt/light-codegen/pull/317) ([jiachen1120](https://github.com/jiachen1120))
+- while generating the test configuration files, create the needed directories [\#332](https://github.com/networknt/light-codegen/pull/332) ([243826](https://github.com/243826))
+- fixes \#342 add release to the codegen-web form for the env_tag [\#343](https://github.com/networknt/light-codegen/pull/343) ([stevehu](https://github.com/stevehu))
+- fixes \#340 update codegen-web to handler.yml for 1.6.x branch [\#341](https://github.com/networknt/light-codegen/pull/341) ([stevehu](https://github.com/stevehu))
 ## [1.6.4](https://github.com/networknt/light-codegen/tree/1.6.4) (2019-06-10)
 
 
