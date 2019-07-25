@@ -369,13 +369,11 @@ public class OpenApiGenerator implements Generator {
         // handler
         for (Map<String, Object> op : operationList) {
             String className = op.get("handlerName").toString();
-            String example = null;
             @SuppressWarnings("unchecked")
             List<Map> parameters = (List<Map>)op.get("parameters");
-            Object responseExample = op.get("responseExample");
-            if (responseExample != null) {
-                example = (String)responseExample;
-            }
+            Map<String, String> responseExample = (Map<String, String>)op.get("responseExample");
+            String example = responseExample.get("example");
+            String statusCode = responseExample.get("statusCode");
             if (checkExist(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), className + ".java") && !overwriteHandler) {
                 continue;
             }
@@ -749,7 +747,8 @@ public class OpenApiGenerator implements Generator {
                         .collect(Collectors.toMap(k -> k.getName(), v -> UrlGenerator.generateValidParam(v)));
                 flattened.put("headerNameValueMap", headerNameValueMap);
                 flattened.put("requestBodyExample", populateRequestBodyExample(operation));
-                flattened.put("responseExample", populateResponseExample(operation));
+                Map<String, String> responseExample = populateResponseExample(operation);
+                flattened.put("responseExample", responseExample);
                 if (enableParamDescription) {
                     //get parameters info and put into result
                     List<Parameter> parameterRawList = operation.getParameters();
@@ -864,19 +863,21 @@ public class OpenApiGenerator implements Generator {
         return result;
     }
 
-    private String populateResponseExample(Operation operation) {
-        String result = null;
+    private Map<String, String> populateResponseExample(Operation operation) {
+        Map<String, String> result = new HashMap<>();
         Object example;
         for (String statusCode : operation.getResponses().keySet()) {
             Optional<Response> response = Optional.ofNullable(operation.getResponse(String.valueOf(statusCode)));
             if (response.get().getContentMediaTypes().size() == 0) {
-                result = statusCode + ",{}";
+                result.put("statusCode", statusCode);
+                result.put("example", "{}");
             }
             for (String mediaTypeStr : response.get().getContentMediaTypes().keySet()) {
                 Optional<MediaType> mediaType = Optional.ofNullable(response.get().getContentMediaType(mediaTypeStr));
                 example = mediaType.get().getExample();
                 if (example != null) {
-                    result = statusCode + "," + JsonStream.serialize(example);
+                    result.put("statusCode", statusCode);
+                    result.put("example", JsonStream.serialize(example));
                 } else {
                     // check if there are multiple examples
                     Map<String, Example> exampleMap = mediaType.get().getExamples();
@@ -885,7 +886,8 @@ public class OpenApiGenerator implements Generator {
                         Map.Entry<String, Example> entry = exampleMap.entrySet().iterator().next();
                         Example e = entry.getValue();
                         if (e != null) {
-                            result = statusCode + "," + JsonStream.serialize(e.getValue());
+                            result.put("statusCode", statusCode);
+                            result.put("example", JsonStream.serialize(e.getValue()));
                         }
                     }
                 }
