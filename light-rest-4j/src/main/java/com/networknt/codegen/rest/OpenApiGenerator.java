@@ -10,6 +10,7 @@ import com.networknt.jsonoverlay.Overlay;
 import com.networknt.oas.OpenApiParser;
 import com.networknt.oas.model.*;
 import com.networknt.oas.model.impl.OpenApi3Impl;
+import com.networknt.utility.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -374,10 +375,11 @@ public class OpenApiGenerator implements Generator {
             Map<String, String> responseExample = (Map<String, String>)op.get("responseExample");
             String example = responseExample.get("example");
             String statusCode = responseExample.get("statusCode");
+            statusCode = StringUtils.isBlank(statusCode) || statusCode.equals("default") ? "-1" : statusCode;
             if (checkExist(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), className + ".java") && !overwriteHandler) {
                 continue;
             }
-            transfer(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), className + ".java", templates.rest.handler.template(handlerPackage, className, example, parameters));
+            transfer(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), className + ".java", templates.rest.handler.template(handlerPackage, className, statusCode, example, parameters));
         }
 
         // handler test cases

@@ -79,9 +79,9 @@ public class SwaggerGenerator implements Generator {
         boolean overwriteHandlerTest = config.toBoolean("overwriteHandlerTest");
         boolean overwriteModel = config.toBoolean("overwriteModel");
         boolean enableHttp = config.toBoolean("enableHttp");
-        String httpPort = config.toString("httpPort");
+        String httpPort = config.toString("httpPort").trim();
         boolean enableHttps = config.toBoolean("enableHttps");
-        String httpsPort = config.toString("httpsPort");
+        String httpsPort = config.toString("httpsPort").trim();
         boolean enableRegistry = config.toBoolean("enableRegistry");
         boolean eclipseIDE = config.toBoolean("eclipseIDE");
         boolean supportClient = config.toBoolean("supportClient");
@@ -289,7 +289,7 @@ public class SwaggerGenerator implements Generator {
                     parameterList.add(parameterResultMap);
                 }
             }
-            transfer(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), className + ".java", templates.rest.handler.template(handlerPackage, className, example, parameterList));
+            transfer(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), className + ".java", templates.rest.handler.template(handlerPackage, className, "200", example, parameterList));
         }
 
         // handler test cases
