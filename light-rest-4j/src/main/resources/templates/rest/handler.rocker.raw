@@ -2,7 +2,7 @@
 @import java.util.Map
 @import java.util.List
 @option discardLogicWhitespace=true
-@args (String handlerPackage, String className, String example, List<Map> parameters)
+@args (String handlerPackage, String className, String statusCode, String example, List<Map> parameters)
 package @handlerPackage;
 
 import com.networknt.handler.LightHttpHandler;
@@ -22,8 +22,8 @@ public class @className implements LightHttpHandler {
     public void handleRequest(HttpServerExchange exchange) throws Exception {
         @if(example != null) {
         exchange.getResponseHeaders().add(new HttpString("Content-Type"), "application/json");
-        @with (String statusCode = ((String)example).split(",", 2)[0]) {@if (!statusCode.equals("default")) {exchange.setStatusCode(@statusCode);} else {exchange.setStatusCode(-1);}}
-        @with (e = StringEscapeUtils.escapeJson(((String)example).split(",", 2)[1])) {exchange.getResponseSender().send("@e");}
+        exchange.setStatusCode(@statusCode);
+        @with (e = StringEscapeUtils.escapeJson(example)) {exchange.getResponseSender().send("@e");}
         } else {
         exchange.endExchange();
         }
