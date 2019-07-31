@@ -6,6 +6,9 @@
 **Merged pull requests:**
 
 
+- Merge \#355 to master [\#357](https://github.com/networknt/light-codegen/pull/357) ([BalloonWen](https://github.com/BalloonWen))
+
+
 ## [2.0.2](https://github.com/networknt/light-codegen/tree/2.0.2) (2019-07-10)
 
 
