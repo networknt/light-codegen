@@ -6,6 +6,9 @@
 **Merged pull requests:**
 
 
+- Fix/\#355 swagger example exception [\#356](https://github.com/networknt/light-codegen/pull/356) ([BalloonWen](https://github.com/BalloonWen))
+
+
 ## [1.6.5](https://github.com/networknt/light-codegen/tree/1.6.5) (2019-07-12)
 
 
