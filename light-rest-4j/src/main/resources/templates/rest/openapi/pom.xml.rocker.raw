@@ -15,11 +15,11 @@
         }
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.main.class>com.networknt.server.Server</project.main.class>
-        <version.light-4j>1.6.5</version.light-4j>
+        <version.light-4j>1.6.6</version.light-4j>
         <version.logback>1.2.3</version.logback>
         <version.junit>4.12</version.junit>
         <version.undertow>2.0.16.Final</version.undertow>
-        <version.json-schema-validator>1.0.17</version.json-schema-validator>
+        <version.json-schema-validator>1.0.18</version.json-schema-validator>
         <version.fastscanner>2.18.1</version.fastscanner>
         @if(config.toBoolean("supportDb") || config.toBoolean("supportH2ForTest")){
         <version.hikaricp>3.1.0</version.hikaricp>
