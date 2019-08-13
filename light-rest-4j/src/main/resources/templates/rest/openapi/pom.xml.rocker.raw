@@ -14,6 +14,7 @@
         <project.main.class>com.networknt.server.Server</project.main.class>
         <version.light-4j>2.0.4-SNAPSHOT</version.light-4j>
         <version.jackson>2.9.9</version.jackson>
+        <version.jackson-databind>2.9.9.3</version.jackson-databind>
         <version.slf4j>1.7.25</version.slf4j>
         <version.jose4j>0.6.3</version.jose4j>
         <version.logback>1.2.3</version.logback>
@@ -209,7 +210,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>${version.jackson}</version>
+            <version>${version.jackson-databind}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
