@@ -23,20 +23,4 @@ singletons:
 # ShutdownHookProvider implementations, there are one to many and they are called in the same sequence defined.
 # - com.networknt.server.ShutdownHookProvider:
   # - com.networknt.server.Test1ShutdownHook
-#@if(config.toBoolean("supportDb") ){
-#@with (driverClassName = config.toString("dbInfo", "driverClassName"), jdbcUrl=config.toString("dbInfo", "jdbcUrl"), username=config.toString("dbInfo", "username"), password=config.toString("dbInfo", "password")) {
-#- javax.sql.DataSource:
-#  - com.zaxxer.hikari.HikariDataSource:
-#      DriverClassName: @driverClassName
-#      jdbcUrl: @jdbcUrl
-#      username: @username
-#      password: @password
-#      maximumPoolSize: 10
-#      useServerPrepStmts: true
-#      cachePrepStmts: true
-#      cacheCallableStmts: true
-#      prepStmtCacheSize: 10
-#      prepStmtCacheSqlLimit: 2048
-#      connectionTimeout: 2000
-#}
-}
+

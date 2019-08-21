@@ -288,11 +288,42 @@ public class OpenApiGenerator implements Generator {
                                     if ("$ref".equals(allOfItem.getKey())) {
                                         String s = allOfItem.getValue().toString();
                                         s = s.substring(s.lastIndexOf('/') + 1);
-                                        handleProperties(props, schemas.get(s).get("properties").asMap());
+
+                                        //wip
+//                                    	Map<String, Any> map = schemas.get(s).asMap();
+                                        
+//                                        Iterator<Any> iterator = schemas.get(s).iterator();
+//                                        Map<String, Any> map = new HashMap<>();
+//                                        while (iterator.hasNext()) {
+//                                        	iterator.next();
+//                                        }
+                                       	handleProperties(props, schemas.get(s).get("properties").asMap());
+                                        
+//                                        if(schemas.get(s).get("oneOf")!=null) {
+//                                        	Map<String, Any> oneOfMap = new HashMap<String, Any>();
+//                                        	List<Any> list = allOfItem.getValue().asList();
+//                                        	for(Any listEntry : list) {
+//                                        		oneOfMap.putAll(listEntry.asMap());
+//                                        	}
+//                                        	handleProperties(props, oneOfMap);
+//                                        }
                                     }
                                     if ("properties".equals(allOfItem.getKey())) {
                                         handleProperties(props, allOfItem.getValue().asMap());
                                     }
+				//wip
+                                    /*
+                                    if ("oneOf".equals(allOfItem.getKey())) {
+                                    	Map<String, Any> oneOfMap = new HashMap<String, Any>();
+                                    	List<Any> list = allOfItem.getValue().asList();
+                                    	for(Any listEntry : list) {
+                                    		oneOfMap.putAll(listEntry.asMap());
+                                    	}
+                                        
+                                        // handle the list now
+                                        handleProperties(props, oneOfMap);
+                                    }
+                                     */
                                 }
                             }
                         }
