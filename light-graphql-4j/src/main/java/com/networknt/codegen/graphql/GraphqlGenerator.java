@@ -42,8 +42,12 @@ public class GraphqlGenerator implements Generator {
         String httpsPort = config.toString("httpsPort");
         boolean enableRegistry = config.toBoolean("enableRegistry");
         boolean supportClient = config.toBoolean("supportClient");
+        boolean prometheusMetrics = config.toBoolean("prometheusMetrics");
+        boolean skipHealthCheck = config.toBoolean("skipHealthCheck");
+        boolean skipServerInfo = config.toBoolean("skipServerInfo");
         String dockerOrganization = config.toString("dockerOrganization");
         String version = config.toString("version");
+        String serviceId = config.get("groupId").toString().trim() + "." + config.get("artifactId").toString().trim() + "-" + config.get("version").toString().trim();
 
         if(dockerOrganization == null || dockerOrganization.length() == 0) dockerOrganization = "networknt";
 
@@ -88,7 +92,8 @@ public class GraphqlGenerator implements Generator {
         // logging
         transfer(targetPath, ("src.main.resources").replace(".", separator), "logback.xml", templates.graphql.logback.template());
         transfer(targetPath, ("src.test.resources").replace(".", separator), "logback-test.xml", templates.graphql.logback.template());
-
+        // handler.yml
+        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "handler.yml", templates.graphql.handlerYml.template(serviceId, prometheusMetrics, !skipHealthCheck, !skipServerInfo));
 
         // Copy schema
         // The generator support both manually coded schema or schema defined in IDL. If schema.graphqls exists
