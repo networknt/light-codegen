@@ -1,0 +1,175 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Cashflow API
+  description: Cashflow API - retrieve aggregated cashflow by account
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+servers:
+  - url: 'http://api.cibc.com/v1'
+paths:
+  /cashflow:
+    post:
+      requestBody:
+        description: >-
+          List of account identifiers that contains the account number,
+          transit and product type code of the accounts to perform aggregation on.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              maxItems: 15
+              items:
+                $ref: '#/components/schemas/AccountId'
+      responses:
+        '200':
+          description: Cashflow information returned for the matching Account IDs
+          content:
+            application/json:
+              schema:
+                properties:
+                  aggregatedAsOfdate:
+                    description: The cut-off date of the aggregation.
+                    type: string
+                    format: date
+                  accounts:
+                    description: the account where the aggregation is taking place
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Accounts'
+        '404':
+          description: No transaction information has been found for the accounts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error, couldn't retrieve transaction information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - accounts_auth:
+            - cashflow.read
+
+components:
+  securitySchemes:
+    accounts_auth:
+      type: oauth2
+      description: This API uses OAuth 2 with the clientCredentials grant flow.
+      flows:
+        clientCredentials:
+          tokenUrl: http://localhost:8888/oauth2/token
+          scopes:
+            cashflow.read: read access - grant to cashflow data retrieval service
+  schemas:
+    AccountId:
+      type: object
+      required:
+        - accountNumber
+        - productTypeCode
+      properties:
+        accountNumber:
+          type: string
+        transit:
+          type: string
+          minLength: 5
+          maxLength: 5
+          nullable: true
+        productTypeCode:
+          type: string
+    Accounts:
+      type: object
+      required:
+        - accountNumber
+        - productTypeCode
+        - resultStatus
+      properties:
+        accountNumber:
+          type: string
+        transit:
+          type: string
+          minLength: 5
+          maxLength: 5
+          nullable: true
+        productTypeCode:
+          type: string
+        resultStatus:
+          description: >-
+            SUCCESS: The aggregation is return successfully.</br>
+            NOT_FOUND: No transactions were found for the account provided. This is because either there</br>
+              were no transactions during the range period we are looking for or the account does not exist.</br>
+            TIMEOUT: The service unable to retrieve the transactions in time for this account</br>
+              based the SLA defined by the business unit</br>
+            ERROR: Transactions were found but there was an error retrieving the transaction
+          type: string
+          enum:
+            - SUCCESS
+            - NOT_FOUND
+            - TIMEOUT
+            - ERROR
+        incomes:
+          description: >-
+            The list of categories for incomes. this field will only be returned if the resultStatus is SUCCESS.
+          type: array
+          items:
+            $ref: '#/components/schemas/Income'
+        expenses:
+          description: >-
+            The list of categories for expenses. this field will only be returned if the resultStatus is SUCCESS.
+          type: array
+          items:
+            $ref: '#/components/schemas/Expense'
+    Income:
+      type: object
+      required:
+        - categoryIdentifier
+        - aggregatedAmount
+      properties:
+        categoryIdentifier:
+          description: Category name
+          type: string
+          enum:
+            - CPP : Canada pension plan
+            - OAS : Ontario Age Service
+        aggregatedAmount:
+          type: number
+          format: int64
+    Expense:
+      type: object
+      required:
+        - categoryIdentifier
+        - aggregatedAmount
+      properties:
+        categoryIdentifier:
+          description: Category name
+          type: string
+          enum:
+            - EFT_BillPay (EFT and Bill Payment)
+            - Cheque_POS (Cheques and Point Sale)
+            - ABM_Cashwid (ABM and Cash Withdrawals)
+            - Loan (Loan Repayment)
+            - Mortgage (Morgage Repayment)
+        aggregatedAmount:
+          type: number
+          format: int64
+    Error:
+      type: object
+      required:
+        - statusCode
+        - code
+        - message
+        - description
+      properties:
+        statusCode:
+          type: integer
+          format: int32
+        code:
+          type: string
+        message:
+          type: string
+        description:
+          type: string
