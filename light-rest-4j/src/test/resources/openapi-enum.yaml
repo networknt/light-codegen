@@ -7,7 +7,7 @@ info:
     name: Apache 2.0
     url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
 servers:
-  - url: 'http://api.cibc.com/v1'
+  - url: 'http://api.example.com/v1'
 paths:
   /cashflow:
     post:
