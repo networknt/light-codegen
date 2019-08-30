@@ -12,6 +12,8 @@
 - fixes \#367 update light-graphql-4j template to leverage handler.yml [\#371](https://github.com/networknt/light-codegen/pull/371) ([stevehu](https://github.com/stevehu))
 - Fixes \#368 - update template for openapi-security code generation after code changes in light-rest-4j [\#369](https://github.com/networknt/light-codegen/pull/369) ([ddobrin](https://github.com/ddobrin))
 - fixes \#365 add full curl command with JWT token in the header in rest… [\#366](https://github.com/networknt/light-codegen/pull/366) ([stevehu](https://github.com/stevehu))
+
+
 ## [2.0.4](https://github.com/networknt/light-codegen/tree/2.0.4) (2019-08-16)
 
 
