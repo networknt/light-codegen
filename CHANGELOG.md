@@ -9,6 +9,8 @@
 - Fixes \#370 - Update handler.yml template in Handler module to support audit on demand [\#374](https://github.com/networknt/light-codegen/pull/374) ([ddobrin](https://github.com/ddobrin))
 - fixes \#372 [\#373](https://github.com/networknt/light-codegen/pull/373) ([chenyan71](https://github.com/chenyan71))
 - Fixes \#368 - update template for openapi-security code generation after code changes in light-rest-4j [\#369](https://github.com/networknt/light-codegen/pull/369) ([ddobrin](https://github.com/ddobrin))
+
+
 ## [1.6.7](https://github.com/networknt/light-codegen/tree/1.6.7) (2019-08-16)
 
 
