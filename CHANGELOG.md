@@ -1,5 +1,17 @@
 # Change Log
 
+## [2.0.5](https://github.com/networknt/light-codegen/tree/2.0.5) (2019-08-30)
+
+
+**Merged pull requests:**
+
+
+- fixes \#375 upgrade to the latest graphql-java library [\#376](https://github.com/networknt/light-codegen/pull/376) ([stevehu](https://github.com/stevehu))
+- Fixes \#370 - Update handler.yml template in Handler module to support audit on demand [\#374](https://github.com/networknt/light-codegen/pull/374) ([ddobrin](https://github.com/ddobrin))
+- fixes \#372 [\#373](https://github.com/networknt/light-codegen/pull/373) ([chenyan71](https://github.com/chenyan71))
+- fixes \#367 update light-graphql-4j template to leverage handler.yml [\#371](https://github.com/networknt/light-codegen/pull/371) ([stevehu](https://github.com/stevehu))
+- Fixes \#368 - update template for openapi-security code generation after code changes in light-rest-4j [\#369](https://github.com/networknt/light-codegen/pull/369) ([ddobrin](https://github.com/ddobrin))
+- fixes \#365 add full curl command with JWT token in the header in rest… [\#366](https://github.com/networknt/light-codegen/pull/366) ([stevehu](https://github.com/stevehu))
 ## [2.0.4](https://github.com/networknt/light-codegen/tree/2.0.4) (2019-08-16)
 
 
