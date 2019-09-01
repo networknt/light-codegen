@@ -21,7 +21,7 @@
     <parent>
         <groupId>com.networknt</groupId>
         <artifactId>light-codegen</artifactId>
-        <version>1.6.7</version>
+        <version>1.6.8</version>
         <relativePath>..</relativePath>
     </parent>
 
@@ -81,6 +81,14 @@
         <dependency>
             <groupId>com.networknt</groupId>
             <artifactId>resource</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.networknt</groupId>
+            <artifactId>health</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.networknt</groupId>
+            <artifactId>info</artifactId>
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
