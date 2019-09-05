@@ -107,7 +107,6 @@
         <module>light-rest-4j</module>
         <module>light-hybrid-4j</module>
         <module>light-graphql-4j</module>
-        <module>codegen-fwk</module>
         <module>codegen-cli</module>
         <module>codegen-web</module>
         <module>light-eventuate-4j</module>

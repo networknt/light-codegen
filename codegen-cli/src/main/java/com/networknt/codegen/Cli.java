@@ -12,7 +12,11 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Set;
+import java.util.Map;
+import java.util.ServiceLoader;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 import static java.io.File.separator;
 
 /**
@@ -71,10 +75,14 @@ public class Cli {
 
         System.out.printf("%s %s %s %s\n", framework, model, config, output);
 
-        FrameworkRegistry registry = FrameworkRegistry.getInstance();
-        Set<String> frameworks = registry.getFrameworks();
-        if(frameworks.contains(framework)) {
-            Generator generator = registry.getGenerator(framework);
+        final Map<String, Generator> frameworks =
+                ServiceLoader.load(Generator.class)
+                             .stream()
+                             .map(ServiceLoader.Provider::get)
+                             .collect(Collectors.toMap(Generator::getFramework, Function.identity()));
+
+        if(frameworks.containsKey(framework)) {
+            Generator generator = frameworks.get(framework);
             Object anyModel = null;
             // model can be empty in some cases.
             if(model != null) {
@@ -109,7 +117,7 @@ public class Cli {
             System.out.println("A project has been generated successfully in " + output + " folder. Have fun!!!");
         } else {
             System.out.printf("Invalid framework: %s\navaliable frameworks:\n", framework);
-            for(String frm : frameworks) {
+            for(String frm : frameworks.keySet()) {
                 System.out.println("\t"+frm);
             }
         }

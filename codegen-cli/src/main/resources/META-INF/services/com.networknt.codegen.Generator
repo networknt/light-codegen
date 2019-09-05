@@ -1,0 +1,8 @@
+com.networknt.codegen.rest.OpenApiGenerator
+com.networknt.codegen.rest.SwaggerGenerator
+com.networknt.codegen.hybrid.HybridServerGenerator
+com.networknt.codegen.hybrid.HybridServiceGenerator
+com.networknt.codegen.graphql.GraphqlGenerator
+com.networknt.codegen.eventuate.EventuateOpenApiGenerator
+com.networknt.codegen.rest.OpenApiKotlinGenerator
+com.networknt.codegen.rest.OpenApiSpecGenerator
