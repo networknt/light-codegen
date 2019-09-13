@@ -8,6 +8,8 @@
 
 - fixes \#384 remove deleted flag in json-schema-validator for openapi t… [\#385](https://github.com/networknt/light-codegen/pull/385) ([stevehu](https://github.com/stevehu))
 - fixes \#378 [\#379](https://github.com/networknt/light-codegen/pull/379) ([chenyan71](https://github.com/chenyan71))
+
+
 ## [1.6.8](https://github.com/networknt/light-codegen/tree/1.6.8) (2019-08-30)
 
 
