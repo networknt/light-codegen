@@ -1,5 +1,14 @@
 # Change Log
 
+## [2.0.6](https://github.com/networknt/light-codegen/tree/2.0.6) (2019-09-13)
+
+
+**Merged pull requests:**
+
+
+- fixes \#382 update light-hybrid-4j server pom.xml to always build a fa… [\#383](https://github.com/networknt/light-codegen/pull/383) ([stevehu](https://github.com/stevehu))
+- fixes \#380 update the openapi-validator.yml template for nullable flag [\#381](https://github.com/networknt/light-codegen/pull/381) ([stevehu](https://github.com/stevehu))
+- fixes \#378 [\#379](https://github.com/networknt/light-codegen/pull/379) ([chenyan71](https://github.com/chenyan71))
 ## [2.0.5](https://github.com/networknt/light-codegen/tree/2.0.5) (2019-08-30)
 
 
