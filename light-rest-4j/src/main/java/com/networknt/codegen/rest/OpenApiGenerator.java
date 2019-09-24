@@ -265,7 +265,9 @@ public class OpenApiGenerator implements Generator {
                                     if ("$ref".equals(allOfItem.getKey())) {
                                         String s = allOfItem.getValue().toString();
                                         s = s.substring(s.lastIndexOf('/') + 1);
-                                        handleProperties(props, schemas.get(s).get("properties").asMap());
+                                        if (schemas.get(s).keys().contains("properties")) {
+                                            handleProperties(props, schemas.get(s).get("properties").asMap());
+                                        }
                                     }
                                     if ("properties".equals(allOfItem.getKey())) {
                                         handleProperties(props, allOfItem.getValue().asMap());
