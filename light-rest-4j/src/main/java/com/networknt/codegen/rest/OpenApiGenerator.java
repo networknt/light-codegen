@@ -225,7 +225,7 @@ public class OpenApiGenerator implements Generator {
                 ArrayList<Runnable> modelCreators = new ArrayList<>();
                 final HashMap<String, Any> references = new HashMap<>();
                 for (Map.Entry<String, Any> entry : schemas.asMap().entrySet()) {
-                    loadModel(entry.getKey(), null, entry.getValue().asMap(), schemas, overwriteModel, targetPath, modelPackage, modelCreators, references);
+                    loadModel(entry.getKey(), null, entry.getValue().asMap(), schemas, overwriteModel, targetPath, modelPackage, modelCreators, references, null);
                 }
 
                 for (Runnable r : modelCreators) {
@@ -796,13 +796,15 @@ public class OpenApiGenerator implements Generator {
 
     private static final Logger logger = LoggerFactory.getLogger(OpenApiGenerator.class);
 
-    private void loadModel(String classVarName, String parentClassName, Map<String, Any> value, Any schemas, boolean overwriteModel, String targetPath, String modelPackage, List<Runnable> modelCreators, Map<String, Any> references) throws IOException {
+    private void loadModel(String classVarName, String parentClassName, Map<String, Any> value, Any schemas, boolean overwriteModel, String targetPath, String modelPackage, List<Runnable> modelCreators, Map<String, Any> references, List<Map<String, Any>> parentClassProps) throws IOException {
         final String modelFileName = classVarName.substring(0, 1).toUpperCase() + classVarName.substring(1);
         final List<Map<String, Any>> props = new ArrayList<>();
+        final List<Map<String, Any>> parentProps = (parentClassProps == null) ? new ArrayList<>() : parentClassProps;
         String type = null;
         String enums = null;
         boolean isEnumClass = false;
         List<Any> required = null;
+        boolean isAbstractClass = false;
 
         // iterate through each schema in the components
         Queue<Map.Entry<String, Any>> schemaQueue = new LinkedList<>();
@@ -847,13 +849,15 @@ public class OpenApiGenerator implements Generator {
                 }
             }
             if ("oneOf".equals(currentSchemaKey)) {
+                isAbstractClass = true;
+                parentProps.addAll(props);
+                String parentName = classVarName.substring(0, 1) + classVarName.substring(1);
                 for (Any listItem : currentSchema.getValue().asList()) {
                     for (Map.Entry<String, Any> oneOfItem : listItem.asMap().entrySet()) {
                         if ("$ref".equals(oneOfItem.getKey())) {
                             String s = oneOfItem.getValue().toString();
                             s = s.substring(s.lastIndexOf('/') + 1);
-                            String parentName = classVarName.substring(0, 1) + classVarName.substring(1);
-                            loadModel(extendModelName(s, classVarName), parentName, schemas.get(s).asMap(), schemas, overwriteModel, targetPath, modelPackage, modelCreators, references);
+                            loadModel(extendModelName(s, classVarName), parentName, schemas.get(s).asMap(), schemas, overwriteModel, targetPath, modelPackage, modelCreators, references, parentProps);
                         }
                     }
                 }
@@ -873,6 +877,7 @@ public class OpenApiGenerator implements Generator {
             }
 
             final String enumsIfClass = isEnumClass ? enums : null;
+            final boolean abstractIfClass = isAbstractClass;
             modelCreators.add(() -> {
                 final int referencesCount = references.size();
                 for (Map<String, Any> properties : props) {
@@ -920,7 +925,7 @@ public class OpenApiGenerator implements Generator {
                             ("src.main.java." + modelPackage).replace(".", separator),
                             modelFileName + ".java",
                             enumsIfClass == null
-                                    ? templates.rest.pojo.template(modelPackage, modelFileName, parentClassName, classVarName, props)
+                                    ? templates.rest.pojo.template(modelPackage, modelFileName, parentClassName, classVarName, abstractIfClass, props, parentProps)
                                     : templates.rest.enumClass.template(modelPackage, modelFileName, enumsIfClass));
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
