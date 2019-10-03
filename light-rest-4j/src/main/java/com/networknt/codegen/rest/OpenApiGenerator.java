@@ -225,137 +225,7 @@ public class OpenApiGenerator implements Generator {
                 ArrayList<Runnable> modelCreators = new ArrayList<>();
                 final HashMap<String, Any> references = new HashMap<>();
                 for (Map.Entry<String, Any> entry : schemas.asMap().entrySet()) {
-                    final List<Map<String, Any>> props = new ArrayList<>();
-                    String key = entry.getKey();
-                    Map<String, Any> value = entry.getValue().asMap();
-                    String type = null;
-                    String enums = null;
-                    boolean isEnum = false;
-                    boolean isEnumClass = false;
-                    // Map<String, Any> properties = null;
-                    List<Any> required = null;
-
-                    // iterate through each schema in the components
-                    for (Map.Entry<String, Any> entrySchema : value.entrySet()) {
-                        if ("type".equals(entrySchema.getKey())) {
-                            type = entrySchema.getValue().toString();
-                            if ("enum".equals(type)) {
-                                isEnum = true;
-                            }
-                        }
-                        if ("enum".equals(entrySchema.getKey())) {
-                            isEnumClass = true;
-                            enums = entrySchema.getValue().asList().toString();
-                            enums = enums.substring(enums.indexOf("[") + 1, enums.indexOf("]"));
-                        }
-                        if ("properties".equals(entrySchema.getKey())) {
-                            handleProperties(props, entrySchema.getValue().asMap());
-                        }
-                        if ("required".equals(entrySchema.getKey())) {
-                            required = entrySchema.getValue().asList();
-                        }
-                        if ("allOf".equals(entrySchema.getKey())) {
-                            type = "object";
-
-                            // could be referred to as "$ref" references or listed in "properties"
-                            for (Any listItem : entrySchema.getValue().asList()) {
-                                //Map<String, Any> allOfItem = (Map<String, Any>)listItem.asMap().entrySet();
-
-                                for (Map.Entry<String, Any> allOfItem : listItem.asMap().entrySet()) {
-                                    if ("$ref".equals(allOfItem.getKey())) {
-                                        String s = allOfItem.getValue().toString();
-                                        s = s.substring(s.lastIndexOf('/') + 1);
-                                        if (schemas.get(s).keys().contains("properties")) {
-                                            handleProperties(props, schemas.get(s).get("properties").asMap());
-                                        }
-                                    }
-                                    if ("properties".equals(allOfItem.getKey())) {
-                                        handleProperties(props, allOfItem.getValue().asMap());
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    final String classVarName = key;
-                    final String modelFileName = key.substring(0, 1).toUpperCase() + key.substring(1);
-                    //System.out.println("props = " + Any.wrap(props));
-
-                    // Check the type of current schema. Generation will be executed only if the type of the schema equals to object.
-                    // Since generate a model for primitive types and arrays do not make sense, and an error class would be generated
-                    // due to lack of properties if force to generate.
-                    if (type == null) {
-                        throw new RuntimeException("Cannot find the type of \"" + modelFileName + "\" in #/components/schemas/ of the specification file.");
-                    }
-
-                    if ("object".equals(type) || isEnumClass) {
-                        if (!overwriteModel && checkExist(targetPath, ("src.main.java." + modelPackage).replace(".", separator), modelFileName + ".java")) {
-                            continue;
-                        }
-
-                        final String enumsIfClass = isEnumClass ? enums : null;
-                        modelCreators.add(() -> {
-                            final int referencesCount = references.size();
-                            for (Map<String, Any> properties : props) {
-                                Any any = properties.get("type");
-                                if (any != null) {
-                                    if (any.valueType() == ValueType.STRING) {
-                                        Any resolved = references.get(any.toString());
-                                        if (resolved == null) {
-                                            continue;
-                                        }
-                                        any = new UnresolvedTypeHolderAny(resolved);
-                                        properties.put("type", any);
-                                    }
-
-                                    int iteration = 0;
-                                    do {
-                                        UnresolvedTypeAny previous = null;
-                                        while (any instanceof UnresolvedTypeAny) {
-                                            previous = (UnresolvedTypeAny)any;
-                                            any = ((UnresolvedTypeAny)any).get();
-                                        }
-
-                                        if (any == null) {
-                                            break;
-                                        } else if (iteration++ > referencesCount) {
-                                            throw new TypeNotPresentException(any.toString(), null);
-                                        }
-
-                                        if (any.valueType() == ValueType.STRING) {
-                                            any = references.get(any.toString());
-                                            if (any == null) {
-                                                break;
-                                            } else {
-                                                previous.set(any);
-                                            }
-                                        } else {
-                                            break;
-                                        }
-                                    } while (true);
-                                }
-                            }
-
-                            try {
-                                transfer(targetPath,
-                                        ("src.main.java." + modelPackage).replace(".", separator),
-                                        modelFileName + ".java",
-                                        enumsIfClass == null
-                                                ? templates.rest.pojo.template(modelPackage, modelFileName, classVarName, props)
-                                                : templates.rest.enumClass.template(modelPackage, modelFileName, enumsIfClass));
-                            } catch (IOException ex) {
-                                throw new RuntimeException(ex);
-                            }
-                        });
-                    } else {
-                        HashMap<String, Any> map = new HashMap<>(1);
-                        map.put(key, Any.wrap(value));
-                        handleProperties(props, map);
-                        if (props.isEmpty()) {
-                            throw new IllegalStateException("Properties empty for " + classVarName + "!");
-                        }
-
-                        references.put(modelFileName, props.get(0).get("type"));
-                    }
+                    loadModel(entry.getKey(), null, entry.getValue().asMap(), schemas, overwriteModel, targetPath, modelPackage, modelCreators, references);
                 }
 
                 for (Runnable r : modelCreators) {
@@ -926,4 +796,148 @@ public class OpenApiGenerator implements Generator {
 
     private static final Logger logger = LoggerFactory.getLogger(OpenApiGenerator.class);
 
+    private void loadModel(String classVarName, String parentClassName, Map<String, Any> value, Any schemas, boolean overwriteModel, String targetPath, String modelPackage, List<Runnable> modelCreators, Map<String, Any> references) throws IOException {
+        final String modelFileName = classVarName.substring(0, 1).toUpperCase() + classVarName.substring(1);
+        final List<Map<String, Any>> props = new ArrayList<>();
+        String type = null;
+        String enums = null;
+        boolean isEnumClass = false;
+        List<Any> required = null;
+
+        // iterate through each schema in the components
+        Queue<Map.Entry<String, Any>> schemaQueue = new LinkedList<>();
+        Set<String> seen = new HashSet<>();
+        for (Map.Entry<String, Any> entrySchema : value.entrySet()) {
+            schemaQueue.offer(entrySchema);
+        }
+        while (!schemaQueue.isEmpty()) {
+            Map.Entry<String, Any> currentSchema = schemaQueue.poll();
+            String currentSchemaKey = currentSchema.getKey();
+            if ("type".equals(currentSchemaKey)) {
+                type = currentSchema.getValue().toString();
+            }
+            if ("enum".equals(currentSchemaKey)) {
+                isEnumClass = true;
+                enums = currentSchema.getValue().asList().toString();
+                enums = enums.substring(enums.indexOf("[") + 1, enums.indexOf("]"));
+            }
+            if ("properties".equals(currentSchemaKey)) {
+                handleProperties(props, currentSchema.getValue().asMap());
+            }
+            if ("required".equals(currentSchemaKey)) {
+                if (required == null) {
+                    required = new ArrayList<>();
+                }
+                required.addAll(currentSchema.getValue().asList());
+            }
+            if ("$ref".equals(currentSchemaKey)) {
+                String s = currentSchema.getValue().toString();
+                s = s.substring(s.lastIndexOf('/') + 1);
+                if (seen.contains(s)) continue;
+                seen.add(s);
+                for (Map.Entry<String, Any> schema : schemas.get(s).asMap().entrySet()) {
+                    schemaQueue.offer(schema);
+                }
+            }
+            if ("allOf".equals(currentSchemaKey)) {
+                for (Any listItem : currentSchema.getValue().asList()) {
+                    for (Map.Entry<String, Any> allOfItem : listItem.asMap().entrySet()) {
+                        schemaQueue.offer(allOfItem);
+                    }
+                }
+            }
+            if ("oneOf".equals(currentSchemaKey)) {
+                for (Any listItem : currentSchema.getValue().asList()) {
+                    for (Map.Entry<String, Any> oneOfItem : listItem.asMap().entrySet()) {
+                        if ("$ref".equals(oneOfItem.getKey())) {
+                            String s = oneOfItem.getValue().toString();
+                            s = s.substring(s.lastIndexOf('/') + 1);
+                            String parentName = classVarName.substring(0, 1) + classVarName.substring(1);
+                            loadModel(extendModelName(s, classVarName), parentName, schemas.get(s).asMap(), schemas, overwriteModel, targetPath, modelPackage, modelCreators, references);
+                        }
+                    }
+                }
+            }
+        }
+
+        // Check the type of current schema. Generation will be executed only if the type of the schema equals to object.
+        // Since generate a model for primitive types and arrays do not make sense, and an error class would be generated
+        // due to lack of properties if force to generate.
+        if (type == null) {
+            throw new RuntimeException("Cannot find the type of \"" + modelFileName + "\" in #/components/schemas/ of the specification file.");
+        }
+
+        if ("object".equals(type) || isEnumClass) {
+            if (!overwriteModel && checkExist(targetPath, ("src.main.java." + modelPackage).replace(".", separator), modelFileName + ".java")) {
+                return;
+            }
+
+            final String enumsIfClass = isEnumClass ? enums : null;
+            modelCreators.add(() -> {
+                final int referencesCount = references.size();
+                for (Map<String, Any> properties : props) {
+                    Any any = properties.get("type");
+                    if (any != null) {
+                        if (any.valueType() == ValueType.STRING) {
+                            Any resolved = references.get(any.toString());
+                            if (resolved == null) {
+                                continue;
+                            }
+                            any = new UnresolvedTypeHolderAny(resolved);
+                            properties.put("type", any);
+                        }
+
+                        int iteration = 0;
+                        do {
+                            UnresolvedTypeAny previous = null;
+                            while (any instanceof UnresolvedTypeAny) {
+                                previous = (UnresolvedTypeAny)any;
+                                any = ((UnresolvedTypeAny)any).get();
+                            }
+
+                            if (any == null) {
+                                break;
+                            } else if (iteration++ > referencesCount) {
+                                throw new TypeNotPresentException(any.toString(), null);
+                            }
+
+                            if (any.valueType() == ValueType.STRING) {
+                                any = references.get(any.toString());
+                                if (any == null) {
+                                    break;
+                                } else {
+                                    previous.set(any);
+                                }
+                            } else {
+                                break;
+                            }
+                        } while (true);
+                    }
+                }
+
+                try {
+                    transfer(targetPath,
+                            ("src.main.java." + modelPackage).replace(".", separator),
+                            modelFileName + ".java",
+                            enumsIfClass == null
+                                    ? templates.rest.pojo.template(modelPackage, modelFileName, parentClassName, classVarName, props)
+                                    : templates.rest.enumClass.template(modelPackage, modelFileName, enumsIfClass));
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            });
+        } else {
+            HashMap<String, Any> map = new HashMap<>(1);
+            map.put(classVarName, Any.wrap(value));
+            handleProperties(props, map);
+            if (props.isEmpty()) {
+                throw new IllegalStateException("Properties empty for " + classVarName + "!");
+            }
+
+            references.put(modelFileName, props.get(0).get("type"));
+        }
+    }
+    private String extendModelName(String str1, String str2) {
+        return str1 + str2.substring(0, 1).toUpperCase() + str2.substring(1);
+    }
 }

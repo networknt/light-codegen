@@ -3,7 +3,7 @@
 @import java.util.List
 @option discardLogicWhitespace=true
 
-@args (String modelPackage, String className, String classVarName, List<Map<String, Any>> props)
+@args (String modelPackage, String className, String parentClassName, String classVarName, List<Map<String, Any>> props)
 package @modelPackage;
 
 import java.util.Arrays;
@@ -11,7 +11,7 @@ import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class @className {
+public class @className @if(parentClassName != null) {extends @parentClassName} {
 
     @for (prop: props) {
     @if(prop.get("isEnum").toBoolean()) {@templates.rest.enumInline.template(prop)} else {private @prop.get("type") @prop.get("name");}
