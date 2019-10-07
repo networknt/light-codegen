@@ -799,7 +799,7 @@ public class OpenApiGenerator implements Generator {
     private void loadModel(String classVarName, String parentClassName, Map<String, Any> value, Any schemas, boolean overwriteModel, String targetPath, String modelPackage, List<Runnable> modelCreators, Map<String, Any> references, List<Map<String, Any>> parentClassProps) throws IOException {
         final String modelFileName = classVarName.substring(0, 1).toUpperCase() + classVarName.substring(1);
         final List<Map<String, Any>> props = new ArrayList<>();
-        final List<Map<String, Any>> parentProps = (parentClassProps == null) ? new ArrayList<>() : parentClassProps;
+        final List<Map<String, Any>> parentProps = (parentClassProps == null) ? new ArrayList<>() : new ArrayList<>(parentClassProps);
         String type = null;
         String enums = null;
         boolean isEnumClass = false;
@@ -815,7 +815,7 @@ public class OpenApiGenerator implements Generator {
         while (!schemaQueue.isEmpty()) {
             Map.Entry<String, Any> currentSchema = schemaQueue.poll();
             String currentSchemaKey = currentSchema.getKey();
-            if ("type".equals(currentSchemaKey)) {
+            if ("type".equals(currentSchemaKey) && type == null) {
                 type = currentSchema.getValue().toString();
             }
             if ("enum".equals(currentSchemaKey)) {
@@ -925,7 +925,7 @@ public class OpenApiGenerator implements Generator {
                             ("src.main.java." + modelPackage).replace(".", separator),
                             modelFileName + ".java",
                             enumsIfClass == null
-                                    ? templates.rest.pojo.template(modelPackage, modelFileName, parentClassName, classVarName, abstractIfClass, props, parentProps)
+                                    ? templates.rest.pojo.template(modelPackage, modelFileName, parentClassName, classVarName, abstractIfClass, props, parentClassProps)
                                     : templates.rest.enumClass.template(modelPackage, modelFileName, enumsIfClass));
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
