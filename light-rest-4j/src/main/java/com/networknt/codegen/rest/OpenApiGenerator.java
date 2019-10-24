@@ -807,52 +807,58 @@ public class OpenApiGenerator implements Generator {
         boolean isAbstractClass = false;
 
         // iterate through each schema in the components
-        Queue<Map.Entry<String, Any>> schemaQueue = new LinkedList<>();
+        Queue<Map.Entry<String, Any>> schemaElementQueue = new LinkedList<>();
+        // cache the visited elements to prevent loop reference
         Set<String> seen = new HashSet<>();
+        // add elements into queue to perform a BFS
         for (Map.Entry<String, Any> entrySchema : value.entrySet()) {
-            schemaQueue.offer(entrySchema);
+            schemaElementQueue.offer(entrySchema);
         }
-        while (!schemaQueue.isEmpty()) {
-            Map.Entry<String, Any> currentSchema = schemaQueue.poll();
-            String currentSchemaKey = currentSchema.getKey();
-            if ("type".equals(currentSchemaKey) && type == null) {
-                type = currentSchema.getValue().toString();
+        while (!schemaElementQueue.isEmpty()) {
+            Map.Entry<String, Any> currentElement = schemaElementQueue.poll();
+            String currentElementKey = currentElement.getKey();
+            // handle the base elements
+            if ("type".equals(currentElementKey) && type == null) {
+                type = currentElement.getValue().toString();
             }
-            if ("enum".equals(currentSchemaKey)) {
+            if ("enum".equals(currentElementKey)) {
                 isEnumClass = true;
-                enums = currentSchema.getValue().asList().toString();
+                enums = currentElement.getValue().asList().toString();
                 enums = enums.substring(enums.indexOf("[") + 1, enums.indexOf("]"));
             }
-            if ("properties".equals(currentSchemaKey)) {
-                handleProperties(props, currentSchema.getValue().asMap());
+            if ("properties".equals(currentElementKey)) {
+                handleProperties(props, currentElement.getValue().asMap());
             }
-            if ("required".equals(currentSchemaKey)) {
+            if ("required".equals(currentElementKey)) {
                 if (required == null) {
                     required = new ArrayList<>();
                 }
-                required.addAll(currentSchema.getValue().asList());
+                required.addAll(currentElement.getValue().asList());
             }
-            if ("$ref".equals(currentSchemaKey)) {
-                String s = currentSchema.getValue().toString();
+            // expend the ref elements and add to the queue
+            if ("$ref".equals(currentElementKey)) {
+                String s = currentElement.getValue().toString();
                 s = s.substring(s.lastIndexOf('/') + 1);
                 if (seen.contains(s)) continue;
                 seen.add(s);
                 for (Map.Entry<String, Any> schema : schemas.get(s).asMap().entrySet()) {
-                    schemaQueue.offer(schema);
+                    schemaElementQueue.offer(schema);
                 }
             }
-            if ("allOf".equals(currentSchemaKey)) {
-                for (Any listItem : currentSchema.getValue().asList()) {
+            // expand the allOf elements and add to the queue
+            if ("allOf".equals(currentElementKey)) {
+                for (Any listItem : currentElement.getValue().asList()) {
                     for (Map.Entry<String, Any> allOfItem : listItem.asMap().entrySet()) {
-                        schemaQueue.offer(allOfItem);
+                        schemaElementQueue.offer(allOfItem);
                     }
                 }
             }
-            if ("oneOf".equals(currentSchemaKey)) {
+            // call loadModel recursively to generate new model corresponding to each oneOf elements
+            if ("oneOf".equals(currentElementKey)) {
                 isAbstractClass = true;
                 parentProps.addAll(props);
                 String parentName = classVarName.substring(0, 1) + classVarName.substring(1);
-                for (Any listItem : currentSchema.getValue().asList()) {
+                for (Any listItem : currentElement.getValue().asList()) {
                     for (Map.Entry<String, Any> oneOfItem : listItem.asMap().entrySet()) {
                         if ("$ref".equals(oneOfItem.getKey())) {
                             String s = oneOfItem.getValue().toString();
