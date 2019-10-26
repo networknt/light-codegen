@@ -1,5 +1,13 @@
 # Change Log
 
+## [1.6.10](https://github.com/networknt/light-codegen/tree/1.6.10) (2019-10-26)
+
+
+**Merged pull requests:**
+
+
+- Feat/388 generation of one of artifacts [\#389](https://github.com/networknt/light-codegen/pull/389) ([jiachen1120](https://github.com/jiachen1120))
+- add NPE check before get "properties" property inside allOf/$ref/ [\#387](https://github.com/networknt/light-codegen/pull/387) ([BalloonWen](https://github.com/BalloonWen))
 ## [1.6.9](https://github.com/networknt/light-codegen/tree/1.6.9) (2019-09-13)
 
 
