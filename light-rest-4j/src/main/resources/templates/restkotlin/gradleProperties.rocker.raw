@@ -3,8 +3,8 @@
 # Versions of Frequently used Libraries
 kafkaVersion=2.0.0
 light4jVersion=1.6.0
-jacksonVersion=2.9.9
-jacksonDatabindVersion=2.9.9.3
+jacksonVersion=2.9.10
+jacksonDatabindVersion=2.9.10
 undertowVersion=2.0.23.Final
 logbackVersion=1.2.3
 jsonSchemaValidatorVersion=1.0.2
