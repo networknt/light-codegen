@@ -98,7 +98,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>2.4.3</version>
+                <version>${version.maven-shade}</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -116,7 +116,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>2.6</version>
+                <version>${version.maven-jar}</version>
                 <configuration>
                     <archive>
                         <manifest>
@@ -128,7 +128,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
-                <version>1.4.0</version>
+                <version>${version.exec-maven}</version>
                 <configuration>
                     <executable>java</executable>
                     <arguments>
@@ -141,7 +141,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.0</version>
+                <version>${version.maven-compiler}</version>
                 <configuration>
                     <release>${java.version}</release>
                 </configuration>

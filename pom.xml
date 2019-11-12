@@ -100,6 +100,10 @@
         <version.swagger>2.0.7</version.swagger>
         <version.javadoc-packagelist-plugin>1.0.0</version.javadoc-packagelist-plugin>
         <version.maven-javadoc>3.1.0</version.maven-javadoc>
+        <version.maven-jar>3.2.0</version.maven-jar>
+        <version.maven-shade>3.2.1</version.maven-shade>
+        <version.exec-maven>1.6.0</version.exec-maven>
+        <version.maven-compiler>3.8.1</version.maven-compiler>
     </properties>
     
     <modules>
