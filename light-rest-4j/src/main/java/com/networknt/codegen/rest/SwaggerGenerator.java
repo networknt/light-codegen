@@ -374,13 +374,17 @@ public class SwaggerGenerator implements Generator {
         }
         return result;
     }
-    private static void attachValidEnumName(Map.Entry<String, Any> entryElement) {
+    private void attachValidEnumName(Map.Entry<String, Any> entryElement) {
         Iterator<Any> iterator = entryElement.getValue().iterator();
         Map<String, Any> map = new HashMap<>();
         while (iterator.hasNext()) {
             String string = iterator.next().toString().trim();
             if (string.equals("")) continue;
-            map.put(convertToValidJavaVariableName(string).toUpperCase(), Any.wrap(string));
+            if (isEnumHasDescription(string)) {
+                map.put(convertToValidJavaVariableName(getEnumName(string)).toUpperCase(), Any.wrap(getEnumDescription(string)));
+            } else {
+                map.put(convertToValidJavaVariableName(string).toUpperCase(), Any.wrap(string));
+            }
         }
         entryElement.setValue(Any.wrap(map));
     }
@@ -410,5 +414,23 @@ public class SwaggerGenerator implements Generator {
             }
         }
         return stringBuilder.toString();
+    }
+
+    private  boolean isEnumHasDescription(String string) {
+        return string.contains(":") || string.contains("{") || string.contains("(");
+    }
+
+    private  String getEnumName(String string) {
+        if (string.contains(":")) return string.substring(0, string.indexOf(":")).trim();
+        if (string.contains("(") && string.contains(")")) return string.substring(0, string.indexOf("(")).trim();
+        if (string.contains("{") && string.contains("}")) return string.substring(0, string.indexOf("{")).trim();
+        return string;
+    }
+
+    private  String getEnumDescription(String string) {
+        if (string.contains(":")) return string.substring(string.indexOf(":") + 1).trim();
+        if (string.contains("(") && string.contains(")")) return string.substring(string.indexOf("(") + 1, string.indexOf(")")).trim();
+        if (string.contains("{") && string.contains("}")) return string.substring(string.indexOf("{") + 1, string.indexOf("}")).trim();
+        return string;
     }
 }
