@@ -100,10 +100,16 @@
         <version.swagger>2.0.7</version.swagger>
         <version.javadoc-packagelist-plugin>1.0.0</version.javadoc-packagelist-plugin>
         <version.maven-javadoc>3.1.0</version.maven-javadoc>
+        <version.maven-source>3.2.0</version.maven-source>
         <version.maven-jar>3.2.0</version.maven-jar>
         <version.maven-shade>3.2.1</version.maven-shade>
         <version.exec-maven>1.6.0</version.exec-maven>
         <version.maven-compiler>3.8.1</version.maven-compiler>
+        <version.nexus-staging-maven>1.6.8</version.nexus-staging-maven>
+        <version.maven-surefire>2.22.2</version.maven-surefire>
+        <version.jacoco-maven>0.8.5</version.jacoco-maven>
+        <version.maven-deploy>2.8.2</version.maven-deploy>
+        <version.maven-gpg>1.6</version.maven-gpg>
     </properties>
     
     <modules>
@@ -390,7 +396,7 @@
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.8</version>
+                <version>${version.nexus-staging-maven}</version>
                 <extensions>true</extensions>
                 <configuration>
                     <serverId>ossrh</serverId>
@@ -401,7 +407,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>3.0.1</version>
+                <version>${version.maven-source}</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -427,12 +433,12 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.19.1</version>
+                <version>${version.maven-surefire}</version>
                 <dependencies>
                     <dependency>
                         <groupId>org.apache.maven.surefire</groupId>
                         <artifactId>surefire-junit47</artifactId>
-                        <version>2.19.1</version>
+                        <version>${version.maven-surefire}</version>
                     </dependency>
                 </dependencies>
             </plugin>
@@ -440,7 +446,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.7.9</version>
+                <version>${version.jacoco-maven}</version>
                 <executions>
                     <execution>
                         <id>pre-unit-test</id>
@@ -464,12 +470,12 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
-                <version>2.8.2</version>
+                <version>${version.maven-deploy}</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.0</version>
+                <version>${version.maven-compiler}</version>
                 <configuration>
                     <release>${java.version}</release>
                 </configuration>
@@ -561,7 +567,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-report-plugin</artifactId>
-                <version>2.20.1</version>
+                <version>${version.maven-surefire}</version>
             </plugin>
         </plugins>
     </reporting>
@@ -580,7 +586,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.6</version>
+                        <version>${version.maven-gpg}</version>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>
