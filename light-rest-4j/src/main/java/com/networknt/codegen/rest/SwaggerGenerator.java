@@ -224,8 +224,7 @@ public class SwaggerGenerator implements Generator {
                                     }
                                     propMap.put("isEnum", Any.wrap(true));
                                     propMap.put("nameWithEnum", Any.wrap(name.substring(0, 1).toUpperCase() + name.substring(1) + "Enum"));
-                                    this.attachValidEnumName(entryElement);
-                                    propMap.put("value", entryElement.getValue());
+                                    propMap.put("value", getValidEnumName(entryElement));
                                 }
                                 if("format".equals(entryElement.getKey())) {
                                     String s = entryElement.getValue().toString();
@@ -374,7 +373,7 @@ public class SwaggerGenerator implements Generator {
         }
         return result;
     }
-    private void attachValidEnumName(Map.Entry<String, Any> entryElement) {
+    private Any getValidEnumName(Map.Entry<String, Any> entryElement) {
         Iterator<Any> iterator = entryElement.getValue().iterator();
         Map<String, Any> map = new HashMap<>();
         while (iterator.hasNext()) {
@@ -386,7 +385,7 @@ public class SwaggerGenerator implements Generator {
                 map.put(convertToValidJavaVariableName(string).toUpperCase(), Any.wrap(string));
             }
         }
-        entryElement.setValue(Any.wrap(map));
+        return Any.wrap(map);
     }
 
     // method used to convert string to valid java variable name
