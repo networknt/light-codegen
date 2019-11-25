@@ -77,7 +77,7 @@ paths:
       - default
       - options
 
-@if(healthCheck){  - path: '/health/@serviceId'
+@if(healthCheck){  - path: '/health/${server.serviceId:@serviceId}'
     method: 'get'
     exec:
       - health
