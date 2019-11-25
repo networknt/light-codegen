@@ -78,7 +78,7 @@ paths:
       - default
       - @with (p = handlerPackage + ".") {@p}@item.get("handlerName")
 }
-@if(healthCheck){  - path: '/health/@serviceId'
+@if(healthCheck){  - path: '/health/${server.serviceId:@serviceId}'
     method: 'get'
     exec:
       - health
