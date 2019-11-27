@@ -133,8 +133,8 @@ components:
           description: Category name
           type: string
           enum:
-            - CPP : Canada pension plan
-            - OAS : Ontario Age Service
+            - CPP:Canada pension plan
+            - OAS:Ontario Age Service
         aggregatedAmount:
           type: number
           format: int64

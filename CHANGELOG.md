@@ -1,5 +1,16 @@
 # Change Log
 
+## [2.0.8](https://github.com/networknt/light-codegen/tree/2.0.8) (2019-11-27)
+
+
+**Merged pull requests:**
+
+
+- fixes \#402 service id out-of-sync since it is located two places [\#403](https://github.com/networknt/light-codegen/pull/403) ([stevehu](https://github.com/stevehu))
+- fixes \#396 manually sync PR 400 from 1.6.x to master [\#401](https://github.com/networknt/light-codegen/pull/401) ([stevehu](https://github.com/stevehu))
+- fixes \#397 compilation fails due to to problems with jar plugin; poss… [\#398](https://github.com/networknt/light-codegen/pull/398) ([stevehu](https://github.com/stevehu))
+- fixes \#393 add module-info.class to the exclude list in maven-shade-p… [\#395](https://github.com/networknt/light-codegen/pull/395) ([stevehu](https://github.com/stevehu))
+- fixes \#394 [\#399](https://github.com/networknt/light-codegen/pull/399) ([chenyan71](https://github.com/chenyan71))
 ## [2.0.7](https://github.com/networknt/light-codegen/tree/2.0.7) (2019-10-26)
 
 
