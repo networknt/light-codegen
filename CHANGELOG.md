@@ -1,5 +1,14 @@
 # Change Log
 
+## [1.6.11](https://github.com/networknt/light-codegen/tree/1.6.11) (2019-11-27)
+
+
+**Merged pull requests:**
+
+
+- fixes \#391 The build.sh template misses -Prelease profile in 1.6.x br… [\#392](https://github.com/networknt/light-codegen/pull/392) ([stevehu](https://github.com/stevehu))
+- Fix swagger enum description [\#400](https://github.com/networknt/light-codegen/pull/400) ([jiachen1120](https://github.com/jiachen1120))
+- fixes \#394 [\#399](https://github.com/networknt/light-codegen/pull/399) ([chenyan71](https://github.com/chenyan71))
 ## [1.6.10](https://github.com/networknt/light-codegen/tree/1.6.10) (2019-10-26)
 
 
