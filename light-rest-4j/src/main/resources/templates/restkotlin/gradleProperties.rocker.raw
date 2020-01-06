@@ -2,12 +2,12 @@
 @args (Any config)
 # Versions of Frequently used Libraries
 kafkaVersion=2.0.0
-light4jVersion=1.6.0
+light4jVersion=1.6.13
 jacksonVersion=2.10.0
 jacksonDatabindVersion=2.10.0
 undertowVersion=2.0.28.Final
 logbackVersion=1.2.3
-jsonSchemaValidatorVersion=1.0.2
+jsonSchemaValidatorVersion=1.0.29
 junitVersion=5.3.1
 kotlinLoggingVersion=1.6.22
 assertkVersion=0.13
