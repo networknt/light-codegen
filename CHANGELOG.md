@@ -1,5 +1,16 @@
 # Change Log
 
+## [2.0.10](https://github.com/networknt/light-codegen/tree/2.0.10) (2020-01-31)
+
+
+**Merged pull requests:**
+
+
+- fixes \#414 remove lds.org maven repository from the pom.xml [\#415](https://github.com/networknt/light-codegen/pull/415) ([stevehu](https://github.com/stevehu))
+- fix \#409 Update light4j to snapshot version in Kotlin REST template [\#413](https://github.com/networknt/light-codegen/pull/413) ([fredriv](https://github.com/fredriv))
+- fixes \#409 [\#410](https://github.com/networknt/light-codegen/pull/410) ([fredriv](https://github.com/fredriv))
+- fixes \#407 complete the client.yml parameterization [\#408](https://github.com/networknt/light-codegen/pull/408) ([stevehu](https://github.com/stevehu))
+- fixes \#404 parameterize client.yml template for values.yml overwritten [\#406](https://github.com/networknt/light-codegen/pull/406) ([stevehu](https://github.com/stevehu))
 ## [2.0.9](https://github.com/networknt/light-codegen/tree/2.0.9) (2019-12-30)
 
 
