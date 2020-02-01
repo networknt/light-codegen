@@ -11,6 +11,8 @@
 - fixes \#409 [\#410](https://github.com/networknt/light-codegen/pull/410) ([fredriv](https://github.com/fredriv))
 - fixes \#407 complete the client.yml parameterization [\#408](https://github.com/networknt/light-codegen/pull/408) ([stevehu](https://github.com/stevehu))
 - fixes \#404 parameterize client.yml template for values.yml overwritten [\#406](https://github.com/networknt/light-codegen/pull/406) ([stevehu](https://github.com/stevehu))
+
+
 ## [2.0.9](https://github.com/networknt/light-codegen/tree/2.0.9) (2019-12-30)
 
 
