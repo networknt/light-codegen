@@ -1,9 +1,20 @@
 # Change Log
 
+## [1.6.14](https://github.com/networknt/light-codegen/tree/1.6.14) (2020-01-31)
+
+
+**Merged pull requests:**
+
+
+- fixes \#414 remove lds.org maven repository from the pom.xml [\#415](https://github.com/networknt/light-codegen/pull/415) ([stevehu](https://github.com/stevehu))
+- fix \#409 snapshot version in Kotlin REST template gradle.properties [\#412](https://github.com/networknt/light-codegen/pull/412) ([fredriv](https://github.com/fredriv))
+- fix \#409 for 1.6.x branch [\#411](https://github.com/networknt/light-codegen/pull/411) ([fredriv](https://github.com/fredriv))
 ## [1.6.13](https://github.com/networknt/light-codegen/tree/1.6.13) (2019-12-30)
 
 
 **Merged pull requests:**
+
+
 
 
 ## [1.6.12](https://github.com/networknt/light-codegen/tree/1.6.12) (2019-12-30)
