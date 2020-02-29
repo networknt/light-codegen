@@ -1,5 +1,12 @@
 # Change Log
 
+## [2.0.11](https://github.com/networknt/light-codegen/tree/2.0.11) (2020-02-29)
+
+
+**Merged pull requests:**
+
+
+- fixes \#416 jlink not found in the latest Dockerfile for JKD11 [\#417](https://github.com/networknt/light-codegen/pull/417) ([stevehu](https://github.com/stevehu))
 ## [2.0.10](https://github.com/networknt/light-codegen/tree/2.0.10) (2020-01-31)
 
 
