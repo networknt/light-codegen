@@ -33,6 +33,7 @@ public class HybridServerGenerator implements Generator {
         boolean enableHttps = config.toBoolean("enableHttps");
         String httpsPort = config.toString("httpsPort");
         boolean enableRegistry = config.toBoolean("enableRegistry");
+        boolean eclipseIDE = config.toBoolean("eclipseIDE");
         String dockerOrganization = config.toString("dockerOrganization");
         String version = config.toString("version");
         if(dockerOrganization ==  null || dockerOrganization.length() == 0) dockerOrganization = "networknt";
@@ -56,8 +57,10 @@ public class HybridServerGenerator implements Generator {
         transfer(targetPath, "", ".gitignore", templates.hybrid.gitignore.template());
         transfer(targetPath, "", "README.md", templates.hybrid.server.README.template());
         transfer(targetPath, "", "LICENSE", templates.hybrid.LICENSE.template());
-        transfer(targetPath, "", ".classpath", templates.hybrid.classpath.template());
-        transfer(targetPath, "", ".project", templates.hybrid.project.template());
+        if(eclipseIDE) {
+            transfer(targetPath, "", ".classpath", templates.hybrid.classpath.template());
+            transfer(targetPath, "", ".project", templates.hybrid.project.template());
+        }
 
         // config
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "service.yml", templates.hybrid.serviceYml.template(config));
