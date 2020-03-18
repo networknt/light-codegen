@@ -41,6 +41,7 @@ public class GraphqlGenerator implements Generator {
         boolean enableHttps = config.toBoolean("enableHttps");
         String httpsPort = config.toString("httpsPort");
         boolean enableRegistry = config.toBoolean("enableRegistry");
+        boolean eclipseIDE = config.toBoolean("eclipseIDE");
         boolean supportClient = config.toBoolean("supportClient");
         String dockerOrganization = config.toString("dockerOrganization");
         String version = config.toString("version");
@@ -63,9 +64,10 @@ public class GraphqlGenerator implements Generator {
         transfer(targetPath, "", ".gitignore", templates.graphql.gitignore.template());
         transfer(targetPath, "", "README.md", templates.graphql.README.template());
         transfer(targetPath, "", "LICENSE", templates.graphql.LICENSE.template());
-        transfer(targetPath, "", ".classpath", templates.graphql.classpath.template());
-        transfer(targetPath, "", ".project", templates.graphql.project.template());
-
+        if(eclipseIDE) {
+            transfer(targetPath, "", ".classpath", templates.graphql.classpath.template());
+            transfer(targetPath, "", ".project", templates.graphql.project.template());
+        }
         // config
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "service.yml", templates.graphql.serviceYml.template(config));
 
