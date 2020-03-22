@@ -25,8 +25,6 @@ singletons:
   - com.networknt.traceability.TraceabilityHandler
   # Correlation Create correlationId if it doesn't exist in the request header and put it into the request header
   - com.networknt.correlation.CorrelationHandler
-  # Jwt Token Verification for signature and expiration
-  - com.networknt.rpc.security.JwtVerifyHandler
   # SimpleAudit Log important info about the request into audit log
   - com.networknt.audit.AuditHandler
 @if(config.toBoolean("supportDb")){

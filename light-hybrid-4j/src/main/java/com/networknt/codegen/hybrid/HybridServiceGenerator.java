@@ -84,7 +84,12 @@ public class HybridServiceGenerator implements Generator {
                 String serviceId  = host + "/" + service + "/" + item.get("name") + "/" + item.get("version");
                 Map<String, Object> map = new HashMap<>();
                 map.put("schema", item.get("schema"));
-                map.put("scope", item.get("scope"));
+                Any anyScope = item.get("scope");
+                String scope = anyScope.valueType() != ValueType.INVALID ? anyScope.toString().trim() : null;
+                if(scope != null) map.put("scope", scope);
+                Any anySkipAuth = item.get("skipAuth");
+                Boolean skipAuth = anySkipAuth.valueType() != ValueType.INVALID ? anySkipAuth.toBoolean() : null;
+                if(skipAuth != null) map.put("skipAuth", skipAuth);
                 services.put(serviceId, map);
             }
 
