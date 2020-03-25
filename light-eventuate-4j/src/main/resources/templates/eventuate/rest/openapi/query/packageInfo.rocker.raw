@@ -1,4 +1,0 @@
-@import org.apache.commons.text.StringEscapeUtils
-@args (String eventuateQueryPackage)
-package @eventuateQueryPackage;
-

@@ -1,9 +1,0 @@
-@import org.apache.commons.text.StringEscapeUtils
-@args (String eventuateQueryPackage,  String className)
-package @eventuateQueryPackage;
-
-public interface @className {
-
-}
-
-
