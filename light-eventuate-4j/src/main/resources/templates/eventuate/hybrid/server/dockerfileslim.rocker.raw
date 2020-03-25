@@ -1,6 +1,0 @@
-@import com.jsoniter.any.Any
-@args (Any config, String expose)
-FROM openjdk:11.0.3-slim
-#EXPOSE @expose
-@with (name = config.get("artifactId") + "-" + config.get("version") + ".jar") {ADD /target/@name server.jar}
-CMD ["/bin/sh","-c","java -Dlight-4j-config-dir=/config -Dlogback.configurationFile=/config/logback.xml -cp /server.jar:/service/* com.networknt.server.Server"]
