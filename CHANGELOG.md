@@ -1,5 +1,13 @@
 # Change Log
 
+## [1.6.18](https://github.com/networknt/light-codegen/tree/1.6.18) (2020-03-31)
+
+
+**Merged pull requests:**
+
+
+- fixes \#421 generate client.truststore and client.keystore for unit te… [\#422](https://github.com/networknt/light-codegen/pull/422) ([stevehu](https://github.com/stevehu))
+- fixes \#419 only generate .classpath and .project if eclipseIDE is true [\#420](https://github.com/networknt/light-codegen/pull/420) ([stevehu](https://github.com/stevehu))
 ## [1.6.17](https://github.com/networknt/light-codegen/tree/1.6.17) (2020-02-29)
 
 
