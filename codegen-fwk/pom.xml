@@ -21,7 +21,7 @@
     <parent>
         <groupId>com.networknt</groupId>
         <artifactId>light-codegen</artifactId>
-        <version>2.0.11</version>
+        <version>2.0.12</version>
         <relativePath>..</relativePath>
     </parent>
 
@@ -49,10 +49,6 @@
         <dependency>
             <groupId>com.networknt</groupId>
             <artifactId>light-graphql-4j-generator</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.networknt</groupId>
-            <artifactId>light-eventuate-4j-generator</artifactId>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
