@@ -1,5 +1,17 @@
 # Change Log
 
+## [2.0.12](https://github.com/networknt/light-codegen/tree/2.0.12) (2020-03-31)
+
+
+**Merged pull requests:**
+
+
+- fixes \#429 resolve a defect in client.yml for the oauth2 urls [\#430](https://github.com/networknt/light-codegen/pull/430) ([stevehu](https://github.com/stevehu))
+- fixes \#427 remove the light-eventuate-4j generator [\#428](https://github.com/networknt/light-codegen/pull/428) ([stevehu](https://github.com/stevehu))
+- fixes \#425 update client.yml template to disable server_url in favour… [\#426](https://github.com/networknt/light-codegen/pull/426) ([stevehu](https://github.com/stevehu))
+- fixes \#423 update hybrid generator in master to reflect the removal o… [\#424](https://github.com/networknt/light-codegen/pull/424) ([stevehu](https://github.com/stevehu))
+- fixes \#421 generate client.truststore and client.keystore for unit te… [\#422](https://github.com/networknt/light-codegen/pull/422) ([stevehu](https://github.com/stevehu))
+- fixes \#419 only generate .classpath and .project if eclipseIDE is true [\#420](https://github.com/networknt/light-codegen/pull/420) ([stevehu](https://github.com/stevehu))
 ## [2.0.11](https://github.com/networknt/light-codegen/tree/2.0.11) (2020-02-29)
 
 
