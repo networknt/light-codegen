@@ -223,11 +223,6 @@
             <artifactId>undertow-core</artifactId>
             <version>${version.undertow}</version>
         </dependency>
-        <dependency>
-            <groupId>io.github.lukehutch</groupId>
-            <artifactId>fast-classpath-scanner</artifactId>
-            <version>${version.fastscanner}</version>
-        </dependency>
         @if(config.toBoolean("supportDb") || config.toBoolean("supportH2ForTest")){
         <dependency>
             <groupId>com.zaxxer</groupId>
