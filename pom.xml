@@ -294,11 +294,6 @@
                 <version>${version.jcommander}</version>
             </dependency>
             <dependency>
-                <groupId>io.github.lukehutch</groupId>
-                <artifactId>fast-classpath-scanner</artifactId>
-                <version>${version.fastscanner}</version>
-            </dependency>
-            <dependency>
                 <groupId>com.graphql-java</groupId>
                 <artifactId>graphql-java</artifactId>
                 <version>${version.graphql}</version>
