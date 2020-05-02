@@ -1,5 +1,13 @@
 # Change Log
 
+## [2.0.13](https://github.com/networknt/light-codegen/tree/2.0.13) (2020-05-01)
+
+
+**Merged pull requests:**
+
+
+- fixes \#433 add jdk.crypto.ec model to Dockerfile with jlink to resolv… [\#434](https://github.com/networknt/light-codegen/pull/434) ([stevehu](https://github.com/stevehu))
+- fixes \#431 remove fast-classpath-scanner from hybrid dependency [\#432](https://github.com/networknt/light-codegen/pull/432) ([stevehu](https://github.com/stevehu))
 ## [2.0.12](https://github.com/networknt/light-codegen/tree/2.0.12) (2020-03-31)
 
 
