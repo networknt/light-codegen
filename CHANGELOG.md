@@ -1,5 +1,12 @@
 # Change Log
 
+## [2.0.14](https://github.com/networknt/light-codegen/tree/2.0.14) (2020-05-29)
+
+
+**Merged pull requests:**
+
+
+- fixes \#435 add keyResolver ot the security configuration template [\#436](https://github.com/networknt/light-codegen/pull/436) ([stevehu](https://github.com/stevehu))
 ## [2.0.13](https://github.com/networknt/light-codegen/tree/2.0.13) (2020-05-01)
 
 
