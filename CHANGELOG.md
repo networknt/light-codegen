@@ -1,5 +1,13 @@
 # Change Log
 
+## [1.6.23](https://github.com/networknt/light-codegen/tree/1.6.23) (2020-06-22)
+
+
+**Merged pull requests:**
+
+
+- fixes \#440 remove the temporary version.jackson-databind in the pom.x… [\#441](https://github.com/networknt/light-codegen/pull/441) ([stevehu](https://github.com/stevehu))
+- fixes \#438 remove the temporary version.jackson-databind in the pom.xml [\#439](https://github.com/networknt/light-codegen/pull/439) ([stevehu](https://github.com/stevehu))
 ## [1.6.22](https://github.com/networknt/light-codegen/tree/1.6.22) (2020-06-06)
 
 
