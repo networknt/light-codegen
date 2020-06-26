@@ -86,6 +86,26 @@
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
+            <artifactId>info</artifactId>
+            <version>${version.light-4j}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.networknt</groupId>
+            <artifactId>health</artifactId>
+            <version>${version.light-4j}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.networknt</groupId>
+            <artifactId>cors</artifactId>
+            <version>${version.light-4j}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.networknt</groupId>
+            <artifactId>jaeger-tracing</artifactId>
+            <version>${version.light-4j}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.networknt</groupId>
             <artifactId>json-schema-validator</artifactId>
             <version>${version.json-schema-validator}</version>
         </dependency>

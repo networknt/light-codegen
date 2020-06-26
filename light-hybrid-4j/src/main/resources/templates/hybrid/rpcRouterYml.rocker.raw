@@ -1,0 +1,3 @@
+@args (String handlerPackage, String jsonPath)
+handlerPackage: '@handlerPackage'
+jsonPath: @jsonPath
