@@ -39,6 +39,11 @@ public class HybridServerGenerator implements Generator {
         if(dockerOrganization ==  null || dockerOrganization.length() == 0) dockerOrganization = "networknt";
 
         boolean supportClient = config.toBoolean("supportClient");
+        String serviceId = config.get("groupId").toString().trim() + "." + config.get("artifactId").toString().trim() + "-" + config.get("version").toString().trim();
+        boolean prometheusMetrics = config.toBoolean("prometheusMetrics");
+        boolean skipHealthCheck = config.toBoolean("skipHealthCheck");
+        boolean skipServerInfo = config.toBoolean("skipServerInfo");
+        String jsonPath = config.get("jsonPath").toString();
 
         transfer(targetPath, "", "pom.xml", templates.hybrid.server.pom.template(config));
         transferMaven(targetPath);
@@ -68,7 +73,7 @@ public class HybridServerGenerator implements Generator {
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "server.yml", templates.hybrid.serverYml.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, httpPort, enableHttps, httpsPort, enableRegistry, version));
         transfer(targetPath, ("src.test.resources.config").replace(".", separator), "server.yml", templates.hybrid.serverYml.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, "49587", enableHttps, "49588", enableRegistry, version));
 
-        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "secret.yml", templates.hybrid.secretYml.template());
+        // transfer(targetPath, ("src.main.resources.config").replace(".", separator), "secret.yml", templates.hybrid.secretYml.template());
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "hybrid-security.yml", templates.hybrid.securityYml.template());
         if(supportClient) {
             transfer(targetPath, ("src.main.resources.config").replace(".", separator), "client.yml", templates.hybrid.clientYml.template());
@@ -82,10 +87,6 @@ public class HybridServerGenerator implements Generator {
         // logging
         transfer(targetPath, ("src.main.resources").replace(".", separator), "logback.xml", templates.hybrid.logback.template());
         transfer(targetPath, ("src.test.resources").replace(".", separator), "logback-test.xml", templates.hybrid.logback.template());
-
-        // no handler as this is a server platform which supports other handlers to be deployed
-
-        // no handler test case as this is a server platform which supports other handlers to be deployed.
 
         // transfer binary files without touching them.
         try (InputStream is = HybridServerGenerator.class.getResourceAsStream("/binaries/server.keystore")) {
@@ -109,6 +110,13 @@ public class HybridServerGenerator implements Generator {
                 Files.copy(is, Paths.get(targetPath, ("src.test.resources.config").replace(".", separator), "client.truststore"), StandardCopyOption.REPLACE_EXISTING);
             }
         }
+
+        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "handler.yml",
+                templates.hybrid.handlerYml.template(serviceId, handlerPackage, jsonPath, prometheusMetrics, !skipHealthCheck, !skipServerInfo));
+
+        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "rpc-router.yml",
+                templates.hybrid.rpcRouterYml.template(handlerPackage, jsonPath));
+
     }
 
 }
