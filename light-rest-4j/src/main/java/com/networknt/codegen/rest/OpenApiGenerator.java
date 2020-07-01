@@ -862,17 +862,16 @@ public class OpenApiGenerator implements Generator {
                         if ("$ref".equals(oneOfItem.getKey())) {
                             String s = oneOfItem.getValue().toString();
                             s = s.substring(s.lastIndexOf('/') + 1);
-                            loadModel(extendModelName(s, classVarName), parentName, schemas.get(s).asMap(), schemas, overwriteModel, targetPath, modelPackage, modelCreators, references, parentProps);
+                            loadModel(extendModelName(s, classVarName), s, schemas.get(s).asMap(), schemas, overwriteModel, targetPath, modelPackage, modelCreators, references, parentProps);
                         }
                     }
                 }
             }
         }
-
         // Check the type of current schema. Generation will be executed only if the type of the schema equals to object.
         // Since generate a model for primitive types and arrays do not make sense, and an error class would be generated
         // due to lack of properties if force to generate.
-        if (type == null) {
+        if (type == null && !isAbstractClass) {
             throw new RuntimeException("Cannot find the type of \"" + modelFileName + "\" in #/components/schemas/ of the specification file.");
         }
 
