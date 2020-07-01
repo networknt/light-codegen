@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.6.24](https://github.com/networknt/light-codegen/tree/1.6.24) (2020-07-01)
+
+
+**Merged pull requests:**
+
+
+- Issue444 [\#445](https://github.com/networknt/light-codegen/pull/445) ([stevehu](https://github.com/stevehu))
 ## [1.6.23](https://github.com/networknt/light-codegen/tree/1.6.23) (2020-06-22)
 
 
