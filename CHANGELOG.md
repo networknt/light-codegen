@@ -1,5 +1,14 @@
 # Change Log
 
+## [2.0.15](https://github.com/networknt/light-codegen/tree/2.0.15) (2020-07-01)
+
+
+**Merged pull requests:**
+
+
+- Issue444 [\#445](https://github.com/networknt/light-codegen/pull/445) ([stevehu](https://github.com/stevehu))
+- fixes \#442 update hybrid generator to leverage handler.yml [\#443](https://github.com/networknt/light-codegen/pull/443) ([stevehu](https://github.com/stevehu))
+- fixes \#438 remove the temporary version.jackson-databind in the pom.xml [\#439](https://github.com/networknt/light-codegen/pull/439) ([stevehu](https://github.com/stevehu))
 ## [2.0.14](https://github.com/networknt/light-codegen/tree/2.0.14) (2020-05-29)
 
 
