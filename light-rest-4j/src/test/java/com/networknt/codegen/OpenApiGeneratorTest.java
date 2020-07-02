@@ -28,6 +28,7 @@ public class OpenApiGeneratorTest {
     public static String configName = "/config.json";
     public static String openapiJson = "/openapi.json";
     public static String openapiYaml = "/openapi.yaml";
+    public static String accountInfoYaml = "/account-info.yaml";
     public static String openapiEnumYaml = "/openapi-enum.yaml";
     public static String openapiNoServersYaml = "/openapi-noServers.yaml";
     public static String packageName = "com.networknt.petstore.model";
@@ -56,6 +57,14 @@ public class OpenApiGeneratorTest {
     public void testGeneratorYaml() throws IOException {
         Any anyConfig = JsonIterator.parse(OpenApiGeneratorTest.class.getResourceAsStream(configName), 1024).readAny();
         String strModel = new Scanner(OpenApiGeneratorTest.class.getResourceAsStream(openapiYaml), "UTF-8").useDelimiter("\\A").next();
+        OpenApiGenerator generator = new OpenApiGenerator();
+        generator.generate(targetPath, strModel, anyConfig);
+    }
+
+    @Test
+    public void testGeneratorAccountInfo() throws IOException {
+        Any anyConfig = JsonIterator.parse(OpenApiGeneratorTest.class.getResourceAsStream(configName), 1024).readAny();
+        String strModel = new Scanner(OpenApiGeneratorTest.class.getResourceAsStream(accountInfoYaml), "UTF-8").useDelimiter("\\A").next();
         OpenApiGenerator generator = new OpenApiGenerator();
         generator.generate(targetPath, strModel, anyConfig);
     }

@@ -41,6 +41,11 @@ public class HybridServiceGenerator implements Generator {
         boolean eclipseIDE = config.toBoolean("eclipseIDE");
         boolean supportClient = config.toBoolean("supportClient");
         String version = config.toString("version");
+        String serviceId = config.get("groupId").toString().trim() + "." + config.get("artifactId").toString().trim() + "-" + config.get("version").toString().trim();
+        boolean prometheusMetrics = config.toBoolean("prometheusMetrics");
+        boolean skipHealthCheck = config.toBoolean("skipHealthCheck");
+        boolean skipServerInfo = config.toBoolean("skipServerInfo");
+        String jsonPath = config.get("jsonPath").toString();
 
         transfer(targetPath, "", "pom.xml", templates.hybrid.service.pom.template(config));
         transferMaven(targetPath);
@@ -57,7 +62,7 @@ public class HybridServiceGenerator implements Generator {
         transfer(targetPath, ("src.test.resources.config").replace(".", separator), "service.yml", templates.hybrid.serviceYml.template(config));
 
         transfer(targetPath, ("src.test.resources.config").replace(".", separator), "server.yml", templates.hybrid.serverYml.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, "49587", enableHttps, "49588", enableRegistry, version));
-        transfer(targetPath, ("src.test.resources.config").replace(".", separator), "secret.yml", templates.hybrid.secretYml.template());
+        //transfer(targetPath, ("src.test.resources.config").replace(".", separator), "secret.yml", templates.hybrid.secretYml.template());
         transfer(targetPath, ("src.test.resources.config").replace(".", separator), "hybrid-security.yml", templates.hybrid.securityYml.template());
         transfer(targetPath, ("src.test.resources.config").replace(".", separator), "client.yml", templates.hybrid.clientYml.template());
         transfer(targetPath, ("src.test.resources.config").replace(".", separator), "primary.crt", templates.hybrid.primaryCrt.template());
@@ -81,7 +86,7 @@ public class HybridServiceGenerator implements Generator {
                     continue;
                 }
                 transfer(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), item.get("handler") + ".java", templates.hybrid.handler.template(handlerPackage, host, service, item, example));
-                String serviceId  = host + "/" + service + "/" + item.get("name") + "/" + item.get("version");
+                String sId  = host + "/" + service + "/" + item.get("name") + "/" + item.get("version");
                 Map<String, Object> map = new HashMap<>();
                 map.put("schema", item.get("schema"));
                 Any anyScope = item.get("scope");
@@ -90,7 +95,7 @@ public class HybridServiceGenerator implements Generator {
                 Any anySkipAuth = item.get("skipAuth");
                 Boolean skipAuth = anySkipAuth.valueType() != ValueType.INVALID ? anySkipAuth.toBoolean() : null;
                 if(skipAuth != null) map.put("skipAuth", skipAuth);
-                services.put(serviceId, map);
+                services.put(sId, map);
             }
 
             // handler test cases
@@ -121,6 +126,13 @@ public class HybridServiceGenerator implements Generator {
         if(Files.notExists(Paths.get(targetPath, ("src.main.resources.config").replace(".", separator)))) {
             Files.createDirectories(Paths.get(targetPath, ("src.main.resources.config").replace(".", separator)));
         }
+
+        transfer(targetPath, ("src.test.resources.config").replace(".", separator), "handler.yml",
+                templates.hybrid.handlerYml.template(serviceId, handlerPackage, jsonPath, prometheusMetrics, !skipHealthCheck, !skipServerInfo));
+
+        transfer(targetPath, ("src.test.resources.config").replace(".", separator), "rpc-router.yml",
+                templates.hybrid.rpcRouterYml.template(handlerPackage, jsonPath));
+
         // write the generated schema into the config folder for schema validation.
         JsonStream.serialize(services, new FileOutputStream(FileSystems.getDefault().getPath(targetPath, ("src.main.resources").replace(".", separator), "schema.json").toFile()));
     }
