@@ -28,7 +28,7 @@
         <version.oracle>11.2.0.3</version.oracle>
         }
         @if(config.toBoolean("supportDb") && "mysql".equalsIgnoreCase(config.toString("dbInfo", "name"))){
-        <version.mysql>6.0.5</version.mysql>
+        <version.mysql>8.0.16</version.mysql>
         }
         @if(config.toBoolean("supportDb") && "postgres".equalsIgnoreCase(config.toString("dbInfo", "name"))){
         <version.postgres>42.1.1</version.postgres>
