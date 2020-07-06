@@ -47,6 +47,7 @@ dependencies {
 
     // jackson json/xml/yaml serialisation
     val jacksonVersion: String by project
+    val jacksonDatabindVersion: String by project
     compile("com.fasterxml.jackson.core", "jackson-core", jacksonVersion)
     compile("com.fasterxml.jackson.core", "jackson-databind", jacksonDatabindVersion)
     compile("com.fasterxml.jackson.module", "jackson-module-kotlin", jacksonVersion)

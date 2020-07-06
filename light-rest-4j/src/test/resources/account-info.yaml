@@ -1,0 +1,242 @@
+openapi: 3.0.1
+info:
+  title: Account and Transaction API Specification
+  description: OpenAPI for Account and Transaction API Specification
+  termsOfService: 'https://www.openbanking.org.uk/terms'
+  contact:
+    name: Service Desk
+    email: ServiceDesk@openbanking.org.uk
+  license:
+    name: open-licence
+    url: 'https://www.openbanking.org.uk/open-licence'
+  version: v3.1.5
+paths:
+  /scheduled-payments:
+    get:
+      tags:
+        - Scheduled Payments
+      summary: Get Scheduled Payments
+      operationId: GetScheduledPayments
+      parameters:
+        - $ref: '#/components/parameters/x-fapi-auth-date'
+        - $ref: '#/components/parameters/x-fapi-customer-ip-address'
+        - $ref: '#/components/parameters/x-fapi-interaction-id'
+        - $ref: '#/components/parameters/Authorization'
+        - $ref: '#/components/parameters/x-customer-user-agent'
+      responses:
+        '200':
+          $ref: '#/components/responses/200ScheduledPaymentsRead'
+      security:
+        - PSUOAuth2Security:
+            - accounts
+
+components:
+  parameters:
+    FromBookingDateTimeParam:
+      in: query
+      name: fromBookingDateTime
+      description: >-
+        The UTC ISO 8601 Date Time to filter transactions FROM
+
+        NB Time component is optional - set to 00:00:00 for just Date.
+
+        If the Date Time contains a timezone, the ASPSP must ignore the timezone
+        component.
+      schema:
+        type: string
+        format: date-time
+    ToBookingDateTimeParam:
+      in: query
+      name: toBookingDateTime
+      description: >-
+        The UTC ISO 8601 Date Time to filter transactions TO
+
+        NB Time component is optional - set to 00:00:00 for just Date.
+
+        If the Date Time contains a timezone, the ASPSP must ignore the timezone
+        component.
+      schema:
+        type: string
+        format: date-time
+    FromStatementDateTimeParam:
+      in: query
+      name: fromStatementDateTime
+      description: >-
+        The UTC ISO 8601 Date Time to filter statements FROM
+
+        NB Time component is optional - set to 00:00:00 for just Date.
+
+        If the Date Time contains a timezone, the ASPSP must ignore the timezone
+        component.
+      schema:
+        type: string
+        format: date-time
+    ToStatementDateTimeParam:
+      in: query
+      name: toStatementDateTime
+      description: >-
+        The UTC ISO 8601 Date Time to filter statements TO
+
+        NB Time component is optional - set to 00:00:00 for just Date.
+
+        If the Date Time contains a timezone, the ASPSP must ignore the timezone
+        component.
+      schema:
+        type: string
+        format: date-time
+    ConsentId:
+      name: ConsentId
+      in: path
+      description: ConsentId
+      required: true
+      schema:
+        type: string
+    AccountId:
+      name: AccountId
+      in: path
+      description: AccountId
+      required: true
+      schema:
+        type: string
+    StatementId:
+      name: StatementId
+      in: path
+      description: StatementId
+      required: true
+      schema:
+        type: string
+    Authorization:
+      in: header
+      name: Authorization
+      required: true
+      description: 'An Authorisation Token as per https://tools.ietf.org/html/rfc6750'
+      schema:
+        type: string
+    x-customer-user-agent:
+      in: header
+      name: x-customer-user-agent
+      description: Indicates the user-agent that the PSU is using.
+      required: false
+      schema:
+        type: string
+    x-fapi-customer-ip-address:
+      in: header
+      name: x-fapi-customer-ip-address
+      required: false
+      description: The PSU's IP address if the PSU is currently logged in with the TPP.
+      schema:
+        type: string
+    x-fapi-auth-date:
+      in: header
+      name: x-fapi-auth-date
+      required: false
+      description: >-
+        The time when the PSU last logged in with the TPP.
+
+        All dates in the HTTP headers are represented as RFC 7231 Full Dates. An
+        example is below:
+
+        Sun, 10 Sep 2017 19:43:31 UTC
+      schema:
+        type: string
+        pattern: >-
+          ^(Mon|Tue|Wed|Thu|Fri|Sat|Sun), \d{2}
+          (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d{4}
+          \d{2}:\d{2}:\d{2} (GMT|UTC)$
+    x-fapi-interaction-id:
+      in: header
+      name: x-fapi-interaction-id
+      required: false
+      description: An RFC4122 UID used as a correlation id.
+      schema:
+        type: string
+    x-idempotency-key:
+      name: x-idempotency-key
+      in: header
+      description: |
+        Every request will be processed only once per x-idempotency-key.  The
+        Idempotency Key will be valid for 24 hours.
+      required: true
+      schema:
+        type: string
+        pattern: ^(?!\s)(.*)(\S)$
+        maxLength: 40
+    x-jws-signature:
+      in: header
+      name: x-jws-signature
+      required: true
+      description: A detached JWS signature of the body of the payload.
+      schema:
+        type: string
+  responses:
+    200ScheduledPaymentsRead:
+      description: Scheduled Payments Read
+      headers:
+        x-fapi-interaction-id:
+          description: An RFC4122 UID used as a correlation id.
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/OBReadScheduledPayment3'
+  schemas:
+    OBReadScheduledPayment3:
+      type: object
+      required:
+        - Data
+      properties:
+        Data:
+          type: object
+          properties:
+            ScheduledPayment:
+              type: array
+              items:
+                $ref: '#/components/schemas/OBScheduledPayment3'
+      additionalProperties: false
+    OBScheduledPayment3:
+      oneOf:
+        - $ref: '#/components/schemas/OBScheduledPayment3Basic'
+        - $ref: '#/components/schemas/OBScheduledPayment3Detail'
+    OBScheduledPayment3Basic:
+      type: object
+      required:
+        - AccountId
+        - ScheduledPaymentDateTime
+        - ScheduledType
+        - InstructedAmount
+      properties:
+        AccountId:
+          $ref: '#/components/schemas/AccountId'
+      additionalProperties: false
+    OBScheduledPayment3Detail:
+      type: object
+      required:
+        - AccountId
+        - ScheduledPaymentDateTime
+        - ScheduledType
+        - InstructedAmount
+        - CreditorAccount
+      properties:
+        AccountId:
+          $ref: '#/components/schemas/AccountId'
+      additionalProperties: false
+    AccountId:
+      description: >-
+        A unique and immutable identifier used to identify the account resource.
+        This identifier has no meaning to the account owner.
+      type: string
+      minLength: 1
+      maxLength: 40
+  securitySchemes:
+    PSUOAuth2Security:
+      type: oauth2
+      description: >-
+        OAuth flow, it is required when the PSU needs to perform SCA with the
+        ASPSP when a TPP wants to access an ASPSP resource owned by the PSU
+      flows:
+        authorizationCode:
+          authorizationUrl: 'https://authserver.example/authorization'
+          tokenUrl: 'https://authserver.example/token'
+          scopes:
+            accounts: Ability to read Accounts information

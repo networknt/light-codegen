@@ -38,6 +38,7 @@ public class HybridServiceGenerator implements Generator {
         boolean enableHttp = config.toBoolean("enableHttp");
         boolean enableHttps = config.toBoolean("enableHttps");
         boolean enableRegistry = config.toBoolean("enableRegistry");
+        boolean eclipseIDE = config.toBoolean("eclipseIDE");
         boolean supportClient = config.toBoolean("supportClient");
         String version = config.toString("version");
 
@@ -47,9 +48,10 @@ public class HybridServiceGenerator implements Generator {
         transfer(targetPath, "", ".gitignore", templates.hybrid.gitignore.template());
         transfer(targetPath, "", "README.md", templates.hybrid.service.README.template());
         transfer(targetPath, "", "LICENSE", templates.hybrid.LICENSE.template());
-        transfer(targetPath, "", ".classpath", templates.hybrid.classpath.template());
-        transfer(targetPath, "", ".project", templates.hybrid.project.template());
-
+        if(eclipseIDE) {
+            transfer(targetPath, "", ".classpath", templates.hybrid.classpath.template());
+            transfer(targetPath, "", ".project", templates.hybrid.project.template());
+        }
 
         // config
         transfer(targetPath, ("src.test.resources.config").replace(".", separator), "service.yml", templates.hybrid.serviceYml.template(config));
@@ -102,6 +104,13 @@ public class HybridServiceGenerator implements Generator {
         }
         try (InputStream is = HybridServiceGenerator.class.getResourceAsStream("/binaries/server.truststore")) {
             Files.copy(is, Paths.get(targetPath, ("src.test.resources.config").replace(".", separator), "server.truststore"), StandardCopyOption.REPLACE_EXISTING);
+        }
+        // to support unit test with HTTPS/HTTP2, we need to have client.truststore and client.keystore
+        try (InputStream is = HybridServiceGenerator.class.getResourceAsStream("/binaries/client.keystore")) {
+            Files.copy(is, Paths.get(targetPath, ("src.test.resources.config").replace(".", separator), "client.keystore"), StandardCopyOption.REPLACE_EXISTING);
+        }
+        try (InputStream is = HybridServiceGenerator.class.getResourceAsStream("/binaries/client.truststore")) {
+            Files.copy(is, Paths.get(targetPath, ("src.test.resources.config").replace(".", separator), "client.truststore"), StandardCopyOption.REPLACE_EXISTING);
         }
 
         if(Files.notExists(Paths.get(targetPath, ("src.main.resources.config").replace(".", separator)))) {

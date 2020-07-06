@@ -1,5 +1,110 @@
 # Change Log
 
+## [1.6.24](https://github.com/networknt/light-codegen/tree/1.6.24) (2020-07-01)
+
+
+**Merged pull requests:**
+
+
+- Issue444 [\#445](https://github.com/networknt/light-codegen/pull/445) ([stevehu](https://github.com/stevehu))
+## [1.6.23](https://github.com/networknt/light-codegen/tree/1.6.23) (2020-06-22)
+
+
+**Merged pull requests:**
+
+
+- fixes \#440 remove the temporary version.jackson-databind in the pom.x… [\#441](https://github.com/networknt/light-codegen/pull/441) ([stevehu](https://github.com/stevehu))
+- fixes \#438 remove the temporary version.jackson-databind in the pom.xml [\#439](https://github.com/networknt/light-codegen/pull/439) ([stevehu](https://github.com/stevehu))
+## [1.6.22](https://github.com/networknt/light-codegen/tree/1.6.22) (2020-06-06)
+
+
+**Merged pull requests:**
+
+
+## [1.6.21](https://github.com/networknt/light-codegen/tree/1.6.21) (2020-06-05)
+
+
+**Merged pull requests:**
+
+
+## [1.6.20](https://github.com/networknt/light-codegen/tree/1.6.20) (2020-05-29)
+
+
+**Merged pull requests:**
+
+
+
+
+## [1.6.19](https://github.com/networknt/light-codegen/tree/1.6.19) (2020-05-01)
+
+
+**Merged pull requests:**
+
+
+## [1.6.18](https://github.com/networknt/light-codegen/tree/1.6.18) (2020-03-31)
+
+
+**Merged pull requests:**
+
+
+- fixes \#421 generate client.truststore and client.keystore for unit te… [\#422](https://github.com/networknt/light-codegen/pull/422) ([stevehu](https://github.com/stevehu))
+- fixes \#419 only generate .classpath and .project if eclipseIDE is true [\#420](https://github.com/networknt/light-codegen/pull/420) ([stevehu](https://github.com/stevehu))
+## [1.6.17](https://github.com/networknt/light-codegen/tree/1.6.17) (2020-02-29)
+
+
+**Merged pull requests:**
+
+
+
+
+## [1.6.16](https://github.com/networknt/light-codegen/tree/1.6.16) (2020-02-06)
+
+
+**Merged pull requests:**
+
+
+## [1.6.15](https://github.com/networknt/light-codegen/tree/1.6.15) (2020-02-06)
+
+
+**Merged pull requests:**
+
+
+
+
+## [1.6.14](https://github.com/networknt/light-codegen/tree/1.6.14) (2020-01-31)
+
+
+**Merged pull requests:**
+
+
+- fixes \#414 remove lds.org maven repository from the pom.xml [\#415](https://github.com/networknt/light-codegen/pull/415) ([stevehu](https://github.com/stevehu))
+- fix \#409 snapshot version in Kotlin REST template gradle.properties [\#412](https://github.com/networknt/light-codegen/pull/412) ([fredriv](https://github.com/fredriv))
+- fix \#409 for 1.6.x branch [\#411](https://github.com/networknt/light-codegen/pull/411) ([fredriv](https://github.com/fredriv))
+## [1.6.13](https://github.com/networknt/light-codegen/tree/1.6.13) (2019-12-30)
+
+
+**Merged pull requests:**
+
+
+
+
+## [1.6.12](https://github.com/networknt/light-codegen/tree/1.6.12) (2019-12-30)
+
+
+**Merged pull requests:**
+
+
+
+
+## [1.6.11](https://github.com/networknt/light-codegen/tree/1.6.11) (2019-11-27)
+
+
+**Merged pull requests:**
+
+
+- fixes \#391 The build.sh template misses -Prelease profile in 1.6.x br… [\#392](https://github.com/networknt/light-codegen/pull/392) ([stevehu](https://github.com/stevehu))
+- Fix swagger enum description [\#400](https://github.com/networknt/light-codegen/pull/400) ([jiachen1120](https://github.com/jiachen1120))
+- fixes \#394 [\#399](https://github.com/networknt/light-codegen/pull/399) ([chenyan71](https://github.com/chenyan71))
 ## [1.6.10](https://github.com/networknt/light-codegen/tree/1.6.10) (2019-10-26)
 
 
