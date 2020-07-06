@@ -72,3 +72,70 @@ oauth:
     client_id: ${client.client_id:f7d42348-c647-4efb-a52d-4c5787421e72}
     # set to true if the oauth2 provider supports HTTP/2
     enableHttp2: true
+  # sign endpoint configuration
+  sign:
+    # token server url. The default port number for token service is 6882. If this url exists, it will be used.
+    # if it is not set, then a service lookup against serviceId will be taken to discover an instance.
+    # server_url: ${client.signServerUrl:https://localhost:6882}
+    # token serviceId. If server_url doesn't exist, the serviceId will be used to lookup the token service.
+    serviceId: ${client.signServiceId:com.networknt.oauth2-token-1.0.0}
+    # signing endpoint for the sign request
+    uri: ${client.signUri:/oauth2/token}
+    # timeout in milliseconds
+    timeout: ${client.signTimeout:2000}
+    # set to true if the oauth2 provider supports HTTP/2
+    enableHttp2: ${client.signEnableHttp2:true}
+    # client_id for client authentication
+    client_id: ${client.signClientId:f7d42348-c647-4efb-a52d-4c5787421e72}
+    # client secret for client authentication and it can be encrypted here.
+    client_secret: ${client.signClientSecret:f6h1FTI8Q3-7UScPZDzfXA}
+    # the key distribution sever config for sign. It can be different then token key distribution server.
+    key:
+      # key distribution server url. It will be used to establish connection if it exists.
+      # if it is not set, then a service lookup against serviceId will be taken to discover an instance.
+      # server_url: ${client.signKeyServerUrl:https://localhost:6886}
+      # the unique service id for key distribution service, it will be used to lookup key service if above url doesn't exist.
+      serviceId: ${client.signKeyServiceId:com.networknt.oauth2-key-1.0.0}
+      # the path for the key distribution endpoint
+      uri: ${client.signKeyUri:/oauth2/key}
+      # client_id used to access key distribution service. It can be the same client_id with token service or not.
+      client_id: ${client.signKeyClientId:f7d42348-c647-4efb-a52d-4c5787421e72}
+      # client secret used to access the key distribution service.
+      client_secret: ${client.signKeyClientSecret:f6h1FTI8Q3-7UScPZDzfXA}
+      # set to true if the oauth2 provider supports HTTP/2
+      enableHttp2: ${client.signKeyEnableHttp2:true}
+  # de-ref by reference token to JWT token. It is separate service as it might be the external OAuth 2.0 provider.
+  deref:
+    # Token service server url, this might be different than the above token server url. The static url will be used if it is configured.
+    # server_url: ${client.derefServerUrl:https://localhost:6882}
+    # token service unique id for OAuth 2.0 provider. Need for service lookup/discovery. It will be used if above server_url is not configured.
+    serviceId: ${client.derefServiceId:com.networknt.oauth2-token-1.0.0}
+    # set to true if the oauth2 provider supports HTTP/2
+    enableHttp2: ${client.derefEnableHttp2:true}
+    # the path for the key distribution endpoint
+    uri: ${client.derefUri:/oauth2/deref}
+    # client_id used to access key distribution service. It can be the same client_id with token service or not.
+    client_id: ${client.derefClientId:f7d42348-c647-4efb-a52d-4c5787421e72}
+    # client_secret for deref
+    client_secret: ${client.derefClientSecret:f6h1FTI8Q3-7UScPZDzfXA}
+# circuit breaker configuration for the client
+request:
+  # number of timeouts/errors to break the circuit
+  errorThreshold: ${client.errorThreshold:2}
+  # timeout in millisecond to indicate a client error.
+  timeout: ${client.timeout:3000}
+  # reset the circuit after this timeout in millisecond
+  resetTimeout: ${client.resetTimeout:7000}
+  # if open tracing is enable. traceability, correlation and metrics should not be in the chain if opentracing is used.
+  injectOpenTracing: ${client.injectOpenTracing:false}
+  # the flag to indicate whether http/2 is enabled when calling client.callService()
+  enableHttp2: ${client.enableHttp2:true}
+  # the maximum host capacity of connection pool
+  connectionPoolSize: ${client.connectionPoolSize:1000}
+  # the maximum request limitation for each connection
+  maxReqPerConn: ${client.maxReqPerConn:1000000}
+  # maximum quantity of connection in connection pool for each host
+  maxConnectionNumPerHost: ${client.maxConnectionNumPerHost:1000}
+  # minimum quantity of connection in connection pool for each host. The corresponding connection number will shrink to minConnectionNumPerHost
+  # by remove least recently used connections when the connection number of a host reach 0.75 * maxConnectionNumPerHost.
+  minConnectionNumPerHost: ${client.minConnectionNumPerHost:250}
