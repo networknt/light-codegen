@@ -109,7 +109,6 @@
         <module>codegen-fwk</module>
         <module>codegen-cli</module>
         <module>codegen-web</module>
-        <module>light-eventuate-4j</module>
     </modules>
 
     <dependencyManagement>

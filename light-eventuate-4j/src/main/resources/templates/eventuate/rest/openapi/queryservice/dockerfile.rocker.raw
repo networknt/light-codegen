@@ -1,6 +1,0 @@
-@import com.jsoniter.any.Any
-@args (Any config)
-FROM openjdk:8-jre-alpine
-#EXPOSE 8482
-@with (name = config.get("artifactId") + "-query-rest-service-" + config.get("version") + ".jar") {ADD ../target/@name server.jar}
-CMD ["/bin/sh","-c","java -Dlight-4j-config-dir=/config -Dlogback.configurationFile=/config/logback.xml -jar /server.jar"]
