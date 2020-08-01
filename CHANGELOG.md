@@ -1,5 +1,15 @@
 # Change Log
 
+## [1.6.26](https://github.com/networknt/light-codegen/tree/1.6.26) (2020-07-31)
+
+
+**Merged pull requests:**
+
+
+- fixes \#455 update config.yml in testing for typos [\#456](https://github.com/networknt/light-codegen/pull/456) ([stevehu](https://github.com/stevehu))
+- fixes \#452 remove light-eventuate-generator in 1.6.x branch [\#453](https://github.com/networknt/light-codegen/pull/453) ([stevehu](https://github.com/stevehu))
+- Issue 446 [\#447](https://github.com/networknt/light-codegen/pull/447) ([chenyan71](https://github.com/chenyan71))
+- Issue444 [\#445](https://github.com/networknt/light-codegen/pull/445) ([stevehu](https://github.com/stevehu))
 ## [1.6.25](https://github.com/networknt/light-codegen/tree/1.6.25) (2020-07-31)
 
 
