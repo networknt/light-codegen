@@ -1,5 +1,14 @@
 # Change Log
 
+## [2.0.16](https://github.com/networknt/light-codegen/tree/2.0.16) (2020-08-01)
+
+
+**Merged pull requests:**
+
+
+- fixes \#455 update config.yml in testing for typos [\#456](https://github.com/networknt/light-codegen/pull/456) ([stevehu](https://github.com/stevehu))
+- fixes \#450 remove fastscanner and upgrade snakeyaml to 1.26 [\#451](https://github.com/networknt/light-codegen/pull/451) ([stevehu](https://github.com/stevehu))
+- fixes \#448 change the authorization code redirect uri in client.yml f… [\#449](https://github.com/networknt/light-codegen/pull/449) ([stevehu](https://github.com/stevehu))
 ## [2.0.15](https://github.com/networknt/light-codegen/tree/2.0.15) (2020-07-01)
 
 

@@ -2,7 +2,7 @@
 @args (Any config)
 # Versions of Frequently used Libraries
 kafkaVersion=2.0.0
-light4jVersion=2.0.15
+light4jVersion=2.0.16
 jacksonVersion=2.10.4
 undertowVersion=2.1.3.Final
 logbackVersion=1.2.3
@@ -17,7 +17,7 @@ hikaricpVersion=3.1.0
 oracleVersion=11.2.0.3
 }
 @if(config.toBoolean("supportDb") && "mysql".equalsIgnoreCase(config.toString("dbInfo", "name"))){
-mysqlVersion=6.0.5
+mysqlVersion=8.0.16
 }
 @if(config.toBoolean("supportDb") && "postgres".equalsIgnoreCase(config.toString("dbInfo", "name"))){
 postgresVersion=42.1.1
