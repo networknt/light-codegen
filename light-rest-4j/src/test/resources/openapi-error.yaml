@@ -1,0 +1,169 @@
+openapi: 3.0.0
+info:
+  title: Influx API Service
+  version: 0.1.0
+  description: |-
+    # Authentication
+
+    <!-- ReDoc-Inject: <security-definitions> -->
+servers:
+  - url: /api/v2
+paths:
+  /write:
+    post:
+      operationId: PostWrite
+      tags:
+        - Write
+      summary: Write time series data into InfluxDB
+      requestBody:
+        description: Line protocol body
+        required: true
+        content:
+          text/plain:
+            schema:
+              type: string
+      parameters:
+        - $ref: '#/components/parameters/TraceSpan'
+        - in: header
+          name: Content-Encoding
+          description: 'When present, its value indicates to the database that compression is applied to the line-protocol body.'
+          schema:
+            type: string
+            description: Specifies that the line protocol in the body is encoded with gzip or not encoded with identity.
+            default: identity
+            enum:
+              - gzip
+              - identity
+        - in: header
+          name: Content-Type
+          description: Content-Type is used to indicate the format of the data sent to the server.
+          schema:
+            type: string
+            description: Text/plain specifies the text line protocol; charset is assumed to be utf-8.
+            default: text/plain; charset=utf-8
+            enum:
+              - text/plain
+              - text/plain; charset=utf-8
+              - application/vnd.influx.arrow
+        - in: header
+          name: Content-Length
+          description: 'Content-Length is an entity header is indicating the size of the entity-body, in bytes, sent to the database. If the length is greater than the database max body configuration option, a 413 response is sent.'
+          schema:
+            type: integer
+            description: The length in decimal number of octets.
+        - in: header
+          name: Accept
+          description: Specifies the return content format.
+          schema:
+            type: string
+            description: The return format for errors.
+            default: application/json
+            enum:
+              - application/json
+        - in: query
+          name: org
+          description: 'Specifies the destination organization for writes. Takes either the ID or Name interchangeably. If both `orgID` and `org` are specified, `org` takes precedence.'
+          required: true
+          schema:
+            type: string
+            description: All points within batch are written to this organization.
+        - in: query
+          name: orgID
+          description: 'Specifies the ID of the destination organization for writes. If both `orgID` and `org` are specified, `org` takes precedence.'
+          schema:
+            type: string
+        - in: query
+          name: bucket
+          description: The destination bucket for writes.
+          required: true
+          schema:
+            type: string
+            description: All points within batch are written to this bucket.
+        - in: query
+          name: precision
+          description: The precision for the unix timestamps within the body line-protocol.
+          schema:
+            $ref: '#/components/schemas/WritePrecision'
+      responses:
+        '204':
+          description: Write data is correctly formatted and accepted for writing to the bucket.
+components:
+  parameters:
+    Offset:
+      in: query
+      name: offset
+      required: false
+      schema:
+        type: integer
+        minimum: 0
+    Limit:
+      in: query
+      name: limit
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+    Descending:
+      in: query
+      name: descending
+      required: false
+      schema:
+        type: boolean
+        default: false
+    SortBy:
+      in: query
+      name: sortBy
+      required: false
+      schema:
+        type: string
+    TraceSpan:
+      in: header
+      name: Zap-Trace-Span
+      description: OpenTracing span context
+      example:
+        trace_id: '1'
+        span_id: '1'
+        baggage:
+          key: value
+      required: false
+      schema:
+        type: string
+  schemas:
+    Error:
+      properties:
+        code:
+          description: Code is the machine-readable error code.
+          readOnly: true
+          type: string
+          enum:
+            - internal error
+            - not found
+            - conflict
+            - invalid
+            - unprocessable entity
+            - empty value
+            - unavailable
+            - forbidden
+            - too many requests
+            - unauthorized
+            - method not allowed
+        message:
+          readOnly: true
+          description: Message is a human-readable message.
+          type: string
+      required:
+        - code
+        - message
+    WritePrecision:
+      type: string
+      enum:
+        - ms
+        - s
+        - us
+        - ns
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
