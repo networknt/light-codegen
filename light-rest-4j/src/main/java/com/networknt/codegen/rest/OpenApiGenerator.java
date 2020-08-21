@@ -872,7 +872,7 @@ public class OpenApiGenerator implements Generator {
         // Since generate a model for primitive types and arrays do not make sense, and an error class would be generated
         // due to lack of properties if force to generate.
         if (type == null && !isAbstractClass) {
-            throw new RuntimeException("Cannot find the type of \"" + modelFileName + "\" in #/components/schemas/ of the specification file.");
+            throw new RuntimeException("Cannot find the schema type of \"" + modelFileName + "\" in #/components/schemas/ of the specification file. In most cases, you need to add \"type: object\" if you want to generate a POJO. Otherwise, give it a type of primary like string or number.");
         }
 
         if ("object".equals(type) || isEnumClass) {
