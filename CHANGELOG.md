@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.6.27](https://github.com/networknt/light-codegen/tree/1.6.27) (2020-08-28)
+
+
+**Merged pull requests:**
+
+
+- fixes \#457 add detailed info for the type missing error in the schema… [\#458](https://github.com/networknt/light-codegen/pull/458) ([stevehu](https://github.com/stevehu))
 ## [1.6.26](https://github.com/networknt/light-codegen/tree/1.6.26) (2020-07-31)
 
 
