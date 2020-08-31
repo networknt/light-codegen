@@ -57,7 +57,7 @@ public class OpenApiKotlinGeneratorTest {
 
     @Test
     public void testGetOperationList() throws IOException {
-        Any anyModel = JsonIterator.parse(SwaggerGeneratorTest.class.getResourceAsStream(openapiJson), 1024).readAny();
+        Any anyModel = JsonIterator.parse(OpenApiGeneratorTest.class.getResourceAsStream(openapiJson), 1024).readAny();
         OpenApiKotlinGenerator generator = new OpenApiKotlinGenerator();
         List list = generator.getOperationList(anyModel);
         System.out.println(list);

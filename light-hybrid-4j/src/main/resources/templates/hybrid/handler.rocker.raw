@@ -8,6 +8,10 @@ import com.networknt.rpc.router.ServiceHandler;
 import java.nio.ByteBuffer;
 import io.undertow.server.HttpServerExchange;
 
+/**
+For more information on how to write business handlers, please check the link below.
+https://doc.networknt.com/development/business-handler/hybrid/
+*/
 @@ServiceHandler(id="@host/@service/@item.get("name")/@item.get("version")")
 public class @item.get("handler") implements Handler {
     @@Override
