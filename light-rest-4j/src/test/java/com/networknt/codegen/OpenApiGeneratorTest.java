@@ -27,6 +27,7 @@ import com.thoughtworks.qdox.model.JavaPackage;
 public class OpenApiGeneratorTest {
     public static String targetPath = "/tmp/openapi";
     public static String configName = "/config.json";
+    public static String configKafkaName = "/configKafka.json";
     public static String openapiJson = "/openapi.json";
     public static String openapiYaml = "/openapi.yaml";
     public static String accountInfoYaml = "/account-info.yaml";
@@ -73,7 +74,7 @@ public class OpenApiGeneratorTest {
 
     @Test
     public void testGetOperationList() throws IOException {
-        Any anyModel = JsonIterator.parse(SwaggerGeneratorTest.class.getResourceAsStream(openapiJson), 1024).readAny();
+        Any anyModel = JsonIterator.parse(OpenApiGeneratorTest.class.getResourceAsStream(openapiJson), 1024).readAny();
         OpenApiGenerator generator = new OpenApiGenerator();
         List list = generator.getOperationList(anyModel);
         System.out.println(list);
@@ -123,6 +124,14 @@ public class OpenApiGeneratorTest {
     public void testGeneratorYamlError() throws IOException {
         Any anyConfig = JsonIterator.parse(OpenApiGeneratorTest.class.getResourceAsStream(configName), 1024).readAny();
         String strModel = new Scanner(OpenApiGeneratorTest.class.getResourceAsStream(openapiErrorYaml), "UTF-8").useDelimiter("\\A").next();
+        OpenApiGenerator generator = new OpenApiGenerator();
+        generator.generate(targetPath, strModel, anyConfig);
+    }
+
+    @Test
+    public void testGeneratorKafka() throws IOException {
+        Any anyConfig = JsonIterator.parse(OpenApiGeneratorTest.class.getResourceAsStream(configKafkaName), 1024).readAny();
+        String strModel = new Scanner(OpenApiGeneratorTest.class.getResourceAsStream(openapiYaml), "UTF-8").useDelimiter("\\A").next();
         OpenApiGenerator generator = new OpenApiGenerator();
         generator.generate(targetPath, strModel, anyConfig);
     }

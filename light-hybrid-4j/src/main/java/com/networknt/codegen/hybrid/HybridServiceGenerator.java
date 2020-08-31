@@ -40,12 +40,17 @@ public class HybridServiceGenerator implements Generator {
         boolean enableRegistry = config.toBoolean("enableRegistry");
         boolean eclipseIDE = config.toBoolean("eclipseIDE");
         boolean supportClient = config.toBoolean("supportClient");
+        String artifactId = config.toString("artifactId");
         String version = config.toString("version");
-        String serviceId = config.get("groupId").toString().trim() + "." + config.get("artifactId").toString().trim() + "-" + config.get("version").toString().trim();
+        String serviceId = config.get("groupId").toString().trim() + "." + artifactId.trim() + "-" + config.get("version").toString().trim();
         boolean prometheusMetrics = config.toBoolean("prometheusMetrics");
         boolean skipHealthCheck = config.toBoolean("skipHealthCheck");
         boolean skipServerInfo = config.toBoolean("skipServerInfo");
         String jsonPath = config.get("jsonPath").toString();
+        boolean kafkaProducer = config.toBoolean("kafkaProducer");
+        boolean kafkaConsumer = config.toBoolean("kafkaConsumer");
+        boolean supportAvro = config.toBoolean("supportAvro");
+        String kafkaTopic = config.get("kafkaTopic").toString();
 
         transfer(targetPath, "", "pom.xml", templates.hybrid.service.pom.template(config));
         transferMaven(targetPath);
@@ -67,6 +72,15 @@ public class HybridServiceGenerator implements Generator {
         transfer(targetPath, ("src.test.resources.config").replace(".", separator), "client.yml", templates.hybrid.clientYml.template());
         transfer(targetPath, ("src.test.resources.config").replace(".", separator), "primary.crt", templates.hybrid.primaryCrt.template());
         transfer(targetPath, ("src.test.resources.config").replace(".", separator), "secondary.crt", templates.hybrid.secondaryCrt.template());
+        if(kafkaProducer) {
+            transfer(targetPath, ("src.test.resources.config").replace(".", separator), "kafka-producer.yml", templates.hybrid.kafkaProducerYml.template(kafkaTopic));
+        }
+        if(kafkaConsumer) {
+            transfer(targetPath, ("src.test.resources.config").replace(".", separator), "kafka-streams.yml", templates.hybrid.kafkaStreamsYml.template(artifactId));
+        }
+        if(supportAvro) {
+            transfer(targetPath, ("src.test.resources.config").replace(".", separator), "schema-registry.yml", templates.hybrid.schemaRegistryYml.template());
+        }
 
         // logging
         transfer(targetPath, ("src.main.resources").replace(".", separator), "logback.xml", templates.hybrid.logback.template());

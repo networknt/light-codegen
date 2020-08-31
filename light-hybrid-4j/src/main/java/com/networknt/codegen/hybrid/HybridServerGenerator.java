@@ -35,15 +35,20 @@ public class HybridServerGenerator implements Generator {
         boolean enableRegistry = config.toBoolean("enableRegistry");
         boolean eclipseIDE = config.toBoolean("eclipseIDE");
         String dockerOrganization = config.toString("dockerOrganization");
+        String artifactId = config.toString("artifactId");
         String version = config.toString("version");
         if(dockerOrganization ==  null || dockerOrganization.length() == 0) dockerOrganization = "networknt";
 
         boolean supportClient = config.toBoolean("supportClient");
-        String serviceId = config.get("groupId").toString().trim() + "." + config.get("artifactId").toString().trim() + "-" + config.get("version").toString().trim();
+        String serviceId = config.get("groupId").toString().trim() + "." + artifactId.trim() + "-" + config.get("version").toString().trim();
         boolean prometheusMetrics = config.toBoolean("prometheusMetrics");
         boolean skipHealthCheck = config.toBoolean("skipHealthCheck");
         boolean skipServerInfo = config.toBoolean("skipServerInfo");
         String jsonPath = config.get("jsonPath").toString();
+        boolean kafkaProducer = config.toBoolean("kafkaProducer");
+        boolean kafkaConsumer = config.toBoolean("kafkaConsumer");
+        boolean supportAvro = config.toBoolean("supportAvro");
+        String kafkaTopic = config.get("kafkaTopic").toString();
 
         transfer(targetPath, "", "pom.xml", templates.hybrid.server.pom.template(config));
         transferMaven(targetPath);
@@ -72,6 +77,16 @@ public class HybridServerGenerator implements Generator {
 
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "server.yml", templates.hybrid.serverYml.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, httpPort, enableHttps, httpsPort, enableRegistry, version));
         transfer(targetPath, ("src.test.resources.config").replace(".", separator), "server.yml", templates.hybrid.serverYml.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, "49587", enableHttps, "49588", enableRegistry, version));
+
+        if(kafkaProducer) {
+            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "kafka-producer.yml", templates.hybrid.kafkaProducerYml.template(kafkaTopic));
+        }
+        if(kafkaConsumer) {
+            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "kafka-streams.yml", templates.hybrid.kafkaStreamsYml.template(artifactId));
+        }
+        if(supportAvro) {
+            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "schema-registry.yml", templates.hybrid.schemaRegistryYml.template());
+        }
 
         // transfer(targetPath, ("src.main.resources.config").replace(".", separator), "secret.yml", templates.hybrid.secretYml.template());
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "hybrid-security.yml", templates.hybrid.securityYml.template());

@@ -35,6 +35,12 @@
         @if(config.toBoolean("supportH2ForTest")){
         <version.h2>1.3.176</version.h2>
         }
+        @if(config.toBoolean("supportAvro")){
+        <version.confluent>5.3.3</version.confluent>
+        }
+        @if(config.toBoolean("kafkaProducer")||config.toBoolean("kafkaConsumer")){
+        <version.kafka>2.5.0</version.kafka>
+        }
         <versions.maven-version>2.4</versions.maven-version>
         <version.javadoc-packagelist-plugin>1.0.0</version.javadoc-packagelist-plugin>
         <version.maven-javadoc>3.1.0</version.maven-javadoc>
@@ -205,6 +211,32 @@
             <artifactId>specification</artifactId>
             <version>${version.light-4j}</version>
         </dependency>
+        @if(config.toBoolean("kafkaProducer")||config.toBoolean("kafkaConsumer")){
+        <dependency>
+            <groupId>com.networknt</groupId>
+            <artifactId>kafka-common</artifactId>
+            <version>${version.light-4j}</version>
+        </dependency>
+        }
+        @if(config.toBoolean("kafkaProducer")){
+        <dependency>
+            <groupId>com.networknt</groupId>
+            <artifactId>kafka-producer</artifactId>
+            <version>${version.light-4j}</version>
+        </dependency>
+        }
+        @if(config.toBoolean("kafkaConsumer")){
+        <dependency>
+            <groupId>com.networknt</groupId>
+            <artifactId>kafka-consumer</artifactId>
+            <version>${version.light-4j}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-streams</artifactId>
+            <version>${version.kafka}</version>
+        </dependency>
+        }
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
@@ -271,6 +303,13 @@
             <artifactId>h2</artifactId>
             <version>${version.h2}</version>
             <scope>test</scope>
+        </dependency>
+        }
+        @if(config.toBoolean("supportAvro")){
+        <dependency>
+            <groupId>io.confluent</groupId>
+            <artifactId>kafka-schema-registry-client</artifactId>
+            <version>${version.confluent}</version>
         </dependency>
         }
     </dependencies>
@@ -373,6 +412,12 @@
 
 
     <repositories>
+        @if(config.toBoolean("supportAvro")){
+        <repository>
+            <id>confluent</id>
+            <url>http://packages.confluent.io/maven/</url>
+        </repository>
+        }
         <repository>
             <id>sonatype-snapshots</id>
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>

@@ -111,9 +111,13 @@ public class OpenApiGenerator implements Generator {
         skipPomFile = config.toBoolean("skipPomFile");
 
         generateValuesYml = config.toBoolean("generateValuesYml");
-
+        String artifactId = config.toString("artifactId");
         String version = config.toString("version").trim();
-        String serviceId = config.get("groupId").toString().trim() + "." + config.get("artifactId").toString().trim() + "-" + config.get("version").toString().trim();
+        String serviceId = config.get("groupId").toString().trim() + "." + artifactId.trim() + "-" + config.get("version").toString().trim();
+        boolean kafkaProducer = config.toBoolean("kafkaProducer");
+        boolean kafkaConsumer = config.toBoolean("kafkaConsumer");
+        boolean supportAvro = config.toBoolean("supportAvro");
+        String kafkaTopic = config.get("kafkaTopic").toString();
 
         if (dockerOrganization == null || dockerOrganization.length() == 0) {
             dockerOrganization = "networknt";
@@ -172,6 +176,15 @@ public class OpenApiGenerator implements Generator {
 
                 transfer(targetPath, ("src.main.resources.config").replace(".", separator), "primary.crt", templates.rest.primaryCrt.template());
                 transfer(targetPath, ("src.main.resources.config").replace(".", separator), "secondary.crt", templates.rest.secondaryCrt.template());
+                if(kafkaProducer) {
+                    transfer(targetPath, ("src.main.resources.config").replace(".", separator), "kafka-producer.yml", templates.rest.kafkaProducerYml.template(kafkaTopic));
+                }
+                if(kafkaConsumer) {
+                    transfer(targetPath, ("src.main.resources.config").replace(".", separator), "kafka-streams.yml", templates.rest.kafkaStreamsYml.template(artifactId));
+                }
+                if(supportAvro) {
+                    transfer(targetPath, ("src.main.resources.config").replace(".", separator), "schema-registry.yml", templates.rest.schemaRegistryYml.template());
+                }
 
                 // mask
                 transfer(targetPath, ("src.main.resources.config").replace(".", separator), "mask.yml", templates.rest.maskYml.template());
