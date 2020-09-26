@@ -40,7 +40,7 @@ public class SchemaGetHandlerTest {
 
     @Test
     public void testGetSchema() throws ClientException, ApiException, UnsupportedEncodingException {
-        String s = "{\"host\":\"lightapi.net\",\"service\":\"codegen\",\"action\":\"getSchema\",\"version\":\"0.0.1\",\"data\":{\"framework\":\"swagger\"}}";
+        String s = "{\"host\":\"lightapi.net\",\"service\":\"codegen\",\"action\":\"getSchema\",\"version\":\"0.0.1\",\"data\":{\"framework\":\"openapi\"}}";
 
         final AtomicReference<ClientResponse> reference = new AtomicReference<>();
         final Http2Client client = Http2Client.getInstance();
