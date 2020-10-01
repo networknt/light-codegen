@@ -1,5 +1,15 @@
 # Change Log
 
+## [2.0.18](https://github.com/networknt/light-codegen/tree/2.0.18) (2020-10-01)
+
+
+**Merged pull requests:**
+
+
+- fixes \#464 remove SwaggerGenerator from the service.yml file [\#465](https://github.com/networknt/light-codegen/pull/465) ([stevehu](https://github.com/stevehu))
+- fixes \#460 support light-kafka for event sourcing and CQRS in rest an… [\#461](https://github.com/networknt/light-codegen/pull/461) ([stevehu](https://github.com/stevehu))
+
+
 ## [2.0.17](https://github.com/networknt/light-codegen/tree/2.0.17) (2020-08-28)
 
 
