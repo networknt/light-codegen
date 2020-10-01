@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.6.28](https://github.com/networknt/light-codegen/tree/1.6.28) (2020-10-01)
+
+
+**Merged pull requests:**
+
+
+- fixes \#464 remove SwaggerGenerator from the service.yml file [\#465](https://github.com/networknt/light-codegen/pull/465) ([stevehu](https://github.com/stevehu))
 ## [1.6.27](https://github.com/networknt/light-codegen/tree/1.6.27) (2020-08-28)
 
 
