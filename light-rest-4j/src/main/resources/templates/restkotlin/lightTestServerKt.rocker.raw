@@ -49,7 +49,7 @@ class LightTestServer() : BeforeAllCallback, AfterAllCallback {
         oldHttpsPort = Server.config.httpsPort
         Server.config.isDynamicPort = false
         Server.config.httpsPort = httpsPort
-        Server.start()
+        Server.init()
     }
 
     // Stop server and unpatch config
