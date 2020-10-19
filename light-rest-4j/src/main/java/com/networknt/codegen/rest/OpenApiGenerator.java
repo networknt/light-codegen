@@ -109,8 +109,6 @@ public class OpenApiGenerator implements Generator {
         specChangeCodeReGenOnly = config.toBoolean("specChangeCodeReGenOnly");
         enableParamDescription = config.toBoolean("enableParamDescription");
         skipPomFile = config.toBoolean("skipPomFile");
-
-        generateValuesYml = config.toBoolean("generateValuesYml");
         String artifactId = config.toString("artifactId");
         String version = config.toString("version").trim();
         String serviceId = config.get("groupId").toString().trim() + "." + artifactId.trim() + "-" + config.get("version").toString().trim();
@@ -203,11 +201,10 @@ public class OpenApiGenerator implements Generator {
                 transfer(targetPath, ("src.main.resources.config").replace(".", separator), "sanitizer.yml", templates.rest.sanitizerYml.template());
                 transfer(targetPath, ("src.main.resources.config").replace(".", separator), "traceability.yml", templates.rest.traceabilityYml.template());
                 transfer(targetPath, ("src.main.resources.config").replace(".", separator), "health.yml", templates.rest.healthYml.template());
-
-                // values.yml file, transfer only if explicitly set in the config.json
-                if (generateValuesYml) {
-                    transfer(targetPath, ("src.main.resources.config").replace(".", separator), "values.yml", templates.rest.openapi.values.template());
-                }
+                // added with #471
+                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "app-status.yml", templates.rest.appStatusYml.template());
+                // values.yml file, transfer to suppress the warning message during start startup and encourage usage.
+                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "values.yml", templates.rest.openapi.values.template());
             }
             // routing handler
             transfer(targetPath, ("src.main.resources.config").replace(".", separator), "handler.yml",

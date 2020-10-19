@@ -85,6 +85,10 @@ public class HybridServiceGenerator implements Generator {
         // logging
         transfer(targetPath, ("src.main.resources").replace(".", separator), "logback.xml", templates.hybrid.logback.template());
         transfer(targetPath, ("src.test.resources").replace(".", separator), "logback-test.xml", templates.hybrid.logback.template());
+        // added with #471
+        transfer(targetPath, ("src.test.resources.config").replace(".", separator), "app-status.yml", templates.hybrid.appStatusYml.template());
+        // values.yml file, transfer to suppress the warning message during start startup and encourage usage.
+        transfer(targetPath, ("src.test.resources.config").replace(".", separator), "values.yml", templates.hybrid.values.template());
 
         // handler
         Map<String, Object> services = new HashMap<String, Object>();
