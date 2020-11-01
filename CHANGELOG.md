@@ -1,5 +1,15 @@
 # Change Log
 
+## [2.0.19](https://github.com/networknt/light-codegen/tree/2.0.19) (2020-11-01)
+
+
+**Merged pull requests:**
+
+
+- Issue470 [\#473](https://github.com/networknt/light-codegen/pull/473) ([stevehu](https://github.com/stevehu))
+- fixes \#471 add appStatusYml to the codegen to allow users to separate… [\#472](https://github.com/networknt/light-codegen/pull/472) ([stevehu](https://github.com/stevehu))
+- fixes \#468 switch to init() from start() in the generated TestServer [\#469](https://github.com/networknt/light-codegen/pull/469) ([stevehu](https://github.com/stevehu))
+- Bump junit from 4.12 to 4.13.1 [\#467](https://github.com/networknt/light-codegen/pull/467) ([dependabot](https://github.com/apps/dependabot))
 ## [2.0.18](https://github.com/networknt/light-codegen/tree/2.0.18) (2020-10-01)
 
 
