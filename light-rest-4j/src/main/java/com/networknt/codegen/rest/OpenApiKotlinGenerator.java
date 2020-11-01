@@ -104,9 +104,6 @@ public class OpenApiKotlinGenerator implements Generator {
         skipServerInfo = config.toBoolean("skipServerInfo");
         regenerateCodeOnly = config.toBoolean("specChangeCodeReGenOnly");
         enableParamDescription = config.toBoolean("enableParamDescription");
-
-        generateValuesYml = config.toBoolean("generateValuesYml");
-
         String version = config.toString("version").trim();
         String serviceId = config.get("groupId").toString().trim() + "." + config.get("artifactId").toString().trim() + "-" + config.get("version").toString().trim();
 
@@ -171,10 +168,10 @@ public class OpenApiKotlinGenerator implements Generator {
 
                 // exclusion list for Config module
                 transfer(targetPath, ("src.main.resources.config").replace(".", separator), "config.yml", templates.restkotlin.openapi.config.template());
-
-                // values.yml file, transfer only if explicitly set in the config.json
-                if(generateValuesYml)
-                    transfer(targetPath, ("src.main.resources.config").replace(".", separator), "values.yml", templates.restkotlin.openapi.values.template());
+                // added with #471
+                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "app-status.yml", templates.restkotlin.appStatusYml.template());
+                // values.yml file, transfer to suppress the warning message during start startup and encourage usage.
+                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "values.yml", templates.restkotlin.openapi.values.template());
             }
         }
 

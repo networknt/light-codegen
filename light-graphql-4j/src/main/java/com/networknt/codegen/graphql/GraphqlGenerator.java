@@ -91,6 +91,11 @@ public class GraphqlGenerator implements Generator {
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "primary.crt", templates.graphql.primaryCrt.template());
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "secondary.crt", templates.graphql.secondaryCrt.template());
 
+        // added with #471
+        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "app-status.yml", templates.graphql.appStatusYml.template());
+        // values.yml file, transfer to suppress the warning message during start startup and encourage usage.
+        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "values.yml", templates.graphql.values.template());
+
         // logging
         transfer(targetPath, ("src.main.resources").replace(".", separator), "logback.xml", templates.graphql.logback.template());
         transfer(targetPath, ("src.test.resources").replace(".", separator), "logback-test.xml", templates.graphql.logback.template());

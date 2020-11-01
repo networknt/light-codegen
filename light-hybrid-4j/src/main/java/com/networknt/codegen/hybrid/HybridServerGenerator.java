@@ -103,6 +103,11 @@ public class HybridServerGenerator implements Generator {
         transfer(targetPath, ("src.main.resources").replace(".", separator), "logback.xml", templates.hybrid.logback.template());
         transfer(targetPath, ("src.test.resources").replace(".", separator), "logback-test.xml", templates.hybrid.logback.template());
 
+        // added with #471
+        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "app-status.yml", templates.hybrid.appStatusYml.template());
+        // values.yml file, transfer to suppress the warning message during start startup and encourage usage.
+        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "values.yml", templates.hybrid.values.template());
+
         // transfer binary files without touching them.
         try (InputStream is = HybridServerGenerator.class.getResourceAsStream("/binaries/server.keystore")) {
             Files.copy(is, Paths.get(targetPath, ("src.main.resources.config").replace(".", separator), "server.keystore"), StandardCopyOption.REPLACE_EXISTING);
