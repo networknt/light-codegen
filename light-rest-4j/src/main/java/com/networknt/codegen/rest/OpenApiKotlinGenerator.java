@@ -144,7 +144,6 @@ public class OpenApiKotlinGenerator implements Generator {
                 transfer(targetPath, ("src.main.resources.config").replace(".", separator), "server.yml", templates.restkotlin.server.template(serviceId, enableHttp, httpPort, enableHttps, httpsPort, enableRegistry, version));
                 transfer(targetPath, ("src.test.resources.config").replace(".", separator), "server.yml", templates.restkotlin.server.template(serviceId, enableHttp, "49587", enableHttps, "49588", enableRegistry, version));
 
-                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "secret.yml", templates.restkotlin.secret.template());
                 transfer(targetPath, ("src.main.resources.config").replace(".", separator), "openapi-security.yml", templates.restkotlin.openapiSecurity.template());
                 transfer(targetPath, ("src.main.resources.config").replace(".", separator), "openapi-validator.yml", templates.restkotlin.openapiValidator.template());
                 if(supportClient) {
