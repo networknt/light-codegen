@@ -61,7 +61,11 @@ public class @className {
         final CountDownLatch latch = new CountDownLatch(1);
         final ClientConnection connection;
         try {
-            connection = client.connect(new URI(url), Http2Client.WORKER, Http2Client.SSL, Http2Client.BUFFER_POOL, enableHttp2 ? OptionMap.create(UndertowOptions.ENABLE_HTTP2, true): OptionMap.EMPTY).get();
+            if(enableHttps) {
+                connection = client.connect(new URI(url), Http2Client.WORKER, Http2Client.SSL, Http2Client.BUFFER_POOL, enableHttp2 ? OptionMap.create(UndertowOptions.ENABLE_HTTP2, true): OptionMap.EMPTY).get();
+            } else {
+                connection = client.connect(new URI(url), Http2Client.WORKER, Http2Client.BUFFER_POOL, OptionMap.EMPTY).get();
+            }
         } catch (Exception e) {
             throw new ClientException(e);
         }
@@ -75,10 +79,12 @@ public class @className {
             request.getRequestHeaders().put(Headers.TRANSFER_ENCODING, "chunked");
             //customized header parameters @for((String key, Object item): headerNameValueMap) {
             request.getRequestHeaders().put(new HttpString("@key"), "@item");}
+            request.getRequestHeaders().put(new HttpString("host"), "localhost");
             connection.sendRequest(request, client.createClientCallback(reference, latch, "@requestBodyExample"));
             } else {
             //customized header parameters @for((String key, Object item): headerNameValueMap) {
             request.getRequestHeaders().put(new HttpString("@key"), "@item");}
+            request.getRequestHeaders().put(new HttpString("host"), "localhost");
             connection.sendRequest(request, client.createClientCallback(reference, latch));
             }
             latch.await();
