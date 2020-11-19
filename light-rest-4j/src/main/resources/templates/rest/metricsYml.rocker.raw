@@ -3,7 +3,8 @@
 
 # If metrics handler is enabled or not
 enabled: ${metrics.enabled:false}
-
+# If metrics handler is enable for JVM MBean or not
+enableJVMMonitor: ${metrics.enableJVMMonitor:false}
 # influxdb protocal can be http, https
 influxdbProtocol: ${metrics.influxdbProtocol:http}
 # influxdb hostname
