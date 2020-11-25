@@ -1,5 +1,18 @@
 # Change Log
 
+## [2.0.21](https://github.com/networknt/light-codegen/tree/2.0.21) (2020-11-25)
+
+
+**Merged pull requests:**
+
+
+- fixes \#491 make the environment tag a template so that it can be inje… [\#492](https://github.com/networknt/light-codegen/pull/492) ([stevehu](https://github.com/stevehu))
+- fixes \#489 update logback.xml in the template to output line number o… [\#490](https://github.com/networknt/light-codegen/pull/490) ([stevehu](https://github.com/stevehu))
+- fixes \#487 add java.net.http for the HttpClient for JDK11 to the Dock… [\#488](https://github.com/networknt/light-codegen/pull/488) ([stevehu](https://github.com/stevehu))
+- fixes \#484 update all generators to add enableHttp2 and server.yml te… [\#485](https://github.com/networknt/light-codegen/pull/485) ([stevehu](https://github.com/stevehu))
+- fixes \#482 update handler test to separate http and https connection … [\#483](https://github.com/networknt/light-codegen/pull/483) ([stevehu](https://github.com/stevehu))
+- fixes \#480 update server.yml to add keystore and truststore passwords [\#481](https://github.com/networknt/light-codegen/pull/481) ([stevehu](https://github.com/stevehu))
+- fixes \#477 remove secret.yml from the light-codegen master branch for… [\#479](https://github.com/networknt/light-codegen/pull/479) ([stevehu](https://github.com/stevehu))
 ## [2.0.20](https://github.com/networknt/light-codegen/tree/2.0.20) (2020-11-05)
 
 
