@@ -37,6 +37,7 @@ public class HybridServiceGenerator implements Generator {
         boolean overwriteHandlerTest = config.toBoolean("overwriteHandlerTest");
         boolean enableHttp = config.toBoolean("enableHttp");
         boolean enableHttps = config.toBoolean("enableHttps");
+        boolean enableHttp2 = config.toBoolean("enableHttp2");
         boolean enableRegistry = config.toBoolean("enableRegistry");
         boolean eclipseIDE = config.toBoolean("eclipseIDE");
         boolean supportClient = config.toBoolean("supportClient");
@@ -66,7 +67,7 @@ public class HybridServiceGenerator implements Generator {
         // config
         transfer(targetPath, ("src.test.resources.config").replace(".", separator), "service.yml", templates.hybrid.serviceYml.template(config));
 
-        transfer(targetPath, ("src.test.resources.config").replace(".", separator), "server.yml", templates.hybrid.serverYml.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, "49587", enableHttps, "49588", enableRegistry, version));
+        transfer(targetPath, ("src.test.resources.config").replace(".", separator), "server.yml", templates.hybrid.serverYml.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, "49587", enableHttps, "49588", enableHttp2, enableRegistry, version));
         //transfer(targetPath, ("src.test.resources.config").replace(".", separator), "secret.yml", templates.hybrid.secretYml.template());
         transfer(targetPath, ("src.test.resources.config").replace(".", separator), "hybrid-security.yml", templates.hybrid.securityYml.template());
         transfer(targetPath, ("src.test.resources.config").replace(".", separator), "client.yml", templates.hybrid.clientYml.template());

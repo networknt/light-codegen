@@ -94,7 +94,7 @@ public class OpenApiKotlinGenerator implements Generator {
         String httpPort = config.toString("httpPort").trim();
         boolean enableHttps = config.toBoolean("enableHttps");
         String httpsPort = config.toString("httpsPort").trim();
-
+        boolean enableHttp2 = config.toBoolean("enableHttp2");
         boolean enableRegistry = config.toBoolean("enableRegistry");
         boolean supportClient = config.toBoolean("supportClient");
         String dockerOrganization = config.toString("dockerOrganization").trim();
@@ -141,10 +141,9 @@ public class OpenApiKotlinGenerator implements Generator {
                 // config
                 transfer(targetPath, ("src.main.resources.config").replace(".", separator), "service.yml", templates.restkotlin.openapi.service.template(config));
 
-                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "server.yml", templates.restkotlin.server.template(serviceId, enableHttp, httpPort, enableHttps, httpsPort, enableRegistry, version));
-                transfer(targetPath, ("src.test.resources.config").replace(".", separator), "server.yml", templates.restkotlin.server.template(serviceId, enableHttp, "49587", enableHttps, "49588", enableRegistry, version));
+                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "server.yml", templates.restkotlin.server.template(serviceId, enableHttp, httpPort, enableHttps, httpsPort, enableHttp2, enableRegistry, version));
+                transfer(targetPath, ("src.test.resources.config").replace(".", separator), "server.yml", templates.restkotlin.server.template(serviceId, enableHttp, "49587", enableHttps, "49588", enableHttp2, enableRegistry, version));
 
-                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "secret.yml", templates.restkotlin.secret.template());
                 transfer(targetPath, ("src.main.resources.config").replace(".", separator), "openapi-security.yml", templates.restkotlin.openapiSecurity.template());
                 transfer(targetPath, ("src.main.resources.config").replace(".", separator), "openapi-validator.yml", templates.restkotlin.openapiValidator.template());
                 if(supportClient) {

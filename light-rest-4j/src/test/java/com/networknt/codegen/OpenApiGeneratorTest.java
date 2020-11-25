@@ -136,4 +136,15 @@ public class OpenApiGeneratorTest {
         generator.generate(targetPath, strModel, anyConfig);
     }
 
+    @Test
+    public void testBasePath() {
+        String basePath = null;
+        String url = "https://lightapi.net/service";
+        int protocolIndex = url.indexOf("://");
+        int pathIndex = url.indexOf('/', protocolIndex + 3);
+        if (pathIndex > 0) {
+            basePath = url.substring(pathIndex);
+        }
+        Assert.assertEquals("/service", basePath);
+    }
 }

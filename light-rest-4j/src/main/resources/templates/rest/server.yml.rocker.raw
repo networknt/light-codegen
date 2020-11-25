@@ -1,4 +1,4 @@
-@args (String serviceId, Boolean enableHttp, String httpPort, Boolean enableHttps, String httpsPort, Boolean enableRegistry, String version)
+@args (String serviceId, Boolean enableHttp, String httpPort, Boolean enableHttps, String httpsPort, Boolean enableHttp2, Boolean enableRegistry, String version)
 # Server configuration
 ---
 # This is the default binding address if the service is dockerized.
@@ -21,7 +21,7 @@ httpsPort: ${server.httpsPort:@httpsPort}
 enableHttps: ${server.enableHttps:@enableHttps}
 
 # Http/2 is enabled by default for better performance and it works with the client module
-enableHttp2: ${server.enableHttp2:true}
+enableHttp2: ${server.enableHttp2:@enableHttp2}
 
 # Keystore file name in config folder. KeystorePass is in secret.yml to access it.
 keystoreName: ${server.keystoreName:server.keystore}
@@ -65,7 +65,7 @@ maxPort: ${server.maxPort:2500}
 # environment tag that will be registered on consul to support multiple instances per env for testing.
 # https://github.com/networknt/light-doc/blob/master/docs/content/design/env-segregation.md
 # This tag should only be set for testing env, not production. The production certification process will enforce it.
-# environment: test1
+# environment: ${server.environment:test1}
 
 # Build Number
 # Allows teams to audit the value and set it according to their release management processes
