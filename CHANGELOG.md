@@ -13,6 +13,8 @@
 - fixes \#482 update handler test to separate http and https connection … [\#483](https://github.com/networknt/light-codegen/pull/483) ([stevehu](https://github.com/stevehu))
 - fixes \#480 update server.yml to add keystore and truststore passwords [\#481](https://github.com/networknt/light-codegen/pull/481) ([stevehu](https://github.com/stevehu))
 - fixes \#477 remove secret.yml from the light-codegen master branch for… [\#479](https://github.com/networknt/light-codegen/pull/479) ([stevehu](https://github.com/stevehu))
+
+
 ## [2.0.20](https://github.com/networknt/light-codegen/tree/2.0.20) (2020-11-05)
 
 
