@@ -1,4 +1,6 @@
-@args (String projectName, String functionName)
+@import java.util.Map
+@import java.util.List
+@args (String projectName, String handlerPackage, List<Map<String, Object>> operationList)
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: >
@@ -12,49 +14,36 @@ Globals:
     Timeout: 20
 
 Resources:
-  @with (s = functionName + "Function:") {
-  @s
-  }
+  @for(op : operationList) {
+  @with(s = op.get("functionName") + ":"){@s}
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      @with(s = functionName + "Function") {
-      CodeUri: @s
-      }
-      @with(s = functionName + ".App::handleRequest") {
-      Handler: @s
-      }
+      @with(s = op.get("functionName")){CodeUri: @s}
+      @with(s = handlerPackage + ".App::handleRequest"){Handler: @s}
       Runtime: java11
       MemorySize: 512
       Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
         Variables:
           PARAM1: VALUE
       Events:
-        @functionName:
+        @with(s = op.get("apiName") + ":"){@s}
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
-            Path: /hello
-            Method: get
+            @with(s = op.get("path")){Path: @s}
+            @with(s = op.get("method")){Method: @s}
+  }
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
-  @with(s = functionName + "Api:"){
-  @s
+  @for(op : operationList){@with(s = op.get("apiName") + "Api:"){@s}
+    Description: "API Gateway endpoint URL for Prod stage for the function"
+    @with(s = op.get("path")){Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod@s/"}
+  @with(s = op.get("functionName") + ":"){@s}
+    Description: "The Lambda Function ARN"
+    @with(s = op.get("functionName") + ".Arn"){Value: !GetAtt @s}
+  @with( s = op.get("functionName") + "IamRole:"){@s}
+    Description: "Implicit IAM Role created for the function"
+    @with(s = op.get("functionName") + "Role.Arn"){Value: !GetAtt @s}
   }
-    Description: "API Gateway endpoint URL for Prod stage for @functionName function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
-  @with(s = functionName + "Function:") {
-  @s
-  }
-    Description: "@functionName Lambda Function ARN"
-    @with (s = functionName + "Function.Arn") {
-    Value: !GetAtt @s
-    }
-  @with ( s = functionName + "FunctionIamRole:") {
-  @s
-  }
-    Description: "Implicit IAM Role created for @functionName function"
-    @with (s = functionName + "FunctionRole.Arn") {
-    Value: !GetAtt @s
-    }
