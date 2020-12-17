@@ -112,9 +112,7 @@ public class OpenApiLambdaGenerator implements Generator {
 
         transfer(targetPath, "", ".gitignore", templates.rest.gitignore.template());
 
-        // TODO add another variable to loop all functions.
-        //transfer(targetPath, "", "README.md", templates.lambda.README.template(projectName, functionName));
-
+        transfer(targetPath, "", "README.md", templates.lambda.README.template(projectName, operationList));
         transfer(targetPath, "", "template.yaml", templates.lambda.template.template(projectName, handlerPackage,  operationList));
 
         // handler
