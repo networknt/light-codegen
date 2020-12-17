@@ -114,12 +114,12 @@ public class OpenApiLambdaGenerator implements Generator {
 
         // TODO add another variable to loop all functions.
         //transfer(targetPath, "", "README.md", templates.lambda.README.template(projectName, functionName));
-        //transfer(targetPath, "", "template.yaml", templates.lambda.template.template(projectName, functionName));
 
-
+        transfer(targetPath, "", "template.yaml", templates.lambda.template.template(projectName, handlerPackage,  operationList));
 
         // handler
         for (Map<String, Object> op : operationList) {
+            System.out.println(op);
             // for each operation, we need to generate a function in a separate folder.
             String functionName = op.get("functionName").toString();
 
@@ -494,7 +494,8 @@ public class OpenApiLambdaGenerator implements Generator {
                 flattened.put("path", basePath + path);
                 String normalizedPath = path.replace("{", "").replace("}", "");
                 flattened.put("handlerName", Utils.camelize(normalizedPath) + Utils.camelize(entryOps.getKey()) + "Handler");
-                flattened.put("functionName", Utils.camelize(normalizedPath) + Utils.camelize(entryOps.getKey()));
+                flattened.put("functionName", Utils.camelize(normalizedPath) + Utils.camelize(entryOps.getKey()) + "Function");
+                flattened.put("apiName", Utils.camelize(normalizedPath) + Utils.camelize(entryOps.getKey()));
                 Operation operation = entryOps.getValue();
                 flattened.put("normalizedPath", UrlGenerator.generateUrl(basePath, path, entryOps.getValue().getParameters()));
                 //eg. 200 || statusCode == 400 || statusCode == 500
