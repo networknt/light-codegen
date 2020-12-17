@@ -84,36 +84,26 @@ public class OpenApiLambdaGenerator implements Generator {
         // whoever is calling this needs to make sure that model is converted to Map<String, Object>
         String projectName = config.toString("projectName").trim();
 
-        String rootPackage = config.toString("rootPackage").trim();
         final String modelPackage = config.toString("modelPackage").trim();
         String handlerPackage = config.toString("handlerPackage").trim();
 
         boolean overwriteHandler = config.toBoolean("overwriteHandler");
         boolean overwriteHandlerTest = config.toBoolean("overwriteHandlerTest");
         boolean overwriteModel = config.toBoolean("overwriteModel");
+        boolean packageDocker = config.toBoolean("packageDocker");
         generateModelOnly = config.toBoolean("generateModelOnly");
-
-        boolean eclipseIDE = config.toBoolean("eclipseIDE");
-        String dockerOrganization = config.toString("dockerOrganization").trim();
 
         specChangeCodeReGenOnly = config.toBoolean("specChangeCodeReGenOnly");
         enableParamDescription = config.toBoolean("enableParamDescription");
         skipPomFile = config.toBoolean("skipPomFile");
-        String artifactId = config.toString("artifactId");
-        String version = config.toString("version").trim();
-        String serviceId = config.get("groupId").toString().trim() + "." + artifactId.trim() + "-" + config.get("version").toString().trim();
-
-        if (dockerOrganization == null || dockerOrganization.length() == 0) {
-            dockerOrganization = "networknt";
-        }
 
         // get the list of operations for this model
         List<Map<String, Object>> operationList = getOperationList(model);
 
         transfer(targetPath, "", ".gitignore", templates.rest.gitignore.template());
 
-        transfer(targetPath, "", "README.md", templates.lambda.README.template(projectName, operationList));
-        transfer(targetPath, "", "template.yaml", templates.lambda.template.template(projectName, handlerPackage,  operationList));
+        transfer(targetPath, "", "README.md", templates.lambda.README.template(projectName, packageDocker, operationList));
+        transfer(targetPath, "", "template.yaml", templates.lambda.template.template(projectName, handlerPackage, packageDocker, operationList));
 
         // handler
         for (Map<String, Object> op : operationList) {
@@ -125,6 +115,11 @@ public class OpenApiLambdaGenerator implements Generator {
 
             // generate pom.xml
             transfer(targetPath, functionName, "pom.xml", templates.lambda.pom.template(config, functionName));
+
+            // generate Dockerfile if packageDocker is true
+            if(packageDocker) {
+                transfer(targetPath, functionName, "Dockerfile", templates.lambda.Dockerfile.template(handlerPackage));
+            }
 
             // generate handler
             String className = op.get("handlerName").toString();

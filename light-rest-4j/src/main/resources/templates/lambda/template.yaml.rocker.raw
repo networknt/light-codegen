@@ -1,6 +1,6 @@
 @import java.util.Map
 @import java.util.List
-@args (String projectName, String handlerPackage, List<Map<String, Object>> operationList)
+@args (String projectName, String handlerPackage, boolean packageDocker, List<Map<String, Object>> operationList)
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: >
@@ -18,6 +18,9 @@ Resources:
   @with(s = op.get("functionName") + ":"){@s}
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
+      @if(packageDocker) {
+      PackageType: Image
+      } else {
       @with(s = op.get("functionName")){CodeUri: @s}
       @with(s = handlerPackage + ".App::handleRequest"){Handler: @s}
       Runtime: java11
@@ -25,12 +28,19 @@ Resources:
       Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
         Variables:
           PARAM1: VALUE
+      }
       Events:
         @with(s = op.get("apiName") + ":"){@s}
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
             @with(s = op.get("path")){Path: @s}
             @with(s = op.get("method")){Method: @s}
+    @if(packageDocker) {
+    Metadata:
+      DockerTag: java11-maven-v1
+      DockerContext: ./@with(s = op.get("functionName")){@s}
+      Dockerfile: Dockerfile
+    }
   }
 
 Outputs:
