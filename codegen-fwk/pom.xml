@@ -40,6 +40,10 @@
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
+            <artifactId>service</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.networknt</groupId>
             <artifactId>light-rest-4j-generator</artifactId>
         </dependency>
         <dependency>
