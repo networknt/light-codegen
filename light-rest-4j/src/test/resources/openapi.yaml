@@ -1,6 +1,6 @@
 openapi: 3.0.0
 servers:
-  - url: 'https://api.interac.ca/publicapi/api/v2'
+  - url: 'https://api.example.com/publicapi/api/v2'
 info:
   version: 2.0.0
   title: e-Transfer Public API
@@ -1628,7 +1628,7 @@ paths:
         - name: maxResponseItems
           in: query
           required: false
-          description: if offset is provided then maxResponse items is required; all ( OR maximum set by interac system ) items are returned if this field is absent
+          description: if offset is provided then maxResponse items is required; all ( OR maximum set by example system ) items are returned if this field is absent
           schema:
             type: integer
         - name: offset
