@@ -15,9 +15,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.lang.model.SourceVersion;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -85,6 +89,7 @@ public class OpenApiLambdaGenerator implements Generator {
         String projectName = config.toString("projectName").trim();
 
         final String modelPackage = config.toString("modelPackage").trim();
+        final String rootPackage = config.toString("rootPackage").trim();
         String handlerPackage = config.toString("handlerPackage").trim();
 
         boolean overwriteHandler = config.toBoolean("overwriteHandler");
@@ -173,6 +178,23 @@ public class OpenApiLambdaGenerator implements Generator {
                 }
             }
 
+            if (model instanceof Any) {
+                try (InputStream is = new ByteArrayInputStream(model.toString().getBytes(StandardCharsets.UTF_8))) {
+                    copyFile(is, Paths.get(targetPath + separator + functionName, ("src.main.resources").replace(".", separator), "openapi.yaml"));
+                }
+            } else if (model instanceof String) {
+                try (InputStream is = new ByteArrayInputStream(((String)model).getBytes(StandardCharsets.UTF_8))) {
+                    copyFile(is, Paths.get(targetPath + separator + functionName, ("src.main.resources").replace(".", separator), "openapi.yaml"));
+                }
+            }
+
+            // logback.xml
+            transfer(targetPath + separator + functionName, ("src.main.resources").replace(".", separator), "logback.xml", templates.lambda.logback.template(rootPackage));
+            transfer(targetPath + separator + functionName, ("src.test.resources").replace(".", separator), "logback-test.xml", templates.lambda.logback.template(rootPackage));
+            // client truststore for the Prod stage.
+            try (InputStream is = OpenApiLambdaGenerator.class.getResourceAsStream("/binaries/client.truststore")) {
+                copyFile(is, Paths.get(targetPath + separator + functionName, ("src.main.resources").replace(".", separator), "prod.truststore"));
+            }
         }
     }
 

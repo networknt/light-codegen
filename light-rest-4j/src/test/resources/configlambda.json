@@ -5,9 +5,9 @@
   "rootPackage": "com.networknt.petstore",
   "handlerPackage":"com.networknt.petstore.handler",
   "modelPackage":"com.networknt.petstore.model",
-  "packageDocker": true,
-  "overwriteHandler": false,
-  "overwriteHandlerTest": false,
+  "packageDocker": false,
+  "overwriteHandler": true,
+  "overwriteHandlerTest": true,
   "overwriteModel": true,
   "generateModelOnly": false
 }
