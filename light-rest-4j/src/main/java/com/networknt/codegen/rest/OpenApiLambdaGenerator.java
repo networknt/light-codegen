@@ -105,7 +105,7 @@ public class OpenApiLambdaGenerator implements Generator {
         // get the list of operations for this model
         List<Map<String, Object>> operationList = getOperationList(model);
         List<OpenApiPath> pathList = getPathList(operationList);
-        transfer(targetPath, "", ".gitignore", templates.rest.gitignore.template());
+        transfer(targetPath, "", ".gitignore", templates.lambda.gitignore.template());
 
         transfer(targetPath, "", "README.md", templates.lambda.README.template(projectName, packageDocker, operationList));
         transfer(targetPath, "", "template.yaml", templates.lambda.template.template(projectName, handlerPackage, packageDocker, operationList, pathList));
