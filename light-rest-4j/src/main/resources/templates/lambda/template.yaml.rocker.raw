@@ -1,6 +1,8 @@
 @import java.util.Map
 @import java.util.List
-@args (String projectName, String handlerPackage, boolean packageDocker, List<Map<String, Object>> operationList)
+@import com.networknt.codegen.rest.OpenApiLambdaGenerator.OpenApiPath;
+@import com.networknt.codegen.rest.OpenApiLambdaGenerator.MethodFunction;
+@args (String projectName, String handlerPackage, boolean packageDocker, List<Map<String, Object>> operationList, List<OpenApiPath> pathList)
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: >
@@ -14,6 +16,43 @@ Globals:
     Timeout: 20
 
 Resources:
+  ApiGateway:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+      DefinitionBody:
+        openapi: 3.0.1
+        info:
+          title:
+            Ref: AWS::StackName
+        components:
+          securitySchemes:
+            jwt-authorizer:
+              type: apiKey
+              name: Authorization
+              in: header
+              x-amazon-apigateway-authtype: custom
+              x-amazon-apigateway-authorizer:
+                identitySource: method.request.header.Authorization
+                type: request
+                authorizerUri:
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-2:964637446810:function:Authorizer/invocations
+                authorizerResultTtlInSeconds: 0
+        paths:
+          @for(ap: pathList){
+          @ap.getPath():
+            @for(mf: ap.getMethodList()){
+            @with(s = mf.getMethod()){@s}:
+              x-amazon-apigateway-integration:
+                httpMethod: post
+                type: aws_proxy
+                uri:
+                  @with(s = "Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${" + mf.getFunctionName() + ".Arn}/invocations"){@s}
+              responses: {}
+              security:
+                - jwt-authorizer: []
+            }
+          }
   @for(op : operationList) {
   @with(s = op.get("functionName") + ":"){@s}
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
@@ -35,25 +74,12 @@ Resources:
           Properties:
             @with(s = op.get("path")){Path: @s}
             @with(s = op.get("method")){Method: @s}
+            RestApiId:
+              Ref: ApiGateway
     @if(packageDocker) {
     Metadata:
       DockerTag: java11-maven-v1
       DockerContext: ./@with(s = op.get("functionName")){@s}
       Dockerfile: Dockerfile
     }
-  }
-
-Outputs:
-  # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
-  # Find out more about other implicit resources you can reference within SAM
-  # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
-  @for(op : operationList){@with(s = op.get("apiName") + "Api:"){@s}
-    Description: "API Gateway endpoint URL for Prod stage for the function"
-    @with(s = op.get("path")){Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod@s/"}
-  @with(s = op.get("functionName") + ":"){@s}
-    Description: "The Lambda Function ARN"
-    @with(s = op.get("functionName") + ".Arn"){Value: !GetAtt @s}
-  @with( s = op.get("functionName") + "IamRole:"){@s}
-    Description: "Implicit IAM Role created for the function"
-    @with(s = op.get("functionName") + "Role.Arn"){Value: !GetAtt @s}
   }

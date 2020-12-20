@@ -104,11 +104,11 @@ public class OpenApiLambdaGenerator implements Generator {
 
         // get the list of operations for this model
         List<Map<String, Object>> operationList = getOperationList(model);
-
+        List<OpenApiPath> pathList = getPathList(operationList);
         transfer(targetPath, "", ".gitignore", templates.rest.gitignore.template());
 
         transfer(targetPath, "", "README.md", templates.lambda.README.template(projectName, packageDocker, operationList));
-        transfer(targetPath, "", "template.yaml", templates.lambda.template.template(projectName, handlerPackage, packageDocker, operationList));
+        transfer(targetPath, "", "template.yaml", templates.lambda.template.template(projectName, handlerPackage, packageDocker, operationList, pathList));
 
         // handler
         for (Map<String, Object> op : operationList) {
@@ -849,4 +849,76 @@ public class OpenApiLambdaGenerator implements Generator {
     private String extendModelName(String str1, String str2) {
         return str1 + str2.substring(0, 1).toUpperCase() + str2.substring(1);
     }
+
+    private List<OpenApiPath> getPathList(List<Map<String, Object>> operationList) {
+        List<OpenApiPath> pathList = new ArrayList<>();
+        Set<String> pathSet = new HashSet<>();
+        OpenApiPath openApiPath = null;
+        for(Map<String, Object> op : operationList) {
+            String path = (String)op.get("path");
+            String method = (String)op.get("method");
+            String functionName = (String)op.get("functionName");
+            if(!pathSet.contains(path)) {
+                openApiPath = new OpenApiPath();
+                openApiPath.setPath(path);
+                pathSet.add(path);
+                MethodFunction methodFunction = new MethodFunction(method, functionName);
+                openApiPath.addMethodFunction(methodFunction);
+                pathList.add(openApiPath);
+            } else {
+                MethodFunction methodFunction = new MethodFunction(method, functionName);
+                openApiPath.addMethodFunction(methodFunction);
+            }
+        }
+        return pathList;
+    }
+
+    public class OpenApiPath {
+        String path;
+        List<MethodFunction> methodList = new ArrayList<>();
+
+        public String getPath() {
+            return path;
+        }
+
+        public void setPath(String path) {
+            this.path = path;
+        }
+
+        public List<MethodFunction> getMethodList() {
+            return methodList;
+        }
+
+        public void addMethodFunction(MethodFunction methodFunction) {
+            methodList.add(methodFunction);
+        }
+
+    }
+
+    public class MethodFunction {
+        String method;
+        String functionName;
+
+        public MethodFunction(String method, String functionName) {
+            this.method = method;
+            this.functionName = functionName;
+        }
+
+        public String getMethod() {
+            return method;
+        }
+
+        public void setMethod(String method) {
+            this.method = method;
+        }
+
+        public String getFunctionName() {
+            return functionName;
+        }
+
+        public void setFunctionName(String functionName) {
+            this.functionName = functionName;
+        }
+    }
+
 }
