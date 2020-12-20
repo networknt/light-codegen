@@ -856,7 +856,7 @@ public class OpenApiLambdaGenerator implements Generator {
         OpenApiPath openApiPath = null;
         for(Map<String, Object> op : operationList) {
             String path = (String)op.get("path");
-            String method = (String)op.get("method");
+            String method = ((String)op.get("method")).toLowerCase();
             String functionName = (String)op.get("functionName");
             if(!pathSet.contains(path)) {
                 openApiPath = new OpenApiPath();
