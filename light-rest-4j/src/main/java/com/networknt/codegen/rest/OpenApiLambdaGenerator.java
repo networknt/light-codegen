@@ -144,7 +144,7 @@ public class OpenApiLambdaGenerator implements Generator {
             if (checkExist(targetPath + separator + functionName, ("src.test.java." + handlerPackage).replace(".", separator), "AppTest.java") && !overwriteHandlerTest) {
                 continue;
             }
-            transfer(targetPath + separator + functionName, ("src.test.java." + handlerPackage).replace(".", separator), "AppTest.java", templates.lambda.AppTest.template(handlerPackage));
+            transfer(targetPath + separator + functionName, ("src.test.java." + handlerPackage).replace(".", separator), "AppTest.java", templates.lambda.AppTest.template(handlerPackage, op));
 
             // generate model
             Any anyComponents;
@@ -522,6 +522,7 @@ public class OpenApiLambdaGenerator implements Generator {
                 flattened.put("requestBodyExample", populateRequestBodyExample(operation));
                 Map<String, String> responseExample = populateResponseExample(operation);
                 flattened.put("responseExample", responseExample);
+                flattened.put("scopes", getScopes(operation));
                 if (enableParamDescription) {
                     //get parameters info and put into result
                     List<Parameter> parameterRawList = operation.getParameters();
@@ -633,6 +634,18 @@ public class OpenApiLambdaGenerator implements Generator {
         return string;
     }
 
+    private String getScopes(Operation operation) {
+        String scopes = null;
+        SecurityRequirement securityRequirement = operation.getSecurityRequirement(0);
+        if(securityRequirement != null) {
+            Map<String, SecurityParameter> requirements = securityRequirement.getRequirements();
+            for(SecurityParameter parameter : requirements.values()) {
+                List<String> ls = parameter.getParameters();
+                if(ls != null) scopes = StringUtils.join(ls, ' ');
+            }
+        }
+        return scopes;
+    }
 
     private String populateRequestBodyExample(Operation operation) {
         String result = "{\"content\": \"request body to be replaced\"}";
