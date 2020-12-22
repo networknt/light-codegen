@@ -65,10 +65,10 @@ chains:
 @if(prometheusMetrics){    - prometheus} else {    - metrics}
     - traceability
     - correlation
-    - specification
-    - security
     - body
     - audit
+    - specification
+    - security
 #    - dump
     - sanitizer
     - validator
