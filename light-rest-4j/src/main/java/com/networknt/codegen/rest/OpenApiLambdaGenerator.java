@@ -135,16 +135,19 @@ public class OpenApiLambdaGenerator implements Generator {
             String statusCode = responseExample.get("statusCode");
             statusCode = StringUtils.isBlank(statusCode) || statusCode.equals("default") ? "-1" : statusCode;
 
-            if (checkExist(targetPath + separator + functionName, ("src.main.java." + handlerPackage).replace(".", separator), "App.java") && !overwriteHandler) {
+            if (checkExist(targetPath + separator + functionName, ("src.main.java." + handlerPackage).replace(".", separator), "BusinessHandler.java")) {
                 continue;
+            } else {
+                transfer(targetPath + separator + functionName, ("src.main.java." + handlerPackage).replace(".", separator), "BusinessHandler.java", templates.lambda.BusinessHandler.template(handlerPackage, example));
             }
-            transfer(targetPath + separator + functionName, ("src.main.java." + handlerPackage).replace(".", separator), "App.java", templates.lambda.App.template(handlerPackage, example));
+            if (checkExist(targetPath + separator + functionName, ("src.test.java." + handlerPackage).replace(".", separator), "BusinessHandlerTest.java")) {
+                continue;
+            } else {
+                transfer(targetPath + separator + functionName, ("src.test.java." + handlerPackage).replace(".", separator), "BusinessHandlerTest.java", templates.lambda.BusinessHandlerTest.template(handlerPackage, op));
+            }
 
-            //generate handler test case
-            if (checkExist(targetPath + separator + functionName, ("src.test.java." + handlerPackage).replace(".", separator), "AppTest.java") && !overwriteHandlerTest) {
-                continue;
-            }
-            transfer(targetPath + separator + functionName, ("src.test.java." + handlerPackage).replace(".", separator), "AppTest.java", templates.lambda.AppTest.template(handlerPackage, op));
+            transfer(targetPath + separator + functionName, ("src.main.java." + handlerPackage).replace(".", separator), "App.java", templates.lambda.App.template(handlerPackage));
+            transfer(targetPath + separator + functionName, ("src.test.java." + handlerPackage).replace(".", separator), "AppTest.java", templates.lambda.AppTest.template(handlerPackage));
 
             // generate model
             Any anyComponents;
