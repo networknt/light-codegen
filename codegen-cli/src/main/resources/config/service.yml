@@ -7,4 +7,5 @@ singletons:
   - com.networknt.codegen.hybrid.HybridServiceGenerator
   - com.networknt.codegen.graphql.GraphqlGenerator
   - com.networknt.codegen.rest.OpenApiKotlinGenerator
+  - com.networknt.codegen.rest.OpenApiLambdaGenerator
   - com.networknt.codegen.rest.OpenApiSpecGenerator

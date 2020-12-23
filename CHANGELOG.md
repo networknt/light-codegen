@@ -1,5 +1,18 @@
 # Change Log
 
+## [2.0.22](https://github.com/networknt/light-codegen/tree/2.0.22) (2020-12-22)
+
+
+**Merged pull requests:**
+
+
+- fixes \#505 update README.md tempate in lambda codegen [\#506](https://github.com/networknt/light-codegen/pull/506) ([stevehu](https://github.com/stevehu))
+- fixes \#503 update aws lambda template.yaml and generator [\#504](https://github.com/networknt/light-codegen/pull/504) ([stevehu](https://github.com/stevehu))
+- fixes \#500 add aws-lambda generator under light-rest-4j [\#501](https://github.com/networknt/light-codegen/pull/501) ([stevehu](https://github.com/stevehu))
+- fixes \#498 add config to the dependency for test case [\#499](https://github.com/networknt/light-codegen/pull/499) ([stevehu](https://github.com/stevehu))
+- fixes \#493 update the server.yml template to add more parameters [\#494](https://github.com/networknt/light-codegen/pull/494) ([stevehu](https://github.com/stevehu))
+
+
 ## [2.0.21](https://github.com/networknt/light-codegen/tree/2.0.21) (2020-11-25)
 
 
