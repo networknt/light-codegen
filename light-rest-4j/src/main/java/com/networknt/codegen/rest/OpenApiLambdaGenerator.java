@@ -191,6 +191,9 @@ public class OpenApiLambdaGenerator implements Generator {
                 }
             }
 
+            // app.yml
+            transfer(targetPath + separator + functionName, ("src.main.resources").replace(".", separator), "app.yml", templates.lambda.appYml.template());
+
             // logback.xml
             transfer(targetPath + separator + functionName, ("src.main.resources").replace(".", separator), "logback.xml", templates.lambda.logback.template(rootPackage));
             transfer(targetPath + separator + functionName, ("src.test.resources").replace(".", separator), "logback-test.xml", templates.lambda.logback.template(rootPackage));
