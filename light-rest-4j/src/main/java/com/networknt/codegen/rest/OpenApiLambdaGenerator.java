@@ -49,7 +49,7 @@ public class OpenApiLambdaGenerator implements Generator {
     boolean specChangeCodeReGenOnly = false;
     boolean enableParamDescription = true;
     boolean generateModelOnly = false;
-    boolean generateValuesYml = false;
+    boolean useLightProxy = false;
     boolean skipPomFile = false;
 
     public OpenApiLambdaGenerator() {
@@ -97,7 +97,8 @@ public class OpenApiLambdaGenerator implements Generator {
         boolean overwriteModel = config.toBoolean("overwriteModel");
         boolean packageDocker = config.toBoolean("packageDocker");
         generateModelOnly = config.toBoolean("generateModelOnly");
-
+        useLightProxy = config.toBoolean("useLightProxy");
+        String launchType = config.toString("launchType").trim();
         specChangeCodeReGenOnly = config.toBoolean("specChangeCodeReGenOnly");
         enableParamDescription = config.toBoolean("enableParamDescription");
         skipPomFile = config.toBoolean("skipPomFile");
@@ -145,8 +146,11 @@ public class OpenApiLambdaGenerator implements Generator {
             } else {
                 transfer(targetPath + separator + functionName, ("src.test.java." + handlerPackage).replace(".", separator), "BusinessHandlerTest.java", templates.lambda.BusinessHandlerTest.template(handlerPackage, op));
             }
-
-            transfer(targetPath + separator + functionName, ("src.main.java." + handlerPackage).replace(".", separator), "App.java", templates.lambda.App.template(handlerPackage));
+            if(useLightProxy) {
+                transfer(targetPath + separator + functionName, ("src.main.java." + handlerPackage).replace(".", separator), "App.java", templates.lambda.AppProxy.template(handlerPackage));
+            } else {
+                transfer(targetPath + separator + functionName, ("src.main.java." + handlerPackage).replace(".", separator), "App.java", templates.lambda.AppGateway.template(handlerPackage));
+            }
             transfer(targetPath + separator + functionName, ("src.test.java." + handlerPackage).replace(".", separator), "AppTest.java", templates.lambda.AppTest.template(handlerPackage));
 
             // generate model
@@ -180,26 +184,29 @@ public class OpenApiLambdaGenerator implements Generator {
                     }
                 }
             }
-
-            if (model instanceof Any) {
-                try (InputStream is = new ByteArrayInputStream(model.toString().getBytes(StandardCharsets.UTF_8))) {
-                    copyFile(is, Paths.get(targetPath + separator + functionName, ("src.main.resources").replace(".", separator), "openapi.yaml"));
-                }
-            } else if (model instanceof String) {
-                try (InputStream is = new ByteArrayInputStream(((String)model).getBytes(StandardCharsets.UTF_8))) {
-                    copyFile(is, Paths.get(targetPath + separator + functionName, ("src.main.resources").replace(".", separator), "openapi.yaml"));
+            if(!useLightProxy) {
+                if (model instanceof Any) {
+                    try (InputStream is = new ByteArrayInputStream(model.toString().getBytes(StandardCharsets.UTF_8))) {
+                        copyFile(is, Paths.get(targetPath + separator + functionName, ("src.main.resources").replace(".", separator), "openapi.yaml"));
+                    }
+                } else if (model instanceof String) {
+                    try (InputStream is = new ByteArrayInputStream(((String)model).getBytes(StandardCharsets.UTF_8))) {
+                        copyFile(is, Paths.get(targetPath + separator + functionName, ("src.main.resources").replace(".", separator), "openapi.yaml"));
+                    }
                 }
             }
 
             // app.yml
-            transfer(targetPath + separator + functionName, ("src.main.resources").replace(".", separator), "app.yml", templates.lambda.appYml.template());
+            transfer(targetPath + separator + functionName, ("src.main.resources").replace(".", separator), "app.yml", templates.lambda.appYml.template(useLightProxy));
 
             // logback.xml
             transfer(targetPath + separator + functionName, ("src.main.resources").replace(".", separator), "logback.xml", templates.lambda.logback.template(rootPackage));
             transfer(targetPath + separator + functionName, ("src.test.resources").replace(".", separator), "logback-test.xml", templates.lambda.logback.template(rootPackage));
             // client truststore for the Prod stage.
-            try (InputStream is = OpenApiLambdaGenerator.class.getResourceAsStream("/binaries/client.truststore")) {
-                copyFile(is, Paths.get(targetPath + separator + functionName, ("src.main.resources").replace(".", separator), "prod.truststore"));
+            if(!useLightProxy) {
+                try (InputStream is = OpenApiLambdaGenerator.class.getResourceAsStream("/binaries/client.truststore")) {
+                    copyFile(is, Paths.get(targetPath + separator + functionName, ("src.main.resources").replace(".", separator), "prod.truststore"));
+                }
             }
         }
     }

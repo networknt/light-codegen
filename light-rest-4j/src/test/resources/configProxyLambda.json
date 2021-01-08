@@ -1,0 +1,15 @@
+{
+  "projectName": "petstore",
+  "version": "1.0.1",
+  "groupId": "com.networknt",
+  "rootPackage": "com.networknt.petstore",
+  "handlerPackage":"com.networknt.petstore.handler",
+  "modelPackage":"com.networknt.petstore.model",
+  "useLightProxy": true,
+  "launchType": "EC2",
+  "packageDocker": false,
+  "overwriteHandler": true,
+  "overwriteHandlerTest": true,
+  "overwriteModel": true,
+  "generateModelOnly": false
+}

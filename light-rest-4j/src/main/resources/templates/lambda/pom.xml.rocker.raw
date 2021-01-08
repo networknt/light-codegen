@@ -56,7 +56,12 @@
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
-            <artifactId>request-handler</artifactId>
+            <artifactId>slf4j-logback</artifactId>
+            <version>${version.light-4j}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.networknt</groupId>
+            <artifactId>@if(config.toBoolean("useLightProxy")){lambda-interceptor}else{request-handler}</artifactId>
             <version>${version.light-4j}</version>
         </dependency>
         <dependency>
