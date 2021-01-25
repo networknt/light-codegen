@@ -49,6 +49,7 @@ public class OpenApiLambdaGenerator implements Generator {
     boolean specChangeCodeReGenOnly = false;
     boolean enableParamDescription = true;
     boolean generateModelOnly = false;
+    boolean buildMaven = false;
     boolean useLightProxy = false;
     boolean publicVpc = true;
     boolean skipPomFile = false;
@@ -100,6 +101,7 @@ public class OpenApiLambdaGenerator implements Generator {
         boolean enableRegistry = config.toBoolean("enableRegistry");
         generateModelOnly = config.toBoolean("generateModelOnly");
         useLightProxy = config.toBoolean("useLightProxy");
+        buildMaven = config.toBoolean("buildMaven");
         String launchType = config.toString("launchType").trim();
         String region = config.toString("region").trim();
         publicVpc = config.toBoolean("publicVpc");
@@ -204,12 +206,25 @@ public class OpenApiLambdaGenerator implements Generator {
             // generate event.json
             transfer(targetPath, "events", "event" + functionName + ".json", templates.lambda.event.template());
 
-            // generate pom.xml
-            transfer(targetPath, functionName, "pom.xml", templates.lambda.pom.template(config, functionName));
 
             // generate Dockerfile if packageDocker is true
             if(packageDocker) {
                 transfer(targetPath, functionName, "Dockerfile", templates.lambda.Dockerfile.template(handlerPackage));
+            }
+
+            if(buildMaven) {
+                // generate pom.xml
+                transfer(targetPath, functionName, "pom.xml", templates.lambda.pom.template(config, functionName));
+                transferMaven(targetPath + separator + functionName);
+            } else {
+                transfer(targetPath, functionName, "build.gradle", templates.lambda.buildGradle.template(config));
+                transferGradle(targetPath + separator + functionName);
+                transfer(targetPath, functionName, "bootstrap", templates.lambda.bootstrap.template());
+                transfer(targetPath, functionName, "build_graalvm.sh", templates.lambda.buildGraalvmSh.template(functionName));
+                transfer(targetPath, functionName, "reflect.json", templates.lambda.reflectJson.template(handlerPackage));
+                transfer(targetPath, functionName, "resource-config.json", templates.lambda.resourceJson.template());
+                transfer(targetPath, functionName, "Makefile", templates.lambda.Makefile.template(functionName));
+
             }
 
             // generate handler
