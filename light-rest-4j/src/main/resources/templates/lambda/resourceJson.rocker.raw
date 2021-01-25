@@ -1,0 +1,9 @@
+{
+  "resources": {
+    "includes": [
+      {"pattern": "app.yml"}
+    ],
+    "excludes": [
+    ]
+  }
+}

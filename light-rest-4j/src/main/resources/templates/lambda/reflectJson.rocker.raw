@@ -1,0 +1,47 @@
+@args (String handlerPackage)
+[
+  {
+    "name": "com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent",
+    "methods": [
+      { "name": "<init>", "parameterTypes": [] }
+    ],
+    "allPublicMethods" : true
+  },
+  {
+    "name": "com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent$ProxyRequestContext",
+    "methods": [
+      { "name": "<init>", "parameterTypes": [] }
+    ],
+    "allPublicMethods" : true
+  },
+  {
+    "name": "com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent$RequestIdentity",
+    "methods": [
+      { "name": "<init>", "parameterTypes": [] }
+    ],
+    "allPublicMethods" : true
+  },
+  {
+    "name": "com.networknt.aws.lambda.AuthPolicy",
+    "allPublicMethods" : true
+  },
+  {
+    "name": "com.networknt.aws.lambda.DefaultResponse",
+    "allPublicMethods" : true
+  },
+  {
+    "name": "com.networknt.aws.lambda.InvocationResponse",
+    "allPublicMethods" : true
+  },
+  {
+    "name": "com.networknt.aws.lambda.LambdaContext",
+    "allPublicMethods" : true
+  },
+  {
+    "name": "@with(s = handlerPackage + ".App"){@s}",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
+  }
+]

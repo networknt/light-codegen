@@ -6,6 +6,7 @@
   "rootPackage": "com.networknt.petstore",
   "handlerPackage":"com.networknt.petstore.handler",
   "modelPackage":"com.networknt.petstore.model",
+  "buildMaven": true,
   "useLightProxy": true,
   "launchType": "EC2",
   "publicVpc": true,

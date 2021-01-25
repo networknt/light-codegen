@@ -64,7 +64,7 @@ Resources:
       } else {
       @with(s = op.get("functionName")){CodeUri: @s}
       @with(s = handlerPackage + ".App::handleRequest"){Handler: @s}
-      Runtime: java11
+      Runtime: provided
       MemorySize: 512
       FunctionName: @with(s = op.get("functionName")){@s}
       Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
