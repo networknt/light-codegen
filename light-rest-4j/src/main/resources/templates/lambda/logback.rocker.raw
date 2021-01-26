@@ -38,7 +38,7 @@
         <appender-ref ref="stdout"/>
     </logger>
 
-    <logger name="@rootPackage" level="debug" additivity="false">
+    <logger name="@rootPackage" level="trace" additivity="false">
         <appender-ref ref="stdout"/>
     </logger>
 

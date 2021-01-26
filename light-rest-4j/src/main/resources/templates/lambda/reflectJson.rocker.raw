@@ -43,5 +43,64 @@
     "allPublicConstructors": true,
     "allDeclaredMethods": true,
     "allPublicMethods": true
+  },
+  {
+    "name": "ch.qos.logback.core.ConsoleAppender",
+    "allPublicMethods":true,
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  },
+  {
+    "name": "ch.qos.logback.core.FileAppender",
+    "allPublicMethods":true,
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  },
+  {
+    "name": "ch.qos.logback.classic.encoder.PatternLayoutEncoder",
+    "allPublicMethods":true,
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  },
+  {
+    "name": "ch.qos.logback.classic.pattern.LineOfCallerConverter",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  },
+  {
+    "name": "ch.qos.logback.classic.pattern.DateConverter",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  },
+  {
+    "name": "ch.qos.logback.classic.pattern.ExtendedThrowableProxyConverter",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  },
+  {
+    "name": "ch.qos.logback.classic.pattern.LevelConverter",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  },
+  {
+    "name": "ch.qos.logback.classic.pattern.LineSeparatorConverter",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  },
+  {
+    "name": "ch.qos.logback.classic.pattern.LoggerConverter",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  },
+  {
+    "name": "ch.qos.logback.classic.pattern.MessageConverter",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  },
+  {
+    "name": "ch.qos.logback.classic.pattern.ThreadConverter",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  },
+  {
+    "name": "ch.qos.logback.classic.pattern.MDCConverter",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  },
+  {
+    "name": "ch.qos.logback.classic.pattern.ClassOfCallerConverter",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  },
+  {
+    "name": "ch.qos.logback.classic.pattern.MethodOfCallerConverter",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
   }
 ]
