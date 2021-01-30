@@ -1,4 +1,4 @@
-@args(String rootPackage)<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Copyright (c) 2016 Network New Technologies Inc.
   ~
@@ -16,6 +16,7 @@
   -->
 
 <configuration>
+    TODO create logger for audit only.
     http://stackoverflow.com/questions/2488558/logback-to-log-different-messages-to-two-files
     <turboFilter class="ch.qos.logback.classic.turbo.MarkerFilter">
         <Marker>PROFILER</Marker>
@@ -30,15 +31,12 @@
             <pattern>%d{HH:mm:ss.SSS} [%thread] %X{sId} %X{cId} %-5level %class{36}:%L %M - %msg%n</pattern>
         </encoder>
     </appender>
+
     <root level="error">
         <appender-ref ref="stdout"/>
     </root>
 
-    <logger name="com.networknt" level="error" additivity="false">
-        <appender-ref ref="stdout"/>
-    </logger>
-
-    <logger name="@rootPackage" level="trace" additivity="false">
+    <logger name="com.networknt" level="trace" additivity="false">
         <appender-ref ref="stdout"/>
     </logger>
 

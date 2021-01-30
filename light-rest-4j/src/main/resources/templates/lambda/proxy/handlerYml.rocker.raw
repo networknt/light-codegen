@@ -48,25 +48,28 @@ handlers:
 @if(prometheusMetrics){  - com.networknt.metrics.prometheus.PrometheusHandler@@prometheus} else {  - com.networknt.metrics.MetricsHandler@@metrics}
   - com.networknt.traceability.TraceabilityHandler@@traceability
   - com.networknt.correlation.CorrelationHandler@@correlation
+  # Cors handler to handler post/put pre-flight
+  # - com.networknt.cors.CorsHttpHandler@@cors
   - com.networknt.openapi.OpenApiHandler@@specification
   - com.networknt.openapi.JwtVerifyHandler@@security
   - com.networknt.body.BodyHandler@@body
   - com.networknt.audit.AuditHandler@@audit
   # DumpHandler is to dump detail request/response info to log, useful for troubleshooting but not suggested to use in production due to it may lower the performance
   # - com.networknt.dump.DumpHandler@@dump
-  - com.networknt.sanitizer.SanitizerHandler@@sanitizer
+  # - com.networknt.sanitizer.SanitizerHandler@@sanitizer
   - com.networknt.openapi.ValidatorHandler@@validator
   # Customer business domain specific cross-cutting concerns handlers
   # - com.example.validator.CustomizedValidator@@custvalidator
   # Framework endpoint handlers
   - com.networknt.health.HealthGetHandler@@health
   - com.networknt.info.ServerInfoGetHandler@@info
+  - com.networknt.logging.handler.LoggerGetHandler@@getLogger
+  - com.networknt.logging.handler.LoggerPostHandler@@postLogger
   - com.networknt.specification.SpecDisplayHandler@@spec
   - com.networknt.specification.SpecSwaggerUIHandler@@swaggerui
   # - com.networknt.metrics.prometheus.PrometheusGetHandler@@getprometheus
-  # Business Handlers
-@for(item: items) {  - @with (p = handlerPackage + ".") {@p}@item.get("handlerName")
-}
+  # lambda function invoker handler
+  - com.networknt.aws.lambda.LambdaFunctionHandler@@lambda
 
 chains:
   default:
@@ -78,27 +81,40 @@ chains:
     - audit
     - specification
     - security
-#    - dump
-    - sanitizer
     - validator
+    - lambda
 
 paths:
 @for(item: items){  - path: '@item.get("path")'
     method: '@item.get("method")'
     exec:
       - default
-      - @with (p = handlerPackage + ".") {@p}@item.get("handlerName")
 }
 @if(healthCheck){  - path: '/health/${server.serviceId:@serviceId}'
     method: 'get'
     exec:
+      - security
       - health
 }
 @if(serverInfo){  - path: '/server/info'
     method: 'get'
     exec:
+      - security
       - info
 }
+  - path: '/logger'
+    method: 'get'
+    exec:
+      - security
+      - getLogger
+
+  - path: '/logger'
+    method: 'post'
+    exec:
+      - security
+      - body
+      - postLogger
+
 @if(prometheusMetrics){  - path: '/prometheus'
     method: 'get'
     exec:

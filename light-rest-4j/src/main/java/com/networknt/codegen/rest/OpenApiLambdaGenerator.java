@@ -49,7 +49,9 @@ public class OpenApiLambdaGenerator implements Generator {
     boolean specChangeCodeReGenOnly = false;
     boolean enableParamDescription = true;
     boolean generateModelOnly = false;
-    boolean generateValuesYml = false;
+    boolean buildMaven = false;
+    boolean useLightProxy = false;
+    boolean publicVpc = true;
     boolean skipPomFile = false;
 
     public OpenApiLambdaGenerator() {
@@ -96,19 +98,105 @@ public class OpenApiLambdaGenerator implements Generator {
         boolean overwriteHandlerTest = config.toBoolean("overwriteHandlerTest");
         boolean overwriteModel = config.toBoolean("overwriteModel");
         boolean packageDocker = config.toBoolean("packageDocker");
+        boolean enableRegistry = config.toBoolean("enableRegistry");
         generateModelOnly = config.toBoolean("generateModelOnly");
-
+        useLightProxy = config.toBoolean("useLightProxy");
+        buildMaven = config.toBoolean("buildMaven");
+        String launchType = config.toString("launchType").trim();
+        String region = config.toString("region").trim();
+        publicVpc = config.toBoolean("publicVpc");
         specChangeCodeReGenOnly = config.toBoolean("specChangeCodeReGenOnly");
         enableParamDescription = config.toBoolean("enableParamDescription");
         skipPomFile = config.toBoolean("skipPomFile");
-
+        String artifactId = config.toString("artifactId");
+        String serviceId = config.get("groupId").toString().trim() + "." + artifactId.trim() + "-" + config.get("version").toString().trim();
+        String version = config.toString("version").trim();
         // get the list of operations for this model
         List<Map<String, Object>> operationList = getOperationList(model);
         List<OpenApiPath> pathList = getPathList(operationList);
         transfer(targetPath, "", ".gitignore", templates.lambda.gitignore.template());
 
         transfer(targetPath, "", "README.md", templates.lambda.README.template(projectName, packageDocker, operationList));
-        transfer(targetPath, "", "template.yaml", templates.lambda.template.template(projectName, handlerPackage, packageDocker, operationList, pathList));
+
+        if(!useLightProxy) {
+            // use AWS API Gateway to access Lambda functions.
+            transfer(targetPath, "", "template.yaml", templates.lambda.template.template(projectName, handlerPackage, packageDocker, useLightProxy, operationList, pathList));
+        } else {
+            // use light-proxy for Lambda function
+            if("EC2".equals(launchType)) {
+                if(publicVpc) {
+                    transfer(targetPath, "", "public-vpc.yaml", templates.lambda.EC2.publicVpcYaml.template());
+                    transfer(targetPath, "", "public-proxy.yaml", templates.lambda.EC2.publicProxyYaml.template());
+                    transfer(targetPath, "", "template.yaml", templates.lambda.template.template(projectName, handlerPackage, packageDocker, useLightProxy, operationList, pathList));
+                } else {
+                    transfer(targetPath, "", "private-vpc.yaml", templates.lambda.EC2.privateVpcYaml.template());
+                    transfer(targetPath, "", "private-proxy.yaml", templates.lambda.EC2.privateProxyYaml.template());
+                    transfer(targetPath, "", "template.yaml", templates.lambda.template.template(projectName, handlerPackage, packageDocker, useLightProxy, operationList, pathList));
+                }
+            } else {
+                // fargate as default
+                if(publicVpc) {
+                    transfer(targetPath, "", "public-vpc.yaml", templates.lambda.Fargate.publicVpcYaml.template());
+                    transfer(targetPath, "", "public-proxy.yaml", templates.lambda.Fargate.publicProxyYaml.template());
+                    transfer(targetPath, "", "template.yaml", templates.lambda.template.template(projectName, handlerPackage, packageDocker, useLightProxy, operationList, pathList));
+                } else {
+                    transfer(targetPath, "", "private-vpc.yaml", templates.lambda.Fargate.privateVpcYaml.template());
+                    transfer(targetPath, "", "private-proxy.yaml", templates.lambda.Fargate.privateProxyYaml.template());
+                    transfer(targetPath, "", "template.yaml", templates.lambda.template.template(projectName, handlerPackage, packageDocker, useLightProxy, operationList, pathList));
+                }
+            }
+            transfer(targetPath, "proxy", "handler.yml",
+                    templates.lambda.proxy.handlerYml.template(serviceId, handlerPackage, operationList, prometheusMetrics, !skipHealthCheck, !skipServerInfo));
+
+            transfer(targetPath, "proxy", "lambda-invoker.yml",
+                    templates.lambda.proxy.lambdaInvokerYml.template(region, operationList));
+            try (InputStream is = new ByteArrayInputStream(((String)model).getBytes(StandardCharsets.UTF_8))) {
+                copyFile(is, Paths.get(targetPath, "proxy", "openapi.yaml"));
+            }
+            transfer(targetPath, "proxy", "server.yml", templates.lambda.proxy.server.template(serviceId, enableRegistry, version));
+
+            transfer(targetPath, "proxy", "openapi-security.yml", templates.rest.openapiSecurity.template());
+            transfer(targetPath, "proxy", "openapi-validator.yml", templates.rest.openapiValidator.template());
+            transfer(targetPath, "proxy", "client.yml", templates.rest.clientYml.template());
+
+            transfer(targetPath, "proxy", "primary.crt", templates.rest.primaryCrt.template());
+            transfer(targetPath, "proxy", "secondary.crt", templates.rest.secondaryCrt.template());
+            // transfer binary files without touching them.
+            try (InputStream is = OpenApiLambdaGenerator.class.getResourceAsStream("/binaries/server.keystore")) {
+                copyFile(is, Paths.get(targetPath, "proxy", "server.keystore"));
+            }
+            try (InputStream is = OpenApiLambdaGenerator.class.getResourceAsStream("/binaries/server.truststore")) {
+                copyFile(is, Paths.get(targetPath, "proxy", "server.truststore"));
+            }
+            try (InputStream is = OpenApiLambdaGenerator.class.getResourceAsStream("/binaries/client.keystore")) {
+                copyFile(is, Paths.get(targetPath, "proxy", "client.keystore"));
+            }
+            try (InputStream is = OpenApiLambdaGenerator.class.getResourceAsStream("/binaries/client.truststore")) {
+                copyFile(is, Paths.get(targetPath, "proxy", "client.truststore"));
+            }
+            // logging
+            transfer(targetPath, "proxy", "logback.xml", templates.rest.logback.template(rootPackage));
+            // proxy.yml
+            transfer(targetPath, "proxy", "proxy.yml", templates.lambda.proxy.proxy.template());
+
+            // exclusion list for Config module
+            transfer(targetPath, "proxy", "config.yml", templates.rest.openapi.config.template(config));
+
+            transfer(targetPath, "proxy", "audit.yml", templates.rest.auditYml.template());
+            transfer(targetPath, "proxy", "body.yml", templates.rest.bodyYml.template());
+            transfer(targetPath, "proxy", "info.yml", templates.rest.infoYml.template());
+            transfer(targetPath, "proxy", "correlation.yml", templates.rest.correlationYml.template());
+            transfer(targetPath, "proxy", "metrics.yml", templates.rest.metricsYml.template());
+            transfer(targetPath, "proxy", "sanitizer.yml", templates.rest.sanitizerYml.template());
+            transfer(targetPath, "proxy", "traceability.yml", templates.rest.traceabilityYml.template());
+            transfer(targetPath, "proxy", "health.yml", templates.rest.healthYml.template());
+            // values.yml file, transfer to suppress the warning message during start startup and encourage usage.
+            transfer(targetPath, "proxy", "values.yml", templates.rest.openapi.values.template());
+            // buildSh.rocker.raw for the docker image build
+            transfer(targetPath, "", "build.sh", templates.lambda.buildSh.template());
+            // Dockerfile for the proxy
+            transfer(targetPath, "", "Dockerfile-proxy", templates.lambda.DockerfileProxy.template());
+        }
 
         // handler
         for (Map<String, Object> op : operationList) {
@@ -118,12 +206,25 @@ public class OpenApiLambdaGenerator implements Generator {
             // generate event.json
             transfer(targetPath, "events", "event" + functionName + ".json", templates.lambda.event.template());
 
-            // generate pom.xml
-            transfer(targetPath, functionName, "pom.xml", templates.lambda.pom.template(config, functionName));
 
             // generate Dockerfile if packageDocker is true
             if(packageDocker) {
                 transfer(targetPath, functionName, "Dockerfile", templates.lambda.Dockerfile.template(handlerPackage));
+            }
+
+            if(buildMaven) {
+                // generate pom.xml
+                transfer(targetPath, functionName, "pom.xml", templates.lambda.pom.template(config, functionName));
+                transferMaven(targetPath + separator + functionName);
+            } else {
+                transfer(targetPath, functionName, "build.gradle", templates.lambda.buildGradle.template(config));
+                transferGradle(targetPath + separator + functionName);
+                transfer(targetPath, functionName, "bootstrap", templates.lambda.bootstrap.template());
+                transfer(targetPath, functionName, "build_graalvm.sh", templates.lambda.buildGraalvmSh.template(functionName));
+                transfer(targetPath, functionName, "reflect.json", templates.lambda.reflectJson.template(handlerPackage));
+                transfer(targetPath, functionName, "resource-config.json", templates.lambda.resourceJson.template());
+                transfer(targetPath, functionName, "Makefile", templates.lambda.Makefile.template(functionName));
+
             }
 
             // generate handler
@@ -135,16 +236,22 @@ public class OpenApiLambdaGenerator implements Generator {
             String statusCode = responseExample.get("statusCode");
             statusCode = StringUtils.isBlank(statusCode) || statusCode.equals("default") ? "-1" : statusCode;
 
-            if (checkExist(targetPath + separator + functionName, ("src.main.java." + handlerPackage).replace(".", separator), "App.java") && !overwriteHandler) {
+            if (checkExist(targetPath + separator + functionName, ("src.main.java." + handlerPackage).replace(".", separator), "BusinessHandler.java")) {
                 continue;
+            } else {
+                transfer(targetPath + separator + functionName, ("src.main.java." + handlerPackage).replace(".", separator), "BusinessHandler.java", templates.lambda.BusinessHandler.template(handlerPackage, example));
             }
-            transfer(targetPath + separator + functionName, ("src.main.java." + handlerPackage).replace(".", separator), "App.java", templates.lambda.App.template(handlerPackage, example));
-
-            //generate handler test case
-            if (checkExist(targetPath + separator + functionName, ("src.test.java." + handlerPackage).replace(".", separator), "AppTest.java") && !overwriteHandlerTest) {
+            if (checkExist(targetPath + separator + functionName, ("src.test.java." + handlerPackage).replace(".", separator), "BusinessHandlerTest.java")) {
                 continue;
+            } else {
+                transfer(targetPath + separator + functionName, ("src.test.java." + handlerPackage).replace(".", separator), "BusinessHandlerTest.java", templates.lambda.BusinessHandlerTest.template(handlerPackage, op));
             }
-            transfer(targetPath + separator + functionName, ("src.test.java." + handlerPackage).replace(".", separator), "AppTest.java", templates.lambda.AppTest.template(handlerPackage, op));
+            if(useLightProxy) {
+                transfer(targetPath + separator + functionName, ("src.main.java." + handlerPackage).replace(".", separator), "App.java", templates.lambda.AppProxy.template(handlerPackage));
+            } else {
+                transfer(targetPath + separator + functionName, ("src.main.java." + handlerPackage).replace(".", separator), "App.java", templates.lambda.AppGateway.template(handlerPackage));
+            }
+            transfer(targetPath + separator + functionName, ("src.test.java." + handlerPackage).replace(".", separator), "AppTest.java", templates.lambda.AppTest.template(handlerPackage));
 
             // generate model
             Any anyComponents;
@@ -177,23 +284,29 @@ public class OpenApiLambdaGenerator implements Generator {
                     }
                 }
             }
-
-            if (model instanceof Any) {
-                try (InputStream is = new ByteArrayInputStream(model.toString().getBytes(StandardCharsets.UTF_8))) {
-                    copyFile(is, Paths.get(targetPath + separator + functionName, ("src.main.resources").replace(".", separator), "openapi.yaml"));
-                }
-            } else if (model instanceof String) {
-                try (InputStream is = new ByteArrayInputStream(((String)model).getBytes(StandardCharsets.UTF_8))) {
-                    copyFile(is, Paths.get(targetPath + separator + functionName, ("src.main.resources").replace(".", separator), "openapi.yaml"));
+            if(!useLightProxy) {
+                if (model instanceof Any) {
+                    try (InputStream is = new ByteArrayInputStream(model.toString().getBytes(StandardCharsets.UTF_8))) {
+                        copyFile(is, Paths.get(targetPath + separator + functionName, ("src.main.resources").replace(".", separator), "openapi.yaml"));
+                    }
+                } else if (model instanceof String) {
+                    try (InputStream is = new ByteArrayInputStream(((String)model).getBytes(StandardCharsets.UTF_8))) {
+                        copyFile(is, Paths.get(targetPath + separator + functionName, ("src.main.resources").replace(".", separator), "openapi.yaml"));
+                    }
                 }
             }
+
+            // app.yml
+            transfer(targetPath + separator + functionName, ("src.main.resources").replace(".", separator), "app.yml", templates.lambda.appYml.template(useLightProxy));
 
             // logback.xml
             transfer(targetPath + separator + functionName, ("src.main.resources").replace(".", separator), "logback.xml", templates.lambda.logback.template(rootPackage));
             transfer(targetPath + separator + functionName, ("src.test.resources").replace(".", separator), "logback-test.xml", templates.lambda.logback.template(rootPackage));
             // client truststore for the Prod stage.
-            try (InputStream is = OpenApiLambdaGenerator.class.getResourceAsStream("/binaries/client.truststore")) {
-                copyFile(is, Paths.get(targetPath + separator + functionName, ("src.main.resources").replace(".", separator), "prod.truststore"));
+            if(!useLightProxy) {
+                try (InputStream is = OpenApiLambdaGenerator.class.getResourceAsStream("/binaries/client.truststore")) {
+                    copyFile(is, Paths.get(targetPath + separator + functionName, ("src.main.resources").replace(".", separator), "prod.truststore"));
+                }
             }
         }
     }
@@ -509,6 +622,7 @@ public class OpenApiLambdaGenerator implements Generator {
                 String normalizedPath = path.replace("{", "").replace("}", "");
                 flattened.put("handlerName", Utils.camelize(normalizedPath) + Utils.camelize(entryOps.getKey()) + "Handler");
                 flattened.put("functionName", Utils.camelize(normalizedPath) + Utils.camelize(entryOps.getKey()) + "Function");
+                flattened.put("endpoint", path + "@" + entryOps.getKey().toLowerCase());
                 flattened.put("apiName", Utils.camelize(normalizedPath) + Utils.camelize(entryOps.getKey()));
                 Operation operation = entryOps.getValue();
                 flattened.put("normalizedPath", UrlGenerator.generateUrl(basePath, path, entryOps.getValue().getParameters()));

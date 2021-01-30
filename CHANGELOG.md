@@ -1,5 +1,15 @@
 # Change Log
 
+## [2.0.23](https://github.com/networknt/light-codegen/tree/2.0.23) (2021-01-29)
+
+
+**Merged pull requests:**
+
+
+- fixes \#34 add graalvm native image for the lambda functions [\#520](https://github.com/networknt/light-codegen/pull/520) ([stevehu](https://github.com/stevehu))
+- Issue517 [\#518](https://github.com/networknt/light-codegen/pull/518) ([stevehu](https://github.com/stevehu))
+- Fix/\#497 change default handler chain sequence for audit handler [\#513](https://github.com/networknt/light-codegen/pull/513) ([BalloonWen](https://github.com/BalloonWen))
+- fixes \#515 generate app.yml for the lambda funcation [\#516](https://github.com/networknt/light-codegen/pull/516) ([stevehu](https://github.com/stevehu))
 ## [2.0.22](https://github.com/networknt/light-codegen/tree/2.0.22) (2020-12-22)
 
 

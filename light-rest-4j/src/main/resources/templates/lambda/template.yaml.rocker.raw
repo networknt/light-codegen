@@ -2,7 +2,7 @@
 @import java.util.List
 @import com.networknt.codegen.rest.OpenApiLambdaGenerator.OpenApiPath;
 @import com.networknt.codegen.rest.OpenApiLambdaGenerator.MethodFunction;
-@args (String projectName, String handlerPackage, boolean packageDocker, List<Map<String, Object>> operationList, List<OpenApiPath> pathList)
+@args (String projectName, String handlerPackage, boolean packageDocker, boolean useLightProxy, List<Map<String, Object>> operationList, List<OpenApiPath> pathList)
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: >
@@ -16,6 +16,7 @@ Globals:
     Timeout: 20
 
 Resources:
+  @if(!useLightProxy){
   ApiGateway:
     Type: AWS::Serverless::Api
     Properties:
@@ -53,6 +54,7 @@ Resources:
                 - jwt-authorizer: []
             }
           }
+  }
   @for(op : operationList) {
   @with(s = op.get("functionName") + ":"){@s}
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
@@ -62,8 +64,9 @@ Resources:
       } else {
       @with(s = op.get("functionName")){CodeUri: @s}
       @with(s = handlerPackage + ".App::handleRequest"){Handler: @s}
-      Runtime: java11
+      Runtime: provided
       MemorySize: 512
+      FunctionName: @with(s = op.get("functionName")){@s}
       Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
         Variables:
           PARAM1: VALUE
@@ -74,8 +77,10 @@ Resources:
           Properties:
             @with(s = op.get("path")){Path: @s}
             @with(s = op.get("method")){Method: @s}
+            @if(!useLightProxy){
             RestApiId:
               Ref: ApiGateway
+            }
     @if(packageDocker) {
     Metadata:
       DockerTag: java11-maven-v1
@@ -83,14 +88,15 @@ Resources:
       Dockerfile: Dockerfile
     }
   }
+  @if(!useLightProxy){
   AuthorizerPerm:
     Type: AWS::Lambda::Permission
     DependsOn:
       - ApiGateway
-      - Authorizer
     Properties:
       Action: lambda:InvokeFunction
       FunctionName: arn:aws:lambda:us-east-2:964637446810:function:Authorizer
       Principal: apigateway.amazonaws.com
       SourceArn:
         'Fn::Sub': 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:*/*/*/*'
+  }

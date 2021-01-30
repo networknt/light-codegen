@@ -16,7 +16,11 @@ import java.util.Scanner;
 
 public class OpenApiLambdaGeneratorTest {
     public static String targetPath = "/tmp/openapilambda";
+    public static String proxyTargetPath = "/tmp/openapiProxyGradle";
+    public static String proxyMavenTargetPath = "/tmp/openapiProxyMaven";
     public static String configName = "/configlambda.json";
+    public static String configProxyLambda = "/configProxyLambda.json";
+    public static String configProxyMaven = "/configlambdamaven.json";
     public static String openapiJson = "/openapilambda.json";
     public static String openapiYaml = "/openapilambda.yaml";
 
@@ -45,6 +49,22 @@ public class OpenApiLambdaGeneratorTest {
         String strModel = new Scanner(OpenApiLambdaGeneratorTest.class.getResourceAsStream(openapiYaml), "UTF-8").useDelimiter("\\A").next();
         OpenApiLambdaGenerator generator = new OpenApiLambdaGenerator();
         generator.generate(targetPath, strModel, anyConfig);
+    }
+
+    @Test
+    public void testProxyGeneratorYaml() throws IOException {
+        Any anyConfig = JsonIterator.parse(OpenApiLambdaGeneratorTest.class.getResourceAsStream(configProxyLambda), 1024).readAny();
+        String strModel = new Scanner(OpenApiLambdaGeneratorTest.class.getResourceAsStream(openapiYaml), "UTF-8").useDelimiter("\\A").next();
+        OpenApiLambdaGenerator generator = new OpenApiLambdaGenerator();
+        generator.generate(proxyTargetPath, strModel, anyConfig);
+    }
+
+    @Test
+    public void testProxyMavenGeneratorYaml() throws IOException {
+        Any anyConfig = JsonIterator.parse(OpenApiLambdaGeneratorTest.class.getResourceAsStream(configProxyMaven), 1024).readAny();
+        String strModel = new Scanner(OpenApiLambdaGeneratorTest.class.getResourceAsStream(openapiYaml), "UTF-8").useDelimiter("\\A").next();
+        OpenApiLambdaGenerator generator = new OpenApiLambdaGenerator();
+        generator.generate(proxyMavenTargetPath, strModel, anyConfig);
     }
 
     @Test
