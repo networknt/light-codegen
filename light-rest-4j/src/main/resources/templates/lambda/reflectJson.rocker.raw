@@ -29,10 +29,6 @@
     "allPublicMethods" : true
   },
   {
-    "name": "com.networknt.aws.lambda.AuthPolicy",
-    "allPublicMethods" : true
-  },
-  {
     "name": "com.networknt.aws.lambda.DefaultResponse",
     "allPublicMethods" : true
   },

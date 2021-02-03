@@ -218,6 +218,7 @@ public class OpenApiLambdaGenerator implements Generator {
                 transferMaven(targetPath + separator + functionName);
             } else {
                 transfer(targetPath, functionName, "build.gradle", templates.lambda.buildGradle.template(config));
+                transfer(targetPath, functionName, "gradle.properties", templates.lambda.gradleProperties.template());
                 transferGradle(targetPath + separator + functionName);
                 transfer(targetPath, functionName, "bootstrap", templates.lambda.bootstrap.template());
                 transfer(targetPath, functionName, "build_graalvm.sh", templates.lambda.buildGraalvmSh.template(functionName));
