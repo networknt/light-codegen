@@ -1,7 +1,5 @@
 package com.networknt.codegen;
 
-import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
@@ -9,6 +7,7 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.networknt.codegen.rest.OpenApiLightGenerator;
 import com.networknt.config.Config;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -17,13 +16,12 @@ import org.junit.Test;
 
 import com.networknt.codegen.rest.OpenApiGenerator;
 
-import static java.io.File.separator;
 import static org.junit.Assert.assertTrue;
 
 /**
  * @author Steve Hu
  */
-public class OpenApiGeneratorTest {
+public class OpenApiLightGeneratorTest {
     public static String targetPath = "/tmp/openapi";
     public static String configName = "/config.json";
     public static String configKafkaName = "/configKafka.json";
@@ -48,54 +46,55 @@ public class OpenApiGeneratorTest {
 
     @Test
     public void testGeneratorJson() throws IOException {
-        JsonNode configNode = Generator.jsonMapper.readTree(OpenApiGeneratorTest.class.getResourceAsStream(configName));
-        JsonNode modelNode = Generator.jsonMapper.readTree(OpenApiGeneratorTest.class.getResourceAsStream(openapiJson));
-        OpenApiGenerator generator = new OpenApiGenerator();
+        JsonNode configNode = Generator.jsonMapper.readTree(OpenApiLightGeneratorTest.class.getResourceAsStream(configName));
+        JsonNode modelNode = Generator.jsonMapper.readTree(OpenApiLightGeneratorTest.class.getResourceAsStream(openapiJson));
+        OpenApiLightGenerator generator = new OpenApiLightGenerator();
         generator.generate(targetPath, modelNode, configNode);
     }
 
     @Test
     public void testGeneratorYaml() throws IOException {
-        JsonNode configNode = Generator.jsonMapper.readTree(OpenApiGeneratorTest.class.getResourceAsStream(configName));
-        JsonNode modelNode = Generator.yamlMapper.readTree(OpenApiGeneratorTest.class.getResourceAsStream(openapiYaml));
-        OpenApiGenerator generator = new OpenApiGenerator();
+        JsonNode configNode = Generator.jsonMapper.readTree(OpenApiLightGeneratorTest.class.getResourceAsStream(configName));
+        JsonNode modelNode = Generator.yamlMapper.readTree(OpenApiLightGeneratorTest.class.getResourceAsStream(openapiYaml));
+        OpenApiLightGenerator generator = new OpenApiLightGenerator();
         generator.generate(targetPath, modelNode, configNode);
     }
 
     @Test
     public void testGeneratorAccountInfo() throws IOException {
-        JsonNode configNode = Generator.jsonMapper.readTree(OpenApiGeneratorTest.class.getResourceAsStream(configName));
-        JsonNode modelNode = Generator.yamlMapper.readTree(OpenApiGeneratorTest.class.getResourceAsStream(accountInfoYaml));
-        OpenApiGenerator generator = new OpenApiGenerator();
+        JsonNode configNode = Generator.jsonMapper.readTree(OpenApiLightGeneratorTest.class.getResourceAsStream(configName));
+        JsonNode modelNode = Generator.yamlMapper.readTree(OpenApiLightGeneratorTest.class.getResourceAsStream(accountInfoYaml));
+        OpenApiLightGenerator generator = new OpenApiLightGenerator();
         generator.generate(targetPath, modelNode, configNode);
     }
 
     @Test
     public void testGetOperationList() throws IOException {
-        JsonNode anyModel = Config.getInstance().getMapper().readTree(OpenApiGeneratorTest.class.getResourceAsStream(openapiJson));
-        OpenApiGenerator generator = new OpenApiGenerator();
-        List list = generator.getOperationList(anyModel);
+        JsonNode model = Config.getInstance().getMapper().readTree(OpenApiLightGeneratorTest.class.getResourceAsStream(openapiJson));
+        JsonNode config = Generator.jsonMapper.readTree(OpenApiLightGeneratorTest.class.getResourceAsStream(configName));
+        OpenApiLightGenerator generator = new OpenApiLightGenerator();
+        List list = generator.getOperationList(model, config);
         System.out.println(list);
     }
 
     @Test
     public void testGetFramework() {
-        OpenApiGenerator generator = new OpenApiGenerator();
+        OpenApiLightGenerator generator = new OpenApiLightGenerator();
         Assert.assertEquals("openapi", generator.getFramework());
     }
 
     @Test
     public void testGetConfigSchema() throws IOException {
-        OpenApiGenerator generator = new OpenApiGenerator();
+        OpenApiLightGenerator generator = new OpenApiLightGenerator();
         ByteBuffer bf = generator.getConfigSchema();
         Assert.assertNotNull(bf);
         System.out.println(bf.toString());
     }
     @Test
     public void testNoServersGeneratorYaml() throws IOException {
-        JsonNode configNode = Generator.jsonMapper.readTree(OpenApiGeneratorTest.class.getResourceAsStream(configName));
-        JsonNode modelNode = Generator.yamlMapper.readTree(OpenApiGeneratorTest.class.getResourceAsStream(openapiNoServersYaml));
-        OpenApiGenerator generator = new OpenApiGenerator();
+        JsonNode configNode = Generator.jsonMapper.readTree(OpenApiLightGeneratorTest.class.getResourceAsStream(configName));
+        JsonNode modelNode = Generator.yamlMapper.readTree(OpenApiLightGeneratorTest.class.getResourceAsStream(openapiNoServersYaml));
+        OpenApiLightGenerator generator = new OpenApiLightGenerator();
         generator.generate(targetPath, modelNode, configNode);
     }
 
@@ -111,26 +110,26 @@ public class OpenApiGeneratorTest {
 
     @Test
     public void testGeneratorYamlEnum() throws IOException {
-        JsonNode configNode = Generator.jsonMapper.readTree(OpenApiGeneratorTest.class.getResourceAsStream(configName));
-        JsonNode modelNode = Generator.yamlMapper.readTree(OpenApiGeneratorTest.class.getResourceAsStream(openapiEnumYaml));
-        OpenApiGenerator generator = new OpenApiGenerator();
+        JsonNode configNode = Generator.jsonMapper.readTree(OpenApiLightGeneratorTest.class.getResourceAsStream(configName));
+        JsonNode modelNode = Generator.yamlMapper.readTree(OpenApiLightGeneratorTest.class.getResourceAsStream(openapiEnumYaml));
+        OpenApiLightGenerator generator = new OpenApiLightGenerator();
         generator.generate(targetPath, modelNode, configNode);
     }
 
     @Test
     @Ignore
     public void testGeneratorYamlError() throws IOException {
-        JsonNode configNode = Generator.jsonMapper.readTree(OpenApiGeneratorTest.class.getResourceAsStream(configName));
-        JsonNode modelNode = Generator.yamlMapper.readTree(OpenApiGeneratorTest.class.getResourceAsStream(openapiErrorYaml));
-        OpenApiGenerator generator = new OpenApiGenerator();
+        JsonNode configNode = Generator.jsonMapper.readTree(OpenApiLightGeneratorTest.class.getResourceAsStream(configName));
+        JsonNode modelNode = Generator.yamlMapper.readTree(OpenApiLightGeneratorTest.class.getResourceAsStream(openapiErrorYaml));
+        OpenApiLightGenerator generator = new OpenApiLightGenerator();
         generator.generate(targetPath, modelNode, configNode);
     }
 
     @Test
     public void testGeneratorKafka() throws IOException {
-        JsonNode configNode = Generator.jsonMapper.readTree(OpenApiGeneratorTest.class.getResourceAsStream(configKafkaName));
-        JsonNode modelNode = Generator.yamlMapper.readTree(OpenApiGeneratorTest.class.getResourceAsStream(openapiYaml));
-        OpenApiGenerator generator = new OpenApiGenerator();
+        JsonNode configNode = Generator.jsonMapper.readTree(OpenApiLightGeneratorTest.class.getResourceAsStream(configKafkaName));
+        JsonNode modelNode = Generator.yamlMapper.readTree(OpenApiLightGeneratorTest.class.getResourceAsStream(openapiYaml));
+        OpenApiLightGenerator generator = new OpenApiLightGenerator();
         generator.generate(targetPath, modelNode, configNode);
     }
 

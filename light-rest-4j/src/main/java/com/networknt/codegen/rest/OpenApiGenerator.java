@@ -27,12 +27,11 @@ import java.util.stream.Collectors;
 
 import static java.io.File.separator;
 
-public class OpenApiGenerator implements Generator {
-    private Map<String, String> typeMapping = new HashMap<>();
+public interface OpenApiGenerator extends Generator {
+    Map<String, String> typeMapping = initTypeMapping();
 
-    boolean enableParamDescription = false;
-
-    public OpenApiGenerator() {
+    static Map<String, String> initTypeMapping() {
+        Map<String, String> typeMapping = new HashMap<>();
         typeMapping.put("array", "java.util.List");
         typeMapping.put("map", "java.util.Map");
         typeMapping.put("List", "java.util.List");
@@ -48,226 +47,7 @@ public class OpenApiGenerator implements Generator {
         typeMapping.put("double", "Double");
         typeMapping.put("object", "Object");
         typeMapping.put("integer", "Integer");
-    }
-
-    @Override
-    public String getFramework() {
-        return "openapi";
-    }
-
-    /**
-     *
-     * @param targetPath The output directory of the generated project
-     * @param model The optional model data that trigger the generation, i.e. swagger specification, graphql IDL etc.
-     * @param config A json object that controls how the generator behaves.
-     *
-     * @throws IOException IO Exception occurs during code generation
-     */
-    @Override
-    public void generate(final String targetPath, Object model, JsonNode config) throws IOException {
-        // whoever is calling this needs to make sure that model is converted to Map<String, Object>
-        String rootPackage = getRootPackage(config, null);
-        String modelPackage = getModelPackage(config, null);
-        String handlerPackage = getHandlerPackage(config, null);
-        boolean overwriteHandler = isOverwriteHandler(config, null);
-        boolean overwriteHandlerTest = isOverwriteHandlerTest(config, null);
-        boolean overwriteModel = isOverwriteModel(config, null);
-        boolean generateModelOnly = isGenerateModelOnly(config, null);
-        boolean enableHttp = isEnableHttp(config, null);
-        String httpPort = getHttpPort(config, null);
-        boolean enableHttps = isEnableHttps(config, null);
-        String httpsPort = getHttpsPort(config, null);
-        boolean enableHttp2 = isEnableHttp2(config, null);
-        boolean enableRegistry = isEnableRegistry(config, null);
-        boolean eclipseIDE = isEclipseIDE(config, null);
-        boolean supportClient = isSupportClient(config, null);
-        boolean prometheusMetrics = isPrometheusMetrics(config, null);
-        String dockerOrganization = getDockerOrganization(config, null);
-        String version = getVersion(config, null);
-        String groupId = getGroupId(config, null);
-        String artifactId = getArtifactId(config, null);
-        String serviceId = groupId + "." + artifactId + "-" + version;
-        boolean specChangeCodeReGenOnly = isSpecChangeCodeReGenOnly(config, null);
-        boolean enableParamDescription = isEnableParamDescription(config, null);
-        boolean skipPomFile = isSkipPomFile(config, null);
-        boolean kafkaProducer = isKafkaProducer(config, null);
-        boolean kafkaConsumer = isKafkaConsumer(config, null);
-        boolean supportAvro = isSupportAvro(config, null);
-        String kafkaTopic = getKafkaTopic(config, null);
-        String decryptOption = getDecryptOption(config, null);
-
-        // get the list of operations for this model
-        List<Map<String, Object>> operationList = getOperationList(model);
-
-        // bypass project generation if the mode is the only one requested to be built
-        if (!generateModelOnly) {
-            // if set to true, regenerate the code only (handlers, model and the handler.yml, potentially affected by operation changes
-            if (!specChangeCodeReGenOnly) {
-                // generate configurations, project, masks, certs, etc
-                if (!skipPomFile) {
-                    transfer(targetPath, "", "pom.xml", templates.rest.openapi.pom.template(config));
-                }
-
-
-                transferMaven(targetPath);
-                // There is only one port that should be exposed in Dockerfile, otherwise, the service
-                // discovery will be so confused. If https is enabled, expose the https port. Otherwise http port.
-                String expose = "";
-                if (enableHttps) {
-                    expose = httpsPort;
-                } else {
-                    expose = httpPort;
-                }
-
-                transfer(targetPath, "docker", "Dockerfile", templates.rest.dockerfile.template(config, expose));
-                transfer(targetPath, "docker", "Dockerfile-Slim", templates.rest.dockerfileslim.template(config, expose));
-                transfer(targetPath, "", "build.sh", templates.rest.buildSh.template(dockerOrganization, serviceId));
-                transfer(targetPath, "", "kubernetes.yml", templates.rest.kubernetes.template(dockerOrganization, serviceId, config.get("artifactId").textValue(), expose, version));
-                transfer(targetPath, "", ".gitignore", templates.rest.gitignore.template());
-                transfer(targetPath, "", "README.md", templates.rest.README.template());
-                transfer(targetPath, "", "LICENSE", templates.rest.LICENSE.template());
-                if(eclipseIDE) {
-                    transfer(targetPath, "", ".classpath", templates.rest.classpath.template());
-                    transfer(targetPath, "", ".project", templates.rest.project.template(config));
-                }
-                // config
-                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "service.yml", templates.rest.openapi.service.template(config));
-
-                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "server.yml",
-                        templates.rest.server.template(serviceId, enableHttp, httpPort, enableHttps, httpsPort, enableHttp2, enableRegistry, version));
-                transfer(targetPath, ("src.test.resources.config").replace(".", separator), "server.yml",
-                        templates.rest.server.template(serviceId, enableHttp, "49587", enableHttps, "49588", enableHttp2, enableRegistry, version));
-
-                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "openapi-security.yml", templates.rest.openapiSecurity.template());
-                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "openapi-validator.yml", templates.rest.openapiValidator.template());
-                if (supportClient) {
-                    transfer(targetPath, ("src.main.resources.config").replace(".", separator), "client.yml", templates.rest.clientYml.template());
-                } else {
-                    transfer(targetPath, ("src.test.resources.config").replace(".", separator), "client.yml", templates.rest.clientYml.template());
-                }
-
-                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "primary.crt", templates.rest.primaryCrt.template());
-                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "secondary.crt", templates.rest.secondaryCrt.template());
-                if(kafkaProducer) {
-                    transfer(targetPath, ("src.main.resources.config").replace(".", separator), "kafka-producer.yml", templates.rest.kafkaProducerYml.template(kafkaTopic));
-                }
-                if(kafkaConsumer) {
-                    transfer(targetPath, ("src.main.resources.config").replace(".", separator), "kafka-streams.yml", templates.rest.kafkaStreamsYml.template(artifactId));
-                }
-                if(supportAvro) {
-                    transfer(targetPath, ("src.main.resources.config").replace(".", separator), "schema-registry.yml", templates.rest.schemaRegistryYml.template());
-                }
-
-                // mask
-                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "mask.yml", templates.rest.maskYml.template());
-                // logging
-                transfer(targetPath, ("src.main.resources").replace(".", separator), "logback.xml", templates.rest.logback.template(rootPackage));
-                transfer(targetPath, ("src.test.resources").replace(".", separator), "logback-test.xml", templates.rest.logback.template(rootPackage));
-
-                // exclusion list for Config module
-                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "config.yml", templates.rest.openapi.config.template(config));
-
-                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "audit.yml", templates.rest.auditYml.template());
-                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "body.yml", templates.rest.bodyYml.template());
-                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "info.yml", templates.rest.infoYml.template());
-                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "correlation.yml", templates.rest.correlationYml.template());
-                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "metrics.yml", templates.rest.metricsYml.template());
-                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "sanitizer.yml", templates.rest.sanitizerYml.template());
-                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "traceability.yml", templates.rest.traceabilityYml.template());
-                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "health.yml", templates.rest.healthYml.template());
-                // added with #471
-                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "app-status.yml", templates.rest.appStatusYml.template());
-                // values.yml file, transfer to suppress the warning message during start startup and encourage usage.
-                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "values.yml", templates.rest.openapi.values.template());
-            }
-            // routing handler
-            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "handler.yml",
-                    templates.rest.openapi.handlerYml.template(serviceId, handlerPackage, operationList, prometheusMetrics));
-
-        }
-
-        // model
-        OpenApi3 openApi3 = null;
-        try {
-            openApi3 = (OpenApi3)new OpenApiParser().parse((JsonNode)model, new URL("https://oas.lightapi.net/"));
-        } catch (MalformedURLException e) {
-            throw new RuntimeException("Failed to parse the model", e);
-        }
-        Map<String, Object> specMap = JsonMapper.string2Map(Overlay.toJson((OpenApi3Impl)openApi3).toString());
-        Map<String, Object> components = (Map<String, Object>)specMap.get("components");
-        if(components != null) {
-            Map<String, Object> schemas = (Map<String, Object>)components.get("schemas");
-            if(schemas != null) {
-                ArrayList<Runnable> modelCreators = new ArrayList<>();
-                final HashMap<String, Object> references = new HashMap<>();
-                for (Map.Entry<String, Object> entry : schemas.entrySet()) {
-                    loadModel(entry.getKey(), null, (Map<String, Object>)entry.getValue(), schemas, overwriteModel, targetPath, modelPackage, modelCreators, references, null);
-                }
-
-                for (Runnable r : modelCreators) {
-                    r.run();
-                }
-            }
-        }
-
-        // exit after generating the model if the consumer needs only the model classes
-        if (generateModelOnly) {
-            return;
-        }
-
-        // handler
-        for (Map<String, Object> op : operationList) {
-            String className = op.get("handlerName").toString();
-            @SuppressWarnings("unchecked")
-            List<Map> parameters = (List<Map>)op.get("parameters");
-            Map<String, String> responseExample = (Map<String, String>)op.get("responseExample");
-            String example = responseExample.get("example");
-            String statusCode = responseExample.get("statusCode");
-            statusCode = StringUtils.isBlank(statusCode) || statusCode.equals("default") ? "-1" : statusCode;
-            if (checkExist(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), className + ".java") && !overwriteHandler) {
-                continue;
-            }
-            transfer(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), className + ".java", templates.rest.handler.template(handlerPackage, className, statusCode, example, parameters));
-        }
-
-        // handler test cases
-        if (!specChangeCodeReGenOnly) {
-            transfer(targetPath, ("src.test.java." + handlerPackage + ".").replace(".", separator), "TestServer.java", templates.rest.testServer.template(handlerPackage));
-        }
-
-        for (Map<String, Object> op : operationList) {
-            if (checkExist(targetPath, ("src.test.java." + handlerPackage).replace(".", separator), op.get("handlerName") + "Test.java") && !overwriteHandlerTest) {
-                continue;
-            }
-            transfer(targetPath, ("src.test.java." + handlerPackage).replace(".", separator), op.get("handlerName") + "Test.java", templates.rest.openapi.handlerTest.template(handlerPackage, op));
-        }
-
-        // transfer binary files without touching them.
-        try (InputStream is = OpenApiGenerator.class.getResourceAsStream("/binaries/server.keystore")) {
-            Generator.copyFile(is, Paths.get(targetPath, ("src.main.resources.config").replace(".", separator), "server.keystore"));
-        }
-        try (InputStream is = OpenApiGenerator.class.getResourceAsStream("/binaries/server.truststore")) {
-            Generator.copyFile(is, Paths.get(targetPath, ("src.main.resources.config").replace(".", separator), "server.truststore"));
-        }
-        if (supportClient) {
-            try (InputStream is = OpenApiGenerator.class.getResourceAsStream("/binaries/client.keystore")) {
-                Generator.copyFile(is, Paths.get(targetPath, ("src.main.resources.config").replace(".", separator), "client.keystore"));
-            }
-            try (InputStream is = OpenApiGenerator.class.getResourceAsStream("/binaries/client.truststore")) {
-                Generator.copyFile(is, Paths.get(targetPath, ("src.main.resources.config").replace(".", separator), "client.truststore"));
-            }
-        } else {
-            try (InputStream is = OpenApiGenerator.class.getResourceAsStream("/binaries/client.keystore")) {
-                Generator.copyFile(is, Paths.get(targetPath, ("src.test.resources.config").replace(".", separator), "client.keystore"));
-            }
-            try (InputStream is = OpenApiGenerator.class.getResourceAsStream("/binaries/client.truststore")) {
-                Generator.copyFile(is, Paths.get(targetPath, ("src.test.resources.config").replace(".", separator), "client.truststore"));
-            }
-        }
-
-        try (InputStream is = new ByteArrayInputStream(Generator.yamlMapper.writeValueAsBytes(model))) {
-            Generator.copyFile(is, Paths.get(targetPath, ("src.main.resources.config").replace(".", separator), "openapi.yaml"));
-        }
+        return typeMapping;
     }
 
     /**
@@ -276,7 +56,7 @@ public class OpenApiGenerator implements Generator {
      * @param entry The entry for which to generate
      * @param propMap The property map to add to, created in the caller
      */
-    private void initializePropertyMap(Map.Entry<String, Object> entry, Map<String, Object> propMap) {
+    default void initializePropertyMap(Map.Entry<String, Object> entry, Map<String, Object> propMap) {
         String name = convertToValidJavaVariableName(entry.getKey());
         propMap.put("jsonProperty", name);
         if (name.startsWith("@")) {
@@ -297,7 +77,7 @@ public class OpenApiGenerator implements Generator {
      * @param props The properties map to add to
      */
     //private void handleProperties(List<Map<String, Any>> props, Map.Entry<String, Any> entrySchema) {
-    private void handleProperties(List<Map<String, Object>> props, Map<String, Object> properties) {
+    default void handleProperties(List<Map<String, Object>> props, Map<String, Object> properties) {
         // transform properties
         for (Map.Entry<String, Object> entryProp : properties.entrySet()) {
             //System.out.println("key = " + entryProp.getKey() + " value = " + entryProp.getValue());
@@ -441,10 +221,11 @@ public class OpenApiGenerator implements Generator {
             props.add(propMap);
         }
     }
-    public static final String HASHER = "hasher";
-    public static final String COMPARATOR = "comparator";
 
-    private String getListOf(String s) {
+    String HASHER = "hasher";
+    String COMPARATOR = "comparator";
+
+    default String getListOf(String s) {
         return String.format("java.util.List<%s>", s);
     }
 
@@ -452,7 +233,7 @@ public class OpenApiGenerator implements Generator {
     // 1. replace invalid character with '_'
     // 2. prefix number with '_'
     // 3. convert the first character of java keywords to upper case
-    public static String convertToValidJavaVariableName(String string) {
+    static String convertToValidJavaVariableName(String string) {
         if (string == null || string.equals("") || SourceVersion.isName(string)) {
             return string;
         }
@@ -475,18 +256,18 @@ public class OpenApiGenerator implements Generator {
         return stringBuilder.toString();
     }
 
-    private  boolean isEnumHasDescription(String string) {
+    default  boolean isEnumHasDescription(String string) {
         return string.contains(":") || string.contains("{") || string.contains("(");
     }
 
-    private  String getEnumName(String string) {
+    default  String getEnumName(String string) {
         if (string.contains(":")) return string.substring(0, string.indexOf(":")).trim();
         if (string.contains("(") && string.contains(")")) return string.substring(0, string.indexOf("(")).trim();
         if (string.contains("{") && string.contains("}")) return string.substring(0, string.indexOf("{")).trim();
         return string;
     }
 
-    private  String getEnumDescription(String string) {
+    default  String getEnumDescription(String string) {
         if (string.contains(":")) return string.substring(string.indexOf(":") + 1).trim();
         if (string.contains("(") && string.contains(")")) return string.substring(string.indexOf("(") + 1, string.indexOf(")")).trim();
         if (string.contains("{") && string.contains("}")) return string.substring(string.indexOf("{") + 1, string.indexOf("}")).trim();
@@ -494,7 +275,7 @@ public class OpenApiGenerator implements Generator {
         return string;
     }
 
-    public List<Map<String, Object>> getOperationList(Object model) {
+    default List<Map<String, Object>> getOperationList(Object model, JsonNode config) {
         List<Map<String, Object>> result = new ArrayList<>();
         OpenApi3 openApi3 = null;
         try {
@@ -532,7 +313,7 @@ public class OpenApiGenerator implements Generator {
                 flattened.put("requestBodyExample", populateRequestBodyExample(operation));
                 Map<String, String> responseExample = populateResponseExample(operation);
                 flattened.put("responseExample", responseExample);
-                if (enableParamDescription) {
+                if (config.get("enableParamDescription").booleanValue()) {
                     //get parameters info and put into result
                     List<Parameter> parameterRawList = operation.getParameters();
                     List<Map> parametersResultList = new LinkedList<>();
@@ -563,7 +344,7 @@ public class OpenApiGenerator implements Generator {
         return result;
     }
 
-    private static String getBasePath(OpenApi3 openApi3) {
+     static String getBasePath(OpenApi3 openApi3) {
         String basePath = "";
         String url = null;
         if (openApi3.getServers().size() > 0) {
@@ -582,7 +363,7 @@ public class OpenApiGenerator implements Generator {
     }
 
     // method used to generate valid enum keys for enum contents
-    private Object getValidEnumName(Map.Entry<String, Object> entryElement) {
+    default Object getValidEnumName(Map.Entry<String, Object> entryElement) {
         Iterator<Object> iterator = ((List)entryElement.getValue()).iterator();
         Map<String, Object> map = new HashMap<>();
         while (iterator.hasNext()) {
@@ -597,7 +378,7 @@ public class OpenApiGenerator implements Generator {
         return map;
     }
 
-    private String populateRequestBodyExample(Operation operation) {
+    default String populateRequestBodyExample(Operation operation) {
         String result = "{\"content\": \"request body to be replaced\"}";
         RequestBody body = operation.getRequestBody();
         if (body != null) {
@@ -627,7 +408,7 @@ public class OpenApiGenerator implements Generator {
         return result;
     }
 
-    private Map<String, String> populateResponseExample(Operation operation) {
+    default Map<String, String> populateResponseExample(Operation operation) {
         Map<String, String> result = new HashMap<>();
         Object example;
         for (String statusCode : operation.getResponses().keySet()) {
@@ -672,7 +453,7 @@ public class OpenApiGenerator implements Generator {
         return result;
     }
 
-    private void loadModel(String classVarName, String parentClassName, Map<String, Object> value, Map<String, Object> schemas, boolean overwriteModel, String targetPath, String modelPackage, List<Runnable> modelCreators, Map<String, Object> references, List<Map<String, Object>> parentClassProps) throws IOException {
+    default void loadModel(String classVarName, String parentClassName, Map<String, Object> value, Map<String, Object> schemas, boolean overwriteModel, String targetPath, String modelPackage, List<Runnable> modelCreators, Map<String, Object> references, List<Map<String, Object>> parentClassProps) throws IOException {
         final String modelFileName = classVarName.substring(0, 1).toUpperCase() + classVarName.substring(1);
         final List<Map<String, Object>> props = new ArrayList<>();
         final List<Map<String, Object>> parentProps = (parentClassProps == null) ? new ArrayList<>() : new ArrayList<>(parentClassProps);
@@ -824,10 +605,10 @@ public class OpenApiGenerator implements Generator {
             references.put(modelFileName, props.get(0).get("type"));
         }
     }
-    private String extendModelName(String str1, String str2) {
+    default String extendModelName(String str1, String str2) {
         return str1 + str2.substring(0, 1).toUpperCase() + str2.substring(1);
     }
-    private String getListObjectType(String listType) {
+    default String getListObjectType(String listType) {
         if(listType != null && listType.contains("<") && listType.contains(">")) {
             return listType.substring(listType.indexOf("<") + 1, listType.indexOf(">"));
         } else {
@@ -835,7 +616,7 @@ public class OpenApiGenerator implements Generator {
         }
     }
 
-    private String setListObjectType(String original, String resolved) {
+    default String setListObjectType(String original, String resolved) {
         if(!original.equals(resolved) && original.contains("<") && original.contains(">")) {
             String replace = original.substring(original.indexOf("<") + 1, original.indexOf(">"));
             original = original.replace(replace, resolved);
@@ -843,7 +624,7 @@ public class OpenApiGenerator implements Generator {
         return original;
     }
 
-    private boolean unresolvedListType(String listType) {
+    default boolean unresolvedListType(String listType) {
         boolean result = false;
         if(listType != null && listType.contains("java.util.List")) {
             String objType = getListObjectType(listType);

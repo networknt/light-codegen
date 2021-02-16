@@ -3,7 +3,6 @@ package com.networknt.codegen;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -17,8 +16,8 @@ public class ConfigTest {
     @BeforeClass
     public static void setUp() throws IOException {
         // load config file
-        anyConfig = Generator.jsonMapper.readTree(OpenApiGeneratorTest.class.getResourceAsStream(configName));
-        anyYamlConfig = Generator.yamlMapper.readTree(OpenApiGeneratorTest.class.getResourceAsStream(configYamlName));
+        anyConfig = Generator.jsonMapper.readTree(OpenApiLightGeneratorTest.class.getResourceAsStream(configName));
+        anyYamlConfig = Generator.yamlMapper.readTree(OpenApiLightGeneratorTest.class.getResourceAsStream(configYamlName));
     }
 
     @Test

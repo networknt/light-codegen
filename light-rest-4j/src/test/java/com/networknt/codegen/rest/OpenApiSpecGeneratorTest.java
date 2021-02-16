@@ -7,7 +7,7 @@ import com.networknt.codegen.Generator;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import com.networknt.codegen.OpenApiGeneratorTest;
+import com.networknt.codegen.OpenApiLightGeneratorTest;
 
 @Ignore
 public class OpenApiSpecGeneratorTest {
@@ -16,7 +16,7 @@ public class OpenApiSpecGeneratorTest {
 	
 	@Test
 	public void test() throws IOException {
-		JsonNode config = Generator.jsonMapper.readTree(OpenApiGeneratorTest.class.getResourceAsStream(configName));
+		JsonNode config = Generator.jsonMapper.readTree(OpenApiLightGeneratorTest.class.getResourceAsStream(configName));
 		
 		OpenApiSpecGenerator generator = new OpenApiSpecGenerator();
 		

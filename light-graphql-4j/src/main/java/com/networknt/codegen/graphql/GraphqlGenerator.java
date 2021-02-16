@@ -25,109 +25,34 @@ public class GraphqlGenerator implements Generator {
 
     @Override
     public void generate(String targetPath, Object schema, JsonNode config) throws IOException {
-        // whoever is calling this needs to make sure that model is converted to Map<String, Object>
-        JsonNode jsonNode = config.get("schemaPackage");
-        if(jsonNode == null) throw new ConfigException("schemaPackage is missing in config");
-        String schemaPackage = jsonNode.textValue();
+        // GraphQL specific config
+        String schemaPackage = getSchemaPackage(config, null);
+        String schemaClass = getSchemaClass(config, null);
+        boolean overwriteSchemaClass = isOverwriteSchemaClass(config, null);
 
-        jsonNode = config.get("schemaClass");
-        if(jsonNode == null) throw new ConfigException("schemaClass is missing in config");
-        String schemaClass = jsonNode.textValue();
-
-        jsonNode = config.get("overwriteSchemaClass");
-        if(jsonNode == null) throw new ConfigException("overwriteSchemaClass is missing in config");
-        boolean overwriteSchemaClass = jsonNode.booleanValue();
-
-        boolean enableHttp = false;
-        jsonNode = config.get("enableHttp");
-        if(jsonNode == null) {
-            ((ObjectNode)config).put("enableHttp", false);
-        } else {
-            enableHttp = jsonNode.booleanValue();
-        }
-
-        String httpPort = "8080";
-        jsonNode = config.get("httpPort");
-        if(jsonNode == null) {
-            ((ObjectNode)config).put("httpPort", httpPort);
-        } else {
-            httpPort = jsonNode.asText();
-        }
-
-        boolean enableHttps = true;
-        jsonNode = config.get("enableHttps");
-        if(jsonNode == null) {
-            ((ObjectNode)config).put("enableHttps", true);
-        } else {
-            enableHttps = jsonNode.booleanValue();
-        }
-
-        String httpsPort = "8443";
-        jsonNode = config.get("httpsPort");
-        if(jsonNode == null) {
-            ((ObjectNode)config).put("httpsPort", httpsPort);
-        } else {
-            httpsPort = jsonNode.asText();
-        }
-
-        boolean enableHttp2 = true;
-        jsonNode = config.get("enableHttp2");
-        if(jsonNode == null) {
-            ((ObjectNode)config).put("enableHttp2", enableHttp2);
-        } else {
-            enableHttp2 = jsonNode.booleanValue();
-        }
-
-        boolean enableRegistry = false;
-        jsonNode = config.get("enableRegistry");
-        if(jsonNode == null) {
-            ((ObjectNode)config).put("enableRegistry", enableRegistry);
-        } else {
-            enableRegistry = jsonNode.booleanValue();
-        }
-
-        boolean eclipseIDE = false;
-        jsonNode = config.get("eclipseIDE");
-        if(jsonNode == null) {
-            ((ObjectNode)config).put("eclipseIDE", eclipseIDE);
-        } else {
-            eclipseIDE = jsonNode.booleanValue();
-        }
-
-        jsonNode = config.get("supportClient");
-        if(jsonNode == null) throw new ConfigException("supportClient is missing in config");
-        boolean supportClient = jsonNode.booleanValue();
-
-        boolean prometheusMetrics = false;
-        jsonNode = config.get("prometheusMetrics");
-        if(jsonNode != null) prometheusMetrics = jsonNode.booleanValue();
-
-        boolean skipHealthCheck = false;
-        jsonNode = config.get("skipHealthCheck");
-        if(jsonNode != null) skipHealthCheck = jsonNode.booleanValue();
-
-
-        boolean skipServerInfo = false;
-        jsonNode = config.get("skipServerInfo");
-        if(jsonNode != null) skipServerInfo = jsonNode.booleanValue();
-
-        String dockerOrganization = "networknt";
-        jsonNode = config.get("dockerOrganization");
-        if(jsonNode != null) dockerOrganization = jsonNode.textValue();
-
-        jsonNode = config.get("version");
-        if(jsonNode == null) throw new ConfigException("version is missing in config");
-        String version = jsonNode.textValue();
-
-        jsonNode = config.get("groupId");
-        if(jsonNode == null) throw new ConfigException("groupId is missing in config");
-        String groupId = jsonNode.textValue();
-
-        jsonNode = config.get("artifactId");
-        if(jsonNode == null) throw new ConfigException("artifactId is missing in config");
-        String artifactId = jsonNode.textValue();
-
+        // Generic config
+        boolean enableHttp = isEnableHttp(config, null);
+        String httpPort = getHttpPort(config, null);
+        boolean enableHttps = isEnableHttps(config, null);
+        String httpsPort = getHttpsPort(config, null);
+        boolean enableHttp2 = isEnableHttp2(config, null);
+        boolean enableRegistry = isEnableRegistry(config, null);
+        boolean eclipseIDE = isEclipseIDE(config, null);
+        boolean supportClient = isSupportClient(config, null);
+        boolean prometheusMetrics = isPrometheusMetrics(config, null);
+        String dockerOrganization = getDockerOrganization(config, null);
+        String version = getVersion(config, null);
+        String groupId = getGroupId(config, null);
+        String artifactId = getArtifactId(config, null);
         String serviceId = groupId + "." + artifactId + "-" + version;
+        boolean specChangeCodeReGenOnly = isSpecChangeCodeReGenOnly(config, null);
+        boolean enableParamDescription = isEnableParamDescription(config, null);
+        boolean skipPomFile = isSkipPomFile(config, null);
+        boolean kafkaProducer = isKafkaProducer(config, null);
+        boolean kafkaConsumer = isKafkaConsumer(config, null);
+        boolean supportAvro = isSupportAvro(config, null);
+        String kafkaTopic = getKafkaTopic(config, null);
+        String decryptOption = getDecryptOption(config, null);
 
         transfer(targetPath, "", "pom.xml", templates.graphql.pom.template(config));
         transferMaven(targetPath);
@@ -176,7 +101,7 @@ public class GraphqlGenerator implements Generator {
         transfer(targetPath, ("src.main.resources").replace(".", separator), "logback.xml", templates.graphql.logback.template());
         transfer(targetPath, ("src.test.resources").replace(".", separator), "logback-test.xml", templates.graphql.logback.template());
         // handler.yml
-        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "handler.yml", templates.graphql.handlerYml.template(serviceId, prometheusMetrics, !skipHealthCheck, !skipServerInfo));
+        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "handler.yml", templates.graphql.handlerYml.template(serviceId, prometheusMetrics));
 
         // Copy schema
         // The generator support both manually coded schema or schema defined in IDL. If schema.graphqls exists
@@ -220,4 +145,37 @@ public class GraphqlGenerator implements Generator {
         }
     }
 
+
+    private String getSchemaPackage(JsonNode config, String defaultValue) {
+        String schemaPackage = defaultValue == null ? "com.networknt.graphql.schema" : defaultValue;
+        JsonNode jsonNode = config.get("schemaPackage");
+        if(jsonNode == null) {
+            ((ObjectNode)config).put("schemaPackage", schemaPackage);
+        } else {
+            schemaPackage = jsonNode.asText();
+        }
+        return schemaPackage;
+    }
+
+    private String getSchemaClass(JsonNode config, String defaultValue) {
+        String schemaClass = defaultValue == null ? "GraphQlSchema" : defaultValue;
+        JsonNode jsonNode = config.get("schemaClass");
+        if(jsonNode == null) {
+            ((ObjectNode)config).put("schemaClass", schemaClass);
+        } else {
+            schemaClass = jsonNode.asText();
+        }
+        return schemaClass;
+    }
+
+    private boolean isOverwriteSchemaClass(JsonNode config, Boolean defaultValue) {
+        boolean overwriteSchemaClass = defaultValue == null ? false : defaultValue;
+        JsonNode jsonNode = config.get("overwriteSchemaClass");
+        if(jsonNode == null) {
+            ((ObjectNode)config).put("overwriteSchemaClass", overwriteSchemaClass);
+        } else {
+            overwriteSchemaClass = jsonNode.booleanValue();
+        }
+        return overwriteSchemaClass;
+    }
 }
