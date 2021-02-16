@@ -10,8 +10,10 @@
   "enableHttp": true,
   "httpsPort": 8443,
   "enableHttps": false,
+  "enableHttp2": true,
   "enableRegistry": false,
   "supportDb": true,
+  "eclipseIDE": false,
   "dbInfo": {
     "name": "mysql",
     "driverClassName": "com.mysql.jdbc.Driver",

@@ -1,5 +1,5 @@
-@import com.jsoniter.any.Any
-@args (Any config)
+@import com.fasterxml.jackson.databind.JsonNode
+@args (JsonNode config)
 plugins {
     id 'java'
     id "com.github.johnrengelman.shadow" version "5.2.0"
@@ -17,7 +17,7 @@ dependencies {
     implementation "com.networknt:utility:$light4jVersion"
     implementation "com.networknt:slf4j-logback:$light4jVersion"
     implementation "com.networknt:custom-runtime:$light4jVersion"
-    implementation "com.networknt:@if(config.toBoolean("useLightProxy")){lambda-interceptor}else{request-handler}:$light4jVersion"
+    implementation "com.networknt:@if(config.get("useLightProxy").booleanValue()){lambda-interceptor}else{request-handler}:$light4jVersion"
     implementation "com.amazonaws:aws-lambda-java-core:$lambdaCoreVersion"
     implementation "com.amazonaws:aws-lambda-java-events:$lambdaEventsVersion"
     testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"

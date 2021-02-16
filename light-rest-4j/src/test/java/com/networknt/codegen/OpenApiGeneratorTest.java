@@ -1,25 +1,24 @@
 package com.networknt.codegen;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Scanner;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.networknt.config.Config;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import com.jsoniter.JsonIterator;
-import com.jsoniter.any.Any;
 import com.networknt.codegen.rest.OpenApiGenerator;
-import com.thoughtworks.qdox.JavaProjectBuilder;
-import com.thoughtworks.qdox.model.JavaClass;
-import com.thoughtworks.qdox.model.JavaField;
-import com.thoughtworks.qdox.model.JavaPackage;
+
+import static java.io.File.separator;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Steve Hu
@@ -49,32 +48,31 @@ public class OpenApiGeneratorTest {
 
     @Test
     public void testGeneratorJson() throws IOException {
-        Any anyConfig = JsonIterator.parse(OpenApiGeneratorTest.class.getResourceAsStream(configName), 1024).readAny();
-        Any anyModel = JsonIterator.parse(OpenApiGeneratorTest.class.getResourceAsStream(openapiJson), 1024).readAny();
-
+        JsonNode configNode = Generator.jsonMapper.readTree(OpenApiGeneratorTest.class.getResourceAsStream(configName));
+        JsonNode modelNode = Generator.jsonMapper.readTree(OpenApiGeneratorTest.class.getResourceAsStream(openapiJson));
         OpenApiGenerator generator = new OpenApiGenerator();
-        generator.generate(targetPath, anyModel, anyConfig);
+        generator.generate(targetPath, modelNode, configNode);
     }
 
     @Test
     public void testGeneratorYaml() throws IOException {
-        Any anyConfig = JsonIterator.parse(OpenApiGeneratorTest.class.getResourceAsStream(configName), 1024).readAny();
-        String strModel = new Scanner(OpenApiGeneratorTest.class.getResourceAsStream(openapiYaml), "UTF-8").useDelimiter("\\A").next();
+        JsonNode configNode = Generator.jsonMapper.readTree(OpenApiGeneratorTest.class.getResourceAsStream(configName));
+        JsonNode modelNode = Generator.yamlMapper.readTree(OpenApiGeneratorTest.class.getResourceAsStream(openapiYaml));
         OpenApiGenerator generator = new OpenApiGenerator();
-        generator.generate(targetPath, strModel, anyConfig);
+        generator.generate(targetPath, modelNode, configNode);
     }
 
     @Test
     public void testGeneratorAccountInfo() throws IOException {
-        Any anyConfig = JsonIterator.parse(OpenApiGeneratorTest.class.getResourceAsStream(configName), 1024).readAny();
-        String strModel = new Scanner(OpenApiGeneratorTest.class.getResourceAsStream(accountInfoYaml), "UTF-8").useDelimiter("\\A").next();
+        JsonNode configNode = Generator.jsonMapper.readTree(OpenApiGeneratorTest.class.getResourceAsStream(configName));
+        JsonNode modelNode = Generator.yamlMapper.readTree(OpenApiGeneratorTest.class.getResourceAsStream(accountInfoYaml));
         OpenApiGenerator generator = new OpenApiGenerator();
-        generator.generate(targetPath, strModel, anyConfig);
+        generator.generate(targetPath, modelNode, configNode);
     }
 
     @Test
     public void testGetOperationList() throws IOException {
-        Any anyModel = JsonIterator.parse(OpenApiGeneratorTest.class.getResourceAsStream(openapiJson), 1024).readAny();
+        JsonNode anyModel = Config.getInstance().getMapper().readTree(OpenApiGeneratorTest.class.getResourceAsStream(openapiJson));
         OpenApiGenerator generator = new OpenApiGenerator();
         List list = generator.getOperationList(anyModel);
         System.out.println(list);
@@ -95,10 +93,10 @@ public class OpenApiGeneratorTest {
     }
     @Test
     public void testNoServersGeneratorYaml() throws IOException {
-        Any anyConfig = JsonIterator.parse(OpenApiGeneratorTest.class.getResourceAsStream(configName), 1024).readAny();
-        String strModel = new Scanner(OpenApiGeneratorTest.class.getResourceAsStream(openapiNoServersYaml), "UTF-8").useDelimiter("\\A").next();
+        JsonNode configNode = Generator.jsonMapper.readTree(OpenApiGeneratorTest.class.getResourceAsStream(configName));
+        JsonNode modelNode = Generator.yamlMapper.readTree(OpenApiGeneratorTest.class.getResourceAsStream(openapiNoServersYaml));
         OpenApiGenerator generator = new OpenApiGenerator();
-        generator.generate(targetPath, strModel, anyConfig);
+        generator.generate(targetPath, modelNode, configNode);
     }
 
     @Test
@@ -113,27 +111,27 @@ public class OpenApiGeneratorTest {
 
     @Test
     public void testGeneratorYamlEnum() throws IOException {
-        Any anyConfig = JsonIterator.parse(OpenApiGeneratorTest.class.getResourceAsStream(configName), 1024).readAny();
-        String strModel = new Scanner(OpenApiGeneratorTest.class.getResourceAsStream(openapiEnumYaml), "UTF-8").useDelimiter("\\A").next();
+        JsonNode configNode = Generator.jsonMapper.readTree(OpenApiGeneratorTest.class.getResourceAsStream(configName));
+        JsonNode modelNode = Generator.yamlMapper.readTree(OpenApiGeneratorTest.class.getResourceAsStream(openapiEnumYaml));
         OpenApiGenerator generator = new OpenApiGenerator();
-        generator.generate(targetPath, strModel, anyConfig);
+        generator.generate(targetPath, modelNode, configNode);
     }
 
     @Test
     @Ignore
     public void testGeneratorYamlError() throws IOException {
-        Any anyConfig = JsonIterator.parse(OpenApiGeneratorTest.class.getResourceAsStream(configName), 1024).readAny();
-        String strModel = new Scanner(OpenApiGeneratorTest.class.getResourceAsStream(openapiErrorYaml), "UTF-8").useDelimiter("\\A").next();
+        JsonNode configNode = Generator.jsonMapper.readTree(OpenApiGeneratorTest.class.getResourceAsStream(configName));
+        JsonNode modelNode = Generator.yamlMapper.readTree(OpenApiGeneratorTest.class.getResourceAsStream(openapiErrorYaml));
         OpenApiGenerator generator = new OpenApiGenerator();
-        generator.generate(targetPath, strModel, anyConfig);
+        generator.generate(targetPath, modelNode, configNode);
     }
 
     @Test
     public void testGeneratorKafka() throws IOException {
-        Any anyConfig = JsonIterator.parse(OpenApiGeneratorTest.class.getResourceAsStream(configKafkaName), 1024).readAny();
-        String strModel = new Scanner(OpenApiGeneratorTest.class.getResourceAsStream(openapiYaml), "UTF-8").useDelimiter("\\A").next();
+        JsonNode configNode = Generator.jsonMapper.readTree(OpenApiGeneratorTest.class.getResourceAsStream(configKafkaName));
+        JsonNode modelNode = Generator.yamlMapper.readTree(OpenApiGeneratorTest.class.getResourceAsStream(openapiYaml));
         OpenApiGenerator generator = new OpenApiGenerator();
-        generator.generate(targetPath, strModel, anyConfig);
+        generator.generate(targetPath, modelNode, configNode);
     }
 
     @Test

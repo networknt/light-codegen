@@ -1,21 +1,14 @@
 package com.networknt.codegen.graphql;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jsoniter.any.Any;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.networknt.codegen.Generator;
-import com.networknt.utility.NioUtils;
-import graphql.schema.GraphQLSchema;
-import graphql.schema.idl.RuntimeWiring;
-import graphql.schema.idl.SchemaGenerator;
-import graphql.schema.idl.SchemaParser;
-import graphql.schema.idl.TypeDefinitionRegistry;
+import com.networknt.config.ConfigException;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
-import java.util.Map;
 
 import static java.io.File.separator;
 
@@ -23,35 +16,118 @@ import static java.io.File.separator;
  * Created by steve on 01/05/17.
  */
 public class GraphqlGenerator implements Generator {
-    static ObjectMapper mapper = new ObjectMapper();
+    public static final String FRAMEWORK="light-graphql-4j";
 
     @Override
     public String getFramework() {
-        return "light-graphql-4j";
+        return FRAMEWORK;
     }
 
     @Override
-    public void generate(String targetPath, Object model, Any config) throws IOException {
+    public void generate(String targetPath, Object schema, JsonNode config) throws IOException {
         // whoever is calling this needs to make sure that model is converted to Map<String, Object>
-        String schemaPackage = config.get("schemaPackage").toString();
-        String schemaClass = config.get("schemaClass").toString();
-        boolean overwriteSchemaClass = config.toBoolean("overwriteSchemaClass");
-        boolean enableHttp = config.toBoolean("enableHttp");
-        String httpPort = config.toString("httpPort");
-        boolean enableHttps = config.toBoolean("enableHttps");
-        String httpsPort = config.toString("httpsPort");
-        boolean enableHttp2 = config.toBoolean("enableHttp2");
-        boolean enableRegistry = config.toBoolean("enableRegistry");
-        boolean eclipseIDE = config.toBoolean("eclipseIDE");
-        boolean supportClient = config.toBoolean("supportClient");
-        boolean prometheusMetrics = config.toBoolean("prometheusMetrics");
-        boolean skipHealthCheck = config.toBoolean("skipHealthCheck");
-        boolean skipServerInfo = config.toBoolean("skipServerInfo");
-        String dockerOrganization = config.toString("dockerOrganization");
-        String version = config.toString("version");
-        String serviceId = config.get("groupId").toString().trim() + "." + config.get("artifactId").toString().trim() + "-" + config.get("version").toString().trim();
+        JsonNode jsonNode = config.get("schemaPackage");
+        if(jsonNode == null) throw new ConfigException("schemaPackage is missing in config");
+        String schemaPackage = jsonNode.textValue();
 
-        if(dockerOrganization == null || dockerOrganization.length() == 0) dockerOrganization = "networknt";
+        jsonNode = config.get("schemaClass");
+        if(jsonNode == null) throw new ConfigException("schemaClass is missing in config");
+        String schemaClass = jsonNode.textValue();
+
+        jsonNode = config.get("overwriteSchemaClass");
+        if(jsonNode == null) throw new ConfigException("overwriteSchemaClass is missing in config");
+        boolean overwriteSchemaClass = jsonNode.booleanValue();
+
+        boolean enableHttp = false;
+        jsonNode = config.get("enableHttp");
+        if(jsonNode == null) {
+            ((ObjectNode)config).put("enableHttp", false);
+        } else {
+            enableHttp = jsonNode.booleanValue();
+        }
+
+        String httpPort = "8080";
+        jsonNode = config.get("httpPort");
+        if(jsonNode == null) {
+            ((ObjectNode)config).put("httpPort", httpPort);
+        } else {
+            httpPort = jsonNode.asText();
+        }
+
+        boolean enableHttps = true;
+        jsonNode = config.get("enableHttps");
+        if(jsonNode == null) {
+            ((ObjectNode)config).put("enableHttps", true);
+        } else {
+            enableHttps = jsonNode.booleanValue();
+        }
+
+        String httpsPort = "8443";
+        jsonNode = config.get("httpsPort");
+        if(jsonNode == null) {
+            ((ObjectNode)config).put("httpsPort", httpsPort);
+        } else {
+            httpsPort = jsonNode.asText();
+        }
+
+        boolean enableHttp2 = true;
+        jsonNode = config.get("enableHttp2");
+        if(jsonNode == null) {
+            ((ObjectNode)config).put("enableHttp2", enableHttp2);
+        } else {
+            enableHttp2 = jsonNode.booleanValue();
+        }
+
+        boolean enableRegistry = false;
+        jsonNode = config.get("enableRegistry");
+        if(jsonNode == null) {
+            ((ObjectNode)config).put("enableRegistry", enableRegistry);
+        } else {
+            enableRegistry = jsonNode.booleanValue();
+        }
+
+        boolean eclipseIDE = false;
+        jsonNode = config.get("eclipseIDE");
+        if(jsonNode == null) {
+            ((ObjectNode)config).put("eclipseIDE", eclipseIDE);
+        } else {
+            eclipseIDE = jsonNode.booleanValue();
+        }
+
+        jsonNode = config.get("supportClient");
+        if(jsonNode == null) throw new ConfigException("supportClient is missing in config");
+        boolean supportClient = jsonNode.booleanValue();
+
+        boolean prometheusMetrics = false;
+        jsonNode = config.get("prometheusMetrics");
+        if(jsonNode != null) prometheusMetrics = jsonNode.booleanValue();
+
+        boolean skipHealthCheck = false;
+        jsonNode = config.get("skipHealthCheck");
+        if(jsonNode != null) skipHealthCheck = jsonNode.booleanValue();
+
+
+        boolean skipServerInfo = false;
+        jsonNode = config.get("skipServerInfo");
+        if(jsonNode != null) skipServerInfo = jsonNode.booleanValue();
+
+        String dockerOrganization = "networknt";
+        jsonNode = config.get("dockerOrganization");
+        if(jsonNode != null) dockerOrganization = jsonNode.textValue();
+
+        jsonNode = config.get("version");
+        if(jsonNode == null) throw new ConfigException("version is missing in config");
+        String version = jsonNode.textValue();
+
+        jsonNode = config.get("groupId");
+        if(jsonNode == null) throw new ConfigException("groupId is missing in config");
+        String groupId = jsonNode.textValue();
+
+        jsonNode = config.get("artifactId");
+        if(jsonNode == null) throw new ConfigException("artifactId is missing in config");
+        String artifactId = jsonNode.textValue();
+
+        String serviceId = groupId + "." + artifactId + "-" + version;
 
         transfer(targetPath, "", "pom.xml", templates.graphql.pom.template(config));
         transferMaven(targetPath);
@@ -109,10 +185,10 @@ public class GraphqlGenerator implements Generator {
         // If no schema file is passed in, then it will just hard-coded as a Hello World example so that developer
         // can expand that to code his/her own schema.
         if(overwriteSchemaClass) {
-            if(model == null) {
+            if(schema == null) {
                 transfer(targetPath, ("src.main.java." + schemaPackage).replace(".", separator), schemaClass + ".java", templates.graphql.schemaClassExample.template(schemaPackage, schemaClass));
             } else {
-                Files.write(FileSystems.getDefault().getPath(targetPath, ("src.main.resources").replace(".", separator), "schema.graphqls"), ((String)model).getBytes(StandardCharsets.UTF_8));
+                Files.write(FileSystems.getDefault().getPath(targetPath, ("src.main.resources").replace(".", separator), "schema.graphqls"), ((String)schema).getBytes(StandardCharsets.UTF_8));
                 // schema class loader/generator template.
                 transfer(targetPath, ("src.main.java." + schemaPackage).replace(".", separator), schemaClass + ".java", templates.graphql.schemaClass.template(schemaPackage, schemaClass));
             }

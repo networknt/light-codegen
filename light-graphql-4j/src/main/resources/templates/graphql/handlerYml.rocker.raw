@@ -1,6 +1,5 @@
 @import java.util.Map
 @import java.util.List
-@import com.jsoniter.any.Any
 @args (String serviceId, boolean prometheusMetrics, boolean healthCheck, boolean serverInfo)
 
 # Handler middleware chain configuration

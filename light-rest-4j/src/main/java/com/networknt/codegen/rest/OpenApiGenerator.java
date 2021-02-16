@@ -1,18 +1,18 @@
 package com.networknt.codegen.rest;
 
-import com.jsoniter.JsonIterator;
-import com.jsoniter.ValueType;
-import com.jsoniter.any.Any;
-import com.jsoniter.output.JsonStream;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.networknt.codegen.Generator;
 import com.networknt.codegen.Utils;
+import com.networknt.config.ConfigException;
+import com.networknt.config.JsonMapper;
 import com.networknt.jsonoverlay.Overlay;
 import com.networknt.oas.OpenApiParser;
 import com.networknt.oas.model.*;
 import com.networknt.oas.model.impl.OpenApi3Impl;
+import com.networknt.oas.model.impl.SchemaImpl;
 import com.networknt.utility.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.lang.model.SourceVersion;
 import java.io.ByteArrayInputStream;
@@ -23,32 +23,14 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import static com.networknt.codegen.Generator.copyFile;
 import static java.io.File.separator;
 
-/**
- * The input for OpenAPI 3.0 generator include config with json format and OpenAPI specification in yaml format.
- *
- * The model is OpenAPI spec in yaml format. And config file is config.json in JSON format.
- *
- * @author Steve Hu
- */
 public class OpenApiGenerator implements Generator {
-
     private Map<String, String> typeMapping = new HashMap<>();
 
-    // optional generation parameters. if not set, they use default values as
-    boolean prometheusMetrics = false;
-    boolean skipHealthCheck = false;
-    boolean skipServerInfo = false;
-    boolean specChangeCodeReGenOnly = false;
-    boolean enableParamDescription = true;
-    boolean generateModelOnly = false;
-    boolean generateValuesYml = false;
-    boolean skipPomFile = false;
+    boolean enableParamDescription = false;
 
     public OpenApiGenerator() {
         typeMapping.put("array", "java.util.List");
@@ -82,45 +64,37 @@ public class OpenApiGenerator implements Generator {
      * @throws IOException IO Exception occurs during code generation
      */
     @Override
-    public void generate(final String targetPath, Object model, Any config) throws IOException {
+    public void generate(final String targetPath, Object model, JsonNode config) throws IOException {
         // whoever is calling this needs to make sure that model is converted to Map<String, Object>
-        String rootPackage = config.toString("rootPackage").trim();
-        final String modelPackage = config.toString("modelPackage").trim();
-        String handlerPackage = config.toString("handlerPackage").trim();
-
-        boolean overwriteHandler = config.toBoolean("overwriteHandler");
-        boolean overwriteHandlerTest = config.toBoolean("overwriteHandlerTest");
-        boolean overwriteModel = config.toBoolean("overwriteModel");
-        generateModelOnly = config.toBoolean("generateModelOnly");
-
-        boolean enableHttp = config.toBoolean("enableHttp");
-        String httpPort = config.toString("httpPort").trim();
-        boolean enableHttps = config.toBoolean("enableHttps");
-        String httpsPort = config.toString("httpsPort").trim();
-        boolean enableHttp2 = config.toBoolean("enableHttp2");
-
-        boolean enableRegistry = config.toBoolean("enableRegistry");
-        boolean eclipseIDE = config.toBoolean("eclipseIDE");
-        boolean supportClient = config.toBoolean("supportClient");
-        String dockerOrganization = config.toString("dockerOrganization").trim();
-
-        prometheusMetrics = config.toBoolean("prometheusMetrics");
-        skipHealthCheck = config.toBoolean("skipHealthCheck");
-        skipServerInfo = config.toBoolean("skipServerInfo");
-        specChangeCodeReGenOnly = config.toBoolean("specChangeCodeReGenOnly");
-        enableParamDescription = config.toBoolean("enableParamDescription");
-        skipPomFile = config.toBoolean("skipPomFile");
-        String artifactId = config.toString("artifactId");
-        String version = config.toString("version").trim();
-        String serviceId = config.get("groupId").toString().trim() + "." + artifactId.trim() + "-" + config.get("version").toString().trim();
-        boolean kafkaProducer = config.toBoolean("kafkaProducer");
-        boolean kafkaConsumer = config.toBoolean("kafkaConsumer");
-        boolean supportAvro = config.toBoolean("supportAvro");
-        String kafkaTopic = config.get("kafkaTopic").toString();
-
-        if (dockerOrganization == null || dockerOrganization.length() == 0) {
-            dockerOrganization = "networknt";
-        }
+        String rootPackage = getRootPackage(config, null);
+        String modelPackage = getModelPackage(config, null);
+        String handlerPackage = getHandlerPackage(config, null);
+        boolean overwriteHandler = isOverwriteHandler(config, null);
+        boolean overwriteHandlerTest = isOverwriteHandlerTest(config, null);
+        boolean overwriteModel = isOverwriteModel(config, null);
+        boolean generateModelOnly = isGenerateModelOnly(config, null);
+        boolean enableHttp = isEnableHttp(config, null);
+        String httpPort = getHttpPort(config, null);
+        boolean enableHttps = isEnableHttps(config, null);
+        String httpsPort = getHttpsPort(config, null);
+        boolean enableHttp2 = isEnableHttp2(config, null);
+        boolean enableRegistry = isEnableRegistry(config, null);
+        boolean eclipseIDE = isEclipseIDE(config, null);
+        boolean supportClient = isSupportClient(config, null);
+        boolean prometheusMetrics = isPrometheusMetrics(config, null);
+        String dockerOrganization = getDockerOrganization(config, null);
+        String version = getVersion(config, null);
+        String groupId = getGroupId(config, null);
+        String artifactId = getArtifactId(config, null);
+        String serviceId = groupId + "." + artifactId + "-" + version;
+        boolean specChangeCodeReGenOnly = isSpecChangeCodeReGenOnly(config, null);
+        boolean enableParamDescription = isEnableParamDescription(config, null);
+        boolean skipPomFile = isSkipPomFile(config, null);
+        boolean kafkaProducer = isKafkaProducer(config, null);
+        boolean kafkaConsumer = isKafkaConsumer(config, null);
+        boolean supportAvro = isSupportAvro(config, null);
+        String kafkaTopic = getKafkaTopic(config, null);
+        String decryptOption = getDecryptOption(config, null);
 
         // get the list of operations for this model
         List<Map<String, Object>> operationList = getOperationList(model);
@@ -148,7 +122,7 @@ public class OpenApiGenerator implements Generator {
                 transfer(targetPath, "docker", "Dockerfile", templates.rest.dockerfile.template(config, expose));
                 transfer(targetPath, "docker", "Dockerfile-Slim", templates.rest.dockerfileslim.template(config, expose));
                 transfer(targetPath, "", "build.sh", templates.rest.buildSh.template(dockerOrganization, serviceId));
-                transfer(targetPath, "", "kubernetes.yml", templates.rest.kubernetes.template(dockerOrganization, serviceId, config.get("artifactId").toString().trim(), expose, version));
+                transfer(targetPath, "", "kubernetes.yml", templates.rest.kubernetes.template(dockerOrganization, serviceId, config.get("artifactId").textValue(), expose, version));
                 transfer(targetPath, "", ".gitignore", templates.rest.gitignore.template());
                 transfer(targetPath, "", "README.md", templates.rest.README.template());
                 transfer(targetPath, "", "LICENSE", templates.rest.LICENSE.template());
@@ -208,34 +182,26 @@ public class OpenApiGenerator implements Generator {
             }
             // routing handler
             transfer(targetPath, ("src.main.resources.config").replace(".", separator), "handler.yml",
-                    templates.rest.openapi.handlerYml.template(serviceId, handlerPackage, operationList, prometheusMetrics, !skipHealthCheck, !skipServerInfo));
+                    templates.rest.openapi.handlerYml.template(serviceId, handlerPackage, operationList, prometheusMetrics));
 
         }
 
         // model
-        Any anyComponents;
-        if (model instanceof Any) {
-            anyComponents = ((Any)model).get("components");
-        } else if (model instanceof String) {
-            // this must be yaml format and we need to convert to json for JsonIterator.
-            OpenApi3 openApi3 = null;
-            try {
-                openApi3 = (OpenApi3)new OpenApiParser().parse((String)model, new URL("https://oas.lightapi.net/"));
-            } catch (MalformedURLException e) {
-                throw new RuntimeException("Failed to parse the model", e);
-            }
-            anyComponents = JsonIterator.deserialize(Overlay.toJson((OpenApi3Impl)openApi3).toString()).get("components");
-        } else {
-            throw new RuntimeException("Invalid Model Class: " + model.getClass());
+        OpenApi3 openApi3 = null;
+        try {
+            openApi3 = (OpenApi3)new OpenApiParser().parse((JsonNode)model, new URL("https://oas.lightapi.net/"));
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("Failed to parse the model", e);
         }
-
-        if (anyComponents.valueType() != ValueType.INVALID) {
-            Any schemas = anyComponents.asMap().get("schemas");
-            if (schemas != null && schemas.valueType() != ValueType.INVALID) {
+        Map<String, Object> specMap = JsonMapper.string2Map(Overlay.toJson((OpenApi3Impl)openApi3).toString());
+        Map<String, Object> components = (Map<String, Object>)specMap.get("components");
+        if(components != null) {
+            Map<String, Object> schemas = (Map<String, Object>)components.get("schemas");
+            if(schemas != null) {
                 ArrayList<Runnable> modelCreators = new ArrayList<>();
-                final HashMap<String, Any> references = new HashMap<>();
-                for (Map.Entry<String, Any> entry : schemas.asMap().entrySet()) {
-                    loadModel(entry.getKey(), null, entry.getValue().asMap(), schemas, overwriteModel, targetPath, modelPackage, modelCreators, references, null);
+                final HashMap<String, Object> references = new HashMap<>();
+                for (Map.Entry<String, Object> entry : schemas.entrySet()) {
+                    loadModel(entry.getKey(), null, (Map<String, Object>)entry.getValue(), schemas, overwriteModel, targetPath, modelPackage, modelCreators, references, null);
                 }
 
                 for (Runnable r : modelCreators) {
@@ -278,35 +244,29 @@ public class OpenApiGenerator implements Generator {
 
         // transfer binary files without touching them.
         try (InputStream is = OpenApiGenerator.class.getResourceAsStream("/binaries/server.keystore")) {
-            copyFile(is, Paths.get(targetPath, ("src.main.resources.config").replace(".", separator), "server.keystore"));
+            Generator.copyFile(is, Paths.get(targetPath, ("src.main.resources.config").replace(".", separator), "server.keystore"));
         }
         try (InputStream is = OpenApiGenerator.class.getResourceAsStream("/binaries/server.truststore")) {
-            copyFile(is, Paths.get(targetPath, ("src.main.resources.config").replace(".", separator), "server.truststore"));
+            Generator.copyFile(is, Paths.get(targetPath, ("src.main.resources.config").replace(".", separator), "server.truststore"));
         }
         if (supportClient) {
             try (InputStream is = OpenApiGenerator.class.getResourceAsStream("/binaries/client.keystore")) {
-                copyFile(is, Paths.get(targetPath, ("src.main.resources.config").replace(".", separator), "client.keystore"));
+                Generator.copyFile(is, Paths.get(targetPath, ("src.main.resources.config").replace(".", separator), "client.keystore"));
             }
             try (InputStream is = OpenApiGenerator.class.getResourceAsStream("/binaries/client.truststore")) {
-                copyFile(is, Paths.get(targetPath, ("src.main.resources.config").replace(".", separator), "client.truststore"));
+                Generator.copyFile(is, Paths.get(targetPath, ("src.main.resources.config").replace(".", separator), "client.truststore"));
             }
         } else {
             try (InputStream is = OpenApiGenerator.class.getResourceAsStream("/binaries/client.keystore")) {
-                copyFile(is, Paths.get(targetPath, ("src.test.resources.config").replace(".", separator), "client.keystore"));
+                Generator.copyFile(is, Paths.get(targetPath, ("src.test.resources.config").replace(".", separator), "client.keystore"));
             }
             try (InputStream is = OpenApiGenerator.class.getResourceAsStream("/binaries/client.truststore")) {
-                copyFile(is, Paths.get(targetPath, ("src.test.resources.config").replace(".", separator), "client.truststore"));
+                Generator.copyFile(is, Paths.get(targetPath, ("src.test.resources.config").replace(".", separator), "client.truststore"));
             }
         }
 
-        if (model instanceof Any) {
-            try (InputStream is = new ByteArrayInputStream(model.toString().getBytes(StandardCharsets.UTF_8))) {
-                copyFile(is, Paths.get(targetPath, ("src.main.resources.config").replace(".", separator), "openapi.json"));
-            }
-        } else if (model instanceof String) {
-            try (InputStream is = new ByteArrayInputStream(((String)model).getBytes(StandardCharsets.UTF_8))) {
-                copyFile(is, Paths.get(targetPath, ("src.main.resources.config").replace(".", separator), "openapi.yaml"));
-            }
+        try (InputStream is = new ByteArrayInputStream(Generator.yamlMapper.writeValueAsBytes(model))) {
+            Generator.copyFile(is, Paths.get(targetPath, ("src.main.resources.config").replace(".", separator), "openapi.yaml"));
         }
     }
 
@@ -316,19 +276,19 @@ public class OpenApiGenerator implements Generator {
      * @param entry The entry for which to generate
      * @param propMap The property map to add to, created in the caller
      */
-    private void initializePropertyMap(Entry<String, Any> entry, Map<String, Any> propMap) {
-	    String name = convertToValidJavaVariableName(entry.getKey());
-        propMap.put("jsonProperty", Any.wrap(name));
+    private void initializePropertyMap(Map.Entry<String, Object> entry, Map<String, Object> propMap) {
+        String name = convertToValidJavaVariableName(entry.getKey());
+        propMap.put("jsonProperty", name);
         if (name.startsWith("@")) {
             name = name.substring(1);
 
         }
-        propMap.put("name", Any.wrap(name));
-        propMap.put("getter", Any.wrap("get" + name.substring(0, 1).toUpperCase() + name.substring(1)));
-        propMap.put("setter", Any.wrap("set" + name.substring(0, 1).toUpperCase() + name.substring(1)));
+        propMap.put("name", name);
+        propMap.put("getter", "get" + name.substring(0, 1).toUpperCase() + name.substring(1));
+        propMap.put("setter", "set" + name.substring(0, 1).toUpperCase() + name.substring(1));
         // assume it is not enum unless it is overwritten
-        propMap.put("isEnum", Any.wrap(false));
-	    propMap.put("isNumEnum", Any.wrap(false));
+        propMap.put("isEnum", false);
+        propMap.put("isNumEnum", false);
     }
 
     /**
@@ -337,61 +297,61 @@ public class OpenApiGenerator implements Generator {
      * @param props The properties map to add to
      */
     //private void handleProperties(List<Map<String, Any>> props, Map.Entry<String, Any> entrySchema) {
-    private void handleProperties(List<Map<String, Any>> props, Map<String, Any> properties) {
+    private void handleProperties(List<Map<String, Object>> props, Map<String, Object> properties) {
         // transform properties
-        for (Map.Entry<String, Any> entryProp : properties.entrySet()) {
+        for (Map.Entry<String, Object> entryProp : properties.entrySet()) {
             //System.out.println("key = " + entryProp.getKey() + " value = " + entryProp.getValue());
-            Map<String, Any> propMap = new HashMap<>();
+            Map<String, Object> propMap = new HashMap<>();
 
             // initialize property map
             initializePropertyMap(entryProp, propMap);
 
             String name = entryProp.getKey();
-		    String type = null;
+            String type = null;
             boolean isArray = false;
-            for (Map.Entry<String, Any> entryElement : entryProp.getValue().asMap().entrySet()) {
+            for (Map.Entry<String, Object> entryElement : ((Map<String, Object>)entryProp.getValue()).entrySet()) {
                 //System.out.println("key = " + entryElement.getKey() + " value = " + entryElement.getValue());
 
                 if ("type".equals(entryElement.getKey())) {
                     String t = typeMapping.get(entryElement.getValue().toString());
-		            type = t;
+                    type = t;
                     if ("java.util.List".equals(t)) {
                         isArray = true;
                     } else {
-                        propMap.putIfAbsent("type", Any.wrap(t));
+                        propMap.putIfAbsent("type", t);
                     }
                 }
                 if ("items".equals(entryElement.getKey())) {
-                    Any a = entryElement.getValue();
-                    if (a.get("$ref").valueType() != ValueType.INVALID && isArray) {
+                    Map<String, Object> a = (Map)entryElement.getValue();
+                    if (a.get("$ref") != null && isArray) {
                         String s = a.get("$ref").toString();
                         s = s.substring(s.lastIndexOf('/') + 1);
                         s = s.substring(0,1).toUpperCase() + (s.length() > 1 ? s.substring(1) : "");
-		                propMap.put("type", getListOf(s));
+                        propMap.put("type", getListOf(s));
                     }
-                    if (a.get("type").valueType() != ValueType.INVALID && isArray) {
+                    if (a.get("type") != null && isArray) {
                         propMap.put("type", getListOf(typeMapping.get(a.get("type").toString())));
                     }
                 }
                 if ("$ref".equals(entryElement.getKey())) {
                     String s = entryElement.getValue().toString();
                     s = s.substring(s.lastIndexOf('/') + 1);
-		            s = s.substring(0,1).toUpperCase() + (s.length() > 1 ? s.substring(1) : "");
-                    propMap.put("type", Any.wrap(s));
+                    s = s.substring(0,1).toUpperCase() + (s.length() > 1 ? s.substring(1) : "");
+                    propMap.put("type", s);
                 }
                 if ("default".equals(entryElement.getKey())) {
-                    Any a = entryElement.getValue();
+                    Object a = entryElement.getValue();
                     propMap.put("default", a);
                 }
                 if ("enum".equals(entryElement.getKey())) {
-		            // different generate format for number enum
-		            if ("Integer".equals(type) || "Double".equals(type) || "Float".equals(type)
+                    // different generate format for number enum
+                    if ("Integer".equals(type) || "Double".equals(type) || "Float".equals(type)
                             || "Long".equals(type) || "Short".equals(type) || "java.math.BigDecimal".equals(type)) {
-		                propMap.put("isNumEnum", Any.wrap(true));
+                        propMap.put("isNumEnum", true);
                     }
-                    propMap.put("isEnum", Any.wrap(true));
-                    propMap.put("nameWithEnum", Any.wrap(name.substring(0, 1).toUpperCase() + name.substring(1) + "Enum"));
-		            propMap.put("value", getValidEnumName(entryElement));
+                    propMap.put("isEnum", true);
+                    propMap.put("nameWithEnum", name.substring(0, 1).toUpperCase() + name.substring(1) + "Enum");
+                    propMap.put("value", getValidEnumName(entryElement));
                 }
 
                 if ("format".equals(entryElement.getKey())) {
@@ -421,8 +381,8 @@ public class OpenApiGenerator implements Generator {
 
                         case "binary":
                             ultimateType = "byte[]";
-                            propMap.put(COMPARATOR, Any.wrap("Arrays"));
-                            propMap.put(HASHER, Any.wrap("Arrays"));
+                            propMap.put(COMPARATOR, "Arrays");
+                            propMap.put(HASHER, "Arrays");
                             break;
 
                         case "byte":
@@ -434,47 +394,47 @@ public class OpenApiGenerator implements Generator {
                     }
 
                     if (ultimateType != null) {
-                        propMap.put("type", Any.wrap(ultimateType));
+                        propMap.put("type", ultimateType);
                     }
                 }
 
                 if ("oneOf".equals(entryElement.getKey())) {
-                    List<Any> list = entryElement.getValue().asList();
-                    Any t = list.get(0).asMap().get("type");
+                    List<Object> list = (List<Object>)entryElement.getValue();
+                    Object t = ((Map)list.get(0)).get("type");
                     if (t != null) {
-                        propMap.put("type", Any.wrap(typeMapping.get(t.toString())));
+                        propMap.put("type", typeMapping.get(t.toString()));
                     } else {
                         // maybe reference? default type to object.
-                        propMap.put("type", Any.wrap("Object"));
+                        propMap.put("type", "Object");
                     }
                 }
                 if ("anyOf".equals(entryElement.getKey())) {
-                    List<Any> list = entryElement.getValue().asList();
-                    Any t = list.get(0).asMap().get("type");
+                    List<Object> list = (List)entryElement.getValue();
+                    Object t = ((Map)list.get(0)).get("type");
                     if (t != null) {
-                        propMap.put("type", Any.wrap(typeMapping.get(t.toString())));
+                        propMap.put("type", typeMapping.get(t.toString()));
                     } else {
                         // maybe reference? default type to object.
-                        propMap.put("type", Any.wrap("Object"));
+                        propMap.put("type", "Object");
                     }
                 }
                 if ("allOf".equals(entryElement.getKey())) {
-                    List<Any> list = entryElement.getValue().asList();
-                    Any t = list.get(0).asMap().get("type");
+                    List<Object> list = (List)entryElement.getValue();
+                    Object t = ((Map)list.get(0)).get("type");
                     if (t != null) {
-                        propMap.put("type", Any.wrap(typeMapping.get(t.toString())));
+                        propMap.put("type", typeMapping.get(t.toString()));
                     } else {
                         // maybe reference? default type to object.
-                        propMap.put("type", Any.wrap("Object"));
+                        propMap.put("type", "Object");
                     }
                 }
                 if ("not".equals(entryElement.getKey())) {
-                    Map<String, Any> m = entryElement.getValue().asMap();
-                    Any t = m.get("type");
+                    Map<String, Object> m = (Map)entryElement.getValue();
+                    Object t = m.get("type");
                     if (t != null) {
                         propMap.put("type", t);
                     } else {
-                        propMap.put("type", Any.wrap("Object"));
+                        propMap.put("type", "Object");
                     }
                 }
             }
@@ -484,123 +444,63 @@ public class OpenApiGenerator implements Generator {
     public static final String HASHER = "hasher";
     public static final String COMPARATOR = "comparator";
 
-    private Any getListOf(String s) {
-        return new UnresolvedTypeListAny(s);
+    private String getListOf(String s) {
+        return String.format("java.util.List<%s>", s);
     }
 
-  private static abstract class UnresolvedTypeAny extends Any {
-
-        Any type;
-
-        UnresolvedTypeAny(Any type) {
-            this.type = type;
+    // method used to convert string to valid java variable name
+    // 1. replace invalid character with '_'
+    // 2. prefix number with '_'
+    // 3. convert the first character of java keywords to upper case
+    public static String convertToValidJavaVariableName(String string) {
+        if (string == null || string.equals("") || SourceVersion.isName(string)) {
+            return string;
         }
-
-        private Any get() {
-            return type;
+        // to validate whether the string is Java keyword
+        if (SourceVersion.isKeyword(string)) {
+            return "_" + string;
         }
-
-        private void set(Any type) {
-            this.type = type;
+        // replace invalid characters with underscore
+        StringBuilder stringBuilder = new StringBuilder();
+        if (!Character.isJavaIdentifierStart(string.charAt(0))) {
+            stringBuilder.append('_');
         }
-
-        @Override
-        public Object object() {
-            return toString();
+        for (char c : string.toCharArray()) {
+            if (!Character.isJavaIdentifierPart(c)) {
+                stringBuilder.append('_');
+            } else {
+                stringBuilder.append(c);
+            }
         }
-
-        @Override
-        public boolean toBoolean() {
-            return Boolean.parseBoolean(toString());
-        }
-
-        @Override
-        public int toInt() {
-            return Integer.parseInt(toString());
-        }
-
-        @Override
-        public long toLong() {
-            return Long.parseLong(toString());
-        }
-
-        @Override
-        public float toFloat() {
-            return Float.parseFloat(toString());
-        }
-
-        @Override
-        public double toDouble() {
-            return Double.parseDouble(toString());
-        }
+        return stringBuilder.toString();
     }
 
-    private static class UnresolvedTypeHolderAny extends UnresolvedTypeAny {
-
-        UnresolvedTypeHolderAny(Any resolved) {
-            super(resolved);
-        }
-
-        @Override
-        public ValueType valueType() {
-            return type.valueType();
-        }
-
-        @Override
-        public String toString() {
-            return type.toString();
-        }
-
-        @Override
-        public void writeTo(JsonStream stream) throws IOException {
-            type.writeTo(stream);
-        }
+    private  boolean isEnumHasDescription(String string) {
+        return string.contains(":") || string.contains("{") || string.contains("(");
     }
 
-    private static class UnresolvedTypeListAny extends UnresolvedTypeAny {
+    private  String getEnumName(String string) {
+        if (string.contains(":")) return string.substring(0, string.indexOf(":")).trim();
+        if (string.contains("(") && string.contains(")")) return string.substring(0, string.indexOf("(")).trim();
+        if (string.contains("{") && string.contains("}")) return string.substring(0, string.indexOf("{")).trim();
+        return string;
+    }
 
-        UnresolvedTypeListAny(Any type) {
-            super(type);
-        }
+    private  String getEnumDescription(String string) {
+        if (string.contains(":")) return string.substring(string.indexOf(":") + 1).trim();
+        if (string.contains("(") && string.contains(")")) return string.substring(string.indexOf("(") + 1, string.indexOf(")")).trim();
+        if (string.contains("{") && string.contains("}")) return string.substring(string.indexOf("{") + 1, string.indexOf("}")).trim();
 
-        UnresolvedTypeListAny(String string) {
-            super(Any.wrap(string));
-        }
-
-        @Override
-        public ValueType valueType() {
-            return ValueType.ARRAY;
-        }
-
-        @Override
-        public void writeTo(JsonStream stream) throws IOException {
-            stream.writeRaw(toString());
-        }
-
-        @Override
-        public String toString() {
-            return UnresolvedTypeListAny.toString(type);
-        }
-
-        private static <T> String toString(Any type) {
-            return String.format("java.util.List<%s>", type.toString());
-        }
+        return string;
     }
 
     public List<Map<String, Object>> getOperationList(Object model) {
         List<Map<String, Object>> result = new ArrayList<>();
-        String s;
-        if (model instanceof Any) {
-            s = ((Any)model).toString();
-        } else if (model instanceof String) {
-            s = (String)model;
-        } else {
-            throw new RuntimeException("Invalid Model Class: " + model.getClass());
-        }
         OpenApi3 openApi3 = null;
         try {
-            openApi3 = (OpenApi3)new OpenApiParser().parse(s, new URL("https://oas.lightapi.net/"));
+            openApi3 = (OpenApi3)new OpenApiParser().parse((JsonNode)model, new URL("https://oas.lightapi.net/"));
         } catch (MalformedURLException e) {
+            e.printStackTrace();
         }
         String basePath = getBasePath(openApi3);
 
@@ -682,67 +582,20 @@ public class OpenApiGenerator implements Generator {
     }
 
     // method used to generate valid enum keys for enum contents
-    private Any getValidEnumName(Map.Entry<String, Any> entryElement) {
-        Iterator<Any> iterator = entryElement.getValue().iterator();
-        Map<String, Any> map = new HashMap<>();
+    private Object getValidEnumName(Map.Entry<String, Object> entryElement) {
+        Iterator<Object> iterator = ((List)entryElement.getValue()).iterator();
+        Map<String, Object> map = new HashMap<>();
         while (iterator.hasNext()) {
             String string = iterator.next().toString().trim();
             if (string.equals("")) continue;
             if (isEnumHasDescription(string)) {
-                map.put(convertToValidJavaVariableName(getEnumName(string)).toUpperCase(), Any.wrap(getEnumDescription(string)));
+                map.put(convertToValidJavaVariableName(getEnumName(string)).toUpperCase(), getEnumDescription(string));
             } else {
-                map.put(convertToValidJavaVariableName(string).toUpperCase(), Any.wrap(string));
+                map.put(convertToValidJavaVariableName(string).toUpperCase(), string);
             }
         }
-        return Any.wrap(map);
+        return map;
     }
-
-    // method used to convert string to valid java variable name
-    // 1. replace invalid character with '_'
-    // 2. prefix number with '_'
-    // 3. convert the first character of java keywords to upper case
-    public static String convertToValidJavaVariableName(String string) {
-        if (string == null || string.equals("") || SourceVersion.isName(string)) {
-            return string;
-        }
-        // to validate whether the string is Java keyword
-        if (SourceVersion.isKeyword(string)) {
-            return "_" + string;
-        }
-        // replace invalid characters with underscore
-	    StringBuilder stringBuilder = new StringBuilder();
-        if (!Character.isJavaIdentifierStart(string.charAt(0))) {
-            stringBuilder.append('_');
-        }
-        for (char c : string.toCharArray()) {
-            if (!Character.isJavaIdentifierPart(c)) {
-                stringBuilder.append('_');
-            } else {
-                stringBuilder.append(c);
-            }
-        }
-        return stringBuilder.toString();
-    }
-
-    private  boolean isEnumHasDescription(String string) {
-       return string.contains(":") || string.contains("{") || string.contains("(");
-    }
-
-    private  String getEnumName(String string) {
-        if (string.contains(":")) return string.substring(0, string.indexOf(":")).trim();
-        if (string.contains("(") && string.contains(")")) return string.substring(0, string.indexOf("(")).trim();
-        if (string.contains("{") && string.contains("}")) return string.substring(0, string.indexOf("{")).trim();
-        return string;
-    }
-
-    private  String getEnumDescription(String string) {
-        if (string.contains(":")) return string.substring(string.indexOf(":") + 1).trim();
-        if (string.contains("(") && string.contains(")")) return string.substring(string.indexOf("(") + 1, string.indexOf(")")).trim();
-        if (string.contains("{") && string.contains("}")) return string.substring(string.indexOf("{") + 1, string.indexOf("}")).trim();
-
-        return string;
-    }
-
 
     private String populateRequestBodyExample(Operation operation) {
         String result = "{\"content\": \"request body to be replaced\"}";
@@ -752,7 +605,7 @@ public class OpenApiGenerator implements Generator {
             if (mediaType != null) {
                 Object valueToBeStringify = null;
                 if (mediaType.getExamples() != null && !mediaType.getExamples().isEmpty()) {
-                    for (Entry<String, Example> entry : mediaType.getExamples().entrySet()) {
+                    for (Map.Entry<String, Example> entry : mediaType.getExamples().entrySet()) {
                         valueToBeStringify = entry.getValue().getValue();
                     }
                 } else if (mediaType.getExample() != null) {
@@ -761,7 +614,11 @@ public class OpenApiGenerator implements Generator {
                 if (valueToBeStringify == null) {
                     return result;
                 }
-                result = JsonStream.serialize(valueToBeStringify);
+                try {
+                    result = Generator.jsonMapper.writeValueAsString(valueToBeStringify);
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
                 if (result.startsWith("\"")) {
                     result = result.substring(1, result.length() - 1);
                 }
@@ -784,7 +641,13 @@ public class OpenApiGenerator implements Generator {
                 example = mediaType.get().getExample();
                 if (example != null) {
                     result.put("statusCode", statusCode);
-                    result.put("example", JsonStream.serialize(example));
+                    String ex = null;
+                    try {
+                        ex = Generator.jsonMapper.writeValueAsString(example);
+                    } catch (JsonProcessingException e) {
+                        e.printStackTrace();
+                    }
+                    result.put("example", ex);
                 } else {
                     // check if there are multiple examples
                     Map<String, Example> exampleMap = mediaType.get().getExamples();
@@ -794,7 +657,13 @@ public class OpenApiGenerator implements Generator {
                         Example e = entry.getValue();
                         if (e != null) {
                             result.put("statusCode", statusCode);
-                            result.put("example", JsonStream.serialize(e.getValue()));
+                            String s = null;
+                            try {
+                                s = Generator.jsonMapper.writeValueAsString(e.getValue());
+                            } catch (JsonProcessingException ex) {
+                                ex.printStackTrace();
+                            }
+                            result.put("example", s);
                         }
                     }
                 }
@@ -803,28 +672,26 @@ public class OpenApiGenerator implements Generator {
         return result;
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(OpenApiGenerator.class);
-
-    private void loadModel(String classVarName, String parentClassName, Map<String, Any> value, Any schemas, boolean overwriteModel, String targetPath, String modelPackage, List<Runnable> modelCreators, Map<String, Any> references, List<Map<String, Any>> parentClassProps) throws IOException {
+    private void loadModel(String classVarName, String parentClassName, Map<String, Object> value, Map<String, Object> schemas, boolean overwriteModel, String targetPath, String modelPackage, List<Runnable> modelCreators, Map<String, Object> references, List<Map<String, Object>> parentClassProps) throws IOException {
         final String modelFileName = classVarName.substring(0, 1).toUpperCase() + classVarName.substring(1);
-        final List<Map<String, Any>> props = new ArrayList<>();
-        final List<Map<String, Any>> parentProps = (parentClassProps == null) ? new ArrayList<>() : new ArrayList<>(parentClassProps);
+        final List<Map<String, Object>> props = new ArrayList<>();
+        final List<Map<String, Object>> parentProps = (parentClassProps == null) ? new ArrayList<>() : new ArrayList<>(parentClassProps);
         String type = null;
         String enums = null;
         boolean isEnumClass = false;
-        List<Any> required = null;
+        List<Object> required = null;
         boolean isAbstractClass = false;
 
         // iterate through each schema in the components
-        Queue<Map.Entry<String, Any>> schemaElementQueue = new LinkedList<>();
+        Queue<Map.Entry<String, Object>> schemaElementQueue = new LinkedList<>();
         // cache the visited elements to prevent loop reference
         Set<String> seen = new HashSet<>();
         // add elements into queue to perform a BFS
-        for (Map.Entry<String, Any> entrySchema : value.entrySet()) {
+        for (Map.Entry<String, Object> entrySchema : value.entrySet()) {
             schemaElementQueue.offer(entrySchema);
         }
         while (!schemaElementQueue.isEmpty()) {
-            Map.Entry<String, Any> currentElement = schemaElementQueue.poll();
+            Map.Entry<String, Object> currentElement = schemaElementQueue.poll();
             String currentElementKey = currentElement.getKey();
             // handle the base elements
             if ("type".equals(currentElementKey) && type == null) {
@@ -832,17 +699,17 @@ public class OpenApiGenerator implements Generator {
             }
             if ("enum".equals(currentElementKey)) {
                 isEnumClass = true;
-                enums = currentElement.getValue().asList().toString();
+                enums = currentElement.getValue().toString();
                 enums = enums.substring(enums.indexOf("[") + 1, enums.indexOf("]"));
             }
             if ("properties".equals(currentElementKey)) {
-                handleProperties(props, currentElement.getValue().asMap());
+                handleProperties(props, (Map<String, Object>)currentElement.getValue());
             }
             if ("required".equals(currentElementKey)) {
                 if (required == null) {
                     required = new ArrayList<>();
                 }
-                required.addAll(currentElement.getValue().asList());
+                required.addAll((List)currentElement.getValue());
             }
             // expend the ref elements and add to the queue
             if ("$ref".equals(currentElementKey)) {
@@ -850,14 +717,14 @@ public class OpenApiGenerator implements Generator {
                 s = s.substring(s.lastIndexOf('/') + 1);
                 if (seen.contains(s)) continue;
                 seen.add(s);
-                for (Map.Entry<String, Any> schema : schemas.get(s).asMap().entrySet()) {
+                for (Map.Entry<String, Object> schema : ((Map<String, Object>)schemas.get(s)).entrySet()) {
                     schemaElementQueue.offer(schema);
                 }
             }
             // expand the allOf elements and add to the queue
             if ("allOf".equals(currentElementKey)) {
-                for (Any listItem : currentElement.getValue().asList()) {
-                    for (Map.Entry<String, Any> allOfItem : listItem.asMap().entrySet()) {
+                for (Object listItem : (List)currentElement.getValue()) {
+                    for (Map.Entry<String, Object> allOfItem : ((Map<String, Object>)listItem).entrySet()) {
                         schemaElementQueue.offer(allOfItem);
                     }
                 }
@@ -867,12 +734,12 @@ public class OpenApiGenerator implements Generator {
                 isAbstractClass = true;
                 parentProps.addAll(props);
                 String parentName = classVarName.substring(0, 1) + classVarName.substring(1);
-                for (Any listItem : currentElement.getValue().asList()) {
-                    for (Map.Entry<String, Any> oneOfItem : listItem.asMap().entrySet()) {
+                for (Object listItem : (List)currentElement.getValue()) {
+                    for (Map.Entry<String, Object> oneOfItem : ((Map<String, Object>)listItem).entrySet()) {
                         if ("$ref".equals(oneOfItem.getKey())) {
                             String s = oneOfItem.getValue().toString();
                             s = s.substring(s.lastIndexOf('/') + 1);
-                            loadModel(extendModelName(s, classVarName), s, schemas.get(s).asMap(), schemas, overwriteModel, targetPath, modelPackage, modelCreators, references, parentProps);
+                            loadModel(extendModelName(s, classVarName), s, (Map<String, Object>)schemas.get(s), schemas, overwriteModel, targetPath, modelPackage, modelCreators, references, parentProps);
                         }
                     }
                 }
@@ -894,24 +761,24 @@ public class OpenApiGenerator implements Generator {
             final boolean abstractIfClass = isAbstractClass;
             modelCreators.add(() -> {
                 final int referencesCount = references.size();
-                for (Map<String, Any> properties : props) {
-                    Any any = properties.get("type");
+                for (Map<String, Object> properties : props) {
+                    Object any = properties.get("type");
                     if (any != null) {
-                        if (any.valueType() == ValueType.STRING) {
-                            Any resolved = references.get(any.toString());
+                        if (any instanceof String) {
+                            Object resolved = references.get(any);
                             if (resolved == null) {
                                 continue;
                             }
-                            any = new UnresolvedTypeHolderAny(resolved);
-                            properties.put("type", any);
+                            any = resolved;
+                            properties.put("type", resolved);
                         }
 
                         int iteration = 0;
                         do {
-                            UnresolvedTypeAny previous = null;
-                            while (any instanceof UnresolvedTypeAny) {
-                                previous = (UnresolvedTypeAny)any;
-                                any = ((UnresolvedTypeAny)any).get();
+                            Object previous = null;
+                            while (unresolvedListType((String)any)) {
+                                previous = any;
+                                any = getListObjectType((String)any);
                             }
 
                             if (any == null) {
@@ -920,12 +787,13 @@ public class OpenApiGenerator implements Generator {
                                 throw new TypeNotPresentException(any.toString(), null);
                             }
 
-                            if (any.valueType() == ValueType.STRING) {
-                                any = references.get(any.toString());
+                            if (any instanceof String) {
+                                any = references.get(any);
                                 if (any == null) {
                                     break;
                                 } else {
-                                    previous.set(any);
+                                    previous = setListObjectType((String)previous, (String)any);
+                                    properties.put("type", previous);
                                 }
                             } else {
                                 break;
@@ -946,8 +814,8 @@ public class OpenApiGenerator implements Generator {
                 }
             });
         } else {
-            HashMap<String, Any> map = new HashMap<>(1);
-            map.put(classVarName, Any.wrap(value));
+            HashMap<String, Object> map = new HashMap<>(1);
+            map.put(classVarName, value);
             handleProperties(props, map);
             if (props.isEmpty()) {
                 throw new IllegalStateException("Properties empty for " + classVarName + "!");
@@ -958,5 +826,36 @@ public class OpenApiGenerator implements Generator {
     }
     private String extendModelName(String str1, String str2) {
         return str1 + str2.substring(0, 1).toUpperCase() + str2.substring(1);
+    }
+    private String getListObjectType(String listType) {
+        if(listType != null && listType.contains("<") && listType.contains(">")) {
+            return listType.substring(listType.indexOf("<") + 1, listType.indexOf(">"));
+        } else {
+            return listType;
+        }
+    }
+
+    private String setListObjectType(String original, String resolved) {
+        if(!original.equals(resolved) && original.contains("<") && original.contains(">")) {
+            String replace = original.substring(original.indexOf("<") + 1, original.indexOf(">"));
+            original = original.replace(replace, resolved);
+        }
+        return original;
+    }
+
+    private boolean unresolvedListType(String listType) {
+        boolean result = false;
+        if(listType != null && listType.contains("java.util.List")) {
+            String objType = getListObjectType(listType);
+            if(!objType.equals("Boolean")
+                    && !objType.equals("Integer")
+                    && !objType.equals("Long")
+                    && !objType.equals("Float")
+                    && !objType.equals("Double")
+                    && !objType.equals("Object")) {
+                result = true;
+            }
+        }
+        return result;
     }
 }

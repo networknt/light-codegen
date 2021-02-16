@@ -1,11 +1,11 @@
-@import com.jsoniter.any.Any
-@args (Any config, String functionName)
+@import com.fasterxml.jackson.databind.JsonNode
+@args (JsonNode config, String functionName)
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>@config.get("groupId")</groupId>
+    <groupId>@config.get("groupId").textValue()</groupId>
     <artifactId>@functionName</artifactId>
-    <version>@config.get("version")</version>
+    <version>@config.get("version").textValue()</version>
     <packaging>jar</packaging>
     <name>@functionName</name>
     <properties>
@@ -61,7 +61,7 @@
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
-            <artifactId>@if(config.toBoolean("useLightProxy")){lambda-interceptor}else{request-handler}</artifactId>
+            <artifactId>@if(config.get("useLightProxy").booleanValue()){lambda-interceptor}else{request-handler}</artifactId>
             <version>${version.light-4j}</version>
         </dependency>
         <dependency>

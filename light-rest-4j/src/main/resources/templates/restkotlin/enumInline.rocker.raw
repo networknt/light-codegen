@@ -1,8 +1,7 @@
-@import com.jsoniter.any.Any
 @import java.util.Map
 @import java.util.List
-@args (Map<String, Any> prop)
-    @with (v = prop.get("nameWithEnum") + ".values()", value = prop.get("value").asList()) {
+@args (Map<String, Object> prop)
+    @with (v = prop.get("nameWithEnum") + ".values()", value = (List)prop.get("value")) {
     public enum @prop.get("nameWithEnum") {
         @for((i, item) :  value) {
         @with(u = item.toString().toUpperCase().replaceAll("-", "_")) {@if (i.index() <  value.size() - 1) {@u ("@item"),}@if(i.index() == value.size() - 1) {@u ("@item");}}

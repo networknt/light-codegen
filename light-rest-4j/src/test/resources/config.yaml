@@ -1,0 +1,26 @@
+---
+# A light-codegen config file to generate the project used with light-proxy sidecar.
+# It is the same as the original petstore config.json but with useSidecar set to true.
+# This will make sure that the API doesn't wire in some of the middleware handlers as
+# they are used in the light-proxy to address these cross-cutting concerns.
+name: petstore
+version: 3.0.1
+groupId: com.networknt
+artifactId: petstore
+rootPackage: com.networknt.petstore
+handlerPackage: com.networknt.petstore.handler
+modelPackage: com.networknt.petstore.model
+overwriteHandler: true
+overwriteHandlerTest: true
+overwriteModel: true
+useSidecar: true
+httpPort: 8080
+enableHttp: false
+httpsPort: 8443
+enableHttps: true
+enableHttp2: true
+enableRegistry: false
+supportDb: false
+supportH2ForTest: false
+supportClient: true
+dockerOrganization: networknt

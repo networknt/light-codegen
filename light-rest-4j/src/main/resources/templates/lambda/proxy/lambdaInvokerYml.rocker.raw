@@ -1,6 +1,5 @@
 @import java.util.Map
 @import java.util.List
-@import com.jsoniter.any.Any
 @args (String region, List<Map<String, Object>> items)
 # The aws region that is used to create the LambdaClient.
 region: @region

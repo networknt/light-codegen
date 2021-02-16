@@ -13,9 +13,12 @@ import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fizzed.rocker.runtime.ArrayOfByteArraysOutput;
 import com.fizzed.rocker.runtime.DefaultRockerModel;
-import com.jsoniter.any.Any;
 
 import org.apache.commons.io.IOUtils;
 
@@ -28,19 +31,22 @@ import org.apache.commons.io.IOUtils;
  * @author Steve Hu
  */
 public interface Generator {
-
+    // Jackson ObjectMapper with YAML support.
+    public static ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory());
+    public static ObjectMapper jsonMapper = new ObjectMapper();
     // config schema cache
     Map<String, byte []> schemaMap = new HashMap<>();
 
     /**
-     * Generate the project based on the input parameters.
+     * Generate the project based on the input parameters. For most frameworks, the model can be converted to JSON, but
+     * the GraphQL is using a schema file that can only be passed in as a string. This is why, the model is an Object.
      *
      * @param targetPath The output directory of the generated project
      * @param model The optional model data that trigger the generation, i.e. swagger specification, graphql IDL etc.
      * @param config A json object that controls how the generator behaves.
      * @throws IOException throws IOException
      */
-    void generate(String targetPath, Object model, Any config) throws IOException;
+    void generate(String targetPath, Object model, JsonNode config) throws IOException;
 
     /**
      * Get generator name
@@ -169,6 +175,316 @@ public interface Generator {
         }
 
         Files.copy(is, folder, StandardCopyOption.REPLACE_EXISTING);
+    }
+
+    default String getRootPackage(JsonNode config, String defaultValue) {
+        String rootPackage = defaultValue == null ? "com.networknt.app" : defaultValue;
+        JsonNode jsonNode = config.get("rootPackage");
+        if(jsonNode == null) {
+            ((ObjectNode)config).put("rootPackage", rootPackage);
+        } else {
+            rootPackage = jsonNode.textValue();
+        }
+        return rootPackage;
+    }
+
+    default String getModelPackage(JsonNode config, String defaultValue) {
+        String rootPackage = getRootPackage(config, null);
+        String modelPackage = defaultValue == null ? rootPackage + ".model" : defaultValue;
+        JsonNode jsonNode = config.get("modelPackage");
+        if(jsonNode == null) {
+            ((ObjectNode)config).put("modelPackage", modelPackage);
+        } else {
+            modelPackage = jsonNode.textValue();
+        }
+        return modelPackage;
+    }
+
+    default String getHandlerPackage(JsonNode config, String defaultValue) {
+        String rootPackage = getRootPackage(config, null);
+        String handlerPackage = defaultValue == null ? rootPackage + ".handler" : defaultValue;
+        JsonNode jsonNode = config.get("handlerPackage");
+        if(jsonNode == null) {
+            ((ObjectNode)config).put("handlerPackage", handlerPackage);
+        } else {
+            handlerPackage = jsonNode.textValue();
+        }
+        return handlerPackage;
+    }
+
+    default boolean isOverwriteHandler(JsonNode config, Boolean defaultValue) {
+        boolean overwriteHandler = defaultValue == null ? true : defaultValue;
+        JsonNode jsonNode = config.get("overwriteHandler");
+        if(jsonNode == null) {
+            ((ObjectNode)config).put("overwriteHandler", overwriteHandler);
+        } else {
+            overwriteHandler = jsonNode.booleanValue();
+        }
+        return overwriteHandler;
+    }
+
+    default boolean isOverwriteHandlerTest(JsonNode config, Boolean defaultValue) {
+        boolean overwriteHandlerTest = defaultValue == null ? true : defaultValue;
+        JsonNode jsonNode = config.get("overwriteHandlerTest");
+        if(jsonNode == null) {
+            ((ObjectNode)config).put("overwriteHandlerTest", overwriteHandlerTest);
+        } else {
+            overwriteHandlerTest = jsonNode.booleanValue();
+        }
+        return overwriteHandlerTest;
+    }
+
+    default boolean isOverwriteModel(JsonNode config, Boolean defaultValue) {
+        boolean overwriteModel = defaultValue == null ? true : defaultValue;
+        JsonNode jsonNode = config.get("overwriteModel");
+        if(jsonNode == null) {
+            ((ObjectNode)config).put("overwriteModel", overwriteModel);
+        } else {
+            overwriteModel = jsonNode.booleanValue();
+        }
+        return overwriteModel;
+    }
+
+    default boolean isGenerateModelOnly(JsonNode config, Boolean defaultValue) {
+        boolean generateModelOnly = defaultValue == null ? false : defaultValue;
+        JsonNode jsonNode = config.get("generateModelOnly");
+        if(jsonNode == null) {
+            ((ObjectNode)config).put("generateModelOnly", generateModelOnly);
+        } else {
+            generateModelOnly = jsonNode.booleanValue();
+        }
+        return generateModelOnly;
+    }
+
+    default boolean isEnableHttp(JsonNode config, Boolean defaultValue) {
+        boolean enableHttp = defaultValue == null ? false : defaultValue;
+        JsonNode jsonNode = config.get("enableHttp");
+        if(jsonNode == null) {
+            ((ObjectNode)config).put("enableHttp", enableHttp);
+        } else {
+            enableHttp = jsonNode.booleanValue();
+        }
+        return enableHttp;
+    }
+
+    default String getHttpPort(JsonNode config, String defaultValue) {
+        String httpPort = defaultValue == null ? "8080" : defaultValue;
+        JsonNode jsonNode = config.get("httpPort");
+        if(jsonNode == null) {
+            ((ObjectNode)config).put("httpPort", httpPort);
+        } else {
+            httpPort = jsonNode.asText();
+        }
+        return httpPort;
+    }
+
+    default boolean isEnableHttps(JsonNode config, Boolean defaultValue) {
+        boolean enableHttps = defaultValue == null ? true : defaultValue;
+        JsonNode jsonNode = config.get("enableHttps");
+        if(jsonNode == null) {
+            ((ObjectNode)config).put("enableHttps", enableHttps);
+        } else {
+            enableHttps = jsonNode.booleanValue();
+        }
+        return enableHttps;
+    }
+
+    default boolean isEnableHttp2(JsonNode config, Boolean defaultValue) {
+        boolean enableHttp2 = defaultValue == null ? true : defaultValue;
+        JsonNode jsonNode = config.get("enableHttp2");
+        if(jsonNode == null) {
+            ((ObjectNode)config).put("enableHttp2", enableHttp2);
+        } else {
+            enableHttp2 = jsonNode.booleanValue();
+        }
+        return enableHttp2;
+    }
+
+    default String getHttpsPort(JsonNode config, String defaultValue) {
+        String httpsPort = defaultValue == null ? "8443" : defaultValue;
+        JsonNode jsonNode = config.get("httpsPort");
+        if(jsonNode == null) {
+            ((ObjectNode)config).put("httpsPort", httpsPort);
+        } else {
+            httpsPort = jsonNode.asText();
+        }
+        return httpsPort;
+    }
+
+    default boolean isEnableRegistry(JsonNode config, Boolean defaultValue) {
+        boolean enableRegistry = defaultValue == null ? false : defaultValue;
+        JsonNode jsonNode = config.get("enableRegistry");
+        if(jsonNode == null) {
+            ((ObjectNode)config).put("enableRegistry", enableRegistry);
+        } else {
+            enableRegistry = jsonNode.booleanValue();
+        }
+        return enableRegistry;
+    }
+
+    default boolean isEclipseIDE(JsonNode config, Boolean defaultValue) {
+        boolean eclipseIDE = defaultValue == null ? false : defaultValue;
+        JsonNode jsonNode = config.get("eclipseIDE");
+        if(jsonNode == null) {
+            ((ObjectNode)config).put("eclipseIDE", eclipseIDE);
+        } else {
+            eclipseIDE = jsonNode.booleanValue();
+        }
+        return eclipseIDE;
+    }
+
+    default boolean isSupportClient(JsonNode config, Boolean defaultValue) {
+        boolean supportClient = defaultValue == null ? false : defaultValue;
+        JsonNode jsonNode = config.get("supportClient");
+        if(jsonNode == null) {
+            ((ObjectNode)config).put("supportClient", supportClient);
+        } else {
+            supportClient = jsonNode.booleanValue();
+        }
+        return supportClient;
+    }
+
+    default boolean isPrometheusMetrics(JsonNode config, Boolean defaultValue) {
+        boolean prometheusMetrics = defaultValue == null ? false : defaultValue;
+        JsonNode jsonNode = config.get("prometheusMetrics");
+        if(jsonNode == null) {
+            ((ObjectNode)config).put("prometheusMetrics", prometheusMetrics);
+        } else {
+            prometheusMetrics = jsonNode.booleanValue();
+        }
+        return prometheusMetrics;
+    }
+
+    default String getDockerOrganization(JsonNode config, String defaultValue) {
+        String dockerOrganization = defaultValue == null ? "networknt" : defaultValue;
+        JsonNode jsonNode = config.get("dockerOrganization");
+        if(jsonNode == null) {
+            ((ObjectNode)config).put("dockerOrganization", dockerOrganization);
+        } else {
+            dockerOrganization = jsonNode.asText();
+        }
+        return dockerOrganization;
+    }
+
+    default String getVersion(JsonNode config, String defaultValue) {
+        String version = defaultValue == null ? "1.0.0" : defaultValue;
+        JsonNode jsonNode = config.get("version");
+        if(jsonNode == null) {
+            ((ObjectNode)config).put("version", version);
+        } else {
+            version = jsonNode.asText();
+        }
+        return version;
+    }
+
+    default String getGroupId(JsonNode config, String defaultValue) {
+        String groupId = defaultValue == null ? "com.networknt" : defaultValue;
+        JsonNode jsonNode = config.get("groupId");
+        if(jsonNode == null) {
+            ((ObjectNode)config).put("groupId", groupId);
+        } else {
+            groupId = jsonNode.asText();
+        }
+        return groupId;
+    }
+
+    default String getArtifactId(JsonNode config, String defaultValue) {
+        String artifactId = defaultValue == null ? "app" : defaultValue;
+        JsonNode jsonNode = config.get("artifactId");
+        if(jsonNode == null) {
+            ((ObjectNode)config).put("artifactId", artifactId);
+        } else {
+            artifactId = jsonNode.asText();
+        }
+        return artifactId;
+    }
+
+    default boolean isSpecChangeCodeReGenOnly(JsonNode config, Boolean defaultValue) {
+        boolean specChangeCodeReGenOnly = defaultValue == null ? false : defaultValue;
+        JsonNode jsonNode = config.get("specChangeCodeReGenOnly");
+        if(jsonNode == null) {
+            ((ObjectNode)config).put("specChangeCodeReGenOnly", specChangeCodeReGenOnly);
+        } else {
+            specChangeCodeReGenOnly = jsonNode.booleanValue();
+        }
+        return specChangeCodeReGenOnly;
+    }
+
+    default boolean isEnableParamDescription(JsonNode config, Boolean defaultValue) {
+        boolean enableParamDescription = defaultValue == null ? false : defaultValue;
+        JsonNode jsonNode = config.get("enableParamDescription");
+        if(jsonNode == null) {
+            ((ObjectNode)config).put("enableParamDescription", enableParamDescription);
+        } else {
+            enableParamDescription = jsonNode.booleanValue();
+        }
+        return enableParamDescription;
+    }
+
+    default boolean isSkipPomFile(JsonNode config, Boolean defaultValue) {
+        boolean skipPomFile = defaultValue == null ? false : defaultValue;
+        JsonNode jsonNode = config.get("skipPomFile");
+        if(jsonNode == null) {
+            ((ObjectNode)config).put("skipPomFile", skipPomFile);
+        } else {
+            skipPomFile = jsonNode.booleanValue();
+        }
+        return skipPomFile;
+    }
+
+    default boolean isKafkaProducer(JsonNode config, Boolean defaultValue) {
+        boolean kafkaProducer = defaultValue == null ? false : defaultValue;
+        JsonNode jsonNode = config.get("kafkaProducer");
+        if(jsonNode == null) {
+            ((ObjectNode)config).put("kafkaProducer", kafkaProducer);
+        } else {
+            kafkaProducer = jsonNode.booleanValue();
+        }
+        return kafkaProducer;
+    }
+
+    default boolean isKafkaConsumer(JsonNode config, Boolean defaultValue) {
+        boolean kafkaConsumer = defaultValue == null ? false : defaultValue;
+        JsonNode jsonNode = config.get("kafkaConsumer");
+        if(jsonNode == null) {
+            ((ObjectNode)config).put("kafkaConsumer", kafkaConsumer);
+        } else {
+            kafkaConsumer = jsonNode.booleanValue();
+        }
+        return kafkaConsumer;
+    }
+
+    default boolean isSupportAvro(JsonNode config, Boolean defaultValue) {
+        boolean supportAvro = defaultValue == null ? false : defaultValue;
+        JsonNode jsonNode = config.get("supportAvro");
+        if(jsonNode == null) {
+            ((ObjectNode)config).put("supportAvro", supportAvro);
+        } else {
+            supportAvro = jsonNode.booleanValue();
+        }
+        return supportAvro;
+    }
+
+    default String getKafkaTopic(JsonNode config, String defaultValue) {
+        String kafkaTopic = defaultValue == null ? "event" : defaultValue;
+        JsonNode jsonNode = config.get("kafkaTopic");
+        if(jsonNode == null) {
+            ((ObjectNode)config).put("kafkaTopic", kafkaTopic);
+        } else {
+            kafkaTopic = jsonNode.asText();
+        }
+        return kafkaTopic;
+    }
+
+    default String getDecryptOption(JsonNode config, String defaultValue) {
+        String decryptOption = defaultValue == null ? "default" : defaultValue;
+        JsonNode jsonNode = config.get("decryptOption");
+        if(jsonNode == null) {
+            ((ObjectNode)config).put("decryptOption", decryptOption);
+        } else {
+            decryptOption = jsonNode.asText();
+        }
+        return decryptOption;
     }
 
 }

@@ -1,13 +1,7 @@
 package com.networknt.codegen;
 
-import com.jsoniter.JsonIterator;
-import com.jsoniter.any.Any;
-import com.networknt.codegen.rest.OpenApiGenerator;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.networknt.codegen.rest.OpenApiKotlinGenerator;
-import com.thoughtworks.qdox.JavaProjectBuilder;
-import com.thoughtworks.qdox.model.JavaClass;
-import com.thoughtworks.qdox.model.JavaField;
-import com.thoughtworks.qdox.model.JavaPackage;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -40,24 +34,23 @@ public class OpenApiKotlinGeneratorTest {
 
     @Test
     public void testGeneratorJson() throws IOException {
-        Any anyConfig = JsonIterator.parse(OpenApiKotlinGeneratorTest.class.getResourceAsStream(configName), 1024).readAny();
-        Any anyModel = JsonIterator.parse(OpenApiKotlinGeneratorTest.class.getResourceAsStream(openapiJson), 1024).readAny();
-
+        JsonNode config = Generator.jsonMapper.readTree(OpenApiKotlinGeneratorTest.class.getResourceAsStream(configName));
+        JsonNode model = Generator.yamlMapper.readTree(OpenApiKotlinGeneratorTest.class.getResourceAsStream(openapiYaml));
         OpenApiKotlinGenerator generator = new OpenApiKotlinGenerator();
-        generator.generate(targetPath, anyModel, anyConfig);
+        generator.generate(targetPath, model, config);
     }
 
     @Test
     public void testGeneratorYaml() throws IOException {
-        Any anyConfig = JsonIterator.parse(OpenApiKotlinGeneratorTest.class.getResourceAsStream(configName), 1024).readAny();
-        String strModel = new Scanner(OpenApiKotlinGeneratorTest.class.getResourceAsStream(openapiYaml), "UTF-8").useDelimiter("\\A").next();
+        JsonNode config = Generator.jsonMapper.readTree(OpenApiKotlinGeneratorTest.class.getResourceAsStream(configName));
+        JsonNode model = Generator.yamlMapper.readTree(OpenApiKotlinGeneratorTest.class.getResourceAsStream(openapiYaml));
         OpenApiKotlinGenerator generator = new OpenApiKotlinGenerator();
-        generator.generate(targetPath, strModel, anyConfig);
+        generator.generate(targetPath, model, config);
     }
 
     @Test
     public void testGetOperationList() throws IOException {
-        Any anyModel = JsonIterator.parse(OpenApiGeneratorTest.class.getResourceAsStream(openapiJson), 1024).readAny();
+        String anyModel = new Scanner(OpenApiKotlinGeneratorTest.class.getResourceAsStream(openapiYaml), "UTF-8").useDelimiter("\\A").next();
         OpenApiKotlinGenerator generator = new OpenApiKotlinGenerator();
         List list = generator.getOperationList(anyModel);
         System.out.println(list);
@@ -78,9 +71,9 @@ public class OpenApiKotlinGeneratorTest {
     }
     @Test
     public void testNoServersGeneratorYaml() throws IOException {
-        Any anyConfig = JsonIterator.parse(OpenApiKotlinGeneratorTest.class.getResourceAsStream(configName), 1024).readAny();
-        String strModel = new Scanner(OpenApiKotlinGeneratorTest.class.getResourceAsStream(openapiNoServersYaml), "UTF-8").useDelimiter("\\A").next();
+        JsonNode config = Generator.jsonMapper.readTree(OpenApiKotlinGeneratorTest.class.getResourceAsStream(configName));
+        JsonNode model = Generator.yamlMapper.readTree(OpenApiKotlinGeneratorTest.class.getResourceAsStream(openapiNoServersYaml));
         OpenApiKotlinGenerator generator = new OpenApiKotlinGenerator();
-        generator.generate(targetPath, strModel, anyConfig);
+        generator.generate(targetPath, model, config);
     }
 }

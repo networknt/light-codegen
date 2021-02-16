@@ -1,5 +1,5 @@
-@import com.jsoniter.any.Any
-@args (String handlerPackage, String host, String service, Any item)
+@import com.fasterxml.jackson.databind.JsonNode
+@args (String handlerPackage, String host, String service, JsonNode item)
 package @handlerPackage;
 
 import com.networknt.client.Http2Client;
@@ -23,11 +23,11 @@ import java.net.URI;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 
-@with(s1 = item.get("handler") + "Test") {public class @s1} {
+@with(s1 = item.get("handler").textValue() + "Test") {public class @s1} {
     @@ClassRule
     public static TestServer server = TestServer.getInstance();
 
-    @with(s2 = item.get("handler") + ".class") {static final Logger logger = LoggerFactory.getLogger(@s2); }
+    @with(s2 = item.get("handler").textValue() + ".class") {static final Logger logger = LoggerFactory.getLogger(@s2); }
     static final boolean enableHttp2 = server.getServerConfig().isEnableHttp2();
     static final boolean enableHttps = server.getServerConfig().isEnableHttps();
     static final int httpPort = server.getServerConfig().getHttpPort();
@@ -35,7 +35,7 @@ import java.util.concurrent.atomic.AtomicReference;
     static final String url = enableHttp2 || enableHttps ? "https://localhost:" + httpsPort : "http://localhost:" + httpPort;
 
     @@Test
-    @with(s3 = item.get("handler") + "()") {public void test@s3} throws ClientException, ApiException {
+    @with(s3 = item.get("handler").textValue() + "()") {public void test@s3} throws ClientException, ApiException {
         /*
         final Http2Client client = Http2Client.getInstance();
         final CountDownLatch latch = new CountDownLatch(1);

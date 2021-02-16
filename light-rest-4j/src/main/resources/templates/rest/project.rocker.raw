@@ -1,9 +1,9 @@
 @option discardLogicWhitespace=true
-@import com.jsoniter.any.Any
-@args (Any config)
+@import com.fasterxml.jackson.databind.JsonNode
+@args (JsonNode config)
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>@config.get("name")</name>
+	<name>@config.get("name").textValue()</name>
 	<comment></comment>
 	<projects>
 	</projects>
