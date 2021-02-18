@@ -10,6 +10,7 @@
   "enableHttp": true,
   "httpsPort": 8443,
   "enableHttps": false,
+  "enableHttp2": false,
   "enableRegistry": false,
   "supportDb": true,
   "dbInfo": {

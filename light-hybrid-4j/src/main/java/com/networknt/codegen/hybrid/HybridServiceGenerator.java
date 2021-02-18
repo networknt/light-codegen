@@ -77,7 +77,7 @@ public class HybridServiceGenerator implements HybridGenerator {
         // config
         transfer(targetPath, ("src.test.resources.config").replace(".", separator), "service.yml", templates.hybrid.serviceYml.template(config));
 
-        transfer(targetPath, ("src.test.resources.config").replace(".", separator), "server.yml", templates.hybrid.serverYml.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, "49587", enableHttps, "49588", enableHttp2, enableRegistry, version));
+        transfer(targetPath, ("src.test.resources.config").replace(".", separator), "server.yml", templates.hybrid.serverYml.template(serviceId, enableHttp, "49587", enableHttps, "49588", enableHttp2, enableRegistry, version));
         //transfer(targetPath, ("src.test.resources.config").replace(".", separator), "secret.yml", templates.hybrid.secretYml.template());
         transfer(targetPath, ("src.test.resources.config").replace(".", separator), "hybrid-security.yml", templates.hybrid.securityYml.template());
         transfer(targetPath, ("src.test.resources.config").replace(".", separator), "client.yml", templates.hybrid.clientYml.template());
@@ -112,10 +112,10 @@ public class HybridServiceGenerator implements HybridGenerator {
             for(JsonNode item : items) {
                 JsonNode any = item.get("example");
                 String example = any != null ? StringEscapeUtils.escapeJson(any.toString()).trim() : "";
-                if(!overwriteHandler && checkExist(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), item.get("handler") + ".java")) {
+                if(!overwriteHandler && checkExist(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), item.get("handler").textValue() + ".java")) {
                     continue;
                 }
-                transfer(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), item.get("handler") + ".java", templates.hybrid.handler.template(handlerPackage, host, service, item, example));
+                transfer(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), item.get("handler").textValue() + ".java", templates.hybrid.handler.template(handlerPackage, host, service, item, example));
                 String sId  = host + "/" + service + "/" + item.get("name") + "/" + item.get("version");
                 Map<String, Object> map = new HashMap<>();
                 map.put("schema", item.get("schema"));
@@ -131,10 +131,10 @@ public class HybridServiceGenerator implements HybridGenerator {
             // handler test cases
             transfer(targetPath, ("src.test.java." + handlerPackage + ".").replace(".", separator),  "TestServer.java", templates.hybrid.testServer.template(handlerPackage));
             for(JsonNode item : items) {
-                if(!overwriteHandlerTest && checkExist(targetPath, ("src.test.java." + handlerPackage).replace(".", separator), item.get("handler") + "Test.java")) {
+                if(!overwriteHandlerTest && checkExist(targetPath, ("src.test.java." + handlerPackage).replace(".", separator), item.get("handler").textValue() + "Test.java")) {
                     continue;
                 }
-                transfer(targetPath, ("src.test.java." + handlerPackage).replace(".", separator), item.get("handler") + "Test.java", templates.hybrid.handlerTest.template(handlerPackage, host, service, item));
+                transfer(targetPath, ("src.test.java." + handlerPackage).replace(".", separator), item.get("handler").textValue() + "Test.java", templates.hybrid.handlerTest.template(handlerPackage, host, service, item));
             }
         }
 
@@ -164,7 +164,7 @@ public class HybridServiceGenerator implements HybridGenerator {
                 templates.hybrid.rpcRouterYml.template(handlerPackage, jsonPath));
 
         // write the generated schema into the config folder for schema validation.
-        try (InputStream is = new ByteArrayInputStream(Generator.jsonMapper.writeValueAsBytes(services))) {
+        try (InputStream is = new ByteArrayInputStream(Generator.jsonMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(services))) {
             Generator.copyFile(is, Paths.get(targetPath, ("src.main.resources").replace(".", separator), "schema.json"));
         }
     }
