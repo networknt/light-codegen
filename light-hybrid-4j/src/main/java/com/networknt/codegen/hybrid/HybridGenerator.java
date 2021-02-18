@@ -11,7 +11,7 @@ public interface HybridGenerator extends Generator {
         if(jsonNode == null) {
             ((ObjectNode)config).put("jsonPath", jsonPath);
         } else {
-            jsonPath = jsonNode.asText();
+            jsonPath = jsonNode.textValue();
         }
         return jsonPath;
     }

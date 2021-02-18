@@ -361,7 +361,7 @@ public interface Generator {
         if(jsonNode == null) {
             ((ObjectNode)config).put("dockerOrganization", dockerOrganization);
         } else {
-            dockerOrganization = jsonNode.asText();
+            dockerOrganization = jsonNode.textValue();
         }
         return dockerOrganization;
     }
@@ -372,7 +372,7 @@ public interface Generator {
         if(jsonNode == null) {
             ((ObjectNode)config).put("version", version);
         } else {
-            version = jsonNode.asText();
+            version = jsonNode.textValue();
         }
         return version;
     }
@@ -383,7 +383,7 @@ public interface Generator {
         if(jsonNode == null) {
             ((ObjectNode)config).put("groupId", groupId);
         } else {
-            groupId = jsonNode.asText();
+            groupId = jsonNode.textValue();
         }
         return groupId;
     }
@@ -394,7 +394,7 @@ public interface Generator {
         if(jsonNode == null) {
             ((ObjectNode)config).put("artifactId", artifactId);
         } else {
-            artifactId = jsonNode.asText();
+            artifactId = jsonNode.textValue();
         }
         return artifactId;
     }
@@ -471,7 +471,7 @@ public interface Generator {
         if(jsonNode == null) {
             ((ObjectNode)config).put("kafkaTopic", kafkaTopic);
         } else {
-            kafkaTopic = jsonNode.asText();
+            kafkaTopic = jsonNode.textValue();
         }
         return kafkaTopic;
     }
@@ -482,7 +482,7 @@ public interface Generator {
         if(jsonNode == null) {
             ((ObjectNode)config).put("decryptOption", decryptOption);
         } else {
-            decryptOption = jsonNode.asText();
+            decryptOption = jsonNode.textValue();
         }
         return decryptOption;
     }

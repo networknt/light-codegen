@@ -66,7 +66,7 @@ public class GraphqlGenerator implements Generator {
         }
         transfer(targetPath, "docker", "Dockerfile", templates.graphql.dockerfile.template(config, expose));
         transfer(targetPath, "docker", "Dockerfile-Slim", templates.graphql.dockerfileslim.template(config, expose));
-        transfer(targetPath, "", "build.sh", templates.graphql.buildSh.template(dockerOrganization, config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version")));
+        transfer(targetPath, "", "build.sh", templates.graphql.buildSh.template(dockerOrganization, serviceId));
         transfer(targetPath, "", ".gitignore", templates.graphql.gitignore.template());
         transfer(targetPath, "", "README.md", templates.graphql.README.template());
         transfer(targetPath, "", "LICENSE", templates.graphql.LICENSE.template());
@@ -77,8 +77,8 @@ public class GraphqlGenerator implements Generator {
         // config
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "service.yml", templates.graphql.serviceYml.template(config));
 
-        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "server.yml", templates.graphql.serverYml.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, httpPort, enableHttps, httpsPort, enableHttp2, enableRegistry, version));
-        transfer(targetPath, ("src.test.resources.config").replace(".", separator), "server.yml", templates.graphql.serverYml.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, "49587", enableHttps, "49588", enableHttp2, enableRegistry, version));
+        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "server.yml", templates.graphql.serverYml.template(serviceId, enableHttp, httpPort, enableHttps, httpsPort, enableHttp2, enableRegistry, version));
+        transfer(targetPath, ("src.test.resources.config").replace(".", separator), "server.yml", templates.graphql.serverYml.template(serviceId, enableHttp, "49587", enableHttps, "49588", enableHttp2, enableRegistry, version));
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "graphql-security.yml", templates.graphql.securityYml.template());
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "graphql-validator.yml", templates.graphql.validatorYml.template());
         if(supportClient) {
@@ -152,7 +152,7 @@ public class GraphqlGenerator implements Generator {
         if(jsonNode == null) {
             ((ObjectNode)config).put("schemaPackage", schemaPackage);
         } else {
-            schemaPackage = jsonNode.asText();
+            schemaPackage = jsonNode.textValue();
         }
         return schemaPackage;
     }
@@ -163,7 +163,7 @@ public class GraphqlGenerator implements Generator {
         if(jsonNode == null) {
             ((ObjectNode)config).put("schemaClass", schemaClass);
         } else {
-            schemaClass = jsonNode.asText();
+            schemaClass = jsonNode.textValue();
         }
         return schemaClass;
     }

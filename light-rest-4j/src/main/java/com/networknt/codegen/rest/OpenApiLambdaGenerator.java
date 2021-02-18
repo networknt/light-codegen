@@ -387,7 +387,7 @@ public class OpenApiLambdaGenerator implements OpenApiGenerator {
         if(jsonNode == null) {
             ((ObjectNode)config).put("launchType", launchType);
         } else {
-            launchType = jsonNode.asText();
+            launchType = jsonNode.textValue();
         }
         return launchType;
     }
@@ -398,7 +398,7 @@ public class OpenApiLambdaGenerator implements OpenApiGenerator {
         if(jsonNode == null) {
             ((ObjectNode)config).put("region", region);
         } else {
-            region = jsonNode.asText();
+            region = jsonNode.textValue();
         }
         return region;
     }
