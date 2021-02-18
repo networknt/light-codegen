@@ -15,7 +15,6 @@ import java.util.List;
 public class OpenApiKotlinGeneratorTest {
     public static String targetPath = "/tmp/openapikotlin";
     public static String configName = "/config.json";
-    public static String openapiJson = "/openapi.json";
     public static String openapiYaml = "/openapi.yaml";
     public static String openapiNoServersYaml = "/openapi-noServers.yaml";
 
