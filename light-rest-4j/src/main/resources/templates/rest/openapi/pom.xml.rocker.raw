@@ -168,7 +168,12 @@
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
-            <artifactId>consul</artifactId>
+            <artifactId>portal-registry</artifactId>
+            <version>${version.light-4j}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.networknt</groupId>
+            <artifactId>logger-config</artifactId>
             <version>${version.light-4j}</version>
         </dependency>
         <dependency>
