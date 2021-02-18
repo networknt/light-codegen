@@ -1,9 +1,7 @@
 package com.networknt.codegen.rest;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.networknt.codegen.Generator;
-import com.networknt.codegen.Utils;
 import com.networknt.config.JsonMapper;
 import com.networknt.jsonoverlay.Overlay;
 import com.networknt.oas.OpenApiParser;
@@ -11,7 +9,6 @@ import com.networknt.oas.model.*;
 import com.networknt.oas.model.impl.OpenApi3Impl;
 import com.networknt.utility.StringUtils;
 
-import javax.lang.model.SourceVersion;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,7 +16,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static java.io.File.separator;
 
@@ -30,8 +26,6 @@ public class OpenApiLightGenerator implements OpenApiGenerator {
     public String getFramework() {
         return FRAMEWORK;
     }
-
-    boolean enableParamDescription = false;
 
     public OpenApiLightGenerator() {
     }
@@ -182,7 +176,7 @@ public class OpenApiLightGenerator implements OpenApiGenerator {
                 ArrayList<Runnable> modelCreators = new ArrayList<>();
                 final HashMap<String, Object> references = new HashMap<>();
                 for (Map.Entry<String, Object> entry : schemas.entrySet()) {
-                    loadModel(entry.getKey(), null, (Map<String, Object>)entry.getValue(), schemas, overwriteModel, targetPath, modelPackage, modelCreators, references, null);
+                    loadModel(entry.getKey(), null, (Map<String, Object>)entry.getValue(), schemas, overwriteModel, targetPath, modelPackage, modelCreators, references, null, callback);
                 }
 
                 for (Runnable r : modelCreators) {
@@ -250,5 +244,21 @@ public class OpenApiLightGenerator implements OpenApiGenerator {
             Generator.copyFile(is, Paths.get(targetPath, ("src.main.resources.config").replace(".", separator), "openapi.yaml"));
         }
     }
+
+    ModelCallback callback = new ModelCallback() {
+        @Override
+        public void callback(String targetPath, String modelPackage, String modelFileName, String enumsIfClass, String parentClassName, String classVarName, boolean abstractIfClass, List<Map<String, Object>> props, List<Map<String, Object>> parentClassProps) {
+            try {
+                transfer(targetPath,
+                        ("src.main.java." + modelPackage).replace(".", separator),
+                        modelFileName + ".java",
+                        enumsIfClass == null
+                                ? templates.rest.pojo.template(modelPackage, modelFileName, parentClassName, classVarName, abstractIfClass, props, parentClassProps)
+                                : templates.rest.enumClass.template(modelPackage, modelFileName, enumsIfClass));
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+    };
 
 }

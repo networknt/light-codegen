@@ -6,13 +6,11 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Scanner;
 
 public class OpenApiKotlinGeneratorTest {
     public static String targetPath = "/tmp/openapikotlin";
@@ -50,9 +48,10 @@ public class OpenApiKotlinGeneratorTest {
 
     @Test
     public void testGetOperationList() throws IOException {
-        String anyModel = new Scanner(OpenApiKotlinGeneratorTest.class.getResourceAsStream(openapiYaml), "UTF-8").useDelimiter("\\A").next();
+        JsonNode model = Generator.yamlMapper.readTree(OpenApiKotlinGeneratorTest.class.getResourceAsStream(openapiYaml));
+        JsonNode config = Generator.jsonMapper.readTree(OpenApiLightGeneratorTest.class.getResourceAsStream(configName));
         OpenApiKotlinGenerator generator = new OpenApiKotlinGenerator();
-        List list = generator.getOperationList(anyModel);
+        List list = generator.getOperationList(model, config);
         System.out.println(list);
     }
 

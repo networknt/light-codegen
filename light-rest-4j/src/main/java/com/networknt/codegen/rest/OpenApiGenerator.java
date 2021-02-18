@@ -275,6 +275,21 @@ public interface OpenApiGenerator extends Generator {
         return string;
     }
 
+    default String getScopes(Operation operation) {
+        String scopes = null;
+        if(operation.hasSecurityRequirements()) {
+            SecurityRequirement securityRequirement = operation.getSecurityRequirement(0);
+            if(securityRequirement != null) {
+                Map<String, SecurityParameter> requirements = securityRequirement.getRequirements();
+                for(SecurityParameter parameter : requirements.values()) {
+                    List<String> ls = parameter.getParameters();
+                    if(ls != null) scopes = StringUtils.join(ls, ' ');
+                }
+            }
+        }
+        return scopes;
+    }
+
     default List<Map<String, Object>> getOperationList(Object model, JsonNode config) {
         List<Map<String, Object>> result = new ArrayList<>();
         OpenApi3 openApi3 = null;
@@ -301,6 +316,9 @@ public interface OpenApiGenerator extends Generator {
                 flattened.put("path", basePath + path);
                 String normalizedPath = path.replace("{", "").replace("}", "");
                 flattened.put("handlerName", Utils.camelize(normalizedPath) + Utils.camelize(entryOps.getKey()) + "Handler");
+                flattened.put("functionName", Utils.camelize(normalizedPath) + Utils.camelize(entryOps.getKey()) + "Function");
+                flattened.put("endpoint", path + "@" + entryOps.getKey().toLowerCase());
+                flattened.put("apiName", Utils.camelize(normalizedPath) + Utils.camelize(entryOps.getKey()));
                 Operation operation = entryOps.getValue();
                 flattened.put("normalizedPath", UrlGenerator.generateUrl(basePath, path, entryOps.getValue().getParameters()));
                 //eg. 200 || statusCode == 400 || statusCode == 500
@@ -313,6 +331,7 @@ public interface OpenApiGenerator extends Generator {
                 flattened.put("requestBodyExample", populateRequestBodyExample(operation));
                 Map<String, String> responseExample = populateResponseExample(operation);
                 flattened.put("responseExample", responseExample);
+                flattened.put("scopes", getScopes(operation));
                 if (config.get("enableParamDescription").booleanValue()) {
                     //get parameters info and put into result
                     List<Parameter> parameterRawList = operation.getParameters();
@@ -453,7 +472,7 @@ public interface OpenApiGenerator extends Generator {
         return result;
     }
 
-    default void loadModel(String classVarName, String parentClassName, Map<String, Object> value, Map<String, Object> schemas, boolean overwriteModel, String targetPath, String modelPackage, List<Runnable> modelCreators, Map<String, Object> references, List<Map<String, Object>> parentClassProps) throws IOException {
+    default void loadModel(String classVarName, String parentClassName, Map<String, Object> value, Map<String, Object> schemas, boolean overwriteModel, String targetPath, String modelPackage, List<Runnable> modelCreators, Map<String, Object> references, List<Map<String, Object>> parentClassProps, ModelCallback lightCallback) throws IOException {
         final String modelFileName = classVarName.substring(0, 1).toUpperCase() + classVarName.substring(1);
         final List<Map<String, Object>> props = new ArrayList<>();
         final List<Map<String, Object>> parentProps = (parentClassProps == null) ? new ArrayList<>() : new ArrayList<>(parentClassProps);
@@ -520,7 +539,7 @@ public interface OpenApiGenerator extends Generator {
                         if ("$ref".equals(oneOfItem.getKey())) {
                             String s = oneOfItem.getValue().toString();
                             s = s.substring(s.lastIndexOf('/') + 1);
-                            loadModel(extendModelName(s, classVarName), s, (Map<String, Object>)schemas.get(s), schemas, overwriteModel, targetPath, modelPackage, modelCreators, references, parentProps);
+                            loadModel(extendModelName(s, classVarName), s, (Map<String, Object>)schemas.get(s), schemas, overwriteModel, targetPath, modelPackage, modelCreators, references, parentProps, lightCallback);
                         }
                     }
                 }
@@ -582,17 +601,7 @@ public interface OpenApiGenerator extends Generator {
                         } while (true);
                     }
                 }
-
-                try {
-                    transfer(targetPath,
-                            ("src.main.java." + modelPackage).replace(".", separator),
-                            modelFileName + ".java",
-                            enumsIfClass == null
-                                    ? templates.rest.pojo.template(modelPackage, modelFileName, parentClassName, classVarName, abstractIfClass, props, parentClassProps)
-                                    : templates.rest.enumClass.template(modelPackage, modelFileName, enumsIfClass));
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
-                }
+                lightCallback.callback(targetPath, modelPackage, modelFileName, enumsIfClass, parentClassName, classVarName, abstractIfClass, props, parentClassProps);
             });
         } else {
             HashMap<String, Object> map = new HashMap<>(1);

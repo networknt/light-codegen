@@ -15,5 +15,6 @@
   "overwriteHandlerTest": true,
   "overwriteModel": true,
   "enableRegistry": false,
+  "enableParamDescription": false,
   "generateModelOnly": false
 }

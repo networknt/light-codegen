@@ -46,10 +46,10 @@ public class OpenApiLightGeneratorTest {
 
     @Test
     public void testGeneratorJson() throws IOException {
-        JsonNode configNode = Generator.jsonMapper.readTree(OpenApiLightGeneratorTest.class.getResourceAsStream(configName));
-        JsonNode modelNode = Generator.jsonMapper.readTree(OpenApiLightGeneratorTest.class.getResourceAsStream(openapiJson));
+        JsonNode config = Generator.jsonMapper.readTree(OpenApiLightGeneratorTest.class.getResourceAsStream(configName));
+        JsonNode model = Generator.jsonMapper.readTree(OpenApiLightGeneratorTest.class.getResourceAsStream(openapiJson));
         OpenApiLightGenerator generator = new OpenApiLightGenerator();
-        generator.generate(targetPath, modelNode, configNode);
+        generator.generate(targetPath, model, config);
     }
 
     @Test

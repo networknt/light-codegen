@@ -68,8 +68,9 @@ public class OpenApiLambdaGeneratorTest {
     @Test
     public void testGetOperationList() throws IOException {
         JsonNode model = Generator.jsonMapper.readTree(OpenApiLambdaGeneratorTest.class.getResourceAsStream(openapiJson));
+        JsonNode config = Generator.jsonMapper.readTree(OpenApiLambdaGeneratorTest.class.getResourceAsStream(configProxyLambda));
         OpenApiLambdaGenerator generator = new OpenApiLambdaGenerator();
-        List list = generator.getOperationList(model);
+        List list = generator.getOperationList(model, config);
         System.out.println(list);
     }
 
