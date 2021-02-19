@@ -1,5 +1,4 @@
-@import com.jsoniter.any.Any
-@args (String modelPackage, String className, Any props)
+@args (String modelPackage, String className)
 package @modelPackage;
 import java.io.Serializable;
 

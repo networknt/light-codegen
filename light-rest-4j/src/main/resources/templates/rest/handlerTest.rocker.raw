@@ -1,6 +1,5 @@
 @import java.util.Map
-@import com.jsoniter.any.Any
-@args (String handlerPackage, Map<String, Any> map)
+@args (String handlerPackage, Map<String, Object> map)
 package @handlerPackage;
 
 import com.networknt.client.Http2Client;

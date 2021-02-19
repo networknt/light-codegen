@@ -1,5 +1,5 @@
-@import com.jsoniter.any.Any
-@args (Any config)
+@import com.fasterxml.jackson.databind.JsonNode
+@args (JsonNode config)
 # Singleton service factory configuration/IoC injection
 singletons:
 # HandlerProvider implementation
@@ -16,9 +16,9 @@ singletons:
   # - com.networknt.server.Test1ShutdownHook
 # GraphQL schema provider interface implementation
 - com.networknt.graphql.router.SchemaProvider:
-  - @with(schemaPackage = config.get("schemaPackage").toString() + "." + config.get("schemaClass").toString()) {@schemaPackage}
-@if(config.toBoolean("supportDb")){
-@with (driverClassName = config.toString("dbInfo", "driverClassName"), jdbcUrl=config.toString("dbInfo", "jdbcUrl"), username=config.toString("dbInfo", "username"), password=config.toString("dbInfo", "password")) {
+  - @with(schemaPackage = config.get("schemaPackage").textValue() + "." + config.get("schemaClass").textValue()) {@schemaPackage}
+@if(config.get("supportDb").booleanValue()){
+@with (driverClassName = config.path("dbInfo").path("driverClassName").textValue(), jdbcUrl=config.path("dbInfo").path("jdbcUrl").textValue(), username=config.path("dbInfo").path("username").textValue(), password=config.path("dbInfo").path("password").textValue()) {
 - javax.sql.DataSource:
   - com.zaxxer.hikari.HikariDataSource:
       DriverClassName: @driverClassName

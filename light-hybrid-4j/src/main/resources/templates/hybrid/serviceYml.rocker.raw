@@ -1,40 +1,40 @@
-@import com.jsoniter.any.Any
-@args (Any config)
+@import com.fasterxml.jackson.databind.JsonNode
+@args (JsonNode config)
 # Singleton service factory configuration/IoC injection
 singletons:
 # StartupHookProvider implementations, there are one to many and they are called in the same sequence defined.
 - com.networknt.server.StartupHookProvider:
   # registry all service handlers by from annotations
   - com.networknt.rpc.router.RpcStartupHookProvider
-  @if(config.toBoolean("kafkaProducer")){
+  @if(config.get("kafkaProducer").booleanValue()){
   # Kafka producer startup hook example
   # - net.lightapi.portal.user.command.UserCommandStartup
   }
-  @if(config.toBoolean("kafkaConsumer")){
+  @if(config.get("kafkaConsumer").booleanValue()){
   # Kafka consumer startup hook example
   # - net.lightapi.portal.user.query.UserQueryStartup
   }
 # ShutdownHookProvider implementations, there are one to many and they are called in the same sequence defined.
 - com.networknt.server.ShutdownHookProvider:
-  @if(config.toBoolean("kafkaProducer")){
+  @if(config.get("kafkaProducer").booleanValue()){
   # Kafka producer startup hook example
   # - net.lightapi.portal.user.command.UserCommandShutdown
   }
-  @if(config.toBoolean("kafkaConsumer")){
+  @if(config.get("kafkaConsumer").booleanValue()){
   # Kafka consumer startup hook example
   # - net.lightapi.portal.user.query.UserQueryShutdown
   }
-@if(config.toBoolean("kafkaProducer")){
+@if(config.get("kafkaProducer").booleanValue()){
 - com.networknt.kafka.producer.LightProducer:
   - com.networknt.kafka.producer.TransactionalProducer
 }
-@if(config.toBoolean("kafkaConsumer")){
+@if(config.get("kafkaConsumer").booleanValue()){
 - com.networknt.kafka.streams.LightStreams:
   # Kafka streams processor example
   # - net.lightapi.portal.user.query.UserQueryStreams
 }
-@if(config.toBoolean("supportDb")){
-@with (driverClassName = config.toString("dbInfo", "driverClassName"), jdbcUrl=config.toString("dbInfo", "jdbcUrl"), username=config.toString("dbInfo", "username"), password=config.toString("dbInfo", "password")) {
+@if(config.get("supportDb").booleanValue()){
+@with (driverClassName = config.path("dbInfo").path("driverClassName").textValue(), jdbcUrl=config.path("dbInfo").path("jdbcUrl").textValue(), username=config.path("dbInfo").path("username").textValue(), password=config.path("dbInfo").path("password").textValue()) {
 - javax.sql.DataSource:
   - com.zaxxer.hikari.HikariDataSource:
       DriverClassName: @driverClassName

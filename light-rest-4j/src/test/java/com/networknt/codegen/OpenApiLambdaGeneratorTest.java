@@ -1,7 +1,6 @@
 package com.networknt.codegen;
 
-import com.jsoniter.JsonIterator;
-import com.jsoniter.any.Any;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.networknt.codegen.rest.OpenApiLambdaGenerator;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -12,7 +11,6 @@ import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Scanner;
 
 public class OpenApiLambdaGeneratorTest {
     public static String targetPath = "/tmp/openapilambda";
@@ -37,41 +35,42 @@ public class OpenApiLambdaGeneratorTest {
 
     @Test
     public void testGeneratorJson() throws IOException {
-        Any anyConfig = JsonIterator.parse(OpenApiLambdaGeneratorTest.class.getResourceAsStream(configName), 1024).readAny();
-        Any anyModel = JsonIterator.parse(OpenApiLambdaGeneratorTest.class.getResourceAsStream(openapiJson), 1024).readAny();
+        JsonNode config = Generator.jsonMapper.readTree(OpenApiLambdaGeneratorTest.class.getResourceAsStream(configName));
+        JsonNode model = Generator.jsonMapper.readTree(OpenApiLambdaGeneratorTest.class.getResourceAsStream(openapiJson));
         OpenApiLambdaGenerator generator = new OpenApiLambdaGenerator();
-        generator.generate(targetPath, anyModel, anyConfig);
+        generator.generate(targetPath, model, config);
     }
 
     @Test
     public void testGeneratorYaml() throws IOException {
-        Any anyConfig = JsonIterator.parse(OpenApiLambdaGeneratorTest.class.getResourceAsStream(configName), 1024).readAny();
-        String strModel = new Scanner(OpenApiLambdaGeneratorTest.class.getResourceAsStream(openapiYaml), "UTF-8").useDelimiter("\\A").next();
+        JsonNode config = Generator.jsonMapper.readTree(OpenApiLambdaGeneratorTest.class.getResourceAsStream(configName));
+        JsonNode model = Generator.yamlMapper.readTree(OpenApiLambdaGeneratorTest.class.getResourceAsStream(openapiYaml));
         OpenApiLambdaGenerator generator = new OpenApiLambdaGenerator();
-        generator.generate(targetPath, strModel, anyConfig);
+        generator.generate(targetPath, model, config);
     }
 
     @Test
     public void testProxyGeneratorYaml() throws IOException {
-        Any anyConfig = JsonIterator.parse(OpenApiLambdaGeneratorTest.class.getResourceAsStream(configProxyLambda), 1024).readAny();
-        String strModel = new Scanner(OpenApiLambdaGeneratorTest.class.getResourceAsStream(openapiYaml), "UTF-8").useDelimiter("\\A").next();
+        JsonNode config = Generator.jsonMapper.readTree(OpenApiLambdaGeneratorTest.class.getResourceAsStream(configProxyLambda));
+        JsonNode model = Generator.yamlMapper.readTree(OpenApiLambdaGeneratorTest.class.getResourceAsStream(openapiYaml));
         OpenApiLambdaGenerator generator = new OpenApiLambdaGenerator();
-        generator.generate(proxyTargetPath, strModel, anyConfig);
+        generator.generate(proxyTargetPath, model, config);
     }
 
     @Test
     public void testProxyMavenGeneratorYaml() throws IOException {
-        Any anyConfig = JsonIterator.parse(OpenApiLambdaGeneratorTest.class.getResourceAsStream(configProxyMaven), 1024).readAny();
-        String strModel = new Scanner(OpenApiLambdaGeneratorTest.class.getResourceAsStream(openapiYaml), "UTF-8").useDelimiter("\\A").next();
+        JsonNode config = Generator.jsonMapper.readTree(OpenApiLambdaGeneratorTest.class.getResourceAsStream(configProxyMaven));
+        JsonNode model = Generator.yamlMapper.readTree(OpenApiLambdaGeneratorTest.class.getResourceAsStream(openapiYaml));
         OpenApiLambdaGenerator generator = new OpenApiLambdaGenerator();
-        generator.generate(proxyMavenTargetPath, strModel, anyConfig);
+        generator.generate(proxyMavenTargetPath, model, config);
     }
 
     @Test
     public void testGetOperationList() throws IOException {
-        Any anyModel = JsonIterator.parse(OpenApiLambdaGeneratorTest.class.getResourceAsStream(openapiJson), 1024).readAny();
+        JsonNode model = Generator.jsonMapper.readTree(OpenApiLambdaGeneratorTest.class.getResourceAsStream(openapiJson));
+        JsonNode config = Generator.jsonMapper.readTree(OpenApiLambdaGeneratorTest.class.getResourceAsStream(configProxyLambda));
         OpenApiLambdaGenerator generator = new OpenApiLambdaGenerator();
-        List list = generator.getOperationList(anyModel);
+        List list = generator.getOperationList(model, config);
         System.out.println(list);
     }
 

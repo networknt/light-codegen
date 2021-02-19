@@ -1,12 +1,12 @@
-@import com.jsoniter.any.Any
-@args (Any config)
+@import com.fasterxml.jackson.databind.JsonNode
+@args (JsonNode config)
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>@config.get("groupId")</groupId>
-    <artifactId>@config.get("artifactId")</artifactId>
+    <groupId>@config.get("groupId").textValue()</groupId>
+    <artifactId>@config.get("artifactId").textValue()</artifactId>
     <packaging>jar</packaging>
-    <name>@config.get("name")</name>
-    <version>@config.get("version")</version>
+    <name>@config.get("name").textValue()</name>
+    <version>@config.get("version").textValue()</version>
 
     <properties>
         <java.version>11</java.version>
@@ -21,19 +21,19 @@
         <version.undertow>2.1.3.Final</version.undertow>
         <version.graphql>13.0</version.graphql>
         <version.rxjava>2.1.5</version.rxjava>
-        @if(config.toBoolean("supportDb") || config.toBoolean("supportH2ForTest")){
+        @if(config.get("supportDb").booleanValue() || config.get("supportH2ForTest").booleanValue()){
         <version.hikaricp>3.1.0</version.hikaricp>
         }
-        @if(config.toBoolean("supportDb") && "oracle".equalsIgnoreCase(config.toString("dbInfo", "name"))){
+        @if(config.get("supportDb").booleanValue() && "oracle".equalsIgnoreCase(config.path("dbInfo").path("name").textValue())){
         <version.oracle>11.2.0.3</version.oracle>
         }
-        @if(config.toBoolean("supportDb") && "mysql".equalsIgnoreCase(config.toString("dbInfo", "name"))){
+        @if(config.get("supportDb").booleanValue() && "mysql".equalsIgnoreCase(config.path("dbInfo").path("name").textValue())){
         <version.mysql>8.0.16</version.mysql>
         }
-        @if(config.toBoolean("supportDb") && "postgres".equalsIgnoreCase(config.toString("dbInfo", "name"))){
+        @if(config.get("supportDb").booleanValue() && "postgres".equalsIgnoreCase(config.path("dbInfo").path("name").textValue())){
         <version.postgres>42.1.1</version.postgres>
         }
-        @if(config.toBoolean("supportH2ForTest")){
+        @if(config.get("supportH2ForTest").booleanValue()){
         <version.h2>1.3.176</version.h2>
         }
         <versions.maven-version>2.4</versions.maven-version>
@@ -226,28 +226,28 @@
             <artifactId>rxjava</artifactId>
             <version>${version.rxjava}</version>
         </dependency>
-        @if(config.toBoolean("supportDb") || config.toBoolean("supportH2ForTest")){
+        @if(config.get("supportDb").booleanValue() || config.get("supportH2ForTest").booleanValue()){
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
             <version>${version.hikaricp}</version>
         </dependency>
         }
-        @if(config.toBoolean("supportDb") && "oracle".equalsIgnoreCase(config.toString("dbInfo", "name"))){
+        @if(config.get("supportDb").booleanValue() && "oracle".equalsIgnoreCase(config.path("dbInfo").path("name").textValue())){
         <dependency>
             <groupId>com.oracle</groupId>
             <artifactId>ojdbc6</artifactId>
             <version>${version.oracle}</version>
         </dependency>
         }
-        @if(config.toBoolean("supportDb") && "mysql".equalsIgnoreCase(config.toString("dbInfo", "name"))){
+        @if(config.get("supportDb").booleanValue() && "mysql".equalsIgnoreCase(config.path("dbInfo").path("name").textValue())){
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>${version.mysql}</version>
         </dependency>
         }
-        @if(config.toBoolean("supportDb") && "postgres".equalsIgnoreCase(config.toString("dbInfo", "name"))){
+        @if(config.get("supportDb").booleanValue() && "postgres".equalsIgnoreCase(config.path("dbInfo").path("name").textValue())){
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
@@ -261,7 +261,7 @@
             <version>${version.junit}</version>
             <scope>test</scope>
         </dependency>
-        @if(config.toBoolean("supportH2ForTest")){
+        @if(config.get("supportH2ForTest").booleanValue()){
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>

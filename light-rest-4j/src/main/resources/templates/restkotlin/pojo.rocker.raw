@@ -1,8 +1,7 @@
-@import com.jsoniter.any.Any
 @option discardLogicWhitespace=true
 @import java.util.Map
 @import java.util.List
-@args (String modelPackage, String className, String classVarName, List<Map<String, Any>> props)
+@args (String modelPackage, String className, String classVarName, List<Map<String, Object>> props)
 package @modelPackage;
 data class @className (
     @for ((i, prop): props) {

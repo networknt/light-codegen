@@ -5,8 +5,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import com.jsoniter.JsonIterator;
-import com.jsoniter.any.Any;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.networknt.codegen.rest.OpenApiLightGenerator;
 import com.thoughtworks.qdox.JavaProjectBuilder;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaField;
@@ -51,11 +51,10 @@ public class OpenApiArrayReferenceGeneratorTest {
     }
 
     public static JavaPackage prepareJavaPackage(String targetPath, String packageName) throws IOException {
-        Any anyConfig = JsonIterator.parse(OpenApiGeneratorTest.class.getResourceAsStream(OpenApiArrayReferenceGeneratorTest.configName), 1024).readAny();
-        Any anyModel = JsonIterator.parse(OpenApiGeneratorTest.class.getResourceAsStream(OpenApiArrayReferenceGeneratorTest.openapiJson), 1024).readAny();
-
-        OpenApiGenerator generator = new OpenApiGenerator();
-        generator.generate(targetPath, anyModel, anyConfig);
+        JsonNode config = Generator.jsonMapper.readTree(OpenApiLightGeneratorTest.class.getResourceAsStream(OpenApiArrayReferenceGeneratorTest.configName));
+        JsonNode model = Generator.jsonMapper.readTree(OpenApiKotlinGeneratorTest.class.getResourceAsStream(OpenApiArrayReferenceGeneratorTest.openapiJson));
+        OpenApiLightGenerator generator = new OpenApiLightGenerator();
+        generator.generate(targetPath, model, config);
 
         File file = new File(targetPath);
         JavaProjectBuilder javaProjectBuilder = new JavaProjectBuilder();

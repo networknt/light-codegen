@@ -1,7 +1,6 @@
 @import java.util.Map
 @import java.util.List
-@import com.jsoniter.any.Any
-@args (String serviceId, String handlerPackage, List<Map<String, Object>> items, boolean prometheusMetrics, boolean healthCheck, boolean serverInfo)
+@args (String serviceId, String handlerPackage, List<Map<String, Object>> items, boolean prometheusMetrics)
 
 # Handler middleware chain configuration
 #----------------------------------------
@@ -61,6 +60,8 @@ handlers:
   # Framework endpoint handlers
   - com.networknt.health.HealthGetHandler@@health
   - com.networknt.info.ServerInfoGetHandler@@info
+  - com.networknt.logging.handler.LoggerGetHandler@@getLogger
+  - com.networknt.logging.handler.LoggerPostHandler@@postLogger
   - com.networknt.specification.SpecDisplayHandler@@spec
   - com.networknt.specification.SpecSwaggerUIHandler@@swaggerui
   # - com.networknt.metrics.prometheus.PrometheusGetHandler@@getprometheus
@@ -74,10 +75,10 @@ chains:
 @if(prometheusMetrics){    - prometheus} else {    - metrics}
     - traceability
     - correlation
-    - body
-    - audit
     - specification
     - security
+    - body
+    - audit
 #    - dump
     - sanitizer
     - validator
@@ -89,16 +90,31 @@ paths:
       - default
       - @with (p = handlerPackage + ".") {@p}@item.get("handlerName")
 }
-@if(healthCheck){  - path: '/health/${server.serviceId:@serviceId}'
+  - path: '/health/${server.serviceId:@serviceId}'
     method: 'get'
     exec:
+      - security
       - health
-}
-@if(serverInfo){  - path: '/server/info'
+
+  - path: '/server/info'
     method: 'get'
     exec:
+      - security
       - info
-}
+
+  - path: '/logger'
+    method: 'get'
+    exec:
+      - security
+      - getLogger
+
+  - path: '/logger'
+    method: 'post'
+    exec:
+      - security
+      - body
+      - postLogger
+
 @if(prometheusMetrics){  - path: '/prometheus'
     method: 'get'
     exec:

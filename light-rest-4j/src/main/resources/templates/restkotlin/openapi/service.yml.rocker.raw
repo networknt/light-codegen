@@ -1,5 +1,5 @@
-@import com.jsoniter.any.Any
-@args (Any config)
+@import com.fasterxml.jackson.databind.JsonNode
+@args (JsonNode config)
 # Singleton service factory configuration/IoC injection
 singletons:
 # StartupHookProvider implementations, there are one to many and they are called in the same sequence defined.
@@ -11,8 +11,8 @@ singletons:
 # ShutdownHookProvider implementations, there are one to many and they are called in the same sequence defined.
 # - com.networknt.server.ShutdownHookProvider:
   # - com.networknt.server.Test1ShutdownHook
-@if(config.toBoolean("supportDb") ){
-@with (driverClassName = config.toString("dbInfo", "driverClassName"), jdbcUrl=config.toString("dbInfo", "jdbcUrl"), username=config.toString("dbInfo", "username"), password=config.toString("dbInfo", "password")) {
+@if(config.get("supportDb").booleanValue()){
+@with (driverClassName = config.path("dbInfo").path("driverClassName").textValue(), jdbcUrl=config.path("dbInfo").path("jdbcUrl").textValue(), username=config.path("dbInfo").path("username").textValue(), password=config.path("dbInfo").path("password").textValue()) {
 - javax.sql.DataSource:
   - com.zaxxer.hikari.HikariDataSource:
       DriverClassName: @driverClassName

@@ -3,15 +3,20 @@ package com.networknt.codegen;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fizzed.rocker.runtime.RockerRuntime;
-import com.jsoniter.JsonIterator;
-import com.jsoniter.any.Any;
-import com.networknt.codegen.rest.YAMLFileParameterizer;
+import com.networknt.utility.NioUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Map;
 import java.util.Set;
 import static java.io.File.separator;
 
@@ -19,6 +24,12 @@ import static java.io.File.separator;
  * Created by steve on 24/04/17.
  */
 public class Cli {
+    private static final String JSON="json";
+    private static final String YAML="yaml";
+    private static final String YML="yml";
+    private static final String GRAPHQLS = "graphqls";
+
+    private ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory());
 
     @Parameter(names={"--framework", "-f"}, required = true,
             description = "The framework template to be used as scaffolding to the generated code.")
@@ -75,37 +86,58 @@ public class Cli {
         Set<String> frameworks = registry.getFrameworks();
         if(frameworks.contains(framework)) {
             Generator generator = registry.getGenerator(framework);
-            Object anyModel = null;
+            Object modelNode = null;
             // model can be empty in some cases.
             if(model != null) {
-                // check if model is json or not before loading.
-                if(model.endsWith("json")) {
-                    if(Utils.isUrl(model)) {
-                        anyModel = JsonIterator.deserialize(Utils.urlToByteArray(new URL(model)));
+                String ext = NioUtils.getFileExtension(model);
+                if(StringUtils.equalsIgnoreCase(ext, JSON)) {
+                    if (Utils.isUrl(model)) {
+                        modelNode = Generator.jsonMapper.readTree(Utils.urlToByteArray(new URL(model)));
                     } else {
-                        anyModel = JsonIterator.deserialize(Files.readAllBytes(Paths.get(model)));
+                        modelNode = Generator.jsonMapper.readTree(Files.readAllBytes(Paths.get(model)));
+                    }
+                } else if(StringUtils.equalsIgnoreCase(ext, YML) || StringUtils.equalsIgnoreCase(ext, YAML)) {
+                    if (Utils.isUrl(model)) {
+                        modelNode = Generator.yamlMapper.readTree(Utils.urlToByteArray(new URL(model)));
+                    } else {
+                        modelNode = Generator.yamlMapper.readTree(Files.readAllBytes(Paths.get(model)));
+                    }
+                } else if(StringUtils.equalsIgnoreCase(ext, GRAPHQLS)) {
+                    if(Utils.isUrl(model)) {
+                        modelNode = new String(Utils.urlToByteArray(new URL(model)), StandardCharsets.UTF_8);
+                    } else {
+                        modelNode = new String(Files.readAllBytes(Paths.get(model)), StandardCharsets.UTF_8);
                     }
                 } else {
-                    if(Utils.isUrl(model)) {
-                        anyModel = new String(Utils.urlToByteArray(new URL(model)), StandardCharsets.UTF_8);
-                    } else {
-                        anyModel = new String(Files.readAllBytes(Paths.get(model)), StandardCharsets.UTF_8);
-                    }
+                    throw new UnsupportedOperationException("Unknown model file format " + ext);
                 }
             }
 
-            Any anyConfig = null;
+            JsonNode configNode = null;
             if(config != null) {
-                if(Utils.isUrl(config)) {
-                    anyConfig = JsonIterator.deserialize(Utils.urlToByteArray(new URL(config)));
+                String ext = NioUtils.getFileExtension(config);
+                if (StringUtils.equalsIgnoreCase(ext, JSON)) {
+                    if (Utils.isUrl(config)) {
+                        configNode = Generator.jsonMapper.readTree(Utils.urlToByteArray(new URL(config)));
+                    } else {
+                        configNode = Generator.jsonMapper.readTree(Files.readAllBytes(Paths.get(config)));
+                    }
+                } else if (StringUtils.equalsIgnoreCase(ext, YML)||StringUtils.equalsIgnoreCase(ext, YAML)) {
+                    if (Utils.isUrl(config)) {
+                        configNode = Generator.yamlMapper.readTree(Utils.urlToByteArray(new URL(config)));
+                    } else {
+                        configNode = Generator.yamlMapper.readTree(Files.readAllBytes(Paths.get(config)));
+                    }
                 } else {
-                    anyConfig = JsonIterator.deserialize(Files.readAllBytes(Paths.get(config)));
+                    throw new UnsupportedOperationException("Unknow file format " + ext);
                 }
+
             }
             if(parameterizationDir != null) {
-                YAMLFileParameterizer.rewriteAll(parameterizationDir, output + separator + YAMLFileParameterizer.DEFAULT_DEST_DIR, anyConfig.asMap().get(YAMLFileParameterizer.GENERATE_ENV_VARS).asMap());
+                Map<String, Object> map = Generator.jsonMapper.convertValue(configNode.get(YAMLFileParameterizer.GENERATE_ENV_VARS), new TypeReference<Map<String, Object>>(){});
+                YAMLFileParameterizer.rewriteAll(parameterizationDir, output + separator + YAMLFileParameterizer.DEFAULT_DEST_DIR, map);
             }
-            generator.generate(output, anyModel, anyConfig);
+            generator.generate(output, modelNode, configNode);
             System.out.println("A project has been generated successfully in " + output + " folder. Have fun!!!");
         } else {
             System.out.printf("Invalid framework: %s\navaliable frameworks:\n", framework);
