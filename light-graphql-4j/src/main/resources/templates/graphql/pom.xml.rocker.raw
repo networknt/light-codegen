@@ -5,7 +5,7 @@
     <groupId>@config.get("groupId").textValue()</groupId>
     <artifactId>@config.get("artifactId").textValue()</artifactId>
     <packaging>jar</packaging>
-    <name>@config.get("name").textValue()</name>
+    <name>@config.get("artifactId").textValue()</name>
     <version>@config.get("version").textValue()</version>
 
     <properties>
