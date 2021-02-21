@@ -3,7 +3,7 @@
 @args (JsonNode config)
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>@config.get("name").textValue()</name>
+	<name>@config.get("artifactId").textValue()</name>
 	<comment></comment>
 	<projects>
 	</projects>
