@@ -245,6 +245,17 @@ public interface Generator {
         return overwriteModel;
     }
 
+    default boolean isUseLightProxy(JsonNode config, Boolean defaultValue) {
+        boolean useLightProxy = defaultValue == null ? false : defaultValue;
+        JsonNode jsonNode = config.get("useLightProxy");
+        if(jsonNode == null) {
+            ((ObjectNode)config).put("useLightProxy", useLightProxy);
+        } else {
+            useLightProxy = jsonNode.booleanValue();
+        }
+        return useLightProxy;
+    }
+
     default boolean isGenerateModelOnly(JsonNode config, Boolean defaultValue) {
         boolean generateModelOnly = defaultValue == null ? false : defaultValue;
         JsonNode jsonNode = config.get("generateModelOnly");

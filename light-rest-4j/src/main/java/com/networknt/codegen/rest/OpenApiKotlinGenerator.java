@@ -71,6 +71,7 @@ public class OpenApiKotlinGenerator implements OpenApiGenerator {
         boolean kafkaProducer = isKafkaProducer(config, null);
         boolean kafkaConsumer = isKafkaConsumer(config, null);
         boolean supportAvro = isSupportAvro(config, null);
+        boolean useLightProxy = isUseLightProxy(config, null);
         String kafkaTopic = getKafkaTopic(config, null);
         String decryptOption = getDecryptOption(config, null);
 
@@ -128,7 +129,7 @@ public class OpenApiKotlinGenerator implements OpenApiGenerator {
                 transfer(targetPath, ("src.test.resources").replace(".", separator), "junit-platform.properties", templates.restkotlin.junitPlatformProperties.template());
 
                 // routing handler
-                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "handler.yml", templates.restkotlin.openapi.handlerYml.template(serviceId, handlerPackage, operationList, prometheusMetrics));
+                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "handler.yml", templates.restkotlin.openapi.handlerYml.template(serviceId, handlerPackage, operationList, prometheusMetrics, useLightProxy));
 
                 // exclusion list for Config module
                 transfer(targetPath, ("src.main.resources.config").replace(".", separator), "config.yml", templates.restkotlin.openapi.config.template());

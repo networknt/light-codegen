@@ -68,6 +68,7 @@ public class OpenApiLightGenerator implements OpenApiGenerator {
         boolean kafkaProducer = isKafkaProducer(config, null);
         boolean kafkaConsumer = isKafkaConsumer(config, null);
         boolean supportAvro = isSupportAvro(config, null);
+        boolean useLightProxy = isUseLightProxy(config, null);
         String kafkaTopic = getKafkaTopic(config, null);
         String decryptOption = getDecryptOption(config, null);
 
@@ -159,7 +160,7 @@ public class OpenApiLightGenerator implements OpenApiGenerator {
             }
             // routing handler
             transfer(targetPath, ("src.main.resources.config").replace(".", separator), "handler.yml",
-                    templates.rest.openapi.handlerYml.template(serviceId, handlerPackage, operationList, prometheusMetrics));
+                    templates.rest.openapi.handlerYml.template(serviceId, handlerPackage, operationList, prometheusMetrics, useLightProxy));
 
         }
 
