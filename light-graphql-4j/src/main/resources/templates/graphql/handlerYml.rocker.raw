@@ -1,6 +1,6 @@
 @import java.util.Map
 @import java.util.List
-@args (String serviceId, boolean prometheusMetrics)
+@args (String serviceId, boolean prometheusMetrics, boolean useLightProxy)
 
 # Handler middleware chain configuration
 ---
@@ -37,9 +37,9 @@ handlers:
   - com.networknt.exception.ExceptionHandler@@exception
 @if(prometheusMetrics){  - com.networknt.metrics.prometheus.PrometheusHandler@@prometheus} else {  - com.networknt.metrics.MetricsHandler@@metrics}
   - com.networknt.traceability.TraceabilityHandler@@traceability
-  - com.networknt.correlation.CorrelationHandler@@correlation
+  - com.networknt.correlation.CorrelationHandler@@correlation @if(!useLightProxy) {
   - com.networknt.graphql.security.JwtVerifyHandler@@security
-  - com.networknt.graphql.validator.ValidatorHandler@@validator
+  - com.networknt.graphql.validator.ValidatorHandler@@validator}
   # Framework endpoint handlers
   - com.networknt.health.HealthGetHandler@@health
   - com.networknt.info.ServerInfoGetHandler@@info
@@ -55,9 +55,9 @@ chains:
     - exception
 @if(prometheusMetrics){    - prometheus} else {    - metrics}
     - traceability
-    - correlation
+    - correlation @if(!useLightProxy){
     - security
-    - validator
+    - validator}
 
 paths:
   - path: '/graphql'

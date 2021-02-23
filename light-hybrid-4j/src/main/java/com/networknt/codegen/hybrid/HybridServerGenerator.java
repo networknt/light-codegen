@@ -51,6 +51,7 @@ public class HybridServerGenerator implements HybridGenerator {
         boolean kafkaProducer = isKafkaProducer(config, null);
         boolean kafkaConsumer = isKafkaConsumer(config, null);
         boolean supportAvro = isSupportAvro(config, null);
+        boolean useLightProxy = isUseLightProxy(config, null);
         String kafkaTopic = getKafkaTopic(config, null);
         String decryptOption = getDecryptOption(config, null);
         String jsonPath = getJsonPath(config, null);

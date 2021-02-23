@@ -348,7 +348,8 @@ public class OpenApiLambdaGenerator implements OpenApiGenerator {
         return packageDocker;
     }
 
-    private boolean isUseLightProxy(JsonNode config, Boolean defaultValue) {
+    @Override
+    public boolean isUseLightProxy(JsonNode config, Boolean defaultValue) {
         boolean useLightProxy = defaultValue == null ? true : defaultValue;
         JsonNode jsonNode = config.get("useLightProxy");
         if(jsonNode == null) {

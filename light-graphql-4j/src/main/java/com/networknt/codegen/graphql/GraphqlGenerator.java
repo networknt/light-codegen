@@ -51,6 +51,7 @@ public class GraphqlGenerator implements Generator {
         boolean kafkaProducer = isKafkaProducer(config, null);
         boolean kafkaConsumer = isKafkaConsumer(config, null);
         boolean supportAvro = isSupportAvro(config, null);
+        boolean useLightProxy = isUseLightProxy(config, null);
         String kafkaTopic = getKafkaTopic(config, null);
         String decryptOption = getDecryptOption(config, null);
 
@@ -101,7 +102,7 @@ public class GraphqlGenerator implements Generator {
         transfer(targetPath, ("src.main.resources").replace(".", separator), "logback.xml", templates.graphql.logback.template());
         transfer(targetPath, ("src.test.resources").replace(".", separator), "logback-test.xml", templates.graphql.logback.template());
         // handler.yml
-        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "handler.yml", templates.graphql.handlerYml.template(serviceId, prometheusMetrics));
+        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "handler.yml", templates.graphql.handlerYml.template(serviceId, prometheusMetrics, useLightProxy));
 
         // Copy schema
         // The generator support both manually coded schema or schema defined in IDL. If schema.graphqls exists

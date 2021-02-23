@@ -14,6 +14,7 @@ overwriteHandler: true
 overwriteHandlerTest: true
 overwriteModel: true
 useSidecar: true
+useLightProxy: true
 httpPort: 8080
 enableHttp: false
 httpsPort: 8443
