@@ -74,7 +74,7 @@ public class OpenApiKotlinGenerator implements OpenApiGenerator {
         boolean useLightProxy = isUseLightProxy(config, null);
         String kafkaTopic = getKafkaTopic(config, null);
         String decryptOption = getDecryptOption(config, null);
-
+        boolean buildMaven = isBuildMaven(config, null);
         // get the list of operations for this model
         List<Map<String, Object>> operationList = getOperationList(model, config);
 
@@ -94,15 +94,19 @@ public class OpenApiKotlinGenerator implements OpenApiGenerator {
 
                 transfer(targetPath, "docker", "Dockerfile", templates.restkotlin.dockerfile.template(config, expose));
                 transfer(targetPath, "docker", "Dockerfile-Slim", templates.restkotlin.dockerfileslim.template(config, expose));
-                transfer(targetPath, "", "build.sh", templates.restkotlin.buildSh.template(dockerOrganization, serviceId));
+                transfer(targetPath, "", "build.sh", templates.restkotlin.buildSh.template(config, serviceId));
                 transfer(targetPath, "", ".gitignore", templates.restkotlin.gitignore.template());
                 transfer(targetPath, "", "README.md", templates.restkotlin.README.template());
                 transfer(targetPath, "", "LICENSE", templates.restkotlin.LICENSE.template());
-                transfer(targetPath, "", "build.gradle.kts", templates.restkotlin.buildGradleKts.template(config));
-                transfer(targetPath, "", "gradle.properties", templates.restkotlin.gradleProperties.template(config));
-                transfer(targetPath, "", "settings.gradle.kts", templates.restkotlin.settingsGradleKts.template(config));
 
-                transferGradle(targetPath);
+                if(buildMaven) {
+                    transferMaven(targetPath);
+                } else {
+                    transfer(targetPath, "", "build.gradle.kts", templates.restkotlin.buildGradleKts.template(config));
+                    transfer(targetPath, "", "gradle.properties", templates.restkotlin.gradleProperties.template(config));
+                    transfer(targetPath, "", "settings.gradle.kts", templates.restkotlin.settingsGradleKts.template(config));
+                    transferGradle(targetPath);
+                }
 
                 // config
                 transfer(targetPath, ("src.main.resources.config").replace(".", separator), "service.yml", templates.restkotlin.openapi.service.template(config));

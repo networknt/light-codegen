@@ -63,9 +63,14 @@ public class HybridServiceGenerator implements HybridGenerator {
         String kafkaTopic = getKafkaTopic(config, null);
         String decryptOption = getDecryptOption(config, null);
         String jsonPath = getJsonPath(config, null);
+        boolean buildMaven = isBuildMaven(config, null);
 
-        transfer(targetPath, "", "pom.xml", templates.hybrid.service.pom.template(config));
-        transferMaven(targetPath);
+        if(buildMaven) {
+            transfer(targetPath, "", "pom.xml", templates.hybrid.service.pom.template(config));
+            transferMaven(targetPath);
+        } else {
+            transferGradle(targetPath);
+        }
         //transfer(targetPath, "", "Dockerfile", templates.dockerfile.template(config));
         transfer(targetPath, "", ".gitignore", templates.hybrid.gitignore.template());
         transfer(targetPath, "", "README.md", templates.hybrid.service.README.template());

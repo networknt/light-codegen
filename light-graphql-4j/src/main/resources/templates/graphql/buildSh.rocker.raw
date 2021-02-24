@@ -1,10 +1,11 @@
-@args (String org, String serviceId)
+@import com.fasterxml.jackson.databind.JsonNode
+@args (JsonNode config, String serviceId)
 #!/bin/bash
 
 set -ex
 
 VERSION=$1
-IMAGE_NAME="@org/@serviceId"
+IMAGE_NAME="@config.get("dockerOrganization").textValue()/@serviceId"
 
 showHelp() {
     echo " "
@@ -20,7 +21,11 @@ showHelp() {
 
 build() {
     echo "Building ..."
+    @if(config.get("buildMaven").booleanValue()){
     mvn clean install -Prelease
+    }else{
+    ./gradlew clean build
+    }
     echo "Successfully built!"
 }
 
@@ -35,6 +40,7 @@ cleanup() {
 publish() {
     echo "Building Docker image with version $VERSION"
     docker build -t $IMAGE_NAME:$VERSION -t $IMAGE_NAME:latest -f ./docker/Dockerfile . --no-cache=true
+    docker build -t $IMAGE_NAME:$VERSION-slim -f ./docker/Dockerfile-Slim . --no-cache=true
     echo "Images built with version $VERSION"
     echo "Pushing image to DockerHub"
     docker push $IMAGE_NAME

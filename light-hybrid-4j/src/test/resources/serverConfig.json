@@ -22,5 +22,6 @@
   },
   "supportH2ForTest": false,
   "supportClient": false,
+  "buildMaven": true,
   "dockerOrganization": "networknt"
 }
