@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.*;
 
@@ -358,17 +357,6 @@ public class OpenApiLambdaGenerator implements OpenApiGenerator {
             useLightProxy = jsonNode.booleanValue();
         }
         return useLightProxy;
-    }
-
-    private boolean isBuildMaven(JsonNode config, Boolean defaultValue) {
-        boolean buildMaven = defaultValue == null ? false : defaultValue;
-        JsonNode jsonNode = config.get("buildMaven");
-        if(jsonNode == null) {
-            ((ObjectNode)config).put("buildMaven", buildMaven);
-        } else {
-            buildMaven = jsonNode.booleanValue();
-        }
-        return buildMaven;
     }
 
     private boolean isPublicVpc(JsonNode config, Boolean defaultValue) {

@@ -55,9 +55,13 @@ public class HybridServerGenerator implements HybridGenerator {
         String kafkaTopic = getKafkaTopic(config, null);
         String decryptOption = getDecryptOption(config, null);
         String jsonPath = getJsonPath(config, null);
-
-        transfer(targetPath, "", "pom.xml", templates.hybrid.server.pom.template(config));
-        transferMaven(targetPath);
+        boolean buildMaven = isBuildMaven(config, null);
+        if(buildMaven) {
+            transfer(targetPath, "", "pom.xml", templates.hybrid.server.pom.template(config));
+            transferMaven(targetPath);
+        } else {
+            transferGradle(targetPath);
+        }
 
         // There is only one port that should be exposed in Dockerfile, otherwise, the service
         // discovery will be so confused. If https is enabled, expose the https port. Otherwise http port.
@@ -69,7 +73,7 @@ public class HybridServerGenerator implements HybridGenerator {
         }
         transfer(targetPath, "docker", "Dockerfile", templates.hybrid.server.dockerfile.template(config, expose));
         transfer(targetPath, "docker", "Dockerfile-Slim", templates.hybrid.server.dockerfileslim.template(config, expose));
-        transfer(targetPath, "", "build.sh", templates.hybrid.server.buildSh.template(dockerOrganization, serviceId));
+        transfer(targetPath, "", "build.sh", templates.hybrid.server.buildSh.template(config, serviceId));
         transfer(targetPath, "", ".gitignore", templates.hybrid.gitignore.template());
         transfer(targetPath, "", "README.md", templates.hybrid.server.README.template());
         transfer(targetPath, "", "LICENSE", templates.hybrid.LICENSE.template());

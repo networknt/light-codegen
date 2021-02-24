@@ -71,6 +71,7 @@ public class OpenApiLightGenerator implements OpenApiGenerator {
         boolean useLightProxy = isUseLightProxy(config, null);
         String kafkaTopic = getKafkaTopic(config, null);
         String decryptOption = getDecryptOption(config, null);
+        boolean buildMaven = isBuildMaven(config, null);
 
         // get the list of operations for this model
         List<Map<String, Object>> operationList = getOperationList(model, config);
@@ -80,12 +81,16 @@ public class OpenApiLightGenerator implements OpenApiGenerator {
             // if set to true, regenerate the code only (handlers, model and the handler.yml, potentially affected by operation changes
             if (!specChangeCodeReGenOnly) {
                 // generate configurations, project, masks, certs, etc
-                if (!skipPomFile) {
-                    transfer(targetPath, "", "pom.xml", templates.rest.openapi.pom.template(config));
+
+                if(buildMaven) {
+                    if (!skipPomFile) {
+                        transfer(targetPath, "", "pom.xml", templates.rest.openapi.pom.template(config));
+                    }
+                    transferMaven(targetPath);
+                } else {
+                    transferGradle(targetPath);
                 }
 
-
-                transferMaven(targetPath);
                 // There is only one port that should be exposed in Dockerfile, otherwise, the service
                 // discovery will be so confused. If https is enabled, expose the https port. Otherwise http port.
                 String expose = "";
@@ -97,7 +102,7 @@ public class OpenApiLightGenerator implements OpenApiGenerator {
 
                 transfer(targetPath, "docker", "Dockerfile", templates.rest.dockerfile.template(config, expose));
                 transfer(targetPath, "docker", "Dockerfile-Slim", templates.rest.dockerfileslim.template(config, expose));
-                transfer(targetPath, "", "build.sh", templates.rest.buildSh.template(dockerOrganization, serviceId));
+                transfer(targetPath, "", "build.sh", templates.rest.buildSh.template(config, serviceId));
                 transfer(targetPath, "", "kubernetes.yml", templates.rest.kubernetes.template(dockerOrganization, serviceId, config.get("artifactId").textValue(), expose, version));
                 transfer(targetPath, "", ".gitignore", templates.rest.gitignore.template());
                 transfer(targetPath, "", "README.md", templates.rest.README.template());

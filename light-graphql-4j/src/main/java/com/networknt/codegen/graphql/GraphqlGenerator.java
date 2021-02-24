@@ -54,9 +54,14 @@ public class GraphqlGenerator implements Generator {
         boolean useLightProxy = isUseLightProxy(config, null);
         String kafkaTopic = getKafkaTopic(config, null);
         String decryptOption = getDecryptOption(config, null);
+        boolean buildMaven = isBuildMaven(config, null);
 
-        transfer(targetPath, "", "pom.xml", templates.graphql.pom.template(config));
-        transferMaven(targetPath);
+        if(buildMaven) {
+            transfer(targetPath, "", "pom.xml", templates.graphql.pom.template(config));
+            transferMaven(targetPath);
+        } else {
+            transferGradle(targetPath);
+        }
         // There is only one port that should be exposed in Dockerfile, otherwise, the service
         // discovery will be so confused. If https is enabled, expose the https port. Otherwise http port.
         String expose = "";
@@ -67,7 +72,7 @@ public class GraphqlGenerator implements Generator {
         }
         transfer(targetPath, "docker", "Dockerfile", templates.graphql.dockerfile.template(config, expose));
         transfer(targetPath, "docker", "Dockerfile-Slim", templates.graphql.dockerfileslim.template(config, expose));
-        transfer(targetPath, "", "build.sh", templates.graphql.buildSh.template(dockerOrganization, serviceId));
+        transfer(targetPath, "", "build.sh", templates.graphql.buildSh.template(config, serviceId));
         transfer(targetPath, "", ".gitignore", templates.graphql.gitignore.template());
         transfer(targetPath, "", "README.md", templates.graphql.README.template());
         transfer(targetPath, "", "LICENSE", templates.graphql.LICENSE.template());
