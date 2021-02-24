@@ -4,7 +4,7 @@
 kafkaVersion=2.0.0
 light4jVersion=2.0.24-SNAPSHOT
 jacksonVersion=2.12.1
-undertowVersion=2.1.3.Final
+undertowVersion=2.2.4.Final
 logbackVersion=1.2.3
 jsonSchemaValidatorVersion=1.0.29
 junitVersion=5.3.1
