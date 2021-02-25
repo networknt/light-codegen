@@ -1,12 +1,13 @@
 package com.networknt.codegen.handler;
 
-import com.jsoniter.JsonIterator;
-import com.jsoniter.any.Any;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.networknt.codegen.CodegenWebConfig;
 import com.networknt.codegen.FrameworkRegistry;
 import com.networknt.codegen.Generator;
 import com.networknt.codegen.Utils;
+import com.networknt.codegen.graphql.GraphqlGenerator;
 import com.networknt.config.Config;
+import com.networknt.config.JsonMapper;
 import com.networknt.rpc.Handler;
 import com.networknt.rpc.router.JsonHandler;
 import com.networknt.rpc.router.ServiceHandler;
@@ -71,16 +72,20 @@ public class CodegenMultipleHandler implements Handler {
                     return NioUtils.toByteBuffer(getStatus(exchange, STATUS_INVALID_FRAMEWORK, framework));
                 }
                 String modelType = (String)generatorMap.get("modelType");
-                Object model = null; // the model can be Any or String depending on the framework
+                Object model = null; // the model can be JsonNode or String depending on the framework
                 if("C".equals(modelType)) {
                     String modelText = (String)generatorMap.get("modelText");
-                    // json or yaml?
-                    modelText = modelText.trim();
-                    if(modelText.startsWith("{") || modelText.startsWith("[")) {
-                        // This is a json string.
-                        model = JsonIterator.deserialize(modelText);
-                    } else {
+                    if(GraphqlGenerator.FRAMEWORK.equals(framework)) {
                         model = modelText;
+                    } else {
+                        // json or yaml?
+                        if(modelText.startsWith("{") || modelText.startsWith("[")) {
+                            // This is a json string.
+                            model = Generator.jsonMapper.readTree(modelText);
+                        } else {
+                            // This is a yaml string
+                            model = Generator.yamlMapper.readTree(modelText);
+                        }
                     }
                 } else if("U".equals(modelType)) {
                     String modelUrl = (String)generatorMap.get("modelUrl");
@@ -88,7 +93,9 @@ public class CodegenMultipleHandler implements Handler {
                     if(Utils.isUrl(modelUrl)) {
                         // if it is a json file.
                         if(modelUrl.endsWith(".json")) {
-                            model = JsonIterator.deserialize(Utils.urlToByteArray(new URL(modelUrl)));
+                            model = Generator.jsonMapper.readTree((Utils.urlToByteArray(new URL(modelUrl))));
+                        } else if (modelUrl.endsWith(".yml") || modelUrl.endsWith(".yaml")) {
+                            model = Generator.yamlMapper.readTree(Utils.urlToByteArray(new URL(modelUrl)));
                         } else {
                             model = new String(Utils.urlToByteArray(new URL(modelUrl)), StandardCharsets.UTF_8);
                         }
@@ -99,29 +106,29 @@ public class CodegenMultipleHandler implements Handler {
                 }
 
                 String configType = (String)generatorMap.get("configType");
-                Any config = null;
+                JsonNode config = null;
                 if("C".equals(configType)) {
                     String configText = (String)generatorMap.get("configText");
                     configText = configText.trim();
                     // the config must be json.
                     if(configText.startsWith("{") || configText.startsWith("[")) {
-                        config = JsonIterator.deserialize(configText);
+                        config = Generator.jsonMapper.readTree(configText);
                     } else {
-                        return NioUtils.toByteBuffer(getStatus(exchange, STATUS_INVALID_CONFIG_JSON));
+                        config = Generator.yamlMapper.readTree(configText);
                     }
                 } else if("U".equals(configType)) {
                     String configUrl = (String)generatorMap.get("configUrl");
                     configUrl = configUrl.trim();
-                    // make sure that the file extension is .json
                     if(configUrl.endsWith(".json")) {
-                        config = JsonIterator.deserialize(Utils.urlToByteArray(new URL(configUrl)));
+                        config = Generator.jsonMapper.readTree(Utils.urlToByteArray(new URL(configUrl)));
+                    } else if(configUrl.endsWith(".yml") || configUrl.endsWith(".yaml")) {
+                        config = Generator.yamlMapper.readTree(Utils.urlToByteArray(new URL(configUrl)));
                     } else {
                         return NioUtils.toByteBuffer(getStatus(exchange, STATUS_INVALID_CONFIG_URL_EXTENSION, configUrl));
                     }
                 }
-
                 Generator generator = FrameworkRegistry.getInstance().getGenerator(framework);
-                generator.generate(projectFolder, model, Any.wrap(config));
+                generator.generate(projectFolder, model, config);
             }
         } catch (Exception e) {
             logger.error("Exception:", e);

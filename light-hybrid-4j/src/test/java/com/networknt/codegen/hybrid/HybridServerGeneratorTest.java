@@ -1,9 +1,8 @@
 package com.networknt.codegen.hybrid;
 
-import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jsoniter.JsonIterator;
-import com.jsoniter.any.Any;
+import com.networknt.codegen.Generator;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -11,7 +10,6 @@ import org.junit.Test;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Map;
 
 /**
  * Created by steve on 28/04/17.
@@ -36,10 +34,9 @@ public class HybridServerGeneratorTest {
 
     @Test
     public void testGenerator() throws IOException {
-        Any anyConfig = JsonIterator.parse(HybridServerGeneratorTest.class.getResourceAsStream(configName), 1024).readAny();
-
+        JsonNode config = Generator.jsonMapper.readTree(HybridServerGeneratorTest.class.getResourceAsStream(configName));
         HybridServerGenerator generator = new HybridServerGenerator();
-        generator.generate(targetPath, null, anyConfig);
+        generator.generate(targetPath, null, config);
     }
 
     @Test

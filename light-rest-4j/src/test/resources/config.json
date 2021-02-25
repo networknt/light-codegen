@@ -9,10 +9,12 @@
   "overwriteHandler": false,
   "overwriteHandlerTest": false,
   "overwriteModel": true,
+  "useLightProxy": false,
   "httpPort": 8080,
   "enableHttp": true,
   "httpsPort": 8443,
   "enableHttps": false,
+  "enableHttp2": false,
   "enableRegistry": false,
   "supportDb": true,
   "dbInfo": {
@@ -25,6 +27,7 @@
   "supportH2ForTest": false,
   "supportClient": false,
   "dockerOrganization": "networknt",
+  "enableParamDescription": false,
   "generateEnvVars": {
   	"generate": true,
   	"skipArray": true,

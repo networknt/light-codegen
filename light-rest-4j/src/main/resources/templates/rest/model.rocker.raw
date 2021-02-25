@@ -1,5 +1,5 @@
-@import com.jsoniter.any.Any
-@args (String modelPackage, String className, Any props)
+@import com.fasterxml.jackson.databind.JsonNode
+@args (String modelPackage, String className)
 package @modelPackage;
 import java.io.Serializable;
 

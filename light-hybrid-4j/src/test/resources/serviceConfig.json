@@ -12,6 +12,7 @@
   "enableHttp": true,
   "httpsPort": 8443,
   "enableHttps": false,
+  "enableHttp2": false,
   "enableRegistry": false,
   "supportDb": true,
   "dbInfo": {
@@ -22,5 +23,6 @@
     "password": "my-secret-pw"
   },
   "supportH2ForTest": false,
-  "supportClient": false
+  "supportClient": false,
+  "buildMaven": true
 }

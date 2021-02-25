@@ -6,12 +6,15 @@
   "schemaPackage": "com.networknt.starwars.schema",
   "schemaClass": "StarWarsSchema",
   "overwriteSchemaClass": true,
+  "useLightProxy": false,
   "httpPort": 8080,
   "enableHttp": true,
   "httpsPort": 8443,
   "enableHttps": false,
+  "enableHttp2": false,
   "enableRegistry": false,
   "supportDb": true,
+  "eclipseIDE": false,
   "dbInfo": {
     "name": "mysql",
     "driverClassName": "com.mysql.jdbc.Driver",
@@ -21,5 +24,6 @@
   },
   "supportH2ForTest": false,
   "supportClient": false,
+  "buildMaven": true,
   "dockerOrganization": "networknt"
 }

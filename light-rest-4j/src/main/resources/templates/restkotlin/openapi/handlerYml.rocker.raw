@@ -1,7 +1,6 @@
 @import java.util.Map
 @import java.util.List
-@import com.jsoniter.any.Any
-@args (String serviceId, String handlerPackage, List<Map<String, Object>> items, boolean prometheusMetrics, boolean healthCheck, boolean serverInfo)
+@args (String serviceId, String handlerPackage, List<Map<String, Object>> items, boolean prometheusMetrics, boolean useLightProxy)
 
 # Handler middleware chain configuration
 ---
@@ -38,15 +37,15 @@ handlers:
   - com.networknt.exception.ExceptionHandler@@exception
 @if(prometheusMetrics){  - com.networknt.metrics.prometheus.PrometheusHandler@@prometheus} else {  - com.networknt.metrics.MetricsHandler@@metrics}
   - com.networknt.traceability.TraceabilityHandler@@traceability
-  - com.networknt.correlation.CorrelationHandler@@correlation
+  - com.networknt.correlation.CorrelationHandler@@correlation @if(!useLightProxy) {
   - com.networknt.openapi.OpenApiHandler@@specification
-  - com.networknt.openapi.JwtVerifyHandler@@security
-  - com.networknt.body.BodyHandler@@body
-  - com.networknt.audit.AuditHandler@@audit
+  - com.networknt.openapi.JwtVerifyHandler@@security}
+  - com.networknt.body.BodyHandler@@body @if(!useLightProxy) {
+  - com.networknt.audit.AuditHandler@@audit}
   # DumpHandler is to dump detail request/response info to log, useful for troubleshooting but not suggested to use in production due to it may lower the performance
-  # - com.networknt.dump.DumpHandler@@dump
+  # - com.networknt.dump.DumpHandler@@dump @if(!useLightProxy) {
   - com.networknt.sanitizer.SanitizerHandler@@sanitizer
-  - com.networknt.openapi.ValidatorHandler@@validator
+  - com.networknt.openapi.ValidatorHandler@@validator}
   # Customer business domain specific cross-cutting concerns handlers
   # - com.example.validator.CustomizedValidator@@custvalidator
   # Framework endpoint handlers
@@ -64,14 +63,14 @@ chains:
     - exception
 @if(prometheusMetrics){    - prometheus} else {    - metrics}
     - traceability
-    - correlation
-    - body
-    - audit
+    - correlation @if(!useLightProxy) {
     - specification
-    - security
-#    - dump
+    - security}
+    - body @if(!useLightProxy) {
+    - audit}
+#    - dump @if(!useLightProxy) {
     - sanitizer
-    - validator
+    - validator}
 
 paths:
 @for(item: items){  - path: '@item.get("path")'
@@ -80,16 +79,16 @@ paths:
       - default
       - @with (p = handlerPackage + ".") {@p}@item.get("handlerName")
 }
-@if(healthCheck){  - path: '/health/${server.serviceId:@serviceId}'
+  - path: '/health/${server.serviceId:@serviceId}'
     method: 'get'
     exec:
       - health
-}
-@if(serverInfo){  - path: '/server/info'
+
+  - path: '/server/info'
     method: 'get'
     exec:
       - info
-}
+
 @if(prometheusMetrics){  - path: '/prometheus'
     method: 'get'
     exec:

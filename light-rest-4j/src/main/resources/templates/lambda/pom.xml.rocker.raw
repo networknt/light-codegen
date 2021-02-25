@@ -1,22 +1,22 @@
-@import com.jsoniter.any.Any
-@args (Any config, String functionName)
+@import com.fasterxml.jackson.databind.JsonNode
+@args (JsonNode config, String functionName)
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>@config.get("groupId")</groupId>
+    <groupId>@config.get("groupId").textValue()</groupId>
     <artifactId>@functionName</artifactId>
-    <version>@config.get("version")</version>
+    <version>@config.get("version").textValue()</version>
     <packaging>jar</packaging>
     <name>@functionName</name>
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <version.light-4j>2.0.23</version.light-4j>
-        <version.jackson>2.10.4</version.jackson>
+        <version.light-4j>2.0.24</version.light-4j>
+        <version.jackson>2.12.1</version.jackson>
         <version.slf4j>1.7.25</version.slf4j>
         <version.logback>1.2.3</version.logback>
-        <version.json-schema-validator>1.0.29</version.json-schema-validator>
+        <version.json-schema-validator>1.0.49</version.json-schema-validator>
         <version.snakeyaml>1.26</version.snakeyaml>
         <version.lambda-core>1.2.1</version.lambda-core>
         <version.lambda-events>3.6.0</version.lambda-events>
@@ -61,7 +61,7 @@
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
-            <artifactId>@if(config.toBoolean("useLightProxy")){lambda-interceptor}else{request-handler}</artifactId>
+            <artifactId>@if(config.get("useLightProxy").booleanValue()){lambda-interceptor}else{request-handler}</artifactId>
             <version>${version.light-4j}</version>
         </dependency>
         <dependency>

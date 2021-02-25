@@ -1,5 +1,5 @@
-@import com.jsoniter.any.Any
-@args (Any config)
+@import com.fasterxml.jackson.databind.JsonNode
+@args (JsonNode config)
 #----------------------------------------------------------------------------------------------------------------
 # Scalable Config file
 #
@@ -18,4 +18,4 @@ exclusionConfigFileList:
   - values
   - status
 
-decryptorClass: @with(decryptOption = config.toString("decryptOption")) {@if(decryptOption.equals("stdin")) {com.networknt.decrypt.ManualAESDecryptor} else if(decryptOption.equals("environment")) {com.networknt.decrypt.AutoAESDecryptor} else {com.networknt.decrypt.AESDecryptor}}
+decryptorClass: @with(decryptOption = config.get("decryptOption").textValue()) {@if(decryptOption.equals("stdin")) {com.networknt.decrypt.ManualAESDecryptor} else if(decryptOption.equals("environment")) {com.networknt.decrypt.AutoAESDecryptor} else {com.networknt.decrypt.AESDecryptor}}

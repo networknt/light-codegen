@@ -1,11 +1,11 @@
 package com.networknt.codegen.hybrid;
 
-import com.jsoniter.ValueType;
-import com.jsoniter.any.Any;
-import com.jsoniter.output.JsonStream;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.networknt.codegen.Generator;
 import org.apache.commons.text.StringEscapeUtils;
 
+import java.io.ByteArrayInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,7 +22,7 @@ import static java.io.File.separator;
 /**
  * Created by steve on 28/04/17.
  */
-public class HybridServiceGenerator implements Generator {
+public class HybridServiceGenerator implements HybridGenerator {
 
     @Override
     public String getFramework() {
@@ -30,31 +30,47 @@ public class HybridServiceGenerator implements Generator {
     }
 
     @Override
-    public void generate(String targetPath, Object model, Any config) throws IOException {
+    public void generate(String targetPath, Object model, JsonNode config) throws IOException {
         // whoever is calling this needs to make sure that model is converted to Map<String, Object>
-        String handlerPackage = config.get("handlerPackage").toString();
-        boolean overwriteHandler = config.toBoolean("overwriteHandler");
-        boolean overwriteHandlerTest = config.toBoolean("overwriteHandlerTest");
-        boolean enableHttp = config.toBoolean("enableHttp");
-        boolean enableHttps = config.toBoolean("enableHttps");
-        boolean enableHttp2 = config.toBoolean("enableHttp2");
-        boolean enableRegistry = config.toBoolean("enableRegistry");
-        boolean eclipseIDE = config.toBoolean("eclipseIDE");
-        boolean supportClient = config.toBoolean("supportClient");
-        String artifactId = config.toString("artifactId");
-        String version = config.toString("version");
-        String serviceId = config.get("groupId").toString().trim() + "." + artifactId.trim() + "-" + config.get("version").toString().trim();
-        boolean prometheusMetrics = config.toBoolean("prometheusMetrics");
-        boolean skipHealthCheck = config.toBoolean("skipHealthCheck");
-        boolean skipServerInfo = config.toBoolean("skipServerInfo");
-        String jsonPath = config.get("jsonPath").toString();
-        boolean kafkaProducer = config.toBoolean("kafkaProducer");
-        boolean kafkaConsumer = config.toBoolean("kafkaConsumer");
-        boolean supportAvro = config.toBoolean("supportAvro");
-        String kafkaTopic = config.get("kafkaTopic").toString();
+        String rootPackage = getRootPackage(config, null);
+        String modelPackage = getModelPackage(config, null);
+        String handlerPackage = getHandlerPackage(config, null);
+        boolean overwriteHandler = isOverwriteHandler(config, null);
+        boolean overwriteHandlerTest = isOverwriteHandlerTest(config, null);
+        boolean overwriteModel = isOverwriteModel(config, null);
+        boolean generateModelOnly = isGenerateModelOnly(config, null);
+        boolean enableHttp = isEnableHttp(config, null);
+        String httpPort = getHttpPort(config, null);
+        boolean enableHttps = isEnableHttps(config, null);
+        String httpsPort = getHttpsPort(config, null);
+        boolean enableHttp2 = isEnableHttp2(config, null);
+        boolean enableRegistry = isEnableRegistry(config, null);
+        boolean eclipseIDE = isEclipseIDE(config, null);
+        boolean supportClient = isSupportClient(config, null);
+        boolean prometheusMetrics = isPrometheusMetrics(config, null);
+        String dockerOrganization = getDockerOrganization(config, null);
+        String version = getVersion(config, null);
+        String groupId = getGroupId(config, null);
+        String artifactId = getArtifactId(config, null);
+        String serviceId = groupId + "." + artifactId + "-" + version;
+        boolean specChangeCodeReGenOnly = isSpecChangeCodeReGenOnly(config, null);
+        boolean enableParamDescription = isEnableParamDescription(config, null);
+        boolean skipPomFile = isSkipPomFile(config, null);
+        boolean kafkaProducer = isKafkaProducer(config, null);
+        boolean kafkaConsumer = isKafkaConsumer(config, null);
+        boolean supportAvro = isSupportAvro(config, null);
+        boolean useLightProxy = isUseLightProxy(config, null);
+        String kafkaTopic = getKafkaTopic(config, null);
+        String decryptOption = getDecryptOption(config, null);
+        String jsonPath = getJsonPath(config, null);
+        boolean buildMaven = isBuildMaven(config, null);
 
-        transfer(targetPath, "", "pom.xml", templates.hybrid.service.pom.template(config));
-        transferMaven(targetPath);
+        if(buildMaven) {
+            transfer(targetPath, "", "pom.xml", templates.hybrid.service.pom.template(config));
+            transferMaven(targetPath);
+        } else {
+            transferGradle(targetPath);
+        }
         //transfer(targetPath, "", "Dockerfile", templates.dockerfile.template(config));
         transfer(targetPath, "", ".gitignore", templates.hybrid.gitignore.template());
         transfer(targetPath, "", "README.md", templates.hybrid.service.README.template());
@@ -67,7 +83,7 @@ public class HybridServiceGenerator implements Generator {
         // config
         transfer(targetPath, ("src.test.resources.config").replace(".", separator), "service.yml", templates.hybrid.serviceYml.template(config));
 
-        transfer(targetPath, ("src.test.resources.config").replace(".", separator), "server.yml", templates.hybrid.serverYml.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, "49587", enableHttps, "49588", enableHttp2, enableRegistry, version));
+        transfer(targetPath, ("src.test.resources.config").replace(".", separator), "server.yml", templates.hybrid.serverYml.template(serviceId, enableHttp, "49587", enableHttps, "49588", enableHttp2, enableRegistry, version));
         //transfer(targetPath, ("src.test.resources.config").replace(".", separator), "secret.yml", templates.hybrid.secretYml.template());
         transfer(targetPath, ("src.test.resources.config").replace(".", separator), "hybrid-security.yml", templates.hybrid.securityYml.template());
         transfer(targetPath, ("src.test.resources.config").replace(".", separator), "client.yml", templates.hybrid.clientYml.template());
@@ -93,37 +109,38 @@ public class HybridServiceGenerator implements Generator {
 
         // handler
         Map<String, Object> services = new HashMap<String, Object>();
-        Any anyModel = (Any)model;
-        String host = anyModel.toString("host");
-        String service = anyModel.toString("service");
-        List<Any> items = anyModel.get("action").asList();
-        if(items != null && items.size() > 0) {
-            for(Any item : items) {
-                Any any = item.get("example");
-                String example = any.valueType() != ValueType.INVALID ? StringEscapeUtils.escapeJson(any.toString()).trim() : "";
-                if(!overwriteHandler && checkExist(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), item.get("handler") + ".java")) {
+        JsonNode anyModel = (JsonNode)model;
+        String host = anyModel.get("host").textValue();
+        String service = anyModel.get("service").textValue();
+        JsonNode jsonNode = anyModel.get("action");
+        if(jsonNode != null && jsonNode.isArray()) {
+            ArrayNode items = (ArrayNode)jsonNode;
+            for(JsonNode item : items) {
+                JsonNode any = item.get("example");
+                String example = any != null ? StringEscapeUtils.escapeJson(any.toString()).trim() : "";
+                if(!overwriteHandler && checkExist(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), item.get("handler").textValue() + ".java")) {
                     continue;
                 }
-                transfer(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), item.get("handler") + ".java", templates.hybrid.handler.template(handlerPackage, host, service, item, example));
+                transfer(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), item.get("handler").textValue() + ".java", templates.hybrid.handler.template(handlerPackage, host, service, item, example));
                 String sId  = host + "/" + service + "/" + item.get("name") + "/" + item.get("version");
                 Map<String, Object> map = new HashMap<>();
                 map.put("schema", item.get("schema"));
-                Any anyScope = item.get("scope");
-                String scope = anyScope.valueType() != ValueType.INVALID ? anyScope.toString().trim() : null;
+                JsonNode anyScope = item.get("scope");
+                String scope = anyScope != null ? anyScope.textValue().trim() : null;
                 if(scope != null) map.put("scope", scope);
-                Any anySkipAuth = item.get("skipAuth");
-                Boolean skipAuth = anySkipAuth.valueType() != ValueType.INVALID ? anySkipAuth.toBoolean() : null;
+                JsonNode anySkipAuth = item.get("skipAuth");
+                Boolean skipAuth = anySkipAuth != null ? anySkipAuth.booleanValue() : false;
                 if(skipAuth != null) map.put("skipAuth", skipAuth);
                 services.put(sId, map);
             }
 
             // handler test cases
             transfer(targetPath, ("src.test.java." + handlerPackage + ".").replace(".", separator),  "TestServer.java", templates.hybrid.testServer.template(handlerPackage));
-            for(Any item : items) {
-                if(!overwriteHandlerTest && checkExist(targetPath, ("src.test.java." + handlerPackage).replace(".", separator), item.get("handler") + "Test.java")) {
+            for(JsonNode item : items) {
+                if(!overwriteHandlerTest && checkExist(targetPath, ("src.test.java." + handlerPackage).replace(".", separator), item.get("handler").textValue() + "Test.java")) {
                     continue;
                 }
-                transfer(targetPath, ("src.test.java." + handlerPackage).replace(".", separator), item.get("handler") + "Test.java", templates.hybrid.handlerTest.template(handlerPackage, host, service, item));
+                transfer(targetPath, ("src.test.java." + handlerPackage).replace(".", separator), item.get("handler").textValue() + "Test.java", templates.hybrid.handlerTest.template(handlerPackage, host, service, item));
             }
         }
 
@@ -147,12 +164,14 @@ public class HybridServiceGenerator implements Generator {
         }
 
         transfer(targetPath, ("src.test.resources.config").replace(".", separator), "handler.yml",
-                templates.hybrid.handlerYml.template(serviceId, handlerPackage, jsonPath, prometheusMetrics, !skipHealthCheck, !skipServerInfo));
+                templates.hybrid.handlerYml.template(serviceId, handlerPackage, jsonPath, prometheusMetrics));
 
         transfer(targetPath, ("src.test.resources.config").replace(".", separator), "rpc-router.yml",
                 templates.hybrid.rpcRouterYml.template(handlerPackage, jsonPath));
 
         // write the generated schema into the config folder for schema validation.
-        JsonStream.serialize(services, new FileOutputStream(FileSystems.getDefault().getPath(targetPath, ("src.main.resources").replace(".", separator), "schema.json").toFile()));
+        try (InputStream is = new ByteArrayInputStream(Generator.jsonMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(services))) {
+            Generator.copyFile(is, Paths.get(targetPath, ("src.main.resources").replace(".", separator), "schema.json"));
+        }
     }
 }

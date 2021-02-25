@@ -21,7 +21,7 @@
     <parent>
         <groupId>com.networknt</groupId>
         <artifactId>light-codegen</artifactId>
-        <version>2.0.23</version>
+        <version>2.0.24</version>
         <relativePath>..</relativePath>
     </parent>
 
@@ -58,14 +58,10 @@
             <groupId>com.fizzed</groupId>
             <artifactId>rocker-compiler</artifactId>
             <scope>provided</scope>
-        </dependency>         
-        <dependency>
-            <groupId>com.jsoniter</groupId>
-            <artifactId>jsoniter</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.javassist</groupId>
-            <artifactId>javassist</artifactId>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
         </dependency>
 
         <dependency>

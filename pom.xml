@@ -19,7 +19,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.networknt</groupId>
     <artifactId>light-codegen</artifactId>
-    <version>2.0.23</version>
+    <version>2.0.24</version>
     <packaging>pom</packaging>
     <name>Parent POM</name>
     <description>Light Code Generator</description>
@@ -66,9 +66,8 @@
     <properties>
         <java.version>11</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <version.light-4j>2.0.23</version.light-4j>
-        <version.jsoniter>0.9.15</version.jsoniter>
-        <version.javassist>3.21.0-GA</version.javassist>
+        <version.light-4j>2.0.24</version.light-4j>
+        <version.jackson>2.12.1</version.jackson>
         <version.slf4j>1.7.25</version.slf4j>
         <version.jose4j>0.6.3</version.jose4j>
         <version.antlr4>4.7</version.antlr4>
@@ -78,17 +77,11 @@
         <version.encoder>1.2.1</version.encoder>
         <version.logback>1.2.3</version.logback>
         <version.junit>4.13.1</version.junit>
-        <version.undertow>2.1.3.Final</version.undertow>
-        <version.swagger-parser>1.0.34</version.swagger-parser>
+        <version.undertow>2.2.4.Final</version.undertow>
         <version.hamcrest>1.3</version.hamcrest>
         <version.assertj>3.8.0</version.assertj>
         <version.hdrhistogram>2.1.10</version.hdrhistogram>
-        <version.jsr305>3.0.2</version.jsr305>
-        <version.json-schema-validator>1.0.29</version.json-schema-validator>
-        <version.consul>1.2.4</version.consul>
-        <version.zookeeper>3.5.3-beta</version.zookeeper>
-        <version.zkclient>0.3</version.zkclient>
-        <version.curator>4.0.0</version.curator>
+        <version.json-schema-validator>1.0.47</version.json-schema-validator>
         <version.snakeyaml>1.26</version.snakeyaml>
         <version.rocker>1.2.1</version.rocker>
         <version.jcommander>1.72</version.jcommander>
@@ -96,7 +89,6 @@
         <version.qdox>2.0-M9</version.qdox>
         <versions.maven-version>2.4</versions.maven-version>
         <versions.classgraph>4.8.22</versions.classgraph>
-        <version.swagger>2.0.7</version.swagger>
         <version.javadoc-packagelist-plugin>1.0.0</version.javadoc-packagelist-plugin>
         <version.maven-javadoc>3.1.0</version.maven-javadoc>
         <version.maven-source>3.2.0</version.maven-source>
@@ -236,16 +228,15 @@
                 <artifactId>openapi-parser</artifactId>
                 <version>${version.light-4j}</version>
             </dependency>
-
             <dependency>
-                <groupId>com.jsoniter</groupId>
-                <artifactId>jsoniter</artifactId>
-                <version>${version.jsoniter}</version>
+                <groupId>com.fasterxml.jackson.dataformat</groupId>
+                <artifactId>jackson-dataformat-yaml</artifactId>
+                <version>${version.jackson}</version>
             </dependency>
             <dependency>
-                <groupId>org.javassist</groupId>
-                <artifactId>javassist</artifactId>
-                <version>${version.javassist}</version>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${version.jackson}</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
@@ -317,11 +308,6 @@
 			    <artifactId>classgraph</artifactId>
 			    <version>${versions.classgraph}</version>
 			</dependency>
-			<dependency>
-			    <groupId>io.swagger.core.v3</groupId>
-			    <artifactId>swagger-core</artifactId>
-			    <version>${version.swagger}</version>
-			</dependency>		
 
             <!-- Test dependencies -->
             <dependency>

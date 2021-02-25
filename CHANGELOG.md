@@ -1,5 +1,21 @@
 # Change Log
 
+## [2.0.24](https://github.com/networknt/light-codegen/tree/2.0.24) (2021-02-24)
+
+
+**Merged pull requests:**
+
+
+- fixes \#538 support buildMaven flag with default true to open the door… [\#539](https://github.com/networknt/light-codegen/pull/539) ([stevehu](https://github.com/stevehu))
+- Feat/\#532 use sidecar [\#537](https://github.com/networknt/light-codegen/pull/537) ([BalloonWen](https://github.com/BalloonWen))
+- fixes \#535 update templates to use artifactId for name [\#536](https://github.com/networknt/light-codegen/pull/536) ([stevehu](https://github.com/stevehu))
+- fixes \#533 upgrade jackson to 2.12.1 for security [\#534](https://github.com/networknt/light-codegen/pull/534) ([stevehu](https://github.com/stevehu))
+- switch to jackson and refactor to support more generators [\#531](https://github.com/networknt/light-codegen/pull/531) ([stevehu](https://github.com/stevehu))
+- Feature/add bin to gitignore [\#530](https://github.com/networknt/light-codegen/pull/530) ([jaswalkiranavtar](https://github.com/jaswalkiranavtar))
+- Adding bin folder to gitignore [\#529](https://github.com/networknt/light-codegen/pull/529) ([jaswalkiranavtar](https://github.com/jaswalkiranavtar))
+- Issue525 [\#526](https://github.com/networknt/light-codegen/pull/526) ([stevehu](https://github.com/stevehu))
+- fixes \#523 add gradleProperties.rocker.raw to externalize the depende… [\#524](https://github.com/networknt/light-codegen/pull/524) ([stevehu](https://github.com/stevehu))
+- Fix/\#521 response reflection [\#522](https://github.com/networknt/light-codegen/pull/522) ([BalloonWen](https://github.com/BalloonWen))
 ## [2.0.23](https://github.com/networknt/light-codegen/tree/2.0.23) (2021-01-29)
 
 

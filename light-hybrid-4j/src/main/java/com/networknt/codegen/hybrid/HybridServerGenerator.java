@@ -1,7 +1,6 @@
 package com.networknt.codegen.hybrid;
 
-import com.jsoniter.any.Any;
-import com.networknt.codegen.Generator;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,45 +13,55 @@ import static java.io.File.separator;
 /**
  * Created by steve on 28/04/17.
  */
-public class HybridServerGenerator implements Generator {
+public class HybridServerGenerator implements HybridGenerator {
+    public static final String FRAMEWORK="light-hybrid-4j-server";
 
     @Override
     public String getFramework() {
-        return "light-hybrid-4j-server";
+        return FRAMEWORK;
     }
 
     @Override
-    public void generate(String targetPath, Object model, Any config) throws IOException {
+    public void generate(String targetPath, Object model, JsonNode config) throws IOException {
         // whoever is calling this needs to make sure that model is converted to Map<String, Object>
-        String rootPackage = config.get("rootPackage").toString();
-        String modelPackage = config.get("modelPackage").toString();
-        String handlerPackage = config.get("handlerPackage").toString();
-
-        boolean enableHttp = config.toBoolean("enableHttp");
-        String httpPort = config.toString("httpPort");
-        boolean enableHttps = config.toBoolean("enableHttps");
-        String httpsPort = config.toString("httpsPort");
-        boolean enableHttp2 = config.toBoolean("enableHttp2");
-        boolean enableRegistry = config.toBoolean("enableRegistry");
-        boolean eclipseIDE = config.toBoolean("eclipseIDE");
-        String dockerOrganization = config.toString("dockerOrganization");
-        String artifactId = config.toString("artifactId");
-        String version = config.toString("version");
-        if(dockerOrganization ==  null || dockerOrganization.length() == 0) dockerOrganization = "networknt";
-
-        boolean supportClient = config.toBoolean("supportClient");
-        String serviceId = config.get("groupId").toString().trim() + "." + artifactId.trim() + "-" + config.get("version").toString().trim();
-        boolean prometheusMetrics = config.toBoolean("prometheusMetrics");
-        boolean skipHealthCheck = config.toBoolean("skipHealthCheck");
-        boolean skipServerInfo = config.toBoolean("skipServerInfo");
-        String jsonPath = config.get("jsonPath").toString();
-        boolean kafkaProducer = config.toBoolean("kafkaProducer");
-        boolean kafkaConsumer = config.toBoolean("kafkaConsumer");
-        boolean supportAvro = config.toBoolean("supportAvro");
-        String kafkaTopic = config.get("kafkaTopic").toString();
-
-        transfer(targetPath, "", "pom.xml", templates.hybrid.server.pom.template(config));
-        transferMaven(targetPath);
+        String rootPackage = getRootPackage(config, null);
+        String modelPackage = getModelPackage(config, null);
+        String handlerPackage = getHandlerPackage(config, null);
+        boolean overwriteHandler = isOverwriteHandler(config, null);
+        boolean overwriteHandlerTest = isOverwriteHandlerTest(config, null);
+        boolean overwriteModel = isOverwriteModel(config, null);
+        boolean generateModelOnly = isGenerateModelOnly(config, null);
+        boolean enableHttp = isEnableHttp(config, null);
+        String httpPort = getHttpPort(config, null);
+        boolean enableHttps = isEnableHttps(config, null);
+        String httpsPort = getHttpsPort(config, null);
+        boolean enableHttp2 = isEnableHttp2(config, null);
+        boolean enableRegistry = isEnableRegistry(config, null);
+        boolean eclipseIDE = isEclipseIDE(config, null);
+        boolean supportClient = isSupportClient(config, null);
+        boolean prometheusMetrics = isPrometheusMetrics(config, null);
+        String dockerOrganization = getDockerOrganization(config, null);
+        String version = getVersion(config, null);
+        String groupId = getGroupId(config, null);
+        String artifactId = getArtifactId(config, null);
+        String serviceId = groupId + "." + artifactId + "-" + version;
+        boolean specChangeCodeReGenOnly = isSpecChangeCodeReGenOnly(config, null);
+        boolean enableParamDescription = isEnableParamDescription(config, null);
+        boolean skipPomFile = isSkipPomFile(config, null);
+        boolean kafkaProducer = isKafkaProducer(config, null);
+        boolean kafkaConsumer = isKafkaConsumer(config, null);
+        boolean supportAvro = isSupportAvro(config, null);
+        boolean useLightProxy = isUseLightProxy(config, null);
+        String kafkaTopic = getKafkaTopic(config, null);
+        String decryptOption = getDecryptOption(config, null);
+        String jsonPath = getJsonPath(config, null);
+        boolean buildMaven = isBuildMaven(config, null);
+        if(buildMaven) {
+            transfer(targetPath, "", "pom.xml", templates.hybrid.server.pom.template(config));
+            transferMaven(targetPath);
+        } else {
+            transferGradle(targetPath);
+        }
 
         // There is only one port that should be exposed in Dockerfile, otherwise, the service
         // discovery will be so confused. If https is enabled, expose the https port. Otherwise http port.
@@ -64,7 +73,7 @@ public class HybridServerGenerator implements Generator {
         }
         transfer(targetPath, "docker", "Dockerfile", templates.hybrid.server.dockerfile.template(config, expose));
         transfer(targetPath, "docker", "Dockerfile-Slim", templates.hybrid.server.dockerfileslim.template(config, expose));
-        transfer(targetPath, "", "build.sh", templates.hybrid.server.buildSh.template(dockerOrganization, config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version")));
+        transfer(targetPath, "", "build.sh", templates.hybrid.server.buildSh.template(config, serviceId));
         transfer(targetPath, "", ".gitignore", templates.hybrid.gitignore.template());
         transfer(targetPath, "", "README.md", templates.hybrid.server.README.template());
         transfer(targetPath, "", "LICENSE", templates.hybrid.LICENSE.template());
@@ -76,8 +85,8 @@ public class HybridServerGenerator implements Generator {
         // config
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "service.yml", templates.hybrid.serviceYml.template(config));
 
-        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "server.yml", templates.hybrid.serverYml.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, httpPort, enableHttps, httpsPort, enableHttp2, enableRegistry, version));
-        transfer(targetPath, ("src.test.resources.config").replace(".", separator), "server.yml", templates.hybrid.serverYml.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, "49587", enableHttps, "49588", enableHttp2, enableRegistry, version));
+        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "server.yml", templates.hybrid.serverYml.template(serviceId, enableHttp, httpPort, enableHttps, httpsPort, enableHttp2, enableRegistry, version));
+        transfer(targetPath, ("src.test.resources.config").replace(".", separator), "server.yml", templates.hybrid.serverYml.template(serviceId, enableHttp, "49587", enableHttps, "49588", enableHttp2, enableRegistry, version));
 
         if(kafkaProducer) {
             transfer(targetPath, ("src.main.resources.config").replace(".", separator), "kafka-producer.yml", templates.hybrid.kafkaProducerYml.template(kafkaTopic));
@@ -133,11 +142,12 @@ public class HybridServerGenerator implements Generator {
         }
 
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "handler.yml",
-                templates.hybrid.handlerYml.template(serviceId, handlerPackage, jsonPath, prometheusMetrics, !skipHealthCheck, !skipServerInfo));
+                templates.hybrid.handlerYml.template(serviceId, handlerPackage, jsonPath, prometheusMetrics));
 
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "rpc-router.yml",
                 templates.hybrid.rpcRouterYml.template(handlerPackage, jsonPath));
 
     }
+
 
 }

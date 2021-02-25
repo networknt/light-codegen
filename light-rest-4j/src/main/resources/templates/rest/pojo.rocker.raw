@@ -1,9 +1,7 @@
-@import com.jsoniter.any.Any
 @import java.util.Map
 @import java.util.List
 @option discardLogicWhitespace=true
-
-@args (String modelPackage, String className, String parentClassName, String classVarName, boolean isAbstractClass, List<Map<String, Any>> props, List<Map<String, Any>> parentProps)
+@args (String modelPackage, String className, String parentClassName, String classVarName, boolean isAbstractClass, List<Map<String, Object>> props, List<Map<String, Object>> parentProps)
 package @modelPackage;
 
 import java.util.Arrays;
@@ -14,14 +12,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public@if(isAbstractClass){ abstract} class @className @if(parentClassName != null) {extends @parentClassName} {
 
     @for (prop: props) {
-    @if(prop.get("isEnum").toBoolean()) {@templates.rest.enumInline.template(prop)} else {private @prop.get("type") @prop.get("name");}
+    @if((Boolean)prop.get("isEnum")) {@templates.rest.enumInline.template(prop)} else {private @prop.get("type") @prop.get("name");}
     }
 
     public @className () {
     }
 
     @for (prop: props) {
-    @if(prop.get("isEnum").toBoolean()) {
+    @if((Boolean)prop.get("isEnum")) {
     @@JsonProperty("@prop.get("jsonProperty")")
     public @prop.get("nameWithEnum") @prop.get("getter")() {
         return @prop.get("name");

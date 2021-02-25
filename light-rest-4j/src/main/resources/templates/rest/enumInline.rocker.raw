@@ -1,11 +1,10 @@
-@import com.jsoniter.any.Any
 @import java.util.Map
 @import java.util.List
-@args (Map<String, Any> prop)
-    @with (v = prop.get("nameWithEnum") + ".values()", value = prop.get("value").asMap()) {
+@args (Map<String, Object> prop)
+    @with (v = prop.get("nameWithEnum") + ".values()", value = (Map)prop.get("value")) {
     public enum @prop.get("nameWithEnum") {
         @for((i, key, item) :  value) {
-        @if (!prop.get("isNumEnum").toBoolean()) {@if (i.index() <  value.size() - 1) {@key ("@item"),}@if(i.index() == value.size() - 1) {@key ("@item");}} @if (prop.get("isNumEnum").toBoolean()) {@if (i.index() <  value.size() - 1) {@key (new @prop.get("type")("@item")),}@if(i.index() == value.size() - 1) {@key (new @prop.get("type")("@item"));}}
+        @if (!(Boolean)prop.get("isNumEnum")) {@if (i.index() <  value.size() - 1) {@key ("@item"),}@if(i.index() == value.size() - 1) {@key ("@item");}} @if ((Boolean)prop.get("isNumEnum")) {@if (i.index() <  value.size() - 1) {@key (new @prop.get("type")("@item")),}@if(i.index() == value.size() - 1) {@key (new @prop.get("type")("@item"));}}
         }
 
         private final @prop.get("type") value;

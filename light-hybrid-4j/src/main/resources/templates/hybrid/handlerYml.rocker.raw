@@ -1,7 +1,6 @@
 @import java.util.Map
 @import java.util.List
-@import com.jsoniter.any.Any
-@args (String serviceId, String handlerPackage, String jsonPath, boolean prometheusMetrics, boolean healthCheck, boolean serverInfo)
+@args (String serviceId, String handlerPackage, String jsonPath, boolean prometheusMetrics)
 
 # Handler middleware chain configuration
 #----------------------------------------
@@ -84,16 +83,16 @@ paths:
     exec:
       - default
 
-@if(healthCheck){  - path: '/health/${server.serviceId:@serviceId}'
+  - path: '/health/${server.serviceId:@serviceId}'
     method: 'get'
     exec:
       - health
-}
-@if(serverInfo){  - path: '/server/info'
+
+  - path: '/server/info'
     method: 'get'
     exec:
       - info
-}
+
 @if(prometheusMetrics){  - path: '/prometheus'
     method: 'get'
     exec:

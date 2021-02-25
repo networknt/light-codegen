@@ -1,21 +1,14 @@
 package com.networknt.codegen.graphql;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jsoniter.any.Any;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.networknt.codegen.Generator;
-import com.networknt.utility.NioUtils;
-import graphql.schema.GraphQLSchema;
-import graphql.schema.idl.RuntimeWiring;
-import graphql.schema.idl.SchemaGenerator;
-import graphql.schema.idl.SchemaParser;
-import graphql.schema.idl.TypeDefinitionRegistry;
+import com.networknt.config.ConfigException;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
-import java.util.Map;
 
 import static java.io.File.separator;
 
@@ -23,38 +16,52 @@ import static java.io.File.separator;
  * Created by steve on 01/05/17.
  */
 public class GraphqlGenerator implements Generator {
-    static ObjectMapper mapper = new ObjectMapper();
+    public static final String FRAMEWORK="light-graphql-4j";
 
     @Override
     public String getFramework() {
-        return "light-graphql-4j";
+        return FRAMEWORK;
     }
 
     @Override
-    public void generate(String targetPath, Object model, Any config) throws IOException {
-        // whoever is calling this needs to make sure that model is converted to Map<String, Object>
-        String schemaPackage = config.get("schemaPackage").toString();
-        String schemaClass = config.get("schemaClass").toString();
-        boolean overwriteSchemaClass = config.toBoolean("overwriteSchemaClass");
-        boolean enableHttp = config.toBoolean("enableHttp");
-        String httpPort = config.toString("httpPort");
-        boolean enableHttps = config.toBoolean("enableHttps");
-        String httpsPort = config.toString("httpsPort");
-        boolean enableHttp2 = config.toBoolean("enableHttp2");
-        boolean enableRegistry = config.toBoolean("enableRegistry");
-        boolean eclipseIDE = config.toBoolean("eclipseIDE");
-        boolean supportClient = config.toBoolean("supportClient");
-        boolean prometheusMetrics = config.toBoolean("prometheusMetrics");
-        boolean skipHealthCheck = config.toBoolean("skipHealthCheck");
-        boolean skipServerInfo = config.toBoolean("skipServerInfo");
-        String dockerOrganization = config.toString("dockerOrganization");
-        String version = config.toString("version");
-        String serviceId = config.get("groupId").toString().trim() + "." + config.get("artifactId").toString().trim() + "-" + config.get("version").toString().trim();
+    public void generate(String targetPath, Object schema, JsonNode config) throws IOException {
+        // GraphQL specific config
+        String schemaPackage = getSchemaPackage(config, null);
+        String schemaClass = getSchemaClass(config, null);
+        boolean overwriteSchemaClass = isOverwriteSchemaClass(config, null);
 
-        if(dockerOrganization == null || dockerOrganization.length() == 0) dockerOrganization = "networknt";
+        // Generic config
+        boolean enableHttp = isEnableHttp(config, null);
+        String httpPort = getHttpPort(config, null);
+        boolean enableHttps = isEnableHttps(config, null);
+        String httpsPort = getHttpsPort(config, null);
+        boolean enableHttp2 = isEnableHttp2(config, null);
+        boolean enableRegistry = isEnableRegistry(config, null);
+        boolean eclipseIDE = isEclipseIDE(config, null);
+        boolean supportClient = isSupportClient(config, null);
+        boolean prometheusMetrics = isPrometheusMetrics(config, null);
+        String dockerOrganization = getDockerOrganization(config, null);
+        String version = getVersion(config, null);
+        String groupId = getGroupId(config, null);
+        String artifactId = getArtifactId(config, null);
+        String serviceId = groupId + "." + artifactId + "-" + version;
+        boolean specChangeCodeReGenOnly = isSpecChangeCodeReGenOnly(config, null);
+        boolean enableParamDescription = isEnableParamDescription(config, null);
+        boolean skipPomFile = isSkipPomFile(config, null);
+        boolean kafkaProducer = isKafkaProducer(config, null);
+        boolean kafkaConsumer = isKafkaConsumer(config, null);
+        boolean supportAvro = isSupportAvro(config, null);
+        boolean useLightProxy = isUseLightProxy(config, null);
+        String kafkaTopic = getKafkaTopic(config, null);
+        String decryptOption = getDecryptOption(config, null);
+        boolean buildMaven = isBuildMaven(config, null);
 
-        transfer(targetPath, "", "pom.xml", templates.graphql.pom.template(config));
-        transferMaven(targetPath);
+        if(buildMaven) {
+            transfer(targetPath, "", "pom.xml", templates.graphql.pom.template(config));
+            transferMaven(targetPath);
+        } else {
+            transferGradle(targetPath);
+        }
         // There is only one port that should be exposed in Dockerfile, otherwise, the service
         // discovery will be so confused. If https is enabled, expose the https port. Otherwise http port.
         String expose = "";
@@ -65,7 +72,7 @@ public class GraphqlGenerator implements Generator {
         }
         transfer(targetPath, "docker", "Dockerfile", templates.graphql.dockerfile.template(config, expose));
         transfer(targetPath, "docker", "Dockerfile-Slim", templates.graphql.dockerfileslim.template(config, expose));
-        transfer(targetPath, "", "build.sh", templates.graphql.buildSh.template(dockerOrganization, config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version")));
+        transfer(targetPath, "", "build.sh", templates.graphql.buildSh.template(config, serviceId));
         transfer(targetPath, "", ".gitignore", templates.graphql.gitignore.template());
         transfer(targetPath, "", "README.md", templates.graphql.README.template());
         transfer(targetPath, "", "LICENSE", templates.graphql.LICENSE.template());
@@ -76,8 +83,8 @@ public class GraphqlGenerator implements Generator {
         // config
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "service.yml", templates.graphql.serviceYml.template(config));
 
-        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "server.yml", templates.graphql.serverYml.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, httpPort, enableHttps, httpsPort, enableHttp2, enableRegistry, version));
-        transfer(targetPath, ("src.test.resources.config").replace(".", separator), "server.yml", templates.graphql.serverYml.template(config.get("groupId") + "." + config.get("artifactId") + "-" + config.get("version"), enableHttp, "49587", enableHttps, "49588", enableHttp2, enableRegistry, version));
+        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "server.yml", templates.graphql.serverYml.template(serviceId, enableHttp, httpPort, enableHttps, httpsPort, enableHttp2, enableRegistry, version));
+        transfer(targetPath, ("src.test.resources.config").replace(".", separator), "server.yml", templates.graphql.serverYml.template(serviceId, enableHttp, "49587", enableHttps, "49588", enableHttp2, enableRegistry, version));
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "graphql-security.yml", templates.graphql.securityYml.template());
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "graphql-validator.yml", templates.graphql.validatorYml.template());
         if(supportClient) {
@@ -100,7 +107,7 @@ public class GraphqlGenerator implements Generator {
         transfer(targetPath, ("src.main.resources").replace(".", separator), "logback.xml", templates.graphql.logback.template());
         transfer(targetPath, ("src.test.resources").replace(".", separator), "logback-test.xml", templates.graphql.logback.template());
         // handler.yml
-        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "handler.yml", templates.graphql.handlerYml.template(serviceId, prometheusMetrics, !skipHealthCheck, !skipServerInfo));
+        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "handler.yml", templates.graphql.handlerYml.template(serviceId, prometheusMetrics, useLightProxy));
 
         // Copy schema
         // The generator support both manually coded schema or schema defined in IDL. If schema.graphqls exists
@@ -109,10 +116,10 @@ public class GraphqlGenerator implements Generator {
         // If no schema file is passed in, then it will just hard-coded as a Hello World example so that developer
         // can expand that to code his/her own schema.
         if(overwriteSchemaClass) {
-            if(model == null) {
+            if(schema == null) {
                 transfer(targetPath, ("src.main.java." + schemaPackage).replace(".", separator), schemaClass + ".java", templates.graphql.schemaClassExample.template(schemaPackage, schemaClass));
             } else {
-                Files.write(FileSystems.getDefault().getPath(targetPath, ("src.main.resources").replace(".", separator), "schema.graphqls"), ((String)model).getBytes(StandardCharsets.UTF_8));
+                Files.write(FileSystems.getDefault().getPath(targetPath, ("src.main.resources").replace(".", separator), "schema.graphqls"), ((String)schema).getBytes(StandardCharsets.UTF_8));
                 // schema class loader/generator template.
                 transfer(targetPath, ("src.main.java." + schemaPackage).replace(".", separator), schemaClass + ".java", templates.graphql.schemaClass.template(schemaPackage, schemaClass));
             }
@@ -144,4 +151,37 @@ public class GraphqlGenerator implements Generator {
         }
     }
 
+
+    private String getSchemaPackage(JsonNode config, String defaultValue) {
+        String schemaPackage = defaultValue == null ? "com.networknt.graphql.schema" : defaultValue;
+        JsonNode jsonNode = config.get("schemaPackage");
+        if(jsonNode == null) {
+            ((ObjectNode)config).put("schemaPackage", schemaPackage);
+        } else {
+            schemaPackage = jsonNode.textValue();
+        }
+        return schemaPackage;
+    }
+
+    private String getSchemaClass(JsonNode config, String defaultValue) {
+        String schemaClass = defaultValue == null ? "GraphQlSchema" : defaultValue;
+        JsonNode jsonNode = config.get("schemaClass");
+        if(jsonNode == null) {
+            ((ObjectNode)config).put("schemaClass", schemaClass);
+        } else {
+            schemaClass = jsonNode.textValue();
+        }
+        return schemaClass;
+    }
+
+    private boolean isOverwriteSchemaClass(JsonNode config, Boolean defaultValue) {
+        boolean overwriteSchemaClass = defaultValue == null ? false : defaultValue;
+        JsonNode jsonNode = config.get("overwriteSchemaClass");
+        if(jsonNode == null) {
+            ((ObjectNode)config).put("overwriteSchemaClass", overwriteSchemaClass);
+        } else {
+            overwriteSchemaClass = jsonNode.booleanValue();
+        }
+        return overwriteSchemaClass;
+    }
 }

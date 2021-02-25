@@ -1,18 +1,10 @@
-package com.networknt.codegen.rest;
+package com.networknt.codegen;
 
 import java.io.*;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.stream.Collectors;
@@ -32,7 +24,6 @@ import org.yaml.snakeyaml.parser.ParserImpl;
 import org.yaml.snakeyaml.reader.StreamReader;
 import org.yaml.snakeyaml.resolver.Resolver;
 
-import com.jsoniter.any.Any;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -60,16 +51,16 @@ public class YAMLFileParameterizer {
 	 * @param dir - file dir
 	 * @param generateEnvVars - config
 	 */
-	public static void rewriteAll(String dir, Map<String, Any> generateEnvVars) {
+	public static void rewriteAll(String dir, Map<String, Object> generateEnvVars) {
 		if (logger.isDebugEnabled()) {
 			logger.debug("rewriting files in {}", dir);
 		}
 		
-		generateEnvVars.put(KEY_IN_PLACE, Any.wrap(true));
+		generateEnvVars.put(KEY_IN_PLACE, true);
 		rewriteFiles(new File(dir), new File(dir), generateEnvVars);
 	}
 	
-	public static void rewriteAll(String srcLocation, String destDir, Map<String, Any> generateEnvVars) {
+	public static void rewriteAll(String srcLocation, String destDir, Map<String, Object> generateEnvVars) {
 		
 		if (logger.isDebugEnabled()) {
 			logger.debug("rewriting files in {}", srcLocation);
@@ -82,7 +73,7 @@ public class YAMLFileParameterizer {
 		}
 	}
 	
-	public static void rewriteFiles(File sourceDir, File destDir, Map<String, Any> generateEnvVars) {
+	public static void rewriteFiles(File sourceDir, File destDir, Map<String, Object> generateEnvVars) {
 		if (!sourceDir.exists() || !sourceDir.isDirectory()) {
 			logger.error("{} does not exist or is not a folder.", sourceDir);
 			return;
@@ -111,7 +102,7 @@ public class YAMLFileParameterizer {
 		}
 	}
 	
-	public static void rewriteResources(String resourceLocation, String destDir, Map<String, Any> generateEnvVars) {
+	public static void rewriteResources(String resourceLocation, String destDir, Map<String, Object> generateEnvVars) {
 		if (StringUtils.isBlank(resourceLocation)) {
 			return;
 		}
@@ -180,7 +171,7 @@ public class YAMLFileParameterizer {
 		}
 	}
 	
-	public static void rewriteResource(String filename, String resourceLocation, String destFilename, Map<String, Any> generateEnvVars) {
+	public static void rewriteResource(String filename, String resourceLocation, String destFilename, Map<String, Object> generateEnvVars) {
 		if (logger.isDebugEnabled()) {
 			logger.debug("rewriting resource {}", resourceLocation);
 		}
@@ -197,7 +188,7 @@ public class YAMLFileParameterizer {
 		}
 	}
 	
-	public static void rewriteFile(File srcFile, File destFile, Map<String, Any> generateEnvVars) {
+	public static void rewriteFile(File srcFile, File destFile, Map<String, Object> generateEnvVars) {
 		if (logger.isDebugEnabled()) {
 			logger.debug("rewriting file {}", srcFile.getAbsolutePath());
 		}
@@ -260,9 +251,9 @@ public class YAMLFileParameterizer {
 		return location;
 	}
 	
-	protected static boolean getValue(Map<String, Any> generateEnvVars, String key) {
+	protected static boolean getValue(Map<String, Object> generateEnvVars, String key) {
 		if (generateEnvVars.containsKey(key)) {
-			return generateEnvVars.get(key).toBoolean();
+			return (Boolean)generateEnvVars.get(key);
 		}
 		
 		return false;
@@ -391,7 +382,7 @@ public class YAMLFileParameterizer {
 		return lines;
 	}
 	
-	protected static void parameterize(String filename, Node document, List<String> srclines, File destFile, Map<String, Any> generateEnvVars) {
+	protected static void parameterize(String filename, Node document, List<String> srclines, File destFile, Map<String, Object> generateEnvVars) {
 		try (Writer writer = Files.newBufferedWriter(destFile.toPath(), UTF_8)) {
 			if (document instanceof MappingNode) {
 				List<String> destlines = parameterize(filename, srclines, (MappingNode) document, generateEnvVars);
@@ -407,7 +398,7 @@ public class YAMLFileParameterizer {
 		}
 	}
 	
-	protected static List<String> parameterize(String filename, List<String> srclines, MappingNode node, Map<String, Any> generateEnvVars) {
+	protected static List<String> parameterize(String filename, List<String> srclines, MappingNode node, Map<String, Object> generateEnvVars) {
 		List<String> destlines = new ArrayList<>();
 		
 		List<NodeTuple> tuples = node.getValue();
@@ -490,33 +481,31 @@ public class YAMLFileParameterizer {
         return str.substring(0, pos);
     }
     
-    protected static Set<String> buildFileExcludeSet(String sourceDir, Map<String, Any> generateEnvVars) {
+    protected static Set<String> buildFileExcludeSet(String sourceDir, Map<String, Object> generateEnvVars) {
     	if (generateEnvVars.containsKey(KEY_EXCLUDE)) {
-    		return buildFileExcludeSet(sourceDir, generateEnvVars.get(KEY_EXCLUDE).asList());
+    		return buildFileExcludeSet(sourceDir, (List)generateEnvVars.get(KEY_EXCLUDE));
     	}
     	
     	return Collections.emptySet();
     }
     
-	protected static Set<String> buildFileExcludeSet(String sourceDir, Collection<Any> excludes) {
+	protected static Set<String> buildFileExcludeSet(String sourceDir, Collection<String> excludes) {
 		return excludes.stream()
-				.map(Any::toString)
 				.filter(StringUtils::isNotBlank)
 				.map(s->sourceDir+normalizeFilename(s))
 				.collect(Collectors.toSet());
 	}
 	
-	protected static Set<String> buildResourceExcludeSet(String resourceLocation, Map<String, Any> generateEnvVars) {
+	protected static Set<String> buildResourceExcludeSet(String resourceLocation, Map<String, Object> generateEnvVars) {
 		if (generateEnvVars.containsKey(KEY_EXCLUDE)) {
-			return buildResourceExcludeSet(resourceLocation, generateEnvVars.get(KEY_EXCLUDE).asList());
+			return buildResourceExcludeSet(resourceLocation, (List)generateEnvVars.get(KEY_EXCLUDE));
 		}
 
 		return Collections.emptySet();
 	}
 	
-	protected static Set<String> buildResourceExcludeSet(String resourceLocation, Collection<Any> excludes) {
+	protected static Set<String> buildResourceExcludeSet(String resourceLocation, Collection<String> excludes) {
 		return excludes.stream()
-				.map(Any::toString)
 				.filter(StringUtils::isNotBlank)
 				.map(s->toNonNullString(getResourceURL(resourceLocation+s)))
 				.collect(Collectors.toSet());
