@@ -499,8 +499,7 @@ public interface Generator {
     }
 
     default boolean isBuildMaven(JsonNode config, Boolean defaultValue) {
-        // TODO once all generators support Gradle, make the default to false.
-        boolean buildMaven = defaultValue == null ? true : defaultValue;
+        boolean buildMaven = defaultValue == null ? false : defaultValue;
         JsonNode jsonNode = config.get("buildMaven");
         if(jsonNode == null) {
             ((ObjectNode)config).put("buildMaven", buildMaven);
