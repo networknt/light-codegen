@@ -84,7 +84,7 @@ public class OpenApiLightGenerator implements OpenApiGenerator {
 
                 if(buildMaven) {
                     if (!skipPomFile) {
-                        transfer(targetPath, "", "pom.xml", templates.rest.openapi.pom.template(config));
+                        transfer(targetPath, "", "pom.xml", templates.rest.pom.template(config));
                     }
                     transferMaven(targetPath);
                 } else {
@@ -112,12 +112,12 @@ public class OpenApiLightGenerator implements OpenApiGenerator {
                     transfer(targetPath, "", ".project", templates.rest.project.template(config));
                 }
                 // config
-                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "service.yml", templates.rest.openapi.service.template(config));
+                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "service.yml", templates.rest.serviceYml.template(config));
 
                 transfer(targetPath, ("src.main.resources.config").replace(".", separator), "server.yml",
-                        templates.rest.server.template(serviceId, enableHttp, httpPort, enableHttps, httpsPort, enableHttp2, enableRegistry, version));
+                        templates.rest.serverYml.template(serviceId, enableHttp, httpPort, enableHttps, httpsPort, enableHttp2, enableRegistry, version));
                 transfer(targetPath, ("src.test.resources.config").replace(".", separator), "server.yml",
-                        templates.rest.server.template(serviceId, enableHttp, "49587", enableHttps, "49588", enableHttp2, enableRegistry, version));
+                        templates.rest.serverYml.template(serviceId, enableHttp, "49587", enableHttps, "49588", enableHttp2, enableRegistry, version));
 
                 transfer(targetPath, ("src.main.resources.config").replace(".", separator), "openapi-security.yml", templates.rest.openapiSecurity.template());
                 transfer(targetPath, ("src.main.resources.config").replace(".", separator), "openapi-validator.yml", templates.rest.openapiValidator.template());
@@ -146,7 +146,7 @@ public class OpenApiLightGenerator implements OpenApiGenerator {
                 transfer(targetPath, ("src.test.resources").replace(".", separator), "logback-test.xml", templates.rest.logback.template(rootPackage));
 
                 // exclusion list for Config module
-                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "config.yml", templates.rest.openapi.config.template(config));
+                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "config.yml", templates.rest.config.template(config));
 
                 transfer(targetPath, ("src.main.resources.config").replace(".", separator), "audit.yml", templates.rest.auditYml.template());
                 transfer(targetPath, ("src.main.resources.config").replace(".", separator), "body.yml", templates.rest.bodyYml.template());
@@ -159,13 +159,13 @@ public class OpenApiLightGenerator implements OpenApiGenerator {
                 // added with #471
                 transfer(targetPath, ("src.main.resources.config").replace(".", separator), "app-status.yml", templates.rest.appStatusYml.template());
                 // values.yml file, transfer to suppress the warning message during start startup and encourage usage.
-                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "values.yml", templates.rest.openapi.values.template());
+                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "values.yml", templates.rest.values.template());
                 // add portal-registry.yml
                 transfer(targetPath, ("src.main.resources.config").replace(".", separator), "portal-registry.yml", templates.rest.portalRegistryYml.template());
             }
             // routing handler
             transfer(targetPath, ("src.main.resources.config").replace(".", separator), "handler.yml",
-                    templates.rest.openapi.handlerYml.template(serviceId, handlerPackage, operationList, prometheusMetrics, useLightProxy));
+                    templates.rest.handlerYml.template(serviceId, handlerPackage, operationList, prometheusMetrics, useLightProxy));
 
         }
 
@@ -222,7 +222,7 @@ public class OpenApiLightGenerator implements OpenApiGenerator {
             if (checkExist(targetPath, ("src.test.java." + handlerPackage).replace(".", separator), op.get("handlerName") + "Test.java") && !overwriteHandlerTest) {
                 continue;
             }
-            transfer(targetPath, ("src.test.java." + handlerPackage).replace(".", separator), op.get("handlerName") + "Test.java", templates.rest.openapi.handlerTest.template(handlerPackage, op));
+            transfer(targetPath, ("src.test.java." + handlerPackage).replace(".", separator), op.get("handlerName") + "Test.java", templates.rest.handlerTest.template(handlerPackage, op));
         }
 
         // transfer binary files without touching them.
