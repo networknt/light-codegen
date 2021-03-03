@@ -1,10 +1,30 @@
+@import org.apache.commons.text.StringEscapeUtils
+@import java.util.Map
+@import java.util.List
 @option discardLogicWhitespace=true
-@args (String handlerPackage, String className)
+@args (String handlerPackage, String serviceName, String statusCode, String example, List<Map> parameters)
 package @handlerPackage;
 
+import com.networknt.http.HttpStatus;
+import com.networknt.http.MediaType;
 import com.networknt.http.RequestEntity;
 import com.networknt.http.ResponseEntity;
+import com.networknt.http.HttpService;
+import io.undertow.util.HeaderMap;
+import io.undertow.util.Headers;
+import io.undertow.util.HttpString;
 
-public interface @className {
-    ResponseEntity apply(RequestEntity requestEntity);
+public class @serviceName implements HttpService {
+    @@Override
+    public ResponseEntity invoke(RequestEntity requestEntity) {
+        HeaderMap responseHeaders = new HeaderMap();
+        responseHeaders.add(Headers.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+        @if(example != null) {
+        @with (e = StringEscapeUtils.escapeJson(example)) {String body = "@e";}
+        } else {
+        String body = "";
+        }
+        ResponseEntity<String> responseEntity = new ResponseEntity<>(body, responseHeaders, HttpStatus.OK);
+        return responseEntity;
+    }
 }

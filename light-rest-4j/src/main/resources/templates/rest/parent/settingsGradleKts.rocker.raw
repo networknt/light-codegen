@@ -1,1 +1,1 @@
-include("model", "service", "domain", "client", "server")
+include("model", "service", "client", "server")

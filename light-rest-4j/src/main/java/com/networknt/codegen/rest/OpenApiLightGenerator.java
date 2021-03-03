@@ -87,7 +87,6 @@ public class OpenApiLightGenerator implements OpenApiGenerator {
                         transfer(targetPath, "", "pom.xml", templates.rest.parent.pom.template(config));
                         transfer(targetPath, "model", "pom.xml", templates.rest.model.pom.template(config));
                         transfer(targetPath, "service", "pom.xml", templates.rest.service.pom.template(config));
-                        transfer(targetPath, "domain", "pom.xml", templates.rest.domain.pom.template(config));
                         transfer(targetPath, "server", "pom.xml", templates.rest.server.pom.template(config));
                         transfer(targetPath, "client", "pom.xml", templates.rest.client.pom.template(config));
                     }
@@ -103,9 +102,6 @@ public class OpenApiLightGenerator implements OpenApiGenerator {
 
                     transfer(targetPath, "service", "build.gradle.kts", templates.rest.service.buildGradleKts.template(config));
                     transfer(targetPath, "service", "settings.gradle.kts", templates.rest.service.settingsGradleKts.template());
-
-                    transfer(targetPath, "domain", "build.gradle.kts", templates.rest.domain.buildGradleKts.template(config));
-                    transfer(targetPath, "domain", "settings.gradle.kts", templates.rest.domain.settingsGradleKts.template());
 
                     transfer(targetPath, "server", "build.gradle.kts", templates.rest.server.buildGradleKts.template(config));
                     transfer(targetPath, "server", "settings.gradle.kts", templates.rest.server.settingsGradleKts.template());
@@ -228,7 +224,6 @@ public class OpenApiLightGenerator implements OpenApiGenerator {
         for (Map<String, Object> op : operationList) {
             String className = op.get("handlerName").toString();
             String serviceName = op.get("serviceName").toString();
-            String serviceImpl = op.get("serviceImpl").toString();
             @SuppressWarnings("unchecked")
             List<Map> parameters = (List<Map>)op.get("parameters");
             Map<String, String> responseExample = (Map<String, String>)op.get("responseExample");
@@ -236,12 +231,11 @@ public class OpenApiLightGenerator implements OpenApiGenerator {
             String statusCode = responseExample.get("statusCode");
             statusCode = StringUtils.isBlank(statusCode) || statusCode.equals("default") ? "-1" : statusCode;
             transfer(targetPath, ("server.src.main.java." + handlerPackage).replace(".", separator), className + ".java", templates.rest.handler.template(handlerPackage, className, serviceName, parameters));
-            transfer(targetPath, ("service.src.main.java." + handlerPackage).replace(".", separator), serviceName + ".java", templates.rest.handlerService.template(handlerPackage, serviceName));
 
-            if (checkExist(targetPath, ("domain.src.main.java." + handlerPackage).replace(".", separator), serviceImpl + ".java") && !overwriteHandler) {
+            if (checkExist(targetPath, ("service.src.main.java." + handlerPackage).replace(".", separator), serviceName + ".java") && !overwriteHandler) {
                 continue;
             }
-            transfer(targetPath, ("domain.src.main.java." + handlerPackage).replace(".", separator), serviceImpl + ".java", templates.rest.handlerServiceImpl.template(handlerPackage, serviceImpl, serviceName, statusCode, example, parameters));
+            transfer(targetPath, ("service.src.main.java." + handlerPackage).replace(".", separator), serviceName + ".java", templates.rest.handlerService.template(handlerPackage, serviceName, statusCode, example, parameters));
         }
 
         // handler test cases

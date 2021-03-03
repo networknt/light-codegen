@@ -21,6 +21,12 @@ For more information on how to write business handlers, please check the link be
 https://doc.networknt.com/development/business-handler/rest/
 */
 public class @className implements LightHttpHandler {
+    @serviceName service;
+
+    public @className () {
+        this.service = new @serviceName ();
+    }
+
     @if(parameters != null && !parameters.isEmpty()) {/**@for (parameter : parameters) {
      * @@param @?parameter.get("name") @if(parameter.get("type") != null)
      { @with (String typeStr = ((String)parameter.get("type")).substring(0, 1).toUpperCase()+((String)parameter.get("type")).substring(1))
@@ -34,8 +40,7 @@ public class @className implements LightHttpHandler {
         Map<String, Deque<String>> pathParameters = exchange.getPathParameters();
         HttpMethod httpMethod = HttpMethod.resolve(exchange.getRequestMethod().toString());
         RequestEntity requestEntity = new RequestEntity<>(null, requestHeaders, httpMethod, null, null, queryParameters, pathParameters);
-        @serviceName service = SingletonServiceFactory.getBean(@with(name=serviceName + ".class"){@name});
-        ResponseEntity<String> responseEntity = service.apply(requestEntity);
+        ResponseEntity<String> responseEntity = service.invoke(requestEntity);
         responseEntity.getHeaders().forEach(values -> {
             exchange.getResponseHeaders().add(values.getHeaderName(), values.getFirst());
         });
