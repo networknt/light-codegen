@@ -55,8 +55,10 @@
 
     <modules>
         <module>model</module>
+        <module>interface</module>
         <module>service</module>
         <module>server</module>
+        <module>client</module>
     </modules>
 
     <dependencyManagement>
@@ -68,7 +70,22 @@
             </dependency>
             <dependency>
                 <groupId>@config.get("groupId").textValue()</groupId>
+                <artifactId>interface</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>@config.get("groupId").textValue()</groupId>
                 <artifactId>service</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>@config.get("groupId").textValue()</groupId>
+                <artifactId>server</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>@config.get("groupId").textValue()</groupId>
+                <artifactId>client</artifactId>
                 <version>${project.version}</version>
             </dependency>
 

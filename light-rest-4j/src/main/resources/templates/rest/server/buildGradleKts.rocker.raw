@@ -46,6 +46,7 @@ dependencies {
     implementation("com.networknt", "openapi-security", light4jVersion)
     implementation("com.networknt", "openapi-validator", light4jVersion)
     implementation("com.networknt", "specification", light4jVersion)
+    implementation("com.networknt", "http-entity", light4jVersion)
     @if(config.get("kafkaProducer").booleanValue() ||config.get("kafkaConsumer").booleanValue()){
     implementation("com.networknt", "kafka-common", light4jVersion)
     }

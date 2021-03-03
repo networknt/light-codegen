@@ -14,12 +14,16 @@
 
     <artifactId>service</artifactId>
     <packaging>jar</packaging>
-    <description>The generated handler service interfaces that will be implemented by the service implementations in domain with business logic.</description>
+    <description>The generated sub for handler service implementations that will be invoked by the server. Add business logic here.</description>
 
     <dependencies>
         <dependency>
             <groupId>@config.get("groupId").textValue()</groupId>
             <artifactId>model</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>@config.get("groupId").textValue()</groupId>
+            <artifactId>service</artifactId>
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>

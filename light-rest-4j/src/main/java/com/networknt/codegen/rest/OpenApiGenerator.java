@@ -316,6 +316,8 @@ public interface OpenApiGenerator extends Generator {
                 flattened.put("path", basePath + path);
                 String normalizedPath = path.replace("{", "").replace("}", "");
                 flattened.put("handlerName", Utils.camelize(normalizedPath) + Utils.camelize(entryOps.getKey()) + "Handler");
+                flattened.put("serviceName", Utils.camelize(normalizedPath) + Utils.camelize(entryOps.getKey()) + "Service");
+                flattened.put("serviceImpl", Utils.camelize(normalizedPath) + Utils.camelize(entryOps.getKey()) + "ServiceImpl");
                 flattened.put("functionName", Utils.camelize(normalizedPath) + Utils.camelize(entryOps.getKey()) + "Function");
                 flattened.put("endpoint", path + "@" + entryOps.getKey().toLowerCase());
                 flattened.put("apiName", Utils.camelize(normalizedPath) + Utils.camelize(entryOps.getKey()));

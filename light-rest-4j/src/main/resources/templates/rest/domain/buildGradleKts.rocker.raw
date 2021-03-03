@@ -6,6 +6,7 @@ plugins {
 
 dependencies {
     implementation(project(":model"))
+    implementation(project(":service"))
     val light4jVersion: String by project
     implementation("com.networknt", "utility", light4jVersion)
     implementation("com.networknt", "http-entity", light4jVersion)
