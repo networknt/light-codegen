@@ -1,7 +1,5 @@
 @import com.fasterxml.jackson.databind.JsonNode
-@import java.util.Map
-@import java.util.List
-@args (JsonNode config, List<Map<String, Object>> operationList)
+@args (JsonNode config)
 # Singleton service factory configuration/IoC injection
 singletons:
 - com.networknt.registry.URL:

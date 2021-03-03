@@ -55,7 +55,6 @@
 
     <modules>
         <module>model</module>
-        <module>interface</module>
         <module>service</module>
         <module>server</module>
         <module>client</module>
@@ -66,11 +65,6 @@
             <dependency>
                 <groupId>@config.get("groupId").textValue()</groupId>
                 <artifactId>model</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>@config.get("groupId").textValue()</groupId>
-                <artifactId>interface</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -249,6 +243,11 @@
             <dependency>
                 <groupId>com.networknt</groupId>
                 <artifactId>specification</artifactId>
+                <version>${version.light-4j}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.networknt</groupId>
+                <artifactId>http-entity</artifactId>
                 <version>${version.light-4j}</version>
             </dependency>
             @if(config.get("kafkaProducer").booleanValue() ||config.get("kafkaConsumer").booleanValue()){

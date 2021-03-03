@@ -127,14 +127,14 @@ public class OpenApiLightGenerator implements OpenApiGenerator {
                 transfer(targetPath, "", "build.sh", templates.rest.buildSh.template(config, serviceId));
                 transfer(targetPath, "", "kubernetes.yml", templates.rest.kubernetes.template(dockerOrganization, serviceId, config.get("artifactId").textValue(), expose, version));
                 transfer(targetPath, "", ".gitignore", templates.rest.gitignore.template());
-                transfer(targetPath, "", "README.md", templates.rest.README.template());
+                transfer(targetPath, "", "README.md", templates.rest.README.template(config));
                 transfer(targetPath, "", "LICENSE", templates.rest.LICENSE.template());
                 if(eclipseIDE) {
                     transfer(targetPath, "", ".classpath", templates.rest.classpath.template());
                     transfer(targetPath, "", ".project", templates.rest.project.template(config));
                 }
                 // config
-                transfer(targetPath, ("server.src.main.resources.config").replace(".", separator), "service.yml", templates.rest.serviceYml.template(config, operationList));
+                transfer(targetPath, ("server.src.main.resources.config").replace(".", separator), "service.yml", templates.rest.serviceYml.template(config));
 
                 transfer(targetPath, ("server.src.main.resources.config").replace(".", separator), "server.yml",
                         templates.rest.serverYml.template(serviceId, enableHttp, httpPort, enableHttps, httpsPort, enableHttp2, enableRegistry, version));
