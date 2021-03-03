@@ -29,264 +29,220 @@
         <dependency>
             <groupId>com.networknt</groupId>
             <artifactId>config</artifactId>
-            <version>${version.light-4j}</version>
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
             <artifactId>utility</artifactId>
-            <version>${version.light-4j}</version>
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
             <artifactId>security</artifactId>
-            <version>${version.light-4j}</version>
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
             <artifactId>client</artifactId>
-            <version>${version.light-4j}</version>
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
             <artifactId>audit</artifactId>
-            <version>${version.light-4j}</version>
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
             <artifactId>info</artifactId>
-            <version>${version.light-4j}</version>
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
             <artifactId>health</artifactId>
-            <version>${version.light-4j}</version>
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
             <artifactId>status</artifactId>
-            <version>${version.light-4j}</version>
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
             <artifactId>exception</artifactId>
-            <version>${version.light-4j}</version>
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
             <artifactId>body</artifactId>
-            <version>${version.light-4j}</version>
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
             <artifactId>dump</artifactId>
-            <version>${version.light-4j}</version>
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
             <artifactId>mask</artifactId>
-            <version>${version.light-4j}</version>
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
             <artifactId>metrics</artifactId>
-            <version>${version.light-4j}</version>
         </dependency>
         @if(config.get("prometheusMetrics").booleanValue()){
         <dependency>
             <groupId>com.networknt</groupId>
             <artifactId>prometheus</artifactId>
-            <version>${version.light-4j}</version>
         </dependency>
         }
         <dependency>
             <groupId>com.networknt</groupId>
             <artifactId>handler</artifactId>
-            <version>${version.light-4j}</version>
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
             <artifactId>sanitizer</artifactId>
-            <version>${version.light-4j}</version>
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
             <artifactId>traceability</artifactId>
-            <version>${version.light-4j}</version>
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
             <artifactId>correlation</artifactId>
-            <version>${version.light-4j}</version>
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
             <artifactId>service</artifactId>
-            <version>${version.light-4j}</version>
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
             <artifactId>registry</artifactId>
-            <version>${version.light-4j}</version>
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
             <artifactId>balance</artifactId>
-            <version>${version.light-4j}</version>
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
             <artifactId>cluster</artifactId>
-            <version>${version.light-4j}</version>
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
             <artifactId>portal-registry</artifactId>
-            <version>${version.light-4j}</version>
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
             <artifactId>logger-config</artifactId>
-            <version>${version.light-4j}</version>
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
             <artifactId>decryptor</artifactId>
-            <version>${version.light-4j}</version>
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
             <artifactId>server</artifactId>
-            <version>${version.light-4j}</version>
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
             <artifactId>json-schema-validator</artifactId>
-            <version>${version.json-schema-validator}</version>
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
             <artifactId>openapi-parser</artifactId>
-            <version>${version.light-4j}</version>
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
             <artifactId>openapi-meta</artifactId>
-            <version>${version.light-4j}</version>
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
             <artifactId>openapi-security</artifactId>
-            <version>${version.light-4j}</version>
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
             <artifactId>openapi-validator</artifactId>
-            <version>${version.light-4j}</version>
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
             <artifactId>specification</artifactId>
-            <version>${version.light-4j}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.networknt</groupId>
+            <artifactId>http-entity</artifactId>
         </dependency>
         @if(config.get("kafkaProducer").booleanValue() ||config.get("kafkaConsumer").booleanValue()){
         <dependency>
             <groupId>com.networknt</groupId>
             <artifactId>kafka-common</artifactId>
-            <version>${version.light-4j}</version>
         </dependency>
         }
         @if(config.get("kafkaProducer").booleanValue()){
         <dependency>
             <groupId>com.networknt</groupId>
             <artifactId>kafka-producer</artifactId>
-            <version>${version.light-4j}</version>
         </dependency>
         }
         @if(config.get("kafkaConsumer").booleanValue()){
         <dependency>
             <groupId>com.networknt</groupId>
             <artifactId>kafka-consumer</artifactId>
-            <version>${version.light-4j}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka-streams</artifactId>
-            <version>${version.kafka}</version>
         </dependency>
         }
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>${version.jackson}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
-            <version>${version.jackson}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
-            <version>${version.jackson}</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>${version.logback}</version>
         </dependency>
         <dependency>
             <groupId>io.undertow</groupId>
             <artifactId>undertow-core</artifactId>
-            <version>${version.undertow}</version>
         </dependency>
         @if(config.get("supportDb").booleanValue() || config.get("supportH2ForTest").booleanValue()){
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
-            <version>${version.hikaricp}</version>
         </dependency>
         }
         @if(config.get("supportDb").booleanValue() && "oracle".equalsIgnoreCase(config.path("dbInfo").path("name").textValue())){
         <dependency>
             <groupId>com.oracle</groupId>
             <artifactId>ojdbc6</artifactId>
-            <version>${version.oracle}</version>
         </dependency>
         }
         @if(config.get("supportDb").booleanValue() && "mysql".equalsIgnoreCase(config.path("dbInfo").path("name").textValue())){
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>${version.mysql}</version>
         </dependency>
         }
         @if(config.get("supportDb").booleanValue() && "postgres".equalsIgnoreCase(config.path("dbInfo").path("name").textValue())){
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>${version.postgres}</version>
-        </dependency>
-        }
-        <!-- Test Dependencies -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${version.junit}</version>
-            <scope>test</scope>
-        </dependency>
-        @if(config.get("supportH2ForTest").booleanValue()){
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <version>${version.h2}</version>
-            <scope>test</scope>
         </dependency>
         }
         @if(config.get("supportAvro").booleanValue()){
         <dependency>
             <groupId>io.confluent</groupId>
             <artifactId>kafka-schema-registry-client</artifactId>
-            <version>${version.confluent}</version>
+        </dependency>
+        }
+        <!-- Test Dependencies -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        @if(config.get("supportH2ForTest").booleanValue()){
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
         </dependency>
         }
     </dependencies>

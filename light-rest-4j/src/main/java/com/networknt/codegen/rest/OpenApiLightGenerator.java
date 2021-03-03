@@ -86,9 +86,10 @@ public class OpenApiLightGenerator implements OpenApiGenerator {
                     if (!skipPomFile) {
                         transfer(targetPath, "", "pom.xml", templates.rest.parent.pom.template(config));
                         transfer(targetPath, "model", "pom.xml", templates.rest.model.pom.template(config));
+                        transfer(targetPath, "service", "pom.xml", templates.rest.service.pom.template(config));
+                        transfer(targetPath, "domain", "pom.xml", templates.rest.domain.pom.template(config));
                         transfer(targetPath, "server", "pom.xml", templates.rest.server.pom.template(config));
                         transfer(targetPath, "client", "pom.xml", templates.rest.client.pom.template(config));
-                        transfer(targetPath, "service", "pom.xml", templates.rest.service.pom.template(config));
                     }
                     transferMaven(targetPath);
                 } else {
@@ -100,14 +101,18 @@ public class OpenApiLightGenerator implements OpenApiGenerator {
                     transfer(targetPath, "model", "build.gradle.kts", templates.rest.model.buildGradleKts.template(config));
                     transfer(targetPath, "model", "settings.gradle.kts", templates.rest.model.settingsGradleKts.template());
 
+                    transfer(targetPath, "service", "build.gradle.kts", templates.rest.service.buildGradleKts.template(config));
+                    transfer(targetPath, "service", "settings.gradle.kts", templates.rest.service.settingsGradleKts.template());
+
+                    transfer(targetPath, "domain", "build.gradle.kts", templates.rest.domain.buildGradleKts.template(config));
+                    transfer(targetPath, "domain", "settings.gradle.kts", templates.rest.domain.settingsGradleKts.template());
+
                     transfer(targetPath, "server", "build.gradle.kts", templates.rest.server.buildGradleKts.template(config));
                     transfer(targetPath, "server", "settings.gradle.kts", templates.rest.server.settingsGradleKts.template());
 
                     transfer(targetPath, "client", "build.gradle.kts", templates.rest.client.buildGradleKts.template(config));
                     transfer(targetPath, "client", "settings.gradle.kts", templates.rest.client.settingsGradleKts.template());
 
-                    transfer(targetPath, "service", "build.gradle.kts", templates.rest.service.buildGradleKts.template(config));
-                    transfer(targetPath, "service", "settings.gradle.kts", templates.rest.service.settingsGradleKts.template());
 
                     transferGradle(targetPath);
                 }
@@ -133,7 +138,7 @@ public class OpenApiLightGenerator implements OpenApiGenerator {
                     transfer(targetPath, "", ".project", templates.rest.project.template(config));
                 }
                 // config
-                transfer(targetPath, ("server.src.main.resources.config").replace(".", separator), "service.yml", templates.rest.serviceYml.template(config));
+                transfer(targetPath, ("server.src.main.resources.config").replace(".", separator), "service.yml", templates.rest.serviceYml.template(config, operationList));
 
                 transfer(targetPath, ("server.src.main.resources.config").replace(".", separator), "server.yml",
                         templates.rest.serverYml.template(serviceId, enableHttp, httpPort, enableHttps, httpsPort, enableHttp2, enableRegistry, version));
@@ -222,16 +227,21 @@ public class OpenApiLightGenerator implements OpenApiGenerator {
         // handler
         for (Map<String, Object> op : operationList) {
             String className = op.get("handlerName").toString();
+            String serviceName = op.get("serviceName").toString();
+            String serviceImpl = op.get("serviceImpl").toString();
             @SuppressWarnings("unchecked")
             List<Map> parameters = (List<Map>)op.get("parameters");
             Map<String, String> responseExample = (Map<String, String>)op.get("responseExample");
             String example = responseExample.get("example");
             String statusCode = responseExample.get("statusCode");
             statusCode = StringUtils.isBlank(statusCode) || statusCode.equals("default") ? "-1" : statusCode;
-            if (checkExist(targetPath, ("server.src.main.java." + handlerPackage).replace(".", separator), className + ".java") && !overwriteHandler) {
+            transfer(targetPath, ("server.src.main.java." + handlerPackage).replace(".", separator), className + ".java", templates.rest.handler.template(handlerPackage, className, serviceName, parameters));
+            transfer(targetPath, ("service.src.main.java." + handlerPackage).replace(".", separator), serviceName + ".java", templates.rest.handlerService.template(handlerPackage, serviceName));
+
+            if (checkExist(targetPath, ("domain.src.main.java." + handlerPackage).replace(".", separator), serviceImpl + ".java") && !overwriteHandler) {
                 continue;
             }
-            transfer(targetPath, ("server.src.main.java." + handlerPackage).replace(".", separator), className + ".java", templates.rest.handler.template(handlerPackage, className, statusCode, example, parameters));
+            transfer(targetPath, ("domain.src.main.java." + handlerPackage).replace(".", separator), serviceImpl + ".java", templates.rest.handlerServiceImpl.template(handlerPackage, serviceImpl, serviceName, statusCode, example, parameters));
         }
 
         // handler test cases

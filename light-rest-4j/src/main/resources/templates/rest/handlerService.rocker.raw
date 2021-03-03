@@ -1,0 +1,10 @@
+@option discardLogicWhitespace=true
+@args (String handlerPackage, String className)
+package @handlerPackage;
+
+import com.networknt.http.RequestEntity;
+import com.networknt.http.ResponseEntity;
+
+public interface @className {
+    ResponseEntity apply(RequestEntity requestEntity);
+}

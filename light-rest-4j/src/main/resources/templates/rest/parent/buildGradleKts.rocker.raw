@@ -16,6 +16,11 @@ allprojects {
     repositories {
         mavenLocal() // mavenLocal must be added first.
         jcenter()
+        @if(config.get("supportAvro").booleanValue()){
+        maven {
+            url = uri("http://packages.confluent.io/maven/")
+        }
+        }
     }
 }
 

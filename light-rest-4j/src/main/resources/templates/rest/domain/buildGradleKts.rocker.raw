@@ -5,9 +5,11 @@ plugins {
 }
 
 dependencies {
+    compile(project(":model"))
+    compile(project(":service"))
     val light4jVersion: String by project
-    compile("com.networknt", "service", light4jVersion)
-    compile("com.networknt", "client", light4jVersion)
+    compile("com.networknt", "utility", light4jVersion)
+    compile("com.networknt", "http-entity", light4jVersion)
     val jacksonVersion: String by project
     compile("com.fasterxml.jackson.core", "jackson-databind", jacksonVersion)
     val slf4jVersion: String by project
