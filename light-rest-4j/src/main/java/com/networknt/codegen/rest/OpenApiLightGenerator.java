@@ -119,9 +119,9 @@ public class OpenApiLightGenerator implements OpenApiGenerator {
                         transfer(targetPath, "client", "build.gradle.kts", templates.rest.client.buildGradleKts.template(config));
                         transfer(targetPath, "client", "settings.gradle.kts", templates.rest.client.settingsGradleKts.template());
                     } else {
-//                        transfer(targetPath, "", "build.gradle.kts", templates.rest.single.buildGradleKts.template(config));
-//                        transfer(targetPath, "", "gradle.properties", templates.rest.single.gradleProperties.template(config));
-//                        transfer(targetPath, "", "settings.gradle.kts", templates.rest.single.settingsGradleKts.template());
+                        transfer(targetPath, "", "build.gradle.kts", templates.rest.single.buildGradleKts.template(config));
+                        transfer(targetPath, "", "gradle.properties", templates.rest.single.gradleProperties.template(config));
+                        transfer(targetPath, "", "settings.gradle.kts", templates.rest.single.settingsGradleKts.template());
                     }
                     transferGradle(targetPath);
                 }

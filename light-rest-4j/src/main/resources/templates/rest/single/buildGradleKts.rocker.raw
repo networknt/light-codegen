@@ -1,0 +1,126 @@
+@import com.fasterxml.jackson.databind.JsonNode
+@args (JsonNode config)
+plugins {
+    base
+    java
+    application
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
+
+dependencies {
+    val light4jVersion: String by project
+    compile("com.networknt", "config", light4jVersion)
+    compile("com.networknt", "utility", light4jVersion)
+    compile("com.networknt", "security", light4jVersion)
+    compile("com.networknt", "client", light4jVersion)
+    compile("com.networknt", "audit", light4jVersion)
+    compile("com.networknt", "info", light4jVersion)
+    compile("com.networknt", "health", light4jVersion)
+    compile("com.networknt", "status", light4jVersion)
+    compile("com.networknt", "exception", light4jVersion)
+    compile("com.networknt", "body", light4jVersion)
+    compile("com.networknt", "dump", light4jVersion)
+    compile("com.networknt", "mask", light4jVersion)
+    @if(config.get("prometheusMetrics").booleanValue()){
+    compile("com.networknt", "prometheus", light4jVersion)
+    }else{
+    compile("com.networknt", "metrics", light4jVersion)
+    }
+    compile("com.networknt", "handler", light4jVersion)
+    compile("com.networknt", "sanitizer", light4jVersion)
+    compile("com.networknt", "traceability", light4jVersion)
+    compile("com.networknt", "correlation", light4jVersion)
+    compile("com.networknt", "service", light4jVersion)
+    compile("com.networknt", "registry", light4jVersion)
+    compile("com.networknt", "balance", light4jVersion)
+    compile("com.networknt", "cluster", light4jVersion)
+    compile("com.networknt", "portal-registry", light4jVersion)
+    compile("com.networknt", "logger-config", light4jVersion)
+    compile("com.networknt", "decryptor", light4jVersion)
+    compile("com.networknt", "server", light4jVersion)
+    compile("com.networknt", "openapi-parser", light4jVersion)
+    compile("com.networknt", "openapi-meta", light4jVersion)
+    compile("com.networknt", "openapi-security", light4jVersion)
+    compile("com.networknt", "openapi-validator", light4jVersion)
+    compile("com.networknt", "specification", light4jVersion)
+    compile("com.networknt", "http-entity", light4jVersion)
+    @if(config.get("kafkaProducer").booleanValue() ||config.get("kafkaConsumer").booleanValue()){
+    compile("com.networknt", "kafka-common", light4jVersion)
+    }
+    @if(config.get("kafkaProducer").booleanValue()){
+    compile("com.networknt", "kafka-producer", light4jVersion)
+    }
+    @if(config.get("kafkaConsumer").booleanValue()){
+    compile("com.networknt", "kafka-consumer", light4jVersion)
+    compile("com.networknt", "kafka-streams", light4jVersion)
+    }
+    val jacksonVersion: String by project
+    compile("com.fasterxml.jackson.core", "jackson-databind", jacksonVersion)
+    val jsonSchemaValidatorVersion: String by project
+    compile("com.networknt", "json-schema-validator", jsonSchemaValidatorVersion)
+    val logbackVersion: String by project
+    compile("ch.qos.logback", "logback-classic", logbackVersion)
+    val undertowVersion: String by project
+    compile("io.undertow", "undertow-core", undertowVersion)
+    @if(config.get("supportDb").booleanValue() || config.get("supportH2ForTest").booleanValue()){
+    val hikaricpVersion: String by project
+    compile("com.zaxxer", "HikariCP", hikaricpVersion)
+    }
+    @if(config.get("supportDb").booleanValue() && "oracle".equalsIgnoreCase(config.path("dbInfo").path("name").textValue())){
+    val oracleVersion: String by project
+    compile("com.oracle", "ojdbc6", oracleVersion)
+    }
+    @if(config.get("supportDb").booleanValue() && "mysql".equalsIgnoreCase(config.path("dbInfo").path("name").textValue())){
+    val mysqlVersion: String by project
+    compile("mysql", "mysql-connector-java", mysqlVersion)
+    }
+    @if(config.get("supportDb").booleanValue() && "postgres".equalsIgnoreCase(config.path("dbInfo").path("name").textValue())){
+    val postgresVersion: String by project
+    compile("org.postgresql", "postgresql", postgresVersion)
+    }
+    @if(config.get("supportAvro").booleanValue()){
+    val avroVersion: String by project
+    compile("io.confluent", "kafka-schema-registry-client", avroVersion)
+    }
+    val junitVersion: String by project
+    testImplementation("junit", "junit", junitVersion)
+    @if(config.get("supportH2ForTest").booleanValue()){
+    val h2Version: String by project
+    testImplementation("com.h2database", "h2", h2Version)
+    }
+}
+
+@with(groupId = config.get("groupId").textValue()){group = "@groupId"}
+@with(version = config.get("version").textValue()){version = "@version"}
+repositories {
+    mavenLocal() // mavenLocal must be added first.
+    jcenter()
+    @if(config.get("supportAvro").booleanValue()){
+    maven {
+        url = uri("http://packages.confluent.io/maven/")
+    }
+    }
+}
+
+
+val fatJar = task("fatJar", type = Jar::class) {
+    baseName = "${project.name}-fat"
+    manifest {
+        attributes["Implementation-Title"] = "Gradle Jar File Example"
+        attributes["Implementation-Version"] = version
+        attributes["Main-Class"] = "com.networknt.server.Server"
+    }
+    from(configurations.runtime.get().map({ if (it.isDirectory) it else zipTree(it) }))
+    with(tasks["jar"] as CopySpec)
+}
+
+tasks {
+    "build" {
+        dependsOn(fatJar)
+    }
+}
+

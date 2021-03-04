@@ -1,0 +1,29 @@
+@import com.fasterxml.jackson.databind.JsonNode
+@args (JsonNode config)
+# Versions of Frequently used Libraries
+kafkaVersion=2.0.0
+light4jVersion=2.0.25-SNAPSHOT
+jacksonVersion=2.12.1
+slf4jVersion=1.7.25
+undertowVersion=2.2.4.Final
+logbackVersion=1.2.3
+jsonSchemaValidatorVersion=1.0.49
+junitVersion=4.13.1
+@if(config.get("supportDb").booleanValue() || config.get("supportH2ForTest").booleanValue()){
+hikaricpVersion=3.1.0
+}
+@if(config.get("supportDb").booleanValue() && "oracle".equalsIgnoreCase(config.path("dbInfo").path("name").textValue())){
+oracleVersion=11.2.0.3
+}
+@if(config.get("supportDb").booleanValue() && "mysql".equalsIgnoreCase(config.path("dbInfo").path("name").textValue())){
+mysqlVersion=8.0.16
+}
+@if(config.get("supportDb").booleanValue() && "postgres".equalsIgnoreCase(config.path("dbInfo").path("name").textValue())){
+postgresVersion=42.1.1
+}
+@if(config.get("supportH2ForTest").booleanValue()){
+h2Version=1.3.176
+}
+@if(config.get("supportAvro").booleanValue()){
+avroVersion=5.3.3
+}
