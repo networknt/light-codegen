@@ -489,7 +489,7 @@ public interface OpenApiGenerator extends Generator {
         return result;
     }
 
-    default void loadModel(String classVarName, String parentClassName, Map<String, Object> value, Map<String, Object> schemas, boolean overwriteModel, String targetPath, String modelPackage, List<Runnable> modelCreators, Map<String, Object> references, List<Map<String, Object>> parentClassProps, ModelCallback lightCallback) throws IOException {
+    default void loadModel(boolean multipleModule, String classVarName, String parentClassName, Map<String, Object> value, Map<String, Object> schemas, boolean overwriteModel, String targetPath, String modelPackage, List<Runnable> modelCreators, Map<String, Object> references, List<Map<String, Object>> parentClassProps, ModelCallback lightCallback) throws IOException {
         final String modelFileName = classVarName.substring(0, 1).toUpperCase() + classVarName.substring(1);
         final List<Map<String, Object>> props = new ArrayList<>();
         final List<Map<String, Object>> parentProps = (parentClassProps == null) ? new ArrayList<>() : new ArrayList<>(parentClassProps);
@@ -556,7 +556,7 @@ public interface OpenApiGenerator extends Generator {
                         if ("$ref".equals(oneOfItem.getKey())) {
                             String s = oneOfItem.getValue().toString();
                             s = s.substring(s.lastIndexOf('/') + 1);
-                            loadModel(extendModelName(s, classVarName), s, (Map<String, Object>)schemas.get(s), schemas, overwriteModel, targetPath, modelPackage, modelCreators, references, parentProps, lightCallback);
+                            loadModel(multipleModule, extendModelName(s, classVarName), s, (Map<String, Object>)schemas.get(s), schemas, overwriteModel, targetPath, modelPackage, modelCreators, references, parentProps, lightCallback);
                         }
                     }
                 }
@@ -618,7 +618,7 @@ public interface OpenApiGenerator extends Generator {
                         } while (true);
                     }
                 }
-                lightCallback.callback(targetPath, modelPackage, modelFileName, enumsIfClass, parentClassName, classVarName, abstractIfClass, props, parentClassProps);
+                lightCallback.callback(multipleModule, targetPath, modelPackage, modelFileName, enumsIfClass, parentClassName, classVarName, abstractIfClass, props, parentClassProps);
             });
         } else {
             HashMap<String, Object> map = new HashMap<>(1);

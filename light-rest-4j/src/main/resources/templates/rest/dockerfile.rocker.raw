@@ -28,9 +28,17 @@ ENV JAVA_MINIMAL=/opt/jre
 ENV PATH="$PATH:$JAVA_MINIMAL/bin"
 
 COPY --from=packager "$JAVA_MINIMAL" "$JAVA_MINIMAL"
+@if(config.get("multipleModule").booleanValue()){
 @if(config.get("buildMaven").booleanValue()){
 COPY /server/target/server.jar server.jar
 }else{
+@with (name = config.get("artifactId").textValue() + ".jar") {COPY /server/build/libs/@name server.jar}
+}
+}else{
+@if(config.get("buildMaven").booleanValue()){
+COPY /target/server.jar server.jar
+}else{
 @with (name = config.get("artifactId").textValue() + ".jar") {COPY /build/libs/@name server.jar}
+}
 }
 CMD ["/bin/sh","-c","java -Dlight-4j-config-dir=/config -Dlogback.configurationFile=/config/logback.xml -jar /server.jar"]

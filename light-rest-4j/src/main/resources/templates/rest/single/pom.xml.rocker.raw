@@ -216,6 +216,11 @@
             <artifactId>specification</artifactId>
             <version>${version.light-4j}</version>
         </dependency>
+        <dependency>
+            <groupId>com.networknt</groupId>
+            <artifactId>http-entity</artifactId>
+            <version>${version.light-4j}</version>
+        </dependency>
         @if(config.get("kafkaProducer").booleanValue() ||config.get("kafkaConsumer").booleanValue()){
         <dependency>
             <groupId>com.networknt</groupId>
@@ -448,6 +453,7 @@
                                     <goal>shade</goal>
                                 </goals>
                                 <configuration>
+                                    <finalName>server</finalName>
                                     <dependencyReducedPomLocation>${project.build.directory}/dependency-reduced-pom.xml</dependencyReducedPomLocation>
                                     <filters>
                                         <filter>
