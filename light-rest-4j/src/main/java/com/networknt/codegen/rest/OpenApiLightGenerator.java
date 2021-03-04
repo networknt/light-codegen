@@ -224,18 +224,23 @@ public class OpenApiLightGenerator implements OpenApiGenerator {
         for (Map<String, Object> op : operationList) {
             String className = op.get("handlerName").toString();
             String serviceName = op.get("serviceName").toString();
+            Object requestModelNameObject = op.get("requestModelName");
+            String requestModelName = null;
+            if(requestModelNameObject != null) {
+                requestModelName = requestModelNameObject.toString();
+            }
             @SuppressWarnings("unchecked")
             List<Map> parameters = (List<Map>)op.get("parameters");
             Map<String, String> responseExample = (Map<String, String>)op.get("responseExample");
             String example = responseExample.get("example");
             String statusCode = responseExample.get("statusCode");
             statusCode = StringUtils.isBlank(statusCode) || statusCode.equals("default") ? "-1" : statusCode;
-            transfer(targetPath, ("server.src.main.java." + handlerPackage).replace(".", separator), className + ".java", templates.rest.handler.template(handlerPackage, className, serviceName, parameters));
+            transfer(targetPath, ("server.src.main.java." + handlerPackage).replace(".", separator), className + ".java", templates.rest.handler.template(handlerPackage, modelPackage, className, serviceName, requestModelName, parameters));
 
             if (checkExist(targetPath, ("service.src.main.java." + handlerPackage).replace(".", separator), serviceName + ".java") && !overwriteHandler) {
                 continue;
             }
-            transfer(targetPath, ("service.src.main.java." + handlerPackage).replace(".", separator), serviceName + ".java", templates.rest.handlerService.template(handlerPackage, serviceName, statusCode, example, parameters));
+            transfer(targetPath, ("service.src.main.java." + handlerPackage).replace(".", separator), serviceName + ".java", templates.rest.handlerService.template(handlerPackage, modelPackage, serviceName, statusCode, requestModelName, example, parameters));
         }
 
         // handler test cases

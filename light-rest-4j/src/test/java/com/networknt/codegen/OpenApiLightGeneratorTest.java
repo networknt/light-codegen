@@ -24,9 +24,11 @@ import static org.junit.Assert.assertTrue;
 public class OpenApiLightGeneratorTest {
     public static String targetPath = "/tmp/openapi";
     public static String configName = "/config.json";
+    public static String configYaml = "/config.yaml";
     public static String configKafkaName = "/configKafka.json";
     public static String openapiJson = "/openapi.json";
     public static String openapiYaml = "/openapi.yaml";
+    public static String petstoreYaml = "/petstore.yaml";
     public static String accountInfoYaml = "/account-info.yaml";
     public static String openapiEnumYaml = "/openapi-enum.yaml";
     public static String openapiErrorYaml = "/openapi-error.yaml";
@@ -42,6 +44,14 @@ public class OpenApiLightGeneratorTest {
     //    @AfterClass
     public static void tearDown() throws IOException {
         Files.deleteIfExists(Paths.get(targetPath));
+    }
+
+    @Test
+    public void testGeneratorPetstore() throws IOException {
+        JsonNode config = Generator.yamlMapper.readTree(OpenApiLightGeneratorTest.class.getResourceAsStream(configYaml));
+        JsonNode model = Generator.yamlMapper.readTree(OpenApiLightGeneratorTest.class.getResourceAsStream(petstoreYaml));
+        OpenApiLightGenerator generator = new OpenApiLightGenerator();
+        generator.generate(targetPath, model, config);
     }
 
     @Test

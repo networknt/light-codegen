@@ -333,6 +333,7 @@ public interface OpenApiGenerator extends Generator {
                 Map<String, String> responseExample = populateResponseExample(operation);
                 flattened.put("responseExample", responseExample);
                 flattened.put("scopes", getScopes(operation));
+                flattened.put("requestModelName", getRequestModelName(operation));
                 if (config.get("enableParamDescription").booleanValue()) {
                     //get parameters info and put into result
                     List<Parameter> parameterRawList = operation.getParameters();
@@ -364,7 +365,22 @@ public interface OpenApiGenerator extends Generator {
         return result;
     }
 
-     static String getBasePath(OpenApi3 openApi3) {
+    static String getRequestModelName(Operation operation) {
+        String result = null;
+        RequestBody body = operation.getRequestBody();
+        if (body != null) {
+            MediaType mediaType = body.getContentMediaType("application/json");
+            if (mediaType != null) {
+                Schema schema = mediaType.getSchema();
+                if(schema != null) {
+                    result = schema.getName();
+                }
+            }
+        }
+        return result;
+    }
+
+    static String getBasePath(OpenApi3 openApi3) {
         String basePath = "";
         String url = null;
         if (openApi3.getServers().size() > 0) {
