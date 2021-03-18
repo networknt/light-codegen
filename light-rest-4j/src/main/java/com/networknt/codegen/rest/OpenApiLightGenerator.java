@@ -303,7 +303,7 @@ public class OpenApiLightGenerator implements OpenApiGenerator {
         public void callback(boolean multipleModule, String targetPath, String modelPackage, String modelFileName, String enumsIfClass, String parentClassName, String classVarName, boolean abstractIfClass, List<Map<String, Object>> props, List<Map<String, Object>> parentClassProps) {
             try {
                 transfer(targetPath,
-                        (multipleModule ? "model.src.main.java." : "src.main.java." + modelPackage).replace(".", separator),
+                        ((multipleModule ? "model.src.main.java." : "src.main.java.") + modelPackage).replace(".", separator),
                         modelFileName + ".java",
                         enumsIfClass == null
                                 ? templates.rest.pojo.template(modelPackage, modelFileName, parentClassName, classVarName, abstractIfClass, props, parentClassProps)
