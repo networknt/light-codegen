@@ -13,6 +13,8 @@
 - fixes \#540 give users an option to use Gradle vs Maven [\#545](https://github.com/networknt/light-codegen/pull/545) ([stevehu](https://github.com/stevehu))
 - fixes \#541 separate the model, rest and domain to three modules in th… [\#544](https://github.com/networknt/light-codegen/pull/544) ([stevehu](https://github.com/stevehu))
 - fixes \#542 remove the openapi sub folder from rest as only OpenAPI 3.… [\#543](https://github.com/networknt/light-codegen/pull/543) ([stevehu](https://github.com/stevehu))
+
+
 ## [2.0.24](https://github.com/networknt/light-codegen/tree/2.0.24) (2021-02-24)
 
 
