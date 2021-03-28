@@ -1,9 +1,0 @@
-@import com.fasterxml.jackson.databind.JsonNode
-@args (String modelPackage, String className)
-package @modelPackage;
-import java.io.Serializable;
-
-public class @className implements Serializable {
-    public @className () {
-    }
-}

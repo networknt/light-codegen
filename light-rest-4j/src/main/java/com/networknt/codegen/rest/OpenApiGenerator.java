@@ -316,6 +316,7 @@ public interface OpenApiGenerator extends Generator {
                 flattened.put("path", basePath + path);
                 String normalizedPath = path.replace("{", "").replace("}", "");
                 flattened.put("handlerName", Utils.camelize(normalizedPath) + Utils.camelize(entryOps.getKey()) + "Handler");
+                flattened.put("serviceName", Utils.camelize(normalizedPath) + Utils.camelize(entryOps.getKey()) + "Service");
                 flattened.put("functionName", Utils.camelize(normalizedPath) + Utils.camelize(entryOps.getKey()) + "Function");
                 flattened.put("endpoint", path + "@" + entryOps.getKey().toLowerCase());
                 flattened.put("apiName", Utils.camelize(normalizedPath) + Utils.camelize(entryOps.getKey()));
@@ -332,6 +333,7 @@ public interface OpenApiGenerator extends Generator {
                 Map<String, String> responseExample = populateResponseExample(operation);
                 flattened.put("responseExample", responseExample);
                 flattened.put("scopes", getScopes(operation));
+                flattened.put("requestModelName", getRequestModelName(operation));
                 if (config.get("enableParamDescription").booleanValue()) {
                     //get parameters info and put into result
                     List<Parameter> parameterRawList = operation.getParameters();
@@ -363,7 +365,22 @@ public interface OpenApiGenerator extends Generator {
         return result;
     }
 
-     static String getBasePath(OpenApi3 openApi3) {
+    static String getRequestModelName(Operation operation) {
+        String result = null;
+        RequestBody body = operation.getRequestBody();
+        if (body != null) {
+            MediaType mediaType = body.getContentMediaType("application/json");
+            if (mediaType != null) {
+                Schema schema = mediaType.getSchema();
+                if(schema != null) {
+                    result = schema.getName();
+                }
+            }
+        }
+        return result;
+    }
+
+    static String getBasePath(OpenApi3 openApi3) {
         String basePath = "";
         String url = null;
         if (openApi3.getServers().size() > 0) {
@@ -472,7 +489,7 @@ public interface OpenApiGenerator extends Generator {
         return result;
     }
 
-    default void loadModel(String classVarName, String parentClassName, Map<String, Object> value, Map<String, Object> schemas, boolean overwriteModel, String targetPath, String modelPackage, List<Runnable> modelCreators, Map<String, Object> references, List<Map<String, Object>> parentClassProps, ModelCallback lightCallback) throws IOException {
+    default void loadModel(boolean multipleModule, String classVarName, String parentClassName, Map<String, Object> value, Map<String, Object> schemas, boolean overwriteModel, String targetPath, String modelPackage, List<Runnable> modelCreators, Map<String, Object> references, List<Map<String, Object>> parentClassProps, ModelCallback lightCallback) throws IOException {
         final String modelFileName = classVarName.substring(0, 1).toUpperCase() + classVarName.substring(1);
         final List<Map<String, Object>> props = new ArrayList<>();
         final List<Map<String, Object>> parentProps = (parentClassProps == null) ? new ArrayList<>() : new ArrayList<>(parentClassProps);
@@ -539,7 +556,7 @@ public interface OpenApiGenerator extends Generator {
                         if ("$ref".equals(oneOfItem.getKey())) {
                             String s = oneOfItem.getValue().toString();
                             s = s.substring(s.lastIndexOf('/') + 1);
-                            loadModel(extendModelName(s, classVarName), s, (Map<String, Object>)schemas.get(s), schemas, overwriteModel, targetPath, modelPackage, modelCreators, references, parentProps, lightCallback);
+                            loadModel(multipleModule, extendModelName(s, classVarName), s, (Map<String, Object>)schemas.get(s), schemas, overwriteModel, targetPath, modelPackage, modelCreators, references, parentProps, lightCallback);
                         }
                     }
                 }
@@ -601,7 +618,7 @@ public interface OpenApiGenerator extends Generator {
                         } while (true);
                     }
                 }
-                lightCallback.callback(targetPath, modelPackage, modelFileName, enumsIfClass, parentClassName, classVarName, abstractIfClass, props, parentClassProps);
+                lightCallback.callback(multipleModule, targetPath, modelPackage, modelFileName, enumsIfClass, parentClassName, classVarName, abstractIfClass, props, parentClassProps);
             });
         } else {
             HashMap<String, Object> map = new HashMap<>(1);

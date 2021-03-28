@@ -31,11 +31,6 @@ public class ConfigTest {
     }
 
     @Test
-    public void testUseSidecar() {
-        Assert.assertTrue(anyYamlConfig.get("useSidecar").booleanValue());
-    }
-
-    @Test
     public void testUseLightProxy() {
         Assert.assertTrue(anyYamlConfig.get("useLightProxy").booleanValue());
     }

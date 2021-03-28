@@ -44,6 +44,7 @@ public class OpenApiLightGenerator implements OpenApiGenerator {
         String rootPackage = getRootPackage(config, null);
         String modelPackage = getModelPackage(config, null);
         String handlerPackage = getHandlerPackage(config, null);
+        String servicePackage = getServicePackage(config, null);
         boolean overwriteHandler = isOverwriteHandler(config, null);
         boolean overwriteHandlerTest = isOverwriteHandlerTest(config, null);
         boolean overwriteModel = isOverwriteModel(config, null);
@@ -71,7 +72,12 @@ public class OpenApiLightGenerator implements OpenApiGenerator {
         boolean useLightProxy = isUseLightProxy(config, null);
         String kafkaTopic = getKafkaTopic(config, null);
         String decryptOption = getDecryptOption(config, null);
-        boolean buildMaven = isBuildMaven(config, null);
+        boolean supportDb = isSupportDb(config, null);
+        boolean supportH2ForTest = isSupportH2ForTest(config, null);
+        boolean buildMaven = isBuildMaven(config, true); // override the default value false to make sure backward compatible.
+        boolean multipleModule = isMultipleModule(config, null);
+        String configFolder = multipleModule ? "server.src.main.resources.config" : "src.main.resources.config";
+        String testConfigFolder = multipleModule ? "server.src.test.resources.config" : "src.test.resources.config";
 
         // get the list of operations for this model
         List<Map<String, Object>> operationList = getOperationList(model, config);
@@ -84,10 +90,39 @@ public class OpenApiLightGenerator implements OpenApiGenerator {
 
                 if(buildMaven) {
                     if (!skipPomFile) {
-                        transfer(targetPath, "", "pom.xml", templates.rest.openapi.pom.template(config));
+                        if(multipleModule) {
+                            transfer(targetPath, "", "pom.xml", templates.rest.parent.pom.template(config));
+                            transfer(targetPath, "model", "pom.xml", templates.rest.model.pom.template(config));
+                            transfer(targetPath, "service", "pom.xml", templates.rest.service.pom.template(config));
+                            transfer(targetPath, "server", "pom.xml", templates.rest.server.pom.template(config));
+                            transfer(targetPath, "client", "pom.xml", templates.rest.client.pom.template(config));
+                        } else {
+                            transfer(targetPath, "", "pom.xml", templates.rest.single.pom.template(config));
+                        }
                     }
                     transferMaven(targetPath);
                 } else {
+                    if(multipleModule) {
+                        transfer(targetPath, "", "build.gradle.kts", templates.rest.parent.buildGradleKts.template(config));
+                        transfer(targetPath, "", "gradle.properties", templates.rest.parent.gradleProperties.template(config));
+                        transfer(targetPath, "", "settings.gradle.kts", templates.rest.parent.settingsGradleKts.template());
+
+                        transfer(targetPath, "model", "build.gradle.kts", templates.rest.model.buildGradleKts.template(config));
+                        transfer(targetPath, "model", "settings.gradle.kts", templates.rest.model.settingsGradleKts.template());
+
+                        transfer(targetPath, "service", "build.gradle.kts", templates.rest.service.buildGradleKts.template(config));
+                        transfer(targetPath, "service", "settings.gradle.kts", templates.rest.service.settingsGradleKts.template());
+
+                        transfer(targetPath, "server", "build.gradle.kts", templates.rest.server.buildGradleKts.template(config));
+                        transfer(targetPath, "server", "settings.gradle.kts", templates.rest.server.settingsGradleKts.template());
+
+                        transfer(targetPath, "client", "build.gradle.kts", templates.rest.client.buildGradleKts.template(config));
+                        transfer(targetPath, "client", "settings.gradle.kts", templates.rest.client.settingsGradleKts.template());
+                    } else {
+                        transfer(targetPath, "", "build.gradle.kts", templates.rest.single.buildGradleKts.template(config));
+                        transfer(targetPath, "", "gradle.properties", templates.rest.single.gradleProperties.template(config));
+                        transfer(targetPath, "", "settings.gradle.kts", templates.rest.single.settingsGradleKts.template());
+                    }
                     transferGradle(targetPath);
                 }
 
@@ -105,67 +140,67 @@ public class OpenApiLightGenerator implements OpenApiGenerator {
                 transfer(targetPath, "", "build.sh", templates.rest.buildSh.template(config, serviceId));
                 transfer(targetPath, "", "kubernetes.yml", templates.rest.kubernetes.template(dockerOrganization, serviceId, config.get("artifactId").textValue(), expose, version));
                 transfer(targetPath, "", ".gitignore", templates.rest.gitignore.template());
-                transfer(targetPath, "", "README.md", templates.rest.README.template());
+                transfer(targetPath, "", "README.md", templates.rest.README.template(config));
                 transfer(targetPath, "", "LICENSE", templates.rest.LICENSE.template());
                 if(eclipseIDE) {
                     transfer(targetPath, "", ".classpath", templates.rest.classpath.template());
                     transfer(targetPath, "", ".project", templates.rest.project.template(config));
                 }
                 // config
-                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "service.yml", templates.rest.openapi.service.template(config));
+                transfer(targetPath, (configFolder).replace(".", separator), "service.yml", templates.rest.serviceYml.template(config));
 
-                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "server.yml",
-                        templates.rest.server.template(serviceId, enableHttp, httpPort, enableHttps, httpsPort, enableHttp2, enableRegistry, version));
-                transfer(targetPath, ("src.test.resources.config").replace(".", separator), "server.yml",
-                        templates.rest.server.template(serviceId, enableHttp, "49587", enableHttps, "49588", enableHttp2, enableRegistry, version));
+                transfer(targetPath, (configFolder).replace(".", separator), "server.yml",
+                        templates.rest.serverYml.template(serviceId, enableHttp, httpPort, enableHttps, httpsPort, enableHttp2, enableRegistry, version));
+                transfer(targetPath, (testConfigFolder).replace(".", separator), "server.yml",
+                        templates.rest.serverYml.template(serviceId, enableHttp, "49587", enableHttps, "49588", enableHttp2, enableRegistry, version));
 
-                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "openapi-security.yml", templates.rest.openapiSecurity.template());
-                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "openapi-validator.yml", templates.rest.openapiValidator.template());
+                transfer(targetPath, (configFolder).replace(".", separator), "openapi-security.yml", templates.rest.openapiSecurity.template());
+                transfer(targetPath, (configFolder).replace(".", separator), "openapi-validator.yml", templates.rest.openapiValidator.template());
                 if (supportClient) {
-                    transfer(targetPath, ("src.main.resources.config").replace(".", separator), "client.yml", templates.rest.clientYml.template());
+                    transfer(targetPath, (configFolder).replace(".", separator), "client.yml", templates.rest.clientYml.template());
                 } else {
-                    transfer(targetPath, ("src.test.resources.config").replace(".", separator), "client.yml", templates.rest.clientYml.template());
+                    transfer(targetPath, (testConfigFolder).replace(".", separator), "client.yml", templates.rest.clientYml.template());
                 }
 
-                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "primary.crt", templates.rest.primaryCrt.template());
-                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "secondary.crt", templates.rest.secondaryCrt.template());
+                transfer(targetPath, (configFolder).replace(".", separator), "primary.crt", templates.rest.primaryCrt.template());
+                transfer(targetPath, (configFolder).replace(".", separator), "secondary.crt", templates.rest.secondaryCrt.template());
                 if(kafkaProducer) {
-                    transfer(targetPath, ("src.main.resources.config").replace(".", separator), "kafka-producer.yml", templates.rest.kafkaProducerYml.template(kafkaTopic));
+                    transfer(targetPath, (configFolder).replace(".", separator), "kafka-producer.yml", templates.rest.kafkaProducerYml.template(kafkaTopic));
                 }
                 if(kafkaConsumer) {
-                    transfer(targetPath, ("src.main.resources.config").replace(".", separator), "kafka-streams.yml", templates.rest.kafkaStreamsYml.template(artifactId));
+                    transfer(targetPath, (configFolder).replace(".", separator), "kafka-streams.yml", templates.rest.kafkaStreamsYml.template(artifactId));
                 }
                 if(supportAvro) {
-                    transfer(targetPath, ("src.main.resources.config").replace(".", separator), "schema-registry.yml", templates.rest.schemaRegistryYml.template());
+                    transfer(targetPath, (configFolder).replace(".", separator), "schema-registry.yml", templates.rest.schemaRegistryYml.template());
                 }
 
                 // mask
-                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "mask.yml", templates.rest.maskYml.template());
+                transfer(targetPath, (configFolder).replace(".", separator), "mask.yml", templates.rest.maskYml.template());
                 // logging
-                transfer(targetPath, ("src.main.resources").replace(".", separator), "logback.xml", templates.rest.logback.template(rootPackage));
-                transfer(targetPath, ("src.test.resources").replace(".", separator), "logback-test.xml", templates.rest.logback.template(rootPackage));
+                transfer(targetPath, (multipleModule ? "server.src.main.resources" : "src.main.resources").replace(".", separator), "logback.xml", templates.rest.logback.template(rootPackage));
+                transfer(targetPath, (multipleModule ? "server.src.test.resources" : "src.test.resources").replace(".", separator), "logback-test.xml", templates.rest.logback.template(rootPackage));
 
                 // exclusion list for Config module
-                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "config.yml", templates.rest.openapi.config.template(config));
+                transfer(targetPath, (configFolder).replace(".", separator), "config.yml", templates.rest.config.template(config));
 
-                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "audit.yml", templates.rest.auditYml.template());
-                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "body.yml", templates.rest.bodyYml.template());
-                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "info.yml", templates.rest.infoYml.template());
-                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "correlation.yml", templates.rest.correlationYml.template());
-                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "metrics.yml", templates.rest.metricsYml.template());
-                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "sanitizer.yml", templates.rest.sanitizerYml.template());
-                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "traceability.yml", templates.rest.traceabilityYml.template());
-                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "health.yml", templates.rest.healthYml.template());
+                transfer(targetPath, (configFolder).replace(".", separator), "audit.yml", templates.rest.auditYml.template());
+                transfer(targetPath, (configFolder).replace(".", separator), "body.yml", templates.rest.bodyYml.template());
+                transfer(targetPath, (configFolder).replace(".", separator), "info.yml", templates.rest.infoYml.template());
+                transfer(targetPath, (configFolder).replace(".", separator), "correlation.yml", templates.rest.correlationYml.template());
+                transfer(targetPath, (configFolder).replace(".", separator), "metrics.yml", templates.rest.metricsYml.template());
+                transfer(targetPath, (configFolder).replace(".", separator), "sanitizer.yml", templates.rest.sanitizerYml.template());
+                transfer(targetPath, (configFolder).replace(".", separator), "traceability.yml", templates.rest.traceabilityYml.template());
+                transfer(targetPath, (configFolder).replace(".", separator), "health.yml", templates.rest.healthYml.template());
                 // added with #471
-                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "app-status.yml", templates.rest.appStatusYml.template());
+                transfer(targetPath, (configFolder).replace(".", separator), "app-status.yml", templates.rest.appStatusYml.template());
                 // values.yml file, transfer to suppress the warning message during start startup and encourage usage.
-                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "values.yml", templates.rest.openapi.values.template());
+                transfer(targetPath, (configFolder).replace(".", separator), "values.yml", templates.rest.values.template());
                 // add portal-registry.yml
-                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "portal-registry.yml", templates.rest.portalRegistryYml.template());
+                transfer(targetPath, (configFolder).replace(".", separator), "portal-registry.yml", templates.rest.portalRegistryYml.template());
             }
             // routing handler
-            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "handler.yml",
-                    templates.rest.openapi.handlerYml.template(serviceId, handlerPackage, operationList, prometheusMetrics, useLightProxy));
+            transfer(targetPath, (configFolder).replace(".", separator), "handler.yml",
+                    templates.rest.handlerYml.template(serviceId, handlerPackage, operationList, prometheusMetrics, useLightProxy));
 
         }
 
@@ -184,7 +219,7 @@ public class OpenApiLightGenerator implements OpenApiGenerator {
                 ArrayList<Runnable> modelCreators = new ArrayList<>();
                 final HashMap<String, Object> references = new HashMap<>();
                 for (Map.Entry<String, Object> entry : schemas.entrySet()) {
-                    loadModel(entry.getKey(), null, (Map<String, Object>)entry.getValue(), schemas, overwriteModel, targetPath, modelPackage, modelCreators, references, null, callback);
+                    loadModel(multipleModule, entry.getKey(), null, (Map<String, Object>)entry.getValue(), schemas, overwriteModel, targetPath, modelPackage, modelCreators, references, null, callback);
                 }
 
                 for (Runnable r : modelCreators) {
@@ -199,66 +234,76 @@ public class OpenApiLightGenerator implements OpenApiGenerator {
         }
 
         // handler
+        String serverFolder = multipleModule ? "server.src.main.java." + handlerPackage : "src.main.java." + handlerPackage;
+        String serviceFolder = multipleModule ? "service.src.main.java." + handlerPackage : "src.main.java." + servicePackage;
+        String serverTestFolder = multipleModule ? "server.src.test.java." + handlerPackage : "src.test.java." + handlerPackage;
         for (Map<String, Object> op : operationList) {
             String className = op.get("handlerName").toString();
+            String serviceName = op.get("serviceName").toString();
+            Object requestModelNameObject = op.get("requestModelName");
+            String requestModelName = null;
+            if(requestModelNameObject != null) {
+                requestModelName = requestModelNameObject.toString();
+            }
             @SuppressWarnings("unchecked")
             List<Map> parameters = (List<Map>)op.get("parameters");
             Map<String, String> responseExample = (Map<String, String>)op.get("responseExample");
             String example = responseExample.get("example");
             String statusCode = responseExample.get("statusCode");
             statusCode = StringUtils.isBlank(statusCode) || statusCode.equals("default") ? "-1" : statusCode;
-            if (checkExist(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), className + ".java") && !overwriteHandler) {
+
+            transfer(targetPath, (serverFolder).replace(".", separator), className + ".java", templates.rest.handler.template(handlerPackage, modelPackage, className, serviceName, requestModelName, parameters));
+            if (checkExist(targetPath, (serviceFolder).replace(".", separator), serviceName + ".java") && !overwriteHandler) {
                 continue;
             }
-            transfer(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), className + ".java", templates.rest.handler.template(handlerPackage, className, statusCode, example, parameters));
+            transfer(targetPath, (serviceFolder).replace(".", separator), serviceName + ".java", templates.rest.handlerService.template(handlerPackage, modelPackage, serviceName, statusCode, requestModelName, example, parameters));
         }
 
         // handler test cases
         if (!specChangeCodeReGenOnly) {
-            transfer(targetPath, ("src.test.java." + handlerPackage + ".").replace(".", separator), "TestServer.java", templates.rest.testServer.template(handlerPackage));
+            transfer(targetPath, (serverTestFolder + ".").replace(".", separator), "TestServer.java", templates.rest.testServer.template(handlerPackage));
         }
-
         for (Map<String, Object> op : operationList) {
-            if (checkExist(targetPath, ("src.test.java." + handlerPackage).replace(".", separator), op.get("handlerName") + "Test.java") && !overwriteHandlerTest) {
+            if (checkExist(targetPath, (serverTestFolder).replace(".", separator), op.get("handlerName") + "Test.java") && !overwriteHandlerTest) {
                 continue;
             }
-            transfer(targetPath, ("src.test.java." + handlerPackage).replace(".", separator), op.get("handlerName") + "Test.java", templates.rest.openapi.handlerTest.template(handlerPackage, op));
+            transfer(targetPath, (serverTestFolder).replace(".", separator), op.get("handlerName") + "Test.java", templates.rest.handlerTest.template(handlerPackage, op));
         }
 
         // transfer binary files without touching them.
         try (InputStream is = OpenApiGenerator.class.getResourceAsStream("/binaries/server.keystore")) {
-            Generator.copyFile(is, Paths.get(targetPath, ("src.main.resources.config").replace(".", separator), "server.keystore"));
+            Generator.copyFile(is, Paths.get(targetPath, (configFolder).replace(".", separator), "server.keystore"));
         }
         try (InputStream is = OpenApiGenerator.class.getResourceAsStream("/binaries/server.truststore")) {
-            Generator.copyFile(is, Paths.get(targetPath, ("src.main.resources.config").replace(".", separator), "server.truststore"));
+            Generator.copyFile(is, Paths.get(targetPath, (configFolder).replace(".", separator), "server.truststore"));
         }
         if (supportClient) {
             try (InputStream is = OpenApiGenerator.class.getResourceAsStream("/binaries/client.keystore")) {
-                Generator.copyFile(is, Paths.get(targetPath, ("src.main.resources.config").replace(".", separator), "client.keystore"));
+                Generator.copyFile(is, Paths.get(targetPath, (configFolder).replace(".", separator), "client.keystore"));
             }
             try (InputStream is = OpenApiGenerator.class.getResourceAsStream("/binaries/client.truststore")) {
-                Generator.copyFile(is, Paths.get(targetPath, ("src.main.resources.config").replace(".", separator), "client.truststore"));
+                Generator.copyFile(is, Paths.get(targetPath, (configFolder).replace(".", separator), "client.truststore"));
             }
         } else {
             try (InputStream is = OpenApiGenerator.class.getResourceAsStream("/binaries/client.keystore")) {
-                Generator.copyFile(is, Paths.get(targetPath, ("src.test.resources.config").replace(".", separator), "client.keystore"));
+                Generator.copyFile(is, Paths.get(targetPath, (testConfigFolder).replace(".", separator), "client.keystore"));
             }
             try (InputStream is = OpenApiGenerator.class.getResourceAsStream("/binaries/client.truststore")) {
-                Generator.copyFile(is, Paths.get(targetPath, ("src.test.resources.config").replace(".", separator), "client.truststore"));
+                Generator.copyFile(is, Paths.get(targetPath, (testConfigFolder).replace(".", separator), "client.truststore"));
             }
         }
 
         try (InputStream is = new ByteArrayInputStream(Generator.yamlMapper.writeValueAsBytes(model))) {
-            Generator.copyFile(is, Paths.get(targetPath, ("src.main.resources.config").replace(".", separator), "openapi.yaml"));
+            Generator.copyFile(is, Paths.get(targetPath, (configFolder).replace(".", separator), "openapi.yaml"));
         }
     }
 
     ModelCallback callback = new ModelCallback() {
         @Override
-        public void callback(String targetPath, String modelPackage, String modelFileName, String enumsIfClass, String parentClassName, String classVarName, boolean abstractIfClass, List<Map<String, Object>> props, List<Map<String, Object>> parentClassProps) {
+        public void callback(boolean multipleModule, String targetPath, String modelPackage, String modelFileName, String enumsIfClass, String parentClassName, String classVarName, boolean abstractIfClass, List<Map<String, Object>> props, List<Map<String, Object>> parentClassProps) {
             try {
                 transfer(targetPath,
-                        ("src.main.java." + modelPackage).replace(".", separator),
+                        ((multipleModule ? "model.src.main.java." : "src.main.java.") + modelPackage).replace(".", separator),
                         modelFileName + ".java",
                         enumsIfClass == null
                                 ? templates.rest.pojo.template(modelPackage, modelFileName, parentClassName, classVarName, abstractIfClass, props, parentClassProps)

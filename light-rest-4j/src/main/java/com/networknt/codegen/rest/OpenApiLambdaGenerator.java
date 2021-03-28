@@ -50,6 +50,7 @@ public class OpenApiLambdaGenerator implements OpenApiGenerator {
         String rootPackage = getRootPackage(config, null);
         String modelPackage = getModelPackage(config, null);
         String handlerPackage = getHandlerPackage(config, null);
+        String servicePackage = getServicePackage(config, null);
         boolean overwriteHandler = isOverwriteHandler(config, null);
         boolean overwriteHandlerTest = isOverwriteHandlerTest(config, null);
         boolean overwriteModel = isOverwriteModel(config, null);
@@ -76,6 +77,7 @@ public class OpenApiLambdaGenerator implements OpenApiGenerator {
         boolean supportAvro = isSupportAvro(config, null);
         String kafkaTopic = getKafkaTopic(config, null);
         String decryptOption = getDecryptOption(config, null);
+        boolean multipleModule = isMultipleModule(config, null);
 
         // get the list of operations for this model
         List<Map<String, Object>> operationList = getOperationList(model, config);
@@ -146,7 +148,7 @@ public class OpenApiLambdaGenerator implements OpenApiGenerator {
             transfer(targetPath, "proxy", "proxy.yml", templates.lambda.proxy.proxy.template());
 
             // exclusion list for Config module
-            transfer(targetPath, "proxy", "config.yml", templates.rest.openapi.config.template(config));
+            transfer(targetPath, "proxy", "config.yml", templates.rest.config.template(config));
 
             transfer(targetPath, "proxy", "audit.yml", templates.rest.auditYml.template());
             transfer(targetPath, "proxy", "body.yml", templates.rest.bodyYml.template());
@@ -157,7 +159,7 @@ public class OpenApiLambdaGenerator implements OpenApiGenerator {
             transfer(targetPath, "proxy", "traceability.yml", templates.rest.traceabilityYml.template());
             transfer(targetPath, "proxy", "health.yml", templates.rest.healthYml.template());
             // values.yml file, transfer to suppress the warning message during start startup and encourage usage.
-            transfer(targetPath, "proxy", "values.yml", templates.rest.openapi.values.template());
+            transfer(targetPath, "proxy", "values.yml", templates.rest.values.template());
             // buildSh.rocker.raw for the docker image build
             transfer(targetPath, "", "build.sh", templates.lambda.buildSh.template());
             // Dockerfile for the proxy
@@ -235,7 +237,7 @@ public class OpenApiLambdaGenerator implements OpenApiGenerator {
                     ArrayList<Runnable> modelCreators = new ArrayList<>();
                     final HashMap<String, Object> references = new HashMap<>();
                     for (Map.Entry<String, Object> entry : schemas.entrySet()) {
-                        loadModel(entry.getKey(), null, (Map<String, Object>)entry.getValue(), schemas, overwriteModel, targetPath +  separator + functionName, modelPackage, modelCreators, references, null, callback);
+                        loadModel(multipleModule, entry.getKey(), null, (Map<String, Object>)entry.getValue(), schemas, overwriteModel, targetPath +  separator + functionName, modelPackage, modelCreators, references, null, callback);
                     }
 
                     for (Runnable r : modelCreators) {
@@ -394,7 +396,7 @@ public class OpenApiLambdaGenerator implements OpenApiGenerator {
 
     ModelCallback callback = new ModelCallback() {
         @Override
-        public void callback(String targetPath, String modelPackage, String modelFileName, String enumsIfClass, String parentClassName, String classVarName, boolean abstractIfClass, List<Map<String, Object>> props, List<Map<String, Object>> parentClassProps) {
+        public void callback(boolean multipleModule, String targetPath, String modelPackage, String modelFileName, String enumsIfClass, String parentClassName, String classVarName, boolean abstractIfClass, List<Map<String, Object>> props, List<Map<String, Object>> parentClassProps) {
             try {
                 transfer(targetPath,
                         ("src.main.java." + modelPackage).replace(".", separator),

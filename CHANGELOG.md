@@ -1,5 +1,20 @@
 # Change Log
 
+## [2.0.25](https://github.com/networknt/light-codegen/tree/2.0.25) (2021-03-28)
+
+
+**Merged pull requests:**
+
+
+- Fix/\#554 model module is not creating correct path [\#555](https://github.com/networknt/light-codegen/pull/555) ([BalloonWen](https://github.com/BalloonWen))
+- fixes \#552 update the TestServer in the generator template [\#553](https://github.com/networknt/light-codegen/pull/553) ([stevehu](https://github.com/stevehu))
+- Issue548 [\#549](https://github.com/networknt/light-codegen/pull/549) ([stevehu](https://github.com/stevehu))
+- fixes \#546 upgrade to gradle from 5.2.1 to 6.8.3 in rest [\#547](https://github.com/networknt/light-codegen/pull/547) ([stevehu](https://github.com/stevehu))
+- fixes \#540 give users an option to use Gradle vs Maven [\#545](https://github.com/networknt/light-codegen/pull/545) ([stevehu](https://github.com/stevehu))
+- fixes \#541 separate the model, rest and domain to three modules in th… [\#544](https://github.com/networknt/light-codegen/pull/544) ([stevehu](https://github.com/stevehu))
+- fixes \#542 remove the openapi sub folder from rest as only OpenAPI 3.… [\#543](https://github.com/networknt/light-codegen/pull/543) ([stevehu](https://github.com/stevehu))
+
+
 ## [2.0.24](https://github.com/networknt/light-codegen/tree/2.0.24) (2021-02-24)
 
 

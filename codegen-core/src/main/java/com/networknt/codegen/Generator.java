@@ -212,6 +212,18 @@ public interface Generator {
         return handlerPackage;
     }
 
+    default String getServicePackage(JsonNode config, String defaultValue) {
+        String rootPackage = getRootPackage(config, null);
+        String servicePackage = defaultValue == null ? rootPackage + ".service" : defaultValue;
+        JsonNode jsonNode = config.get("servicePackage");
+        if(jsonNode == null) {
+            ((ObjectNode)config).put("servicePackage", servicePackage);
+        } else {
+            servicePackage = jsonNode.textValue();
+        }
+        return servicePackage;
+    }
+
     default boolean isOverwriteHandler(JsonNode config, Boolean defaultValue) {
         boolean overwriteHandler = defaultValue == null ? true : defaultValue;
         JsonNode jsonNode = config.get("overwriteHandler");
@@ -499,8 +511,7 @@ public interface Generator {
     }
 
     default boolean isBuildMaven(JsonNode config, Boolean defaultValue) {
-        // TODO once all generators support Gradle, make the default to false.
-        boolean buildMaven = defaultValue == null ? true : defaultValue;
+        boolean buildMaven = defaultValue == null ? false : defaultValue;
         JsonNode jsonNode = config.get("buildMaven");
         if(jsonNode == null) {
             ((ObjectNode)config).put("buildMaven", buildMaven);
@@ -509,4 +520,38 @@ public interface Generator {
         }
         return buildMaven;
     }
+
+    default boolean isMultipleModule(JsonNode config, Boolean defaultValue) {
+        boolean multipleModule = defaultValue == null ? false : defaultValue;
+        JsonNode jsonNode = config.get("multipleModule");
+        if(jsonNode == null) {
+            ((ObjectNode)config).put("multipleModule", multipleModule);
+        } else {
+            multipleModule = jsonNode.booleanValue();
+        }
+        return multipleModule;
+    }
+
+    default boolean isSupportDb(JsonNode config, Boolean defaultValue) {
+        boolean supportDb = defaultValue == null ? false : defaultValue;
+        JsonNode jsonNode = config.get("supportDb");
+        if(jsonNode == null) {
+            ((ObjectNode)config).put("supportDb", supportDb);
+        } else {
+            supportDb = jsonNode.booleanValue();
+        }
+        return supportDb;
+    }
+
+    default boolean isSupportH2ForTest(JsonNode config, Boolean defaultValue) {
+        boolean supportH2ForTest = defaultValue == null ? false : defaultValue;
+        JsonNode jsonNode = config.get("supportH2ForTest");
+        if(jsonNode == null) {
+            ((ObjectNode)config).put("supportH2ForTest", supportH2ForTest);
+        } else {
+            supportH2ForTest = jsonNode.booleanValue();
+        }
+        return supportH2ForTest;
+    }
+
 }

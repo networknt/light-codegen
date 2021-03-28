@@ -1,0 +1,38 @@
+@import org.apache.commons.text.StringEscapeUtils
+@import java.util.Map
+@import java.util.List
+@option discardLogicWhitespace=true
+@args (String handlerPackage, String modelPackage, String serviceName, String statusCode, String requestModelName, String example, List<Map> parameters)
+package @handlerPackage;
+
+import com.networknt.http.HttpStatus;
+import com.networknt.http.MediaType;
+import com.networknt.http.RequestEntity;
+import com.networknt.http.ResponseEntity;
+import com.networknt.http.HttpService;
+@if(requestModelName != null){import @modelPackage.@requestModelName;}
+import io.undertow.util.HeaderMap;
+import io.undertow.util.Headers;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class @serviceName implements HttpService<@if(requestModelName != null ){@requestModelName, String}else{Void, String}> {
+    private static final Logger logger = LoggerFactory.getLogger(@with(loggerName = serviceName + ".class"){@loggerName});
+
+    @@Override
+    public ResponseEntity invoke(RequestEntity<@if(requestModelName != null){@requestModelName}else{Void}> requestEntity) {
+        @if(requestModelName != null) {
+        @requestModelName requestBody = requestEntity.getBody();
+        logger.debug(requestBody.toString());
+        }
+        HeaderMap responseHeaders = new HeaderMap();
+        responseHeaders.add(Headers.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+        @if(example != null) {
+        @with (e = StringEscapeUtils.escapeJson(example)) {String body = "@e";}
+        } else {
+        String body = "";
+        }
+        ResponseEntity<String> responseEntity = new ResponseEntity<>(body, responseHeaders, HttpStatus.OK);
+        return responseEntity;
+    }
+}
