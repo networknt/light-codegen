@@ -4,6 +4,7 @@
     @with (v = prop.get("nameWithEnum") + ".values()", value = (Map)prop.get("value")) {
     public enum @prop.get("nameWithEnum") {
         @for((i, key, item) :  value) {
+        @@JsonProperty("@item")
         @if (!(Boolean)prop.get("isNumEnum")) {@if (i.index() <  value.size() - 1) {@key ("@item"),}@if(i.index() == value.size() - 1) {@key ("@item");}} @if ((Boolean)prop.get("isNumEnum")) {@if (i.index() <  value.size() - 1) {@key (new @prop.get("type")("@item")),}@if(i.index() == value.size() - 1) {@key (new @prop.get("type")("@item"));}}
         }
 
