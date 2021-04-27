@@ -277,7 +277,7 @@ public interface OpenApiGenerator extends Generator {
 
     default String getScopes(Operation operation) {
         String scopes = null;
-        if(operation.hasSecurityRequirements()) {
+        if(operation.hasSecurityRequirements() && operation.getSecurityRequirements().size() != 0) {
             SecurityRequirement securityRequirement = operation.getSecurityRequirement(0);
             if(securityRequirement != null) {
                 Map<String, SecurityParameter> requirements = securityRequirement.getRequirements();
