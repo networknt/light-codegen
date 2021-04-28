@@ -1,5 +1,14 @@
 # Change Log
 
+## [2.0.26](https://github.com/networknt/light-codegen/tree/2.0.26) (2021-04-27)
+
+
+**Merged pull requests:**
+
+
+- fix \#564 avoid security list empty [\#565](https://github.com/networknt/light-codegen/pull/565) ([BalloonWen](https://github.com/BalloonWen))
+- fix \#560 tests with gradle [\#561](https://github.com/networknt/light-codegen/pull/561) ([BalloonWen](https://github.com/BalloonWen))
+- fix \#557 json property in enum [\#559](https://github.com/networknt/light-codegen/pull/559) ([BalloonWen](https://github.com/BalloonWen))
 ## [2.0.25](https://github.com/networknt/light-codegen/tree/2.0.25) (2021-03-28)
 
 
