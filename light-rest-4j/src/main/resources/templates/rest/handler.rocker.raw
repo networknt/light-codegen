@@ -2,11 +2,12 @@
 @import java.util.Map
 @import java.util.List
 @option discardLogicWhitespace=true
-@args (String handlerPackage, String modelPackage, String className, String serviceName, String requestModelName, List<Map> parameters)
+@args (String handlerPackage, String servicePackage, String modelPackage, String className, String serviceName, String requestModelName, List<Map> parameters)
 package @handlerPackage;
 
 import com.networknt.body.BodyHandler;
 import com.networknt.config.Config;
+import @servicePackage.@serviceName;
 import com.networknt.handler.LightHttpHandler;
 import com.networknt.http.HttpMethod;
 import com.networknt.http.RequestEntity;
