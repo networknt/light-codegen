@@ -1,5 +1,15 @@
 # Change Log
 
+## [2.0.28](https://github.com/networknt/light-codegen/tree/2.0.28) (2021-06-27)
+
+
+**Merged pull requests:**
+
+
+- fixes \#579 update test cases to leverage Http2Client connection pool [\#580](https://github.com/networknt/light-codegen/pull/580) ([stevehu](https://github.com/stevehu))
+- fixes \#577 fix the handleTest template with http and http2 enabled [\#578](https://github.com/networknt/light-codegen/pull/578) ([stevehu](https://github.com/stevehu))
+- fixes \#575 Remove the first empty line in the pom.xml generated [\#576](https://github.com/networknt/light-codegen/pull/576) ([stevehu](https://github.com/stevehu))
+- fixes \#573 Resolve the service package name for the OpenApiLightGener… [\#574](https://github.com/networknt/light-codegen/pull/574) ([stevehu](https://github.com/stevehu))
 ## [2.0.27](https://github.com/networknt/light-codegen/tree/2.0.27) (2021-05-25)
 
 

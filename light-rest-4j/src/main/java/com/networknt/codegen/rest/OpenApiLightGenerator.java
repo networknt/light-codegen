@@ -235,7 +235,7 @@ public class OpenApiLightGenerator implements OpenApiGenerator {
 
         // handler
         String serverFolder = multipleModule ? "server.src.main.java." + handlerPackage : "src.main.java." + handlerPackage;
-        String serviceFolder = multipleModule ? "service.src.main.java." + handlerPackage : "src.main.java." + servicePackage;
+        String serviceFolder = multipleModule ? "service.src.main.java." + servicePackage : "src.main.java." + servicePackage;
         String serverTestFolder = multipleModule ? "server.src.test.java." + handlerPackage : "src.test.java." + handlerPackage;
         for (Map<String, Object> op : operationList) {
             String className = op.get("handlerName").toString();
@@ -252,11 +252,11 @@ public class OpenApiLightGenerator implements OpenApiGenerator {
             String statusCode = responseExample.get("statusCode");
             statusCode = StringUtils.isBlank(statusCode) || statusCode.equals("default") ? "-1" : statusCode;
 
-            transfer(targetPath, (serverFolder).replace(".", separator), className + ".java", templates.rest.handler.template(handlerPackage, modelPackage, className, serviceName, requestModelName, parameters));
+            transfer(targetPath, (serverFolder).replace(".", separator), className + ".java", templates.rest.handler.template(handlerPackage, servicePackage, modelPackage, className, serviceName, requestModelName, parameters));
             if (checkExist(targetPath, (serviceFolder).replace(".", separator), serviceName + ".java") && !overwriteHandler) {
                 continue;
             }
-            transfer(targetPath, (serviceFolder).replace(".", separator), serviceName + ".java", templates.rest.handlerService.template(handlerPackage, modelPackage, serviceName, statusCode, requestModelName, example, parameters));
+            transfer(targetPath, (serviceFolder).replace(".", separator), serviceName + ".java", templates.rest.handlerService.template(servicePackage, modelPackage, serviceName, statusCode, requestModelName, example, parameters));
         }
 
         // handler test cases
