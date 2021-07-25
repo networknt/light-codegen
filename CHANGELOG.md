@@ -7,6 +7,8 @@
 
 
 - fixes \#583 update TestServer to replace Server.config with Server.get… [\#584](https://github.com/networknt/light-codegen/pull/584) ([stevehu](https://github.com/stevehu))
+
+
 ## [2.0.28](https://github.com/networknt/light-codegen/tree/2.0.28) (2021-06-27)
 
 
