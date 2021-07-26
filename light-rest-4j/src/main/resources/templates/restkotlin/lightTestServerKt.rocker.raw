@@ -43,20 +43,20 @@ class LightTestServer() : BeforeAllCallback, AfterAllCallback {
     var oldIsDynamicPort: Boolean? = null
     var oldHttpsPort: Int? = null
 
-    // Patch Server.config and start server
+    // Patch server config and start server
     override fun beforeAll(context: ExtensionContext?) {
-        oldIsDynamicPort = Server.config.isDynamicPort
-        oldHttpsPort = Server.config.httpsPort
-        Server.config.isDynamicPort = false
-        Server.config.httpsPort = httpsPort
+        oldIsDynamicPort = Server.getServerConfig().isDynamicPort
+        oldHttpsPort = Server.getServerConfig().httpsPort
+        Server.getServerConfig().isDynamicPort = false
+        Server.getServerConfig().httpsPort = httpsPort
         Server.init()
     }
 
-    // Stop server and unpatch config
+    // Stop server and unpatch server config
     override fun afterAll(context: ExtensionContext?) {
         Server.stop()
-        Server.config.isDynamicPort = oldIsDynamicPort!!
-        Server.config.httpsPort = oldHttpsPort!!
+        Server.getServerConfig().isDynamicPort = oldIsDynamicPort!!
+        Server.getServerConfig().httpsPort = oldHttpsPort!!
     }
 
     companion object {
