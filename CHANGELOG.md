@@ -1,5 +1,12 @@
 # Change Log
 
+## [2.0.30](https://github.com/networknt/light-codegen/tree/2.0.30) (2021-08-23)
+
+
+**Merged pull requests:**
+
+
+- fixes \#588 Update buildSh.rocker.raw to add -a for docker push [\#589](https://github.com/networknt/light-codegen/pull/589) ([stevehu](https://github.com/stevehu))
 ## [2.0.29](https://github.com/networknt/light-codegen/tree/2.0.29) (2021-07-25)
 
 
