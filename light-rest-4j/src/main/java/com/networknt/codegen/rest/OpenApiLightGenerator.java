@@ -196,7 +196,7 @@ public class OpenApiLightGenerator implements OpenApiGenerator {
                 // values.yml file, transfer to suppress the warning message during start startup and encourage usage.
                 transfer(targetPath, (configFolder).replace(".", separator), "values.yml", templates.rest.values.template());
                 // add portal-registry.yml
-                transfer(targetPath, (configFolder).replace(".", separator), "portal-registry.yml", templates.rest.portalRegistryYml.template());
+                transfer(targetPath, (configFolder).replace(".", separator), "portal-registry.yml", templates.rest.portalRegistryYml.template(serviceId));
             }
             // routing handler
             transfer(targetPath, (configFolder).replace(".", separator), "handler.yml",
