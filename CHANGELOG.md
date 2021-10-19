@@ -1,5 +1,15 @@
 # Change Log
 
+## [2.0.32](https://github.com/networknt/light-codegen/tree/2.0.32) (2021-10-19)
+
+
+**Merged pull requests:**
+
+
+- fixes \#599 update healthPath to remove serviceId in portal-registry.yml [\#600](https://github.com/networknt/light-codegen/pull/600) ([stevehu](https://github.com/stevehu))
+- fixes \#597 add exec to the java command line in the Dockerfile [\#598](https://github.com/networknt/light-codegen/pull/598) ([stevehu](https://github.com/stevehu))
+
+
 ## [2.0.31](https://github.com/networknt/light-codegen/tree/2.0.31) (2021-09-22)
 
 
