@@ -43,7 +43,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @@Disabled
 @@ExtendWith(TestServer.class)
 public class @className {
-    @@ClassRule
+
     public static TestServer server = TestServer.getInstance();
 
     static final Logger logger = LoggerFactory.getLogger(@loggerName);
