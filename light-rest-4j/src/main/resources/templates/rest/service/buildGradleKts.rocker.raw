@@ -21,6 +21,3 @@ dependencies {
     testImplementation("org.junit.jupiter", "junit-jupiter", junitVersion)
 }
 
-test {
-    useJUnitPlatform()
-}

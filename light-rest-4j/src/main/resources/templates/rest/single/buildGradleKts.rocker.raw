@@ -94,9 +94,6 @@ dependencies {
     }
 }
 
-test {
-    useJUnitPlatform()
-}
 
 @with(groupId = config.get("groupId").textValue()){group = "@groupId"}
 @with(version = config.get("version").textValue()){version = "@version"}

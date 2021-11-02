@@ -104,10 +104,6 @@ val fatJar = task("fatJar", type = Jar::class) {
     with(tasks["jar"] as CopySpec)
 }
 
-test {
-    useJUnitPlatform()
-}
-
 tasks {
     "build" {
         dependsOn(fatJar)

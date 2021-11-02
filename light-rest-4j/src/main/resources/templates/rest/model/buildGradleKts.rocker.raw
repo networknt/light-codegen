@@ -12,7 +12,3 @@ dependencies {
     val junitVersion: String by project
     testImplementation("org.junit.jupiter", "junit-jupiter", junitVersion)
 }
-
-test {
-    useJUnitPlatform()
-}
