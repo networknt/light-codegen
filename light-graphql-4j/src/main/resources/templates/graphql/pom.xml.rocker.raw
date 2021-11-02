@@ -17,7 +17,7 @@
         <version.slf4j>1.7.25</version.slf4j>
         <version.jose4j>0.6.3</version.jose4j>
         <version.logback>1.2.3</version.logback>
-        <version.junit>4.12</version.junit>
+        <version.junit>5.8.1</version.junit>
         <version.undertow>2.2.4.Final</version.undertow>
         <version.graphql>13.0</version.graphql>
         <version.rxjava>2.1.5</version.rxjava>
@@ -256,8 +256,8 @@
         }
         <!-- Test Dependencies -->
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
             <version>${version.junit}</version>
             <scope>test</scope>
         </dependency>
@@ -308,9 +308,14 @@
                 <version>${version.maven-surefire}</version>
                 <dependencies>
                     <dependency>
-                        <groupId>org.apache.maven.surefire</groupId>
-                        <artifactId>surefire-junit47</artifactId>
-                        <version>${version.maven-surefire}</version>
+                        <groupId>org.junit.platform</groupId>
+                        <artifactId>junit-platform-surefire-provider</artifactId>
+                        <version>1.2.0</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.junit.jupiter</groupId>
+                        <artifactId>junit-jupiter</artifactId>
+                        <version>${version.junit}</version>
                     </dependency>
                 </dependencies>
             </plugin>
