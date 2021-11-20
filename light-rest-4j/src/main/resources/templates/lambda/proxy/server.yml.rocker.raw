@@ -5,48 +5,48 @@
 ip: 0.0.0.0
 
 # Http port if enableHttp is true. It will be ignored if dynamicPort is true.
-httpPort: 8080
+httpPort: ${server.httpPort:8080}
 
 # Enable HTTP should be false by default. It should be only used for testing with clients or tools
 # that don't support https or very hard to import the certificate. Otherwise, https should be used.
 # When enableHttp, you must set enableHttps to false, otherwise, this flag will be ignored. There is
 # only one protocol will be used for the server at anytime. If both http and https are true, only
 # https listener will be created and the server will bind to https port only.
-enableHttp: true
+enableHttp: ${server.enableHttp:false}
 
 # Https port if enableHttps is true. It will be ignored if dynamicPort is true.
-httpsPort: 8443
+httpsPort: ${server.httpsPort:8443}
 
 # Enable HTTPS should be true on official environment and most dev environments.
-enableHttps: false
+enableHttps: ${server.enableHttps:true}
 
 # Http/2 is enabled by default for better performance and it works with the client module
 # Please note that HTTP/2 only works with HTTPS.
-enableHttp2: false
+enableHttp2: ${server.enableHttp2:true}
 
 # Keystore file name in config folder.
-keystoreName: server.keystore
+keystoreName: ${server.keystoreName:server.keystore}
 
 # Keystore password
-keystorePass: password
+keystorePass: ${server.keystorePass:password}
 
 # Private key password
-keyPass: password
+keyPass: ${server.keyPass:password}
 
 # Flag that indicate if two way TLS is enabled. Not recommended in docker container.
-enableTwoWayTls: false
+enableTwoWayTls: ${server.enableTwoWayTls:false}
 
 # Truststore file name in config folder.
-truststoreName: server.truststore
+truststoreName: ${server.truststoreName:server.truststore}
 
 # Truststore password
-truststorePass: password
+truststorePass: ${server.truststorePass:password}
 
 # Bootstrap truststore name used to connect to the light-config-server if it is used.
-bootstrapStoreName: bootstrap.truststore
+bootstrapStoreName: ${server.bootstrapStoreName:bootstrap.truststore}
 
 # Bootstrap truststore password
-bootstrapStorePass: password
+bootstrapStorePass: ${server.bootstrapStorePass:password}
 
 # Unique service identifier. Used in service registration and discovery etc.
 serviceId: ${server.serviceId:@serviceId}
@@ -82,6 +82,11 @@ maxPort: ${server.maxPort:2500}
 # Build Number, to be set by teams for auditing or tracing purposes. 
 # Allows teams to audit the value and set it according to their release management process
 buildNumber: ${server.buildNumber:@version}
+
+# Shutdown gracefully wait period in milliseconds
+# In this period, it allows the in-flight requests to complete but new requests are not allowed. It needs to be set
+# based on the slowest request possible.
+shutdownGracefulPeriod: ${server.shutdownGracefulPeriod:2000}
 
 # -----------------------------------------------------------------------------------------------------------
 # The following parameters are for advanced users to fine tune the service in a container environment. Please leave
