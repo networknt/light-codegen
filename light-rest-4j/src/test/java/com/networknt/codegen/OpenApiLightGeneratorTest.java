@@ -9,14 +9,14 @@ import java.util.List;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.networknt.codegen.rest.OpenApiLightGenerator;
 import com.networknt.config.Config;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeAll;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.networknt.codegen.rest.OpenApiGenerator;
 
-import static org.junit.Assert.assertTrue;
+
 
 /**
  * @author Steve Hu
@@ -35,7 +35,7 @@ public class OpenApiLightGeneratorTest {
     public static String openapiNoServersYaml = "/openapi-noServers.yaml";
     public static String packageName = "com.networknt.petstore.model";
 
-    @BeforeClass
+    @BeforeAll
     public static void setUp() throws IOException {
         // create the output directory
         Files.createDirectories(Paths.get(targetPath));
@@ -90,14 +90,14 @@ public class OpenApiLightGeneratorTest {
     @Test
     public void testGetFramework() {
         OpenApiLightGenerator generator = new OpenApiLightGenerator();
-        Assert.assertEquals("openapi", generator.getFramework());
+        assertEquals("openapi", generator.getFramework());
     }
 
     @Test
     public void testGetConfigSchema() throws IOException {
         OpenApiLightGenerator generator = new OpenApiLightGenerator();
         ByteBuffer bf = generator.getConfigSchema();
-        Assert.assertNotNull(bf);
+        assertNotNull(bf);
         System.out.println(bf.toString());
     }
     @Test
@@ -114,7 +114,7 @@ public class OpenApiLightGeneratorTest {
         String[] validVariableNames = {"na_me", "_new", "_1", "_1_1", "n_a"};
         for (int i = 0; i < invalidVariableNames.length; i++) {
             String string = OpenApiGenerator.convertToValidJavaVariableName(invalidVariableNames[i]);
-            Assert.assertEquals(validVariableNames[i], string);
+            assertEquals(validVariableNames[i], string);
         }
     }
 
@@ -127,7 +127,7 @@ public class OpenApiLightGeneratorTest {
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void testGeneratorYamlError() throws IOException {
         JsonNode configNode = Generator.jsonMapper.readTree(OpenApiLightGeneratorTest.class.getResourceAsStream(configName));
         JsonNode modelNode = Generator.yamlMapper.readTree(OpenApiLightGeneratorTest.class.getResourceAsStream(openapiErrorYaml));
@@ -152,6 +152,6 @@ public class OpenApiLightGeneratorTest {
         if (pathIndex > 0) {
             basePath = url.substring(pathIndex);
         }
-        Assert.assertEquals("/service", basePath);
+        assertEquals("/service", basePath);
     }
 }

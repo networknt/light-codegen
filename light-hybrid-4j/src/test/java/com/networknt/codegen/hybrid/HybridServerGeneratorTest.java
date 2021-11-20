@@ -3,9 +3,9 @@ package com.networknt.codegen.hybrid;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.networknt.codegen.Generator;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeAll;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -21,7 +21,7 @@ public class HybridServerGeneratorTest {
 
     ObjectMapper mapper = new ObjectMapper();
 
-    @BeforeClass
+    @BeforeAll
     public static void setUp() throws IOException {
         // create the output directory
         Files.createDirectories(Paths.get(targetPath));
@@ -42,13 +42,13 @@ public class HybridServerGeneratorTest {
     @Test
     public void testGetFramework() {
         HybridServerGenerator generator = new HybridServerGenerator();
-        Assert.assertEquals("light-hybrid-4j-server", generator.getFramework());
+        assertEquals("light-hybrid-4j-server", generator.getFramework());
     }
 
     @Test
     public void testGetConfigSchema() throws IOException {
         HybridServerGenerator generator = new HybridServerGenerator();
-        Assert.assertNotNull(generator.getConfigSchema());
+        assertNotNull(generator.getConfigSchema());
         System.out.println(generator.getConfigSchema().toString());
     }
 }

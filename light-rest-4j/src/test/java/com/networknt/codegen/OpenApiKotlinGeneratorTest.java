@@ -2,9 +2,9 @@ package com.networknt.codegen;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.networknt.codegen.rest.OpenApiKotlinGenerator;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeAll;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -18,7 +18,7 @@ public class OpenApiKotlinGeneratorTest {
     public static String openapiYaml = "/openapi.yaml";
     public static String openapiNoServersYaml = "/openapi-noServers.yaml";
 
-    @BeforeClass
+    @BeforeAll
     public static void setUp() throws IOException {
         // create the output directory
         Files.createDirectories(Paths.get(targetPath));
@@ -57,14 +57,14 @@ public class OpenApiKotlinGeneratorTest {
     @Test
     public void testGetFramework() {
         OpenApiKotlinGenerator generator = new OpenApiKotlinGenerator();
-        Assert.assertEquals("openapikotlin", generator.getFramework());
+        assertEquals("openapikotlin", generator.getFramework());
     }
 
     @Test
     public void testGetConfigSchema() throws IOException {
         OpenApiKotlinGenerator generator = new OpenApiKotlinGenerator();
         ByteBuffer bf = generator.getConfigSchema();
-        Assert.assertNotNull(bf);
+        assertNotNull(bf);
         System.out.println(bf.toString());
     }
     @Test

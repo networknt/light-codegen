@@ -1,9 +1,8 @@
 package com.networknt.codegen;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,14 +13,14 @@ import java.util.Map;
 public class UtilsTest {
 
 
-    Map<String, String> camelToUnderscore_ = new HashMap<>();
-    Map<String, String> underscoreToLowerCamel_ = new HashMap<>();
-    Map<String, String> underscoreToCamel_ = new HashMap<>();
-    Map<String, String> slashToCamel_ = new HashMap<>();
-    Map<String, String> dashToCamel_ = new HashMap<>();
+    static  Map<String, String> camelToUnderscore_ = new HashMap<>();
+    static  Map<String, String> underscoreToLowerCamel_ = new HashMap<>();
+    static Map<String, String> underscoreToCamel_ = new HashMap<>();
+    static Map<String, String> slashToCamel_ = new HashMap<>();
+    static Map<String, String> dashToCamel_ = new HashMap<>();
 
-    @Before
-    public void setUp() {
+    @BeforeAll
+    public static void setUp() {
 
         camelToUnderscore_.put("Product", "product");
         camelToUnderscore_.put("SpecialGuest", "special_guest");
@@ -49,7 +48,7 @@ public class UtilsTest {
     @Test
     public void testUnderscoreToLowerCamel() {
         for (Map.Entry<String, String> entry : underscoreToLowerCamel_.entrySet()) {
-            Assert.assertEquals(entry.getValue(), Utils.camelize(entry.getKey(), true));
+            assertEquals(entry.getValue(), Utils.camelize(entry.getKey(), true));
         }
 
     }
@@ -57,7 +56,7 @@ public class UtilsTest {
     @Test
     public void testUnderscoreToCamel() {
         for (Map.Entry<String, String> entry : underscoreToCamel_.entrySet()) {
-            Assert.assertEquals(entry.getValue(), Utils.camelize(entry.getKey()));
+            assertEquals(entry.getValue(), Utils.camelize(entry.getKey()));
         }
 
     }
@@ -65,7 +64,7 @@ public class UtilsTest {
     @Test
     public void testSlashToCamel() {
         for (Map.Entry<String, String> entry : slashToCamel_.entrySet()) {
-            Assert.assertEquals(entry.getValue(), Utils.camelize(entry.getKey()));
+            assertEquals(entry.getValue(), Utils.camelize(entry.getKey()));
         }
 
     }
@@ -73,14 +72,14 @@ public class UtilsTest {
     @Test
     public void testCamelToUnderscore() {
         for (Map.Entry<String, String> entry : camelToUnderscore_.entrySet()) {
-            Assert.assertEquals(entry.getKey(), Utils.camelize(entry.getValue()));
+            assertEquals(entry.getKey(), Utils.camelize(entry.getValue()));
         }
     }
 
     @Test
     public void testDashToCamel() {
         for (Map.Entry<String, String> entry : dashToCamel_.entrySet()) {
-            Assert.assertEquals(entry.getValue(), Utils.camelize(entry.getKey()));
+            assertEquals(entry.getValue(), Utils.camelize(entry.getKey()));
         }
     }
 
