@@ -58,6 +58,7 @@ public class HybridServiceGenerator implements HybridGenerator {
         boolean skipPomFile = isSkipPomFile(config, null);
         boolean kafkaProducer = isKafkaProducer(config, null);
         boolean kafkaConsumer = isKafkaConsumer(config, null);
+        boolean kafkaStreams = isKafkaStreams(config, null);
         boolean supportAvro = isSupportAvro(config, null);
         boolean useLightProxy = isUseLightProxy(config, null);
         String kafkaTopic = getKafkaTopic(config, null);
@@ -93,6 +94,9 @@ public class HybridServiceGenerator implements HybridGenerator {
             transfer(targetPath, ("src.test.resources.config").replace(".", separator), "kafka-producer.yml", templates.hybrid.kafkaProducerYml.template(kafkaTopic));
         }
         if(kafkaConsumer) {
+            transfer(targetPath, ("src.test.resources.config").replace(".", separator), "kafka-consumer.yml", templates.hybrid.kafkaConsumerYml.template(kafkaTopic));
+        }
+        if(kafkaStreams) {
             transfer(targetPath, ("src.test.resources.config").replace(".", separator), "kafka-streams.yml", templates.hybrid.kafkaStreamsYml.template(artifactId));
         }
 

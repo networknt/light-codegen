@@ -477,6 +477,17 @@ public interface Generator {
         return kafkaConsumer;
     }
 
+    default boolean isKafkaStreams(JsonNode config, Boolean defaultValue) {
+        boolean kafkaStreams = defaultValue == null ? false : defaultValue;
+        JsonNode jsonNode = config.get("kafkaStreams");
+        if(jsonNode == null) {
+            ((ObjectNode)config).put("kafkaStreams", kafkaStreams);
+        } else {
+            kafkaStreams = jsonNode.booleanValue();
+        }
+        return kafkaStreams;
+    }
+
     default boolean isSupportAvro(JsonNode config, Boolean defaultValue) {
         boolean supportAvro = defaultValue == null ? false : defaultValue;
         JsonNode jsonNode = config.get("supportAvro");
