@@ -18,6 +18,5 @@ dependencies {
     val logbackVersion: String by project
     compile("ch.qos.logback", "logback-classic", logbackVersion)
     val junitVersion: String by project
-    testImplementation("org.junit.jupiter", "junit-jupiter", junitVersion)
+    testImplementation("junit", "junit", junitVersion)
 }
-

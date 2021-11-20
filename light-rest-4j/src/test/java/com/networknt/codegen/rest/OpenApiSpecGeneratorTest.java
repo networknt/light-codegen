@@ -4,12 +4,12 @@ import java.io.IOException;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.networknt.codegen.Generator;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
+import org.junit.Ignore;
+import org.junit.Test;
 
 import com.networknt.codegen.OpenApiLightGeneratorTest;
 
-@Disabled
+@Ignore
 public class OpenApiSpecGeneratorTest {
 	private static final String configName = "/config.json";
 	private static final String outputDir = "/tmp/codegen/";

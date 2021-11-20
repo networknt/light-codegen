@@ -1,6 +1,8 @@
 package com.networknt.codegen;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.junit.Ignore;
+import org.junit.Test;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -11,11 +13,9 @@ import java.util.Map;
 import java.util.Set;
 
 import static java.io.File.separator;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.assertTrue;
 
-@Disabled
+@Ignore
 public class YAMLFileParameterizerTest {
 	private static String configName = "/config.json";
 
