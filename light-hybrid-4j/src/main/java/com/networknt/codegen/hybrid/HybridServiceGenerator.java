@@ -95,9 +95,6 @@ public class HybridServiceGenerator implements HybridGenerator {
         if(kafkaConsumer) {
             transfer(targetPath, ("src.test.resources.config").replace(".", separator), "kafka-streams.yml", templates.hybrid.kafkaStreamsYml.template(artifactId));
         }
-        if(supportAvro) {
-            transfer(targetPath, ("src.test.resources.config").replace(".", separator), "schema-registry.yml", templates.hybrid.schemaRegistryYml.template());
-        }
 
         // logging
         transfer(targetPath, ("src.main.resources").replace(".", separator), "logback.xml", templates.hybrid.logback.template());
@@ -122,7 +119,7 @@ public class HybridServiceGenerator implements HybridGenerator {
                     continue;
                 }
                 transfer(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), item.get("handler").textValue() + ".java", templates.hybrid.handler.template(handlerPackage, host, service, item, example));
-                String sId  = host + "/" + service + "/" + item.get("name") + "/" + item.get("version");
+                String sId  = host + "/" + service + "/" + item.get("name").textValue() + "/" + item.get("version").textValue();
                 Map<String, Object> map = new HashMap<>();
                 map.put("schema", item.get("schema"));
                 JsonNode anyScope = item.get("scope");
