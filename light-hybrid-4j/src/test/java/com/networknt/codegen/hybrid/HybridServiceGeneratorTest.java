@@ -2,9 +2,9 @@ package com.networknt.codegen.hybrid;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.networknt.codegen.Generator;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeAll;
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -18,7 +18,7 @@ public class HybridServiceGeneratorTest {
     public static String configName = "/serviceConfig.json";
     public static String schemaName = "/schema.json";
 
-    @BeforeAll
+    @BeforeClass
     public static void setUp() throws IOException {
         // create the output directory
         Files.createDirectories(Paths.get(targetPath));
@@ -40,13 +40,13 @@ public class HybridServiceGeneratorTest {
     @Test
     public void testGetFramework() {
         HybridServiceGenerator generator = new HybridServiceGenerator();
-        assertEquals("light-hybrid-4j-service", generator.getFramework());
+        Assert.assertEquals("light-hybrid-4j-service", generator.getFramework());
     }
 
     @Test
     public void testGetConfigSchema() throws IOException {
         HybridServiceGenerator generator = new HybridServiceGenerator();
-        assertNotNull(generator.getConfigSchema());
+        Assert.assertNotNull(generator.getConfigSchema());
         System.out.println(generator.getConfigSchema().toString());
     }
 

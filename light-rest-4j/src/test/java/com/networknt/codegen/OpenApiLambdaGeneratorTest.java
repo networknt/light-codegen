@@ -2,9 +2,9 @@ package com.networknt.codegen;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.networknt.codegen.rest.OpenApiLambdaGenerator;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeAll;
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -22,7 +22,7 @@ public class OpenApiLambdaGeneratorTest {
     public static String openapiJson = "/openapilambda.json";
     public static String openapiYaml = "/openapilambda.yaml";
 
-    @BeforeAll
+    @BeforeClass
     public static void setUp() throws IOException {
         // create the output directory
         Files.createDirectories(Paths.get(targetPath));
@@ -77,14 +77,14 @@ public class OpenApiLambdaGeneratorTest {
     @Test
     public void testGetFramework() {
         OpenApiLambdaGenerator generator = new OpenApiLambdaGenerator();
-        assertEquals("openapilambda", generator.getFramework());
+        Assert.assertEquals("openapilambda", generator.getFramework());
     }
 
     @Test
     public void testGetConfigSchema() throws IOException {
         OpenApiLambdaGenerator generator = new OpenApiLambdaGenerator();
         ByteBuffer bf = generator.getConfigSchema();
-        assertNotNull(bf);
+        Assert.assertNotNull(bf);
         System.out.println(bf.toString());
     }
 

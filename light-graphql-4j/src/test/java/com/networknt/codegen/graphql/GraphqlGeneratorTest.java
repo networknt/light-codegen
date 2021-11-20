@@ -3,9 +3,9 @@ package com.networknt.codegen.graphql;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.networknt.codegen.Generator;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeAll;
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,7 +26,7 @@ public class GraphqlGeneratorTest {
 
     ObjectMapper mapper = new ObjectMapper();
 
-    @BeforeAll
+    @BeforeClass
     public static void setUp() throws IOException {
         // create the output directory
         Files.createDirectories(Paths.get(targetPath));
@@ -62,14 +62,14 @@ public class GraphqlGeneratorTest {
     @Test
     public void testGetFramework() {
         GraphqlGenerator generator = new GraphqlGenerator();
-        assertEquals("light-graphql-4j", generator.getFramework());
+        Assert.assertEquals("light-graphql-4j", generator.getFramework());
     }
 
     @Test
     public void testGetConfigSchema() throws IOException {
         GraphqlGenerator generator = new GraphqlGenerator();
         ByteBuffer bf = generator.getConfigSchema();
-        assertNotNull(bf);
+        Assert.assertNotNull(bf);
         System.out.println(bf.toString());
     }
 

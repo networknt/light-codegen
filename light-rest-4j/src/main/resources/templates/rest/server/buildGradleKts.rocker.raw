@@ -86,7 +86,7 @@ dependencies {
     compile("io.confluent", "kafka-schema-registry-client", avroVersion)
     }
     val junitVersion: String by project
-    testImplementation("org.junit.jupiter", "junit-jupiter", junitVersion)
+    testImplementation("junit", "junit", junitVersion)
     @if(config.get("supportH2ForTest").booleanValue()){
     val h2Version: String by project
     testImplementation("com.h2database", "h2", h2Version)

@@ -21,8 +21,8 @@
     <parent>
         <groupId>com.networknt</groupId>
         <artifactId>light-codegen</artifactId>
-        <version>2.0.33-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
+        <version>2.0.32</version>
+        <relativePath>..</relativePath>
     </parent>
 
     <artifactId>light-rest-4j-generator</artifactId>
@@ -82,8 +82,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.thoughtworks.qdox</groupId>

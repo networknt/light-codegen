@@ -1,10 +1,9 @@
 package com.networknt.codegen;
 
 import com.fasterxml.jackson.databind.JsonNode;
-
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeAll;
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import java.io.IOException;
 
@@ -14,7 +13,7 @@ public class ConfigTest {
     public static JsonNode anyConfig = null;
     public static JsonNode anyYamlConfig = null;
 
-    @BeforeAll
+    @BeforeClass
     public static void setUp() throws IOException {
         // load config file
         anyConfig = Generator.jsonMapper.readTree(OpenApiLightGeneratorTest.class.getResourceAsStream(configName));
@@ -23,17 +22,17 @@ public class ConfigTest {
 
     @Test
     public void testDbName() {
-        assertEquals("mysql", anyConfig.path("dbInfo").path("name").textValue());
+        Assert.assertEquals("mysql", anyConfig.path("dbInfo").path("name").textValue());
     }
 
     @Test
     public void testDbSupport() {
-        assertTrue(anyConfig.get("supportDb").booleanValue());
+        Assert.assertTrue(anyConfig.get("supportDb").booleanValue());
     }
 
     @Test
     public void testUseLightProxy() {
-        assertTrue(anyYamlConfig.get("useLightProxy").booleanValue());
+        Assert.assertTrue(anyYamlConfig.get("useLightProxy").booleanValue());
     }
 
 }

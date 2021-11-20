@@ -1,7 +1,7 @@
 package com.networknt.codegen;
 
-import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
+import org.junit.Assert;
+import org.junit.Test;
 
 import java.util.Set;
 
@@ -14,6 +14,6 @@ public class FrameworkRegistryTest {
     public void testRegistry() {
         FrameworkRegistry registry = FrameworkRegistry.getInstance();
         Set<String> frameworks = registry.getFrameworks();
-        assertTrue(frameworks.size() > 0);
+        Assert.assertTrue(frameworks.size() > 0);
     }
 }
