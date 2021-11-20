@@ -25,13 +25,19 @@ singletons:
   # - net.lightapi.portal.user.query.UserQueryShutdown
   }
 @if(config.get("kafkaProducer").booleanValue()){
-- com.networknt.kafka.producer.LightProducer:
-  - com.networknt.kafka.producer.TransactionalProducer
+# Kafka Producer instance
+- com.networknt.kafka.producer.NativeLightProducer:
+  - com.networknt.kafka.producer.SidecarProducer
 }
-@if(config.get("kafkaConsumer").booleanValue()){
+@if(config.get("kafkaStreams").booleanValue()){
 - com.networknt.kafka.streams.LightStreams:
   # Kafka streams processor example
   # - net.lightapi.portal.user.query.UserQueryStreams
+}
+@if(config.get("kafkaStreams").booleanValue()||config.get("kafkaProducer").booleanValue()||config.get("kafkaConsumer").booleanValue()){
+# Schema registry client
+- io.confluent.kafka.schemaregistry.client.SchemaRegistryClient:
+  - com.networknt.kafka.common.LightSchemaRegistryClient
 }
 @if(config.get("supportDb").booleanValue()){
 @with (driverClassName = config.path("dbInfo").path("driverClassName").textValue(), jdbcUrl=config.path("dbInfo").path("jdbcUrl").textValue(), username=config.path("dbInfo").path("username").textValue(), password=config.path("dbInfo").path("password").textValue()) {

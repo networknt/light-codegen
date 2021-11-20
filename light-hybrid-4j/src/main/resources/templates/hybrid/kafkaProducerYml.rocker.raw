@@ -1,3 +1,4 @@
+@args (String kafkaTopic)
 # Generic configuration for Kafka producer.
 properties:
   # The sidecar does the serialization to byte array for both key and value
@@ -46,7 +47,7 @@ properties:
   max.request.size: ${kafka-producer.max.request.size:1048576}
 
 # The default topic for the producer. Only certain producer implementation will use it.
-topic: ${kafka-producer.topic:portal-event}
+topic: ${kafka-producer.topic:@kafkaTopic}
 # Default key format if no schema for the topic key
 keyFormat: ${kafka-producer.keyFormat:jsonschema}
 # Default value format if no schema for the topic value

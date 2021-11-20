@@ -50,6 +50,7 @@ public class HybridServerGenerator implements HybridGenerator {
         boolean skipPomFile = isSkipPomFile(config, null);
         boolean kafkaProducer = isKafkaProducer(config, null);
         boolean kafkaConsumer = isKafkaConsumer(config, null);
+        boolean kafkaStreams = isKafkaStreams(config, null);
         boolean supportAvro = isSupportAvro(config, null);
         boolean useLightProxy = isUseLightProxy(config, null);
         String kafkaTopic = getKafkaTopic(config, null);
