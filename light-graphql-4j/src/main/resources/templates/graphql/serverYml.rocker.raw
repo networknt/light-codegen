@@ -2,7 +2,7 @@
 # Server configuration
 ---
 # This is the default binding address if the service is dockerized.
-ip: 0.0.0.0
+ip: ${server.ip:0.0.0.0}
 
 # Http port if enableHttp is true. It will be ignored if dynamicPort is true.
 httpPort: ${server.httpPort:@httpPort}
@@ -82,6 +82,11 @@ maxPort: ${server.maxPort:2500}
 # Build Number, to be set by teams for auditing or tracing purposes. 
 # Allows teams to audit the value and set it according to their release management process
 buildNumber: ${server.buildNumber:@version}
+
+# Shutdown gracefully wait period in milliseconds
+# In this period, it allows the in-flight requests to complete but new requests are not allowed. It needs to be set
+# based on the slowest request possible.
+shutdownGracefulPeriod: ${server.shutdownGracefulPeriod:2000}
 
 # -----------------------------------------------------------------------------------------------------------
 # The following parameters are for advanced users to fine tune the service in a container environment. Please leave

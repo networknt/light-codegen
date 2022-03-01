@@ -75,6 +75,7 @@ public interface OpenApiGenerator extends Generator {
      * Handle elements listed as "properties"
      *
      * @param props The properties map to add to
+     * @param properties the properties
      */
     //private void handleProperties(List<Map<String, Any>> props, Map.Entry<String, Any> entrySchema) {
     default void handleProperties(List<Map<String, Object>> props, Map<String, Object> properties) {

@@ -58,6 +58,7 @@ public class HybridServiceGenerator implements HybridGenerator {
         boolean skipPomFile = isSkipPomFile(config, null);
         boolean kafkaProducer = isKafkaProducer(config, null);
         boolean kafkaConsumer = isKafkaConsumer(config, null);
+        boolean kafkaStreams = isKafkaStreams(config, null);
         boolean supportAvro = isSupportAvro(config, null);
         boolean useLightProxy = isUseLightProxy(config, null);
         String kafkaTopic = getKafkaTopic(config, null);
@@ -93,10 +94,10 @@ public class HybridServiceGenerator implements HybridGenerator {
             transfer(targetPath, ("src.test.resources.config").replace(".", separator), "kafka-producer.yml", templates.hybrid.kafkaProducerYml.template(kafkaTopic));
         }
         if(kafkaConsumer) {
-            transfer(targetPath, ("src.test.resources.config").replace(".", separator), "kafka-streams.yml", templates.hybrid.kafkaStreamsYml.template(artifactId));
+            transfer(targetPath, ("src.test.resources.config").replace(".", separator), "kafka-consumer.yml", templates.hybrid.kafkaConsumerYml.template(kafkaTopic));
         }
-        if(supportAvro) {
-            transfer(targetPath, ("src.test.resources.config").replace(".", separator), "schema-registry.yml", templates.hybrid.schemaRegistryYml.template());
+        if(kafkaStreams) {
+            transfer(targetPath, ("src.test.resources.config").replace(".", separator), "kafka-streams.yml", templates.hybrid.kafkaStreamsYml.template(artifactId));
         }
 
         // logging
@@ -122,7 +123,7 @@ public class HybridServiceGenerator implements HybridGenerator {
                     continue;
                 }
                 transfer(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), item.get("handler").textValue() + ".java", templates.hybrid.handler.template(handlerPackage, host, service, item, example));
-                String sId  = host + "/" + service + "/" + item.get("name") + "/" + item.get("version");
+                String sId  = host + "/" + service + "/" + item.get("name").textValue() + "/" + item.get("version").textValue();
                 Map<String, Object> map = new HashMap<>();
                 map.put("schema", item.get("schema"));
                 JsonNode anyScope = item.get("scope");

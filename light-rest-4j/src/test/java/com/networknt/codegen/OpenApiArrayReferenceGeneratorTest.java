@@ -13,9 +13,9 @@ import com.thoughtworks.qdox.model.JavaField;
 import com.thoughtworks.qdox.model.JavaPackage;
 import com.thoughtworks.qdox.model.JavaParameterizedType;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeAll;
+import static org.junit.jupiter.api.Assertions.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +30,7 @@ public class OpenApiArrayReferenceGeneratorTest {
 
     static JavaPackage javaPackage;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUp() throws IOException {
         delete(Paths.get(targetPath).toFile());
         Files.createDirectories(Paths.get(targetPath));
@@ -65,38 +65,38 @@ public class OpenApiArrayReferenceGeneratorTest {
     @Test
     public void testTypeReferences() {
         JavaClass classResponse = javaPackage.getClassByName("Response");
-        Assert.assertEquals("Count of fields", 3, classResponse.getFields().size());
+        assertEquals( 3, classResponse.getFields().size(), "Count of fields");
 
         logger.debug("The test is to check that the type of contacts is List<List<Contact>> and not ArrayofContacts");
         JavaField contacts = classResponse.getFieldByName("contacts");
-        Assert.assertTrue("Data structure for contacts type", contacts.getType() instanceof JavaParameterizedType);
+        assertTrue(contacts.getType() instanceof JavaParameterizedType, "Data structure for contacts type");
 
         JavaParameterizedType type = (JavaParameterizedType)contacts.getType();
-        Assert.assertEquals("Type of contacts", java.util.List.class.getName(), type.getFullyQualifiedName());
-        Assert.assertTrue("Data structure for the generic", type.getActualTypeArguments().get(0) instanceof JavaParameterizedType);
+        assertEquals(java.util.List.class.getName(), type.getFullyQualifiedName(), "Type of contacts");
+        assertTrue( type.getActualTypeArguments().get(0) instanceof JavaParameterizedType, "Data structure for the generic");
 
         type = (JavaParameterizedType)type.getActualTypeArguments().get(0);
-        Assert.assertEquals("Type of generic", java.util.List.class.getName(), type.getFullyQualifiedName());
-        Assert.assertTrue("Data structure for the generic of generic", type.getActualTypeArguments().get(0) instanceof JavaParameterizedType);
+        assertEquals( java.util.List.class.getName(), type.getFullyQualifiedName(), "Type of generic");
+        assertTrue( type.getActualTypeArguments().get(0) instanceof JavaParameterizedType, "Data structure for the generic of generic");
 
         type = (JavaParameterizedType)type.getActualTypeArguments().get(0);
-        Assert.assertEquals("Type of generic of generic", String.format("%s.Contact", packageName), type.getFullyQualifiedName());
+        assertEquals( String.format("%s.Contact", packageName), type.getFullyQualifiedName(), "Type of generic of generic");
     }
 
     @Test
     public void testStringFormats() {
         JavaClass classSignature = javaPackage.getClassByName("Signature");
-        Assert.assertEquals("Count of fields", 2, classSignature.getFields().size());
+        assertEquals( 2, classSignature.getFields().size(), "Count of fields");
 
         logger.debug("The test is to check that the type of contacts  is List<List<Contact> and not ArrayofContacts");
         JavaField fieldType = classSignature.getFieldByName("type");
         JavaField fieldData = classSignature.getFieldByName("data");
 
         JavaClass type = fieldType.getType();
-        Assert.assertEquals("Type of type", "byte", type.getFullyQualifiedName());
+        assertEquals( "byte", type.getFullyQualifiedName(), "Type of type");
 
         JavaClass data = fieldData.getType();
-        Assert.assertEquals("Type of type", "byte[]", data.getFullyQualifiedName());
+        assertEquals("byte[]", data.getFullyQualifiedName(), "Type of type");
     }
 
     private static final Logger logger = LoggerFactory.getLogger(OpenApiArrayReferenceGeneratorTest.class);

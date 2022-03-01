@@ -1,5 +1,18 @@
 # Change Log
 
+## [2.1.0](https://github.com/networknt/light-codegen/tree/2.1.0) (2022-02-27)
+
+
+**Merged pull requests:**
+
+
+- fixes \#618 upgrade commons.io from 2.5 to 2.11.0 for master branch [\#619](https://github.com/networknt/light-codegen/pull/619) ([stevehu](https://github.com/stevehu))
+- fixes \#610 sync kafka config and service.yml [\#611](https://github.com/networknt/light-codegen/pull/611) ([stevehu](https://github.com/stevehu))
+- fixes \#608 sync client.yml, server.yml and kafka-producer.yml templat… [\#609](https://github.com/networknt/light-codegen/pull/609) ([stevehu](https://github.com/stevehu))
+- fixes \#604 hybrid schema serviceId concat is incorrect [\#607](https://github.com/networknt/light-codegen/pull/607) ([stevehu](https://github.com/stevehu))
+- Issue594 [\#601](https://github.com/networknt/light-codegen/pull/601) ([GavinChenYan](https://github.com/GavinChenYan))
+
+
 ## [2.0.32](https://github.com/networknt/light-codegen/tree/2.0.32) (2021-10-19)
 
 

@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.networknt.config.Config;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
 
 /**
  * Created by steve on 24/04/17.
