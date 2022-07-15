@@ -19,3 +19,8 @@ exclusionConfigFileList:
   - status
 
 decryptorClass: @with(decryptOption = config.get("decryptOption").textValue()) {@if(decryptOption.equals("stdin")) {com.networknt.decrypt.ManualAESDecryptor} else if(decryptOption.equals("environment")) {com.networknt.decrypt.AutoAESDecryptor} else {com.networknt.decrypt.AESDecryptor}}
+
+# For some configuration files, we have left some properties without default values as there
+# would be negative impact on the application security. The following config will ensure that
+# null will be used when the default value is empty without stopping the server during the start.
+allowDefaultValueEmpty: true
