@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.6.40](https://github.com/networknt/light-codegen/tree/1.6.40) (2022-08-05)
+
+
+**Merged pull requests:**
+
+
+-  change the 1.6.x branch codegen junit test case to use junit5+ [\#630](https://github.com/networknt/light-codegen/pull/630) ([GavinChenYan](https://github.com/GavinChenYan))
 ## [1.6.39](https://github.com/networknt/light-codegen/tree/1.6.39) (2022-04-26)
 
 
