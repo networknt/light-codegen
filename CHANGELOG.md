@@ -6,6 +6,8 @@
 **Merged pull requests:**
 
 
+
+
 ## [1.6.40](https://github.com/networknt/light-codegen/tree/1.6.40) (2022-08-05)
 
 
