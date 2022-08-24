@@ -7,6 +7,8 @@
 
 
 - add the missed version property of fastscanner [\#632](https://github.com/networknt/light-codegen/pull/632) ([atmoshaman](https://github.com/atmoshaman))
+
+
 ## [1.6.41](https://github.com/networknt/light-codegen/tree/1.6.41) (2022-08-11)
 
 
