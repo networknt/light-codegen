@@ -90,7 +90,7 @@
         <version.zookeeper>3.5.3-beta</version.zookeeper>
         <version.zkclient>0.3</version.zkclient>
         <version.curator>4.0.0</version.curator>
-        <version.snakeyaml>1.26</version.snakeyaml>
+        <version.snakeyaml>1.31</version.snakeyaml>
         <version.rocker>1.2.1</version.rocker>
         <version.jcommander>1.72</version.jcommander>
         <version.graphql>13.0</version.graphql>
