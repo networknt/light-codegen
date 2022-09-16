@@ -86,7 +86,7 @@
         <version.snakeyaml>1.26</version.snakeyaml>
         <version.rocker>1.2.1</version.rocker>
         <version.jcommander>1.72</version.jcommander>
-        <version.graphql>13.0</version.graphql>
+        <version.graphql>17.4</version.graphql>
         <version.qdox>2.0-M9</version.qdox>
         <versions.maven-version>2.4</versions.maven-version>
         <versions.classgraph>4.8.22</versions.classgraph>
