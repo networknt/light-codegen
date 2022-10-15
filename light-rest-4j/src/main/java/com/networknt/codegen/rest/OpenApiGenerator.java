@@ -342,6 +342,7 @@ public interface OpenApiGenerator extends Generator {
                     parameterRawList.forEach(parameter -> {
                         Map<String, String> parameterMap = new HashMap<>();
                         parameterMap.put("name", parameter.getName());
+                        parameterMap.put("in", parameter.getIn());
                         parameterMap.put("description", parameter.getDescription());
                         if (parameter.getRequired() != null) {
                             parameterMap.put("required", String.valueOf(parameter.getRequired()));
