@@ -1,0 +1,49 @@
+@import org.apache.commons.text.StringEscapeUtils
+@import java.util.Map
+@import java.util.List
+@option discardLogicWhitespace=true
+@args (String handlerPackage, String servicePackage, String modelPackage, String className, String serviceName, String requestModelName, List<Map> parameters)
+package @handlerPackage;
+
+import com.networknt.body.BodyHandler;
+import com.networknt.config.Config;
+
+import com.networknt.handler.LightHttpHandler;
+import com.networknt.http.HttpMethod;
+import com.networknt.http.HttpStatus;
+import com.networknt.http.MediaType;
+import io.undertow.server.HttpServerExchange;
+import io.undertow.util.Headers;
+import io.undertow.util.HeaderMap;
+@if(requestModelName != null){import @modelPackage.@requestModelName;}
+import java.util.Deque;
+import java.util.Map;
+
+/**
+For more information on how to write business handlers, please check the link below.
+https://doc.networknt.com/development/business-handler/rest/
+*/
+public class @className implements LightHttpHandler {
+
+    @if(parameters != null && !parameters.isEmpty()) {/**@for (parameter : parameters) {
+     * @@param @?parameter.get("name") @if(parameter.get("type") != null)
+     { @with (String typeStr = ((String)parameter.get("type")).substring(0, 1).toUpperCase()+((String)parameter.get("type")).substring(1))
+       {  @?typeStr  }} @if ( parameter.get("required") != null && parameter.get("required").equals("true") ) {@@Required } else{@@Optional }@if(parameter.get("minLength") != null){minLength:@parameter.get("minLength");}@if(parameter.get("maxLength") != null) {maxLength:@parameter.get("maxLength");}@if(parameter.get("description") != null ){
+     *           @parameter.get("description")}}
+     */}
+    @@Override
+    public void handleRequest(HttpServerExchange exchange) throws Exception {
+       // HeaderMap requestHeaders = exchange.getRequestHeaders();
+        //Map<String, Deque<String>> queryParameters = exchange.getQueryParameters();
+        //Map<String, Deque<String>> pathParameters = exchange.getPathParameters();
+        @if(requestModelName != null){
+        Map<String, Object> bodyMap = (Map<String, Object>)exchange.getAttachment(BodyHandler.REQUEST_BODY);
+        @requestModelName requestBody = Config.getInstance().getMapper().convertValue(bodyMap, @with(c=requestModelName + ".class"){@c});
+        }
+        String responseBody = "";
+        //TODO calls service method here: responseBody = Service method call
+        exchange.getResponseHeaders().add(Headers.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+        exchange.setStatusCode(HttpStatus.OK.value());
+        exchange.getResponseSender().send(responseBody);
+    }
+}

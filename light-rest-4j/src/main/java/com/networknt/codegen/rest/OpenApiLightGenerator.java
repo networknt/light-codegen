@@ -252,11 +252,17 @@ public class OpenApiLightGenerator implements OpenApiGenerator {
             String statusCode = responseExample.get("statusCode");
             statusCode = StringUtils.isBlank(statusCode) || statusCode.equals("default") ? "-1" : statusCode;
 
-            transfer(targetPath, (serverFolder).replace(".", separator), className + ".java", templates.rest.handler.template(handlerPackage, servicePackage, modelPackage, className, serviceName, requestModelName, parameters));
-            if (checkExist(targetPath, (serviceFolder).replace(".", separator), serviceName + ".java") && !overwriteHandler) {
-                continue;
+            if (multipleModule) {
+                transfer(targetPath, (serverFolder).replace(".", separator), className + ".java", templates.rest.handler.template(handlerPackage, servicePackage, modelPackage, className, serviceName, requestModelName, parameters));
+            } else {
+                transfer(targetPath, (serverFolder).replace(".", separator), className + ".java", templates.rest.handlerSingle.template(handlerPackage, servicePackage, modelPackage, className, serviceName, requestModelName, parameters));
             }
-            transfer(targetPath, (serviceFolder).replace(".", separator), serviceName + ".java", templates.rest.handlerService.template(servicePackage, modelPackage, serviceName, statusCode, requestModelName, example, parameters));
+            if (multipleModule) {
+                if (checkExist(targetPath, (serviceFolder).replace(".", separator), serviceName + ".java") && !overwriteHandler) {
+                    continue;
+                }
+                transfer(targetPath, (serviceFolder).replace(".", separator), serviceName + ".java", templates.rest.handlerService.template(servicePackage, modelPackage, serviceName, statusCode, requestModelName, example, parameters));
+            }
         }
 
         // handler test cases

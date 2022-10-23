@@ -62,9 +62,13 @@ handlers:
   - com.networknt.info.ServerInfoGetHandler@@info
   - com.networknt.logging.handler.LoggerGetHandler@@getLogger
   - com.networknt.logging.handler.LoggerPostHandler@@postLogger
+  - com.networknt.logging.handler.LoggerGetLogContentsHandler@@getLogContents
+  - com.networknt.config.reload.handler.ModuleRegistryGetHandler@@modules
+  - com.networknt.config.reload.handler.ConfigReloadHandler@@configReload
   - com.networknt.specification.SpecDisplayHandler@@spec
   - com.networknt.specification.SpecSwaggerUIHandler@@swaggerui
   # - com.networknt.metrics.prometheus.PrometheusGetHandler@@getprometheus
+  - com.networknt.server.handler.ServerShutdownHandler@@shutdown
   # Business Handlers
 @for(item: items) {  - @with (p = handlerPackage + ".") {@p}@item.get("handlerName")
 }
@@ -114,6 +118,27 @@ paths:
       - security
       - body
       - postLogger
+  - path: '/logger/content'
+    method: 'GET'
+    exec:
+      - security
+      - getLogContents
+
+  - path: '/modules'
+    method: 'get'
+    exec:
+      - modules
+
+  - path: '/modules'
+    method: 'post'
+    exec:
+      - body
+      - configReload
+
+  - path: '/shutdown'
+    method: 'delete'
+    exec:
+      - shutdown
 
 @if(prometheusMetrics){  - path: '/prometheus'
     method: 'get'

@@ -1,5 +1,14 @@
 # Change Log
 
+## [2.1.2](https://github.com/networknt/light-codegen/tree/2.1.2) (2022-10-22)
+
+
+**Merged pull requests:**
+
+
+- fixes \#635 [\#636](https://github.com/networknt/light-codegen/pull/636) ([GavinChenYan](https://github.com/GavinChenYan))
+- fixes \#626 add logstash dependency to the pom.xml for rest generator [\#627](https://github.com/networknt/light-codegen/pull/627) ([stevehu](https://github.com/stevehu))
+- fixes \#624 update rest template to sync the configuration changes [\#625](https://github.com/networknt/light-codegen/pull/625) ([stevehu](https://github.com/stevehu))
 ## [2.1.1](https://github.com/networknt/light-codegen/tree/2.1.1) (2022-04-26)
 
 
