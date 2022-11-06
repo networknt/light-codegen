@@ -147,21 +147,6 @@ public class OpenApiLightGenerator implements OpenApiGenerator {
                     transfer(targetPath, "", ".project", templates.rest.project.template(config));
                 }
                 // config
-                transfer(targetPath, (configFolder).replace(".", separator), "service.yml", templates.rest.serviceYml.template(config));
-
-                transfer(targetPath, (configFolder).replace(".", separator), "server.yml",
-                        templates.rest.serverYml.template(serviceId, enableHttp, httpPort, enableHttps, httpsPort, enableHttp2, enableRegistry, version));
-                transfer(targetPath, (testConfigFolder).replace(".", separator), "server.yml",
-                        templates.rest.serverYml.template(serviceId, enableHttp, "49587", enableHttps, "49588", enableHttp2, enableRegistry, version));
-
-                transfer(targetPath, (configFolder).replace(".", separator), "openapi-security.yml", templates.rest.openapiSecurity.template());
-                transfer(targetPath, (configFolder).replace(".", separator), "openapi-validator.yml", templates.rest.openapiValidator.template());
-                if (supportClient) {
-                    transfer(targetPath, (configFolder).replace(".", separator), "client.yml", templates.rest.clientYml.template());
-                } else {
-                    transfer(targetPath, (testConfigFolder).replace(".", separator), "client.yml", templates.rest.clientYml.template());
-                }
-
                 transfer(targetPath, (configFolder).replace(".", separator), "primary.crt", templates.rest.primaryCrt.template());
                 transfer(targetPath, (configFolder).replace(".", separator), "secondary.crt", templates.rest.secondaryCrt.template());
                 if(kafkaProducer) {
@@ -174,29 +159,16 @@ public class OpenApiLightGenerator implements OpenApiGenerator {
                     transfer(targetPath, (configFolder).replace(".", separator), "schema-registry.yml", templates.rest.schemaRegistryYml.template());
                 }
 
-                // mask
-                transfer(targetPath, (configFolder).replace(".", separator), "mask.yml", templates.rest.maskYml.template());
                 // logging
                 transfer(targetPath, (multipleModule ? "server.src.main.resources" : "src.main.resources").replace(".", separator), "logback.xml", templates.rest.logback.template(rootPackage));
                 transfer(targetPath, (multipleModule ? "server.src.test.resources" : "src.test.resources").replace(".", separator), "logback-test.xml", templates.rest.logback.template(rootPackage));
 
-                // exclusion list for Config module
-                transfer(targetPath, (configFolder).replace(".", separator), "config.yml", templates.rest.config.template(config));
-
-                transfer(targetPath, (configFolder).replace(".", separator), "audit.yml", templates.rest.auditYml.template());
-                transfer(targetPath, (configFolder).replace(".", separator), "body.yml", templates.rest.bodyYml.template());
-                transfer(targetPath, (configFolder).replace(".", separator), "info.yml", templates.rest.infoYml.template());
-                transfer(targetPath, (configFolder).replace(".", separator), "correlation.yml", templates.rest.correlationYml.template());
-                transfer(targetPath, (configFolder).replace(".", separator), "metrics.yml", templates.rest.metricsYml.template());
-                transfer(targetPath, (configFolder).replace(".", separator), "sanitizer.yml", templates.rest.sanitizerYml.template());
-                transfer(targetPath, (configFolder).replace(".", separator), "traceability.yml", templates.rest.traceabilityYml.template());
-                transfer(targetPath, (configFolder).replace(".", separator), "health.yml", templates.rest.healthYml.template());
-                // added with #471
-                transfer(targetPath, (configFolder).replace(".", separator), "app-status.yml", templates.rest.appStatusYml.template());
                 // values.yml file, transfer to suppress the warning message during start startup and encourage usage.
-                transfer(targetPath, (configFolder).replace(".", separator), "values.yml", templates.rest.values.template());
-                // add portal-registry.yml
-                transfer(targetPath, (configFolder).replace(".", separator), "portal-registry.yml", templates.rest.portalRegistryYml.template(serviceId));
+                transfer(targetPath, (configFolder).replace(".", separator), "values.yml",
+                        templates.rest.values.template(serviceId, enableHttp, httpPort, enableHttps, httpsPort, enableHttp2, enableRegistry, version, config));
+                transfer(targetPath, (testConfigFolder).replace(".", separator), "values.yml",
+                        templates.rest.values.template(serviceId, enableHttp, "49587", enableHttps, "49588", enableHttp2, enableRegistry, version, config));
+
             }
             // routing handler
             transfer(targetPath, (configFolder).replace(".", separator), "handler.yml",
@@ -255,7 +227,7 @@ public class OpenApiLightGenerator implements OpenApiGenerator {
             if (multipleModule) {
                 transfer(targetPath, (serverFolder).replace(".", separator), className + ".java", templates.rest.handler.template(handlerPackage, servicePackage, modelPackage, className, serviceName, requestModelName, parameters));
             } else {
-                transfer(targetPath, (serverFolder).replace(".", separator), className + ".java", templates.rest.handlerSingle.template(handlerPackage, servicePackage, modelPackage, className, serviceName, requestModelName, parameters));
+                transfer(targetPath, (serverFolder).replace(".", separator), className + ".java", templates.rest.handlerSingle.template(handlerPackage, servicePackage, modelPackage, className, serviceName, requestModelName, example, parameters));
             }
             if (multipleModule) {
                 if (checkExist(targetPath, (serviceFolder).replace(".", separator), serviceName + ".java") && !overwriteHandler) {

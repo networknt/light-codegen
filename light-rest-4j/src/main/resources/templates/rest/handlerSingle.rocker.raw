@@ -2,7 +2,7 @@
 @import java.util.Map
 @import java.util.List
 @option discardLogicWhitespace=true
-@args (String handlerPackage, String servicePackage, String modelPackage, String className, String serviceName, String requestModelName, List<Map> parameters)
+@args (String handlerPackage, String servicePackage, String modelPackage, String className, String serviceName, String requestModelName, String example, List<Map> parameters)
 package @handlerPackage;
 
 import com.networknt.body.BodyHandler;
@@ -33,15 +33,17 @@ public class @className implements LightHttpHandler {
      */}
     @@Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {
-       // HeaderMap requestHeaders = exchange.getRequestHeaders();
-        //Map<String, Deque<String>> queryParameters = exchange.getQueryParameters();
-        //Map<String, Deque<String>> pathParameters = exchange.getPathParameters();
+        // HeaderMap requestHeaders = exchange.getRequestHeaders();
+        // Map<String, Deque<String>> queryParameters = exchange.getQueryParameters();
         @if(requestModelName != null){
         Map<String, Object> bodyMap = (Map<String, Object>)exchange.getAttachment(BodyHandler.REQUEST_BODY);
         @requestModelName requestBody = Config.getInstance().getMapper().convertValue(bodyMap, @with(c=requestModelName + ".class"){@c});
         }
+        @if(example != null) {
+        @with (e = StringEscapeUtils.escapeJson(example)) {String responseBody = "@e";}
+        } else {
         String responseBody = "";
-        //TODO calls service method here: responseBody = Service method call
+        }
         exchange.getResponseHeaders().add(Headers.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
         exchange.setStatusCode(HttpStatus.OK.value());
         exchange.getResponseSender().send(responseBody);
