@@ -123,10 +123,6 @@ public class OpenApiLambdaGenerator implements OpenApiGenerator {
             }
             transfer(targetPath, "proxy", "server.yml", templates.lambda.proxy.server.template(serviceId, enableRegistry, version));
 
-            transfer(targetPath, "proxy", "openapi-security.yml", templates.rest.openapiSecurity.template());
-            transfer(targetPath, "proxy", "openapi-validator.yml", templates.rest.openapiValidator.template());
-            transfer(targetPath, "proxy", "client.yml", templates.rest.clientYml.template());
-
             transfer(targetPath, "proxy", "primary.crt", templates.rest.primaryCrt.template());
             transfer(targetPath, "proxy", "secondary.crt", templates.rest.secondaryCrt.template());
             // transfer binary files without touching them.
@@ -148,18 +144,8 @@ public class OpenApiLambdaGenerator implements OpenApiGenerator {
             transfer(targetPath, "proxy", "proxy.yml", templates.lambda.proxy.proxy.template());
 
             // exclusion list for Config module
-            transfer(targetPath, "proxy", "config.yml", templates.rest.config.template(config));
-
-            transfer(targetPath, "proxy", "audit.yml", templates.rest.auditYml.template());
-            transfer(targetPath, "proxy", "body.yml", templates.rest.bodyYml.template());
-            transfer(targetPath, "proxy", "info.yml", templates.rest.infoYml.template());
-            transfer(targetPath, "proxy", "correlation.yml", templates.rest.correlationYml.template());
-            transfer(targetPath, "proxy", "metrics.yml", templates.rest.metricsYml.template());
-            transfer(targetPath, "proxy", "sanitizer.yml", templates.rest.sanitizerYml.template());
-            transfer(targetPath, "proxy", "traceability.yml", templates.rest.traceabilityYml.template());
-            transfer(targetPath, "proxy", "health.yml", templates.rest.healthYml.template());
             // values.yml file, transfer to suppress the warning message during start startup and encourage usage.
-            transfer(targetPath, "proxy", "values.yml", templates.rest.values.template());
+            transfer(targetPath, "proxy", "values.yml", templates.rest.values.template(serviceId, enableHttp, httpPort, enableHttps, httpsPort, enableHttp2, enableRegistry, version, config));
             // buildSh.rocker.raw for the docker image build
             transfer(targetPath, "", "build.sh", templates.lambda.buildSh.template());
             // Dockerfile for the proxy
