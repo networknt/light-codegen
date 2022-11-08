@@ -1,0 +1,10 @@
+@args (String serviceId, Boolean enableHttp, String httpPort, Boolean enableHttps, String httpsPort, Boolean enableHttp2, Boolean enableRegistry, String version)
+# server.yml
+server.httpPort: @httpPort
+server.enableHttp: @enableHttp
+server.httpsPort: @httpsPort
+server.enableHttps: @enableHttps
+server.enableHttp2: @enableHttp2
+server.enableRegistry: @enableRegistry
+server.serviceId: @serviceId
+server.buildNumber: @version
