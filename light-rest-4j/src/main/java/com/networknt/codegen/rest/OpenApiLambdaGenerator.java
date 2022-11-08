@@ -145,7 +145,7 @@ public class OpenApiLambdaGenerator implements OpenApiGenerator {
 
             // exclusion list for Config module
             // values.yml file, transfer to suppress the warning message during start startup and encourage usage.
-            transfer(targetPath, "proxy", "values.yml", templates.rest.values.template(serviceId, enableHttp, httpPort, enableHttps, httpsPort, enableHttp2, enableRegistry, version, config));
+            transfer(targetPath, "proxy", "values.yml", templates.lambda.values.template(serviceId, enableHttp, httpPort, enableHttps, httpsPort, enableHttp2, enableRegistry, version));
             // buildSh.rocker.raw for the docker image build
             transfer(targetPath, "", "build.sh", templates.lambda.buildSh.template());
             // Dockerfile for the proxy
