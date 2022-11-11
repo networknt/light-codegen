@@ -1,5 +1,13 @@
 # Change Log
 
+## [2.1.3](https://github.com/networknt/light-codegen/tree/2.1.3) (2022-11-10)
+
+
+**Merged pull requests:**
+
+
+- fixes \#640 add a values.yml file to the lambda generator template [\#641](https://github.com/networknt/light-codegen/pull/641) ([stevehu](https://github.com/stevehu))
+- fixes \#638 remove most config files and use values.yml to overwrite [\#639](https://github.com/networknt/light-codegen/pull/639) ([stevehu](https://github.com/stevehu))
 ## [2.1.2](https://github.com/networknt/light-codegen/tree/2.1.2) (2022-10-22)
 
 
