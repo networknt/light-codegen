@@ -88,8 +88,8 @@
         <version.jcommander>1.82</version.jcommander>
         <version.graphql>19.0</version.graphql>
         <version.qdox>2.0-M9</version.qdox>
-        <versions.maven-version>2.4</versions.maven-version>
-        <versions.classgraph>4.8.22</versions.classgraph>
+        <version.classgraph>4.8.149</version.classgraph>
+        <version.maven-version>2.4</version.maven-version>
         <version.javadoc-packagelist-plugin>1.0.0</version.javadoc-packagelist-plugin>
         <version.maven-javadoc>3.1.0</version.maven-javadoc>
         <version.maven-source>3.2.0</version.maven-source>
@@ -307,7 +307,7 @@
 			<dependency>
 			    <groupId>io.github.classgraph</groupId>
 			    <artifactId>classgraph</artifactId>
-			    <version>${versions.classgraph}</version>
+			    <version>${version.classgraph}</version>
 			</dependency>
 
             <!-- Test dependencies -->
@@ -383,7 +383,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>versions-maven-plugin</artifactId>
-                <version>${versions.maven-version}</version>
+                <version>${version.maven-version}</version>
             </plugin>
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
