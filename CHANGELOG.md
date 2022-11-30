@@ -1,5 +1,12 @@
 # Change Log
 
+## [2.1.4](https://github.com/networknt/light-codegen/tree/2.1.4) (2022-11-30)
+
+
+**Merged pull requests:**
+
+
+- fixes \#642 upgrade classgraph to version 4.8.149 [\#643](https://github.com/networknt/light-codegen/pull/643) ([stevehu](https://github.com/stevehu))
 ## [2.1.3](https://github.com/networknt/light-codegen/tree/2.1.3) (2022-11-10)
 
 
