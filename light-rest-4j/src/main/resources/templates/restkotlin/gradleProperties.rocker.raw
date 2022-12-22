@@ -2,7 +2,7 @@
 @args (Any config)
 # Versions of Frequently used Libraries
 kafkaVersion=2.0.0
-light4jVersion=1.6.44-SNAPSHOT
+light4jVersion=1.6.44
 jacksonVersion=2.14.0
 jacksonDatabindVersion=2.10.4
 undertowVersion=2.2.21.Final
