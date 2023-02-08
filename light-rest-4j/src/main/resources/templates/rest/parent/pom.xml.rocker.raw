@@ -39,7 +39,7 @@
         <version.confluent>7.1.1</version.confluent>
         }
         @if(config.get("kafkaProducer").booleanValue() ||config.get("kafkaConsumer").booleanValue()){
-        <version.kafka>3.2.0</version.kafka>
+        <version.kafka>3.4.0</version.kafka>
         }
         <versions.maven-version>2.4</versions.maven-version>
         <version.javadoc-packagelist-plugin>1.0.0</version.javadoc-packagelist-plugin>
