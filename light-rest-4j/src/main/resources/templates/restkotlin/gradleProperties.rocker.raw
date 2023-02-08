@@ -17,7 +17,7 @@ hikaricpVersion=3.1.0
 oracleVersion=11.2.0.3
 }
 @if(config.get("supportDb").booleanValue() && "mysql".equalsIgnoreCase(config.path("dbInfo").path("name").textValue())){
-mysqlVersion=8.0.16
+mysqlVersion=8.0.32
 }
 @if(config.get("supportDb").booleanValue() && "postgres".equalsIgnoreCase(config.path("dbInfo").path("name").textValue())){
 postgresVersion=42.1.1
