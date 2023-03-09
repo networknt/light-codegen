@@ -31,7 +31,7 @@ enabled: true
 handlers:
   # Light-framework cross-cutting concerns implemented in the microservice
   - com.networknt.exception.ExceptionHandler@exception
-  - com.networknt.metrics.InfluxMetricsHandler@metrics
+  - com.networknt.metrics.MetricsHandler@metrics
   - com.networknt.traceability.TraceabilityHandler@traceability
   - com.networknt.correlation.CorrelationHandler@correlation
   # Cors handler to handler post/put pre-flight
