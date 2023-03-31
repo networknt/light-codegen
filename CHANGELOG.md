@@ -1,5 +1,12 @@
 # Change Log
 
+## [2.1.9](https://github.com/networknt/light-codegen/tree/2.1.9) (2023-03-30)
+
+
+**Merged pull requests:**
+
+
+- fixes \#650 update the cli with the snakeyaml 2.0 [\#651](https://github.com/networknt/light-codegen/pull/651) ([stevehu](https://github.com/stevehu))
 ## [2.1.8](https://github.com/networknt/light-codegen/tree/2.1.8) (2023-03-06)
 
 
