@@ -3,7 +3,7 @@ package com.networknt.codegen.handler;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.networknt.client.Http2Client;
-import com.networknt.exception.ApiException;
+import com.networknt.client.simplepool.SimpleConnectionHolder;
 import com.networknt.exception.ClientException;
 import io.undertow.client.ClientConnection;
 import io.undertow.client.ClientRequest;
@@ -15,13 +15,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import static org.junit.jupiter.api.Assertions.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xnio.IoUtils;
 import org.xnio.OptionMap;
 
 import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -52,6 +50,7 @@ public class GeneratorServiceHandlerTest {
     static String multipleWithAllUrl = "{\"host\":\"lightapi.net\",\"service\":\"codegen\",\"action\":\"multiple\",\"version\":\"0.0.1\",\"data\":{\"generators\":[{\"framework\":\"openapi\",\"modelType\":\"U\",\"modelUrl\":\"https://raw.githubusercontent.com/networknt/model-config/master/rest/openapi/petstore/1.0.0/openapi.json\",\"configType\":\"U\",\"configUrl\":\"https://raw.githubusercontent.com/networknt/model-config/master/rest/openapi/petstore/1.0.0/config.json\"}]}}";
 
     static final Logger logger = LoggerFactory.getLogger(GeneratorServiceHandlerTest.class);
+    final Http2Client client = Http2Client.getInstance();
 
     /**
      * The original generate action is removed and single and multiple are added. This is to ensure that the old
@@ -68,15 +67,11 @@ public class GeneratorServiceHandlerTest {
 
 
         final AtomicReference<ClientResponse> reference = new AtomicReference<>();
-        final Http2Client client = Http2Client.getInstance();
         final CountDownLatch latch = new CountDownLatch(1);
-        final ClientConnection connection;
+        SimpleConnectionHolder.ConnectionToken connectionToken = null;
         try {
-            connection = client.connect(new URI(url), Http2Client.WORKER, Http2Client.SSL, Http2Client.BUFFER_POOL, OptionMap.EMPTY).get();
-        } catch (Exception e) {
-            throw new ClientException(e);
-        }
-        try {
+            connectionToken = client.borrow(new URI(url), Http2Client.WORKER, client.getDefaultXnioSsl(), Http2Client.BUFFER_POOL, OptionMap.EMPTY);
+            final ClientConnection connection = (ClientConnection)connectionToken.getRawConnection();
             connection.getIoThread().execute(() -> {
                 final ClientRequest request = new ClientRequest().setMethod(Methods.POST).setPath("/codegen");
 
@@ -96,7 +91,7 @@ public class GeneratorServiceHandlerTest {
             logger.error("IOException: ", e);
             throw new ClientException(e);
         } finally {
-            IoUtils.safeClose(connection);
+            client.restore(connectionToken);
         }
         int statusCode = reference.get().getResponseCode();
         String body = reference.get().getAttachment(Http2Client.RESPONSE_BODY);
@@ -121,15 +116,11 @@ public class GeneratorServiceHandlerTest {
         params.put("data", new ObjectMapper().readValue("{\"generators\":[{\"framework\":\"invalid\",\"modelType\":\"C\",\"modelText\":{\"key\":\"value\"},\"configType\":\"C\",\"configText\":{\"key\":\"value\"}}]}", Map.class));
 
         final AtomicReference<ClientResponse> reference = new AtomicReference<>();
-        final Http2Client client = Http2Client.getInstance();
         final CountDownLatch latch = new CountDownLatch(1);
-        final ClientConnection connection;
+        SimpleConnectionHolder.ConnectionToken connectionToken = null;
         try {
-            connection = client.connect(new URI(url), Http2Client.WORKER, Http2Client.SSL, Http2Client.BUFFER_POOL, OptionMap.EMPTY).get();
-        } catch (Exception e) {
-            throw new ClientException(e);
-        }
-        try {
+            connectionToken = client.borrow(new URI(url), Http2Client.WORKER, client.getDefaultXnioSsl(), Http2Client.BUFFER_POOL, OptionMap.EMPTY);
+            ClientConnection connection = (ClientConnection) connectionToken.getRawConnection();
             connection.getIoThread().execute(() -> {
                 final ClientRequest request = new ClientRequest().setMethod(Methods.POST).setPath("/codegen");
                 request.getRequestHeaders().put(Headers.HOST, "localhost");
@@ -148,7 +139,7 @@ public class GeneratorServiceHandlerTest {
             logger.error("IOException: ", e);
             throw new ClientException(e);
         } finally {
-            IoUtils.safeClose(connection);
+            client.restore(connectionToken);
         }
         int statusCode = reference.get().getResponseCode();
         String body = reference.get().getAttachment(Http2Client.RESPONSE_BODY);
@@ -173,15 +164,11 @@ public class GeneratorServiceHandlerTest {
         params.put("data", new ObjectMapper().readValue("{\"framework\":\"invalid\",\"modelType\":\"C\",\"modelText\":{\"key\":\"value\"},\"configType\":\"C\",\"configText\":{\"key\":\"value\"}}", Map.class));
 
         final AtomicReference<ClientResponse> reference = new AtomicReference<>();
-        final Http2Client client = Http2Client.getInstance();
         final CountDownLatch latch = new CountDownLatch(1);
-        final ClientConnection connection;
+        SimpleConnectionHolder.ConnectionToken connectionToken = null;
         try {
-            connection = client.connect(new URI(url), Http2Client.WORKER, Http2Client.SSL, Http2Client.BUFFER_POOL, OptionMap.EMPTY).get();
-        } catch (Exception e) {
-            throw new ClientException(e);
-        }
-        try {
+            connectionToken = client.borrow(new URI(url), Http2Client.WORKER, client.getDefaultXnioSsl(), Http2Client.BUFFER_POOL, OptionMap.EMPTY);
+            ClientConnection connection = (ClientConnection) connectionToken.getRawConnection();
             connection.getIoThread().execute(() -> {
                 final ClientRequest request = new ClientRequest().setMethod(Methods.POST).setPath("/codegen");
                 request.getRequestHeaders().put(Headers.HOST, "localhost");
@@ -200,7 +187,7 @@ public class GeneratorServiceHandlerTest {
             logger.error("IOException: ", e);
             throw new ClientException(e);
         } finally {
-            IoUtils.safeClose(connection);
+            client.restore(connectionToken);
         }
         int statusCode = reference.get().getResponseCode();
         String body = reference.get().getAttachment(Http2Client.RESPONSE_BODY);
@@ -213,22 +200,16 @@ public class GeneratorServiceHandlerTest {
     /**
      * Test multiple generators with both model and config as strings.
      * @throws ClientException
-     * @throws ApiException
-     * @throws IOException
      */
     @Test
-    public void testGeneratorMultipleText() throws ClientException, ApiException, IOException {
+    public void testGeneratorMultipleText() throws ClientException {
 
         final AtomicReference<ClientResponse> reference = new AtomicReference<>();
-        final Http2Client client = Http2Client.getInstance();
         final CountDownLatch latch = new CountDownLatch(1);
-        final ClientConnection connection;
+        SimpleConnectionHolder.ConnectionToken connectionToken = null;
         try {
-            connection = client.connect(new URI(url), Http2Client.WORKER, Http2Client.SSL, Http2Client.BUFFER_POOL, OptionMap.EMPTY).get();
-        } catch (Exception e) {
-            throw new ClientException(e);
-        }
-        try {
+            connectionToken = client.borrow(new URI(url), Http2Client.WORKER, client.getDefaultXnioSsl(), Http2Client.BUFFER_POOL, OptionMap.EMPTY);
+            ClientConnection connection = (ClientConnection) connectionToken.getRawConnection();
             connection.getIoThread().execute(new Runnable() {
                 @Override
                 public void run() {
@@ -246,7 +227,7 @@ public class GeneratorServiceHandlerTest {
             logger.error("IOException: ", e);
             throw new ClientException(e);
         } finally {
-            IoUtils.safeClose(connection);
+            client.restore(connectionToken);
         }
         int statusCode = reference.get().getResponseCode();
         String body = reference.get().getAttachment(Http2Client.RESPONSE_BODY);
@@ -256,23 +237,17 @@ public class GeneratorServiceHandlerTest {
 
     /**
      * Test with a single generator with both model and config as strings.
-     * @throws ClientException
-     * @throws ApiException
-     * @throws IOException
+     * @throws ClientException client exception
      */
     @Test
-    public void testGeneratorSingleText() throws ClientException, ApiException, IOException {
+    public void testGeneratorSingleText() throws ClientException {
 
         final AtomicReference<ClientResponse> reference = new AtomicReference<>();
-        final Http2Client client = Http2Client.getInstance();
         final CountDownLatch latch = new CountDownLatch(1);
-        final ClientConnection connection;
+        SimpleConnectionHolder.ConnectionToken connectionToken = null;
         try {
-            connection = client.connect(new URI(url), Http2Client.WORKER, Http2Client.SSL, Http2Client.BUFFER_POOL, OptionMap.EMPTY).get();
-        } catch (Exception e) {
-            throw new ClientException(e);
-        }
-        try {
+            connectionToken = client.borrow(new URI(url), Http2Client.WORKER, client.getDefaultXnioSsl(), Http2Client.BUFFER_POOL, OptionMap.EMPTY);
+            ClientConnection connection = (ClientConnection) connectionToken.getRawConnection();
             connection.getIoThread().execute(new Runnable() {
                 @Override
                 public void run() {
@@ -290,7 +265,7 @@ public class GeneratorServiceHandlerTest {
             logger.error("IOException: ", e);
             throw new ClientException(e);
         } finally {
-            IoUtils.safeClose(connection);
+            client.restore(connectionToken);
         }
         int statusCode = reference.get().getResponseCode();
         String body = reference.get().getAttachment(Http2Client.RESPONSE_BODY);
@@ -300,23 +275,17 @@ public class GeneratorServiceHandlerTest {
 
     /**
      * Test multiple generators with model from github.com and config with the content as a string.
-     * @throws ClientException
-     * @throws ApiException
-     * @throws IOException
+     * @throws ClientException client exception
      */
     @Test
-    public void testGeneratorMultipleAllUrl() throws ClientException, ApiException, IOException {
+    public void testGeneratorMultipleAllUrl() throws ClientException {
 
         final AtomicReference<ClientResponse> reference = new AtomicReference<>();
-        final Http2Client client = Http2Client.getInstance();
         final CountDownLatch latch = new CountDownLatch(1);
-        final ClientConnection connection;
+        SimpleConnectionHolder.ConnectionToken connectionToken = null;
         try {
-            connection = client.connect(new URI(url), Http2Client.WORKER, Http2Client.SSL, Http2Client.BUFFER_POOL, OptionMap.EMPTY).get();
-        } catch (Exception e) {
-            throw new ClientException(e);
-        }
-        try {
+            connectionToken = client.borrow(new URI(url), Http2Client.WORKER, client.getDefaultXnioSsl(), Http2Client.BUFFER_POOL, OptionMap.EMPTY);
+            ClientConnection connection = (ClientConnection) connectionToken.getRawConnection();
             connection.getIoThread().execute(new Runnable() {
                 @Override
                 public void run() {
@@ -334,7 +303,7 @@ public class GeneratorServiceHandlerTest {
             logger.error("IOException: ", e);
             throw new ClientException(e);
         } finally {
-            IoUtils.safeClose(connection);
+            client.restore(connectionToken);
         }
         int statusCode = reference.get().getResponseCode();
         String body = reference.get().getAttachment(Http2Client.RESPONSE_BODY);
@@ -344,23 +313,18 @@ public class GeneratorServiceHandlerTest {
 
     /**
      * Test with single generator with both model and config from github.com
-     * @throws ClientException
-     * @throws ApiException
-     * @throws IOException
+     * @throws ClientException client exception
      */
     @Test
-    public void testGeneratorSingleModelUrl() throws ClientException, ApiException, IOException {
+    public void testGeneratorSingleModelUrl() throws ClientException {
 
         final AtomicReference<ClientResponse> reference = new AtomicReference<>();
-        final Http2Client client = Http2Client.getInstance();
         final CountDownLatch latch = new CountDownLatch(1);
-        final ClientConnection connection;
+        SimpleConnectionHolder.ConnectionToken connectionToken = null;
         try {
-            connection = client.connect(new URI(url), Http2Client.WORKER, Http2Client.SSL, Http2Client.BUFFER_POOL, OptionMap.EMPTY).get();
-        } catch (Exception e) {
-            throw new ClientException(e);
-        }
-        try {
+            connectionToken = client.borrow(new URI(url), Http2Client.WORKER, client.getDefaultXnioSsl(), Http2Client.BUFFER_POOL, OptionMap.EMPTY);
+            ClientConnection connection = (ClientConnection) connectionToken.getRawConnection();
+
             connection.getIoThread().execute(new Runnable() {
                 @Override
                 public void run() {
@@ -378,7 +342,7 @@ public class GeneratorServiceHandlerTest {
             logger.error("IOException: ", e);
             throw new ClientException(e);
         } finally {
-            IoUtils.safeClose(connection);
+            client.restore(connectionToken);
         }
         int statusCode = reference.get().getResponseCode();
         String body = reference.get().getAttachment(Http2Client.RESPONSE_BODY);

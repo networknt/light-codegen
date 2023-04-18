@@ -87,9 +87,6 @@ public class HybridServiceGenerator implements HybridGenerator {
         transfer(targetPath, ("src.test.resources.config").replace(".", separator), "server.yml", templates.hybrid.serverYml.template(serviceId, enableHttp, "49587", enableHttps, "49588", enableHttp2, enableRegistry, version));
         //transfer(targetPath, ("src.test.resources.config").replace(".", separator), "secret.yml", templates.hybrid.secretYml.template());
         transfer(targetPath, ("src.test.resources.config").replace(".", separator), "hybrid-security.yml", templates.hybrid.securityYml.template());
-        transfer(targetPath, ("src.test.resources.config").replace(".", separator), "client.yml", templates.hybrid.clientYml.template());
-        transfer(targetPath, ("src.test.resources.config").replace(".", separator), "primary.crt", templates.hybrid.primaryCrt.template());
-        transfer(targetPath, ("src.test.resources.config").replace(".", separator), "secondary.crt", templates.hybrid.secondaryCrt.template());
         if(kafkaProducer) {
             transfer(targetPath, ("src.test.resources.config").replace(".", separator), "kafka-producer.yml", templates.hybrid.kafkaProducerYml.template(kafkaTopic));
         }
@@ -151,13 +148,6 @@ public class HybridServiceGenerator implements HybridGenerator {
         }
         try (InputStream is = HybridServiceGenerator.class.getResourceAsStream("/binaries/server.truststore")) {
             Files.copy(is, Paths.get(targetPath, ("src.test.resources.config").replace(".", separator), "server.truststore"), StandardCopyOption.REPLACE_EXISTING);
-        }
-        // to support unit test with HTTPS/HTTP2, we need to have client.truststore and client.keystore
-        try (InputStream is = HybridServiceGenerator.class.getResourceAsStream("/binaries/client.keystore")) {
-            Files.copy(is, Paths.get(targetPath, ("src.test.resources.config").replace(".", separator), "client.keystore"), StandardCopyOption.REPLACE_EXISTING);
-        }
-        try (InputStream is = HybridServiceGenerator.class.getResourceAsStream("/binaries/client.truststore")) {
-            Files.copy(is, Paths.get(targetPath, ("src.test.resources.config").replace(".", separator), "client.truststore"), StandardCopyOption.REPLACE_EXISTING);
         }
 
         if(Files.notExists(Paths.get(targetPath, ("src.main.resources.config").replace(".", separator)))) {

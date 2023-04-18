@@ -1,6 +1,7 @@
 package com.networknt.codegen.handler;
 
 import com.networknt.client.Http2Client;
+import com.networknt.client.simplepool.SimpleConnectionHolder;
 import com.networknt.exception.ApiException;
 import com.networknt.exception.ClientException;
 import io.undertow.client.ClientConnection;
@@ -37,21 +38,19 @@ public class SchemaGetHandlerTest {
     static final String url = enableHttp2 || enableHttps ? "https://localhost:" + httpsPort : "http://localhost:" + httpPort;
 
     static final Logger logger = LoggerFactory.getLogger(SchemaGetHandlerTest.class);
+    final Http2Client client = Http2Client.getInstance();
 
     @Test
     public void testGetSchema() throws ClientException, ApiException, UnsupportedEncodingException {
         String s = "{\"host\":\"lightapi.net\",\"service\":\"codegen\",\"action\":\"getSchema\",\"version\":\"0.0.1\",\"data\":{\"framework\":\"openapi\"}}";
 
         final AtomicReference<ClientResponse> reference = new AtomicReference<>();
-        final Http2Client client = Http2Client.getInstance();
         final CountDownLatch latch = new CountDownLatch(1);
-        final ClientConnection connection;
+        SimpleConnectionHolder.ConnectionToken connectionToken = null;
+
         try {
-            connection = client.connect(new URI(url), Http2Client.WORKER, Http2Client.SSL, Http2Client.BUFFER_POOL, OptionMap.EMPTY).get();
-        } catch (Exception e) {
-            throw new ClientException(e);
-        }
-        try {
+            connectionToken = client.borrow(new URI(url), Http2Client.WORKER, client.getDefaultXnioSsl(), Http2Client.BUFFER_POOL, OptionMap.EMPTY);
+            ClientConnection connection = (ClientConnection) connectionToken.getRawConnection();
             connection.getIoThread().execute(new Runnable() {
                 @Override
                 public void run() {
@@ -69,7 +68,7 @@ public class SchemaGetHandlerTest {
             logger.error("IOException: ", e);
             throw new ClientException(e);
         } finally {
-            IoUtils.safeClose(connection);
+            client.restore(connectionToken);
         }
         int statusCode = reference.get().getResponseCode();
         String body = reference.get().getAttachment(Http2Client.RESPONSE_BODY);

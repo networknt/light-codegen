@@ -1,6 +1,7 @@
 package com.networknt.codegen.handler;
 
 import com.networknt.client.Http2Client;
+import com.networknt.client.simplepool.SimpleConnectionHolder;
 import com.networknt.exception.ApiException;
 import com.networknt.exception.ClientException;
 import io.undertow.client.ClientConnection;
@@ -36,6 +37,7 @@ public class FrameworkListHandlerTest {
     static final int httpPort = server.getServerConfig().getHttpPort();
     static final int httpsPort = server.getServerConfig().getHttpsPort();
     static final String url = enableHttp2 || enableHttps ? "https://localhost:" + httpsPort : "http://localhost:" + httpPort;
+    final Http2Client client = Http2Client.getInstance();
 
     static final Logger logger = LoggerFactory.getLogger(GeneratorServiceHandlerTest.class);
 
@@ -43,16 +45,12 @@ public class FrameworkListHandlerTest {
     public void testGenerator() throws ClientException, ApiException, UnsupportedEncodingException {
         String s = "{\"host\":\"lightapi.net\",\"service\":\"codegen\",\"action\":\"listFramework\",\"version\":\"0.0.1\"}";
 
+        SimpleConnectionHolder.ConnectionToken connectionToken = null;
         final AtomicReference<ClientResponse> reference = new AtomicReference<>();
-        final Http2Client client = Http2Client.getInstance();
-        final CountDownLatch latch = new CountDownLatch(1);
-        final ClientConnection connection;
         try {
-            connection = client.connect(new URI(url), Http2Client.WORKER, Http2Client.SSL, Http2Client.BUFFER_POOL, OptionMap.EMPTY).get();
-        } catch (Exception e) {
-            throw new ClientException(e);
-        }
-        try {
+            connectionToken = client.borrow(new URI(url), Http2Client.WORKER, client.getDefaultXnioSsl(), Http2Client.BUFFER_POOL, OptionMap.EMPTY);
+            ClientConnection connection = (ClientConnection) connectionToken.getRawConnection();
+            final CountDownLatch latch = new CountDownLatch(1);
             connection.getIoThread().execute(new Runnable() {
                 @Override
                 public void run() {
@@ -69,7 +67,7 @@ public class FrameworkListHandlerTest {
             logger.error("IOException: ", e);
             throw new ClientException(e);
         } finally {
-            IoUtils.safeClose(connection);
+            client.restore(connectionToken);
         }
         int statusCode = reference.get().getResponseCode();
         String body = reference.get().getAttachment(Http2Client.RESPONSE_BODY);
