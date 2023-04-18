@@ -87,14 +87,6 @@ public class GraphqlGenerator implements Generator {
         transfer(targetPath, ("src.test.resources.config").replace(".", separator), "server.yml", templates.graphql.serverYml.template(serviceId, enableHttp, "49587", enableHttps, "49588", enableHttp2, enableRegistry, version));
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "graphql-security.yml", templates.graphql.securityYml.template());
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "graphql-validator.yml", templates.graphql.validatorYml.template());
-        if(supportClient) {
-            // copy client.yml to main/resources/config
-            transfer(targetPath, ("src.main.resources.config").replace(".", separator), "client.yml", templates.graphql.clientYml.template());
-        } else {
-            // copy client.yml to test/resources/config for test cases
-            transfer(targetPath, ("src.test.resources.config").replace(".", separator), "client.yml", templates.graphql.clientYml.template());
-        }
-
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "primary.crt", templates.graphql.primaryCrt.template());
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "secondary.crt", templates.graphql.secondaryCrt.template());
 
@@ -132,22 +124,6 @@ public class GraphqlGenerator implements Generator {
         }
         try (InputStream is = GraphqlGenerator.class.getResourceAsStream("/binaries/server.truststore")) {
             Files.copy(is, Paths.get(targetPath, ("src.main.resources.config").replace(".", separator), "server.truststore"), StandardCopyOption.REPLACE_EXISTING);
-        }
-        if(supportClient) {
-            try (InputStream is = GraphqlGenerator.class.getResourceAsStream("/binaries/client.keystore")) {
-                Files.copy(is, Paths.get(targetPath, ("src.main.resources.config").replace(".", separator), "client.keystore"), StandardCopyOption.REPLACE_EXISTING);
-            }
-            try (InputStream is = GraphqlGenerator.class.getResourceAsStream("/binaries/client.truststore")) {
-                Files.copy(is, Paths.get(targetPath, ("src.main.resources.config").replace(".", separator), "client.truststore"), StandardCopyOption.REPLACE_EXISTING);
-            }
-        } else {
-            // copy client keystore and truststore into test resources for test cases.
-            try (InputStream is = GraphqlGenerator.class.getResourceAsStream("/binaries/client.keystore")) {
-                Files.copy(is, Paths.get(targetPath, ("src.test.resources.config").replace(".", separator), "client.keystore"), StandardCopyOption.REPLACE_EXISTING);
-            }
-            try (InputStream is = GraphqlGenerator.class.getResourceAsStream("/binaries/client.truststore")) {
-                Files.copy(is, Paths.get(targetPath, ("src.test.resources.config").replace(".", separator), "client.truststore"), StandardCopyOption.REPLACE_EXISTING);
-            }
         }
     }
 

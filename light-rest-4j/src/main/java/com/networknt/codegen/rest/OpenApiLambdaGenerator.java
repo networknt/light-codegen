@@ -132,12 +132,6 @@ public class OpenApiLambdaGenerator implements OpenApiGenerator {
             try (InputStream is = OpenApiLambdaGenerator.class.getResourceAsStream("/binaries/server.truststore")) {
                 Generator.copyFile(is, Paths.get(targetPath, "proxy", "server.truststore"));
             }
-            try (InputStream is = OpenApiLambdaGenerator.class.getResourceAsStream("/binaries/client.keystore")) {
-                Generator.copyFile(is, Paths.get(targetPath, "proxy", "client.keystore"));
-            }
-            try (InputStream is = OpenApiLambdaGenerator.class.getResourceAsStream("/binaries/client.truststore")) {
-                Generator.copyFile(is, Paths.get(targetPath, "proxy", "client.truststore"));
-            }
             // logging
             transfer(targetPath, "proxy", "logback.xml", templates.rest.logback.template(rootPackage));
             // proxy.yml
@@ -244,12 +238,6 @@ public class OpenApiLambdaGenerator implements OpenApiGenerator {
             // logback.xml
             transfer(targetPath + separator + functionName, ("src.main.resources").replace(".", separator), "logback.xml", templates.lambda.logback.template(rootPackage));
             transfer(targetPath + separator + functionName, ("src.test.resources").replace(".", separator), "logback-test.xml", templates.lambda.logback.template(rootPackage));
-            // client truststore for the Prod stage.
-            if(!useLightProxy) {
-                try (InputStream is = OpenApiLambdaGenerator.class.getResourceAsStream("/binaries/client.truststore")) {
-                    Generator.copyFile(is, Paths.get(targetPath + separator + functionName, ("src.main.resources").replace(".", separator), "prod.truststore"));
-                }
-            }
         }
     }
 

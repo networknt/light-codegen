@@ -119,11 +119,6 @@ public class OpenApiKotlinGenerator implements OpenApiGenerator {
 
                 transfer(targetPath, ("src.main.resources.config").replace(".", separator), "openapi-security.yml", templates.restkotlin.openapiSecurity.template());
                 transfer(targetPath, ("src.main.resources.config").replace(".", separator), "openapi-validator.yml", templates.restkotlin.openapiValidator.template());
-                if(supportClient) {
-                    transfer(targetPath, ("src.main.resources.config").replace(".", separator), "client.yml", templates.restkotlin.clientYml.template());
-                } else {
-                    transfer(targetPath, ("src.test.resources.config").replace(".", separator), "client.yml", templates.restkotlin.clientYml.template());
-                }
 
                 transfer(targetPath, ("src.main.resources.config").replace(".", separator), "primary.crt", templates.restkotlin.primaryCrt.template());
                 transfer(targetPath, ("src.main.resources.config").replace(".", separator), "secondary.crt", templates.restkotlin.secondaryCrt.template());
@@ -208,21 +203,6 @@ public class OpenApiKotlinGenerator implements OpenApiGenerator {
         }
         try (InputStream is = OpenApiGenerator.class.getResourceAsStream("/binaries/server.truststore")) {
             Files.copy(is, Paths.get(targetPath, ("src.main.resources.config").replace(".", separator), "server.truststore"), StandardCopyOption.REPLACE_EXISTING);
-        }
-        if(supportClient) {
-            try (InputStream is = OpenApiGenerator.class.getResourceAsStream("/binaries/client.keystore")) {
-                Files.copy(is, Paths.get(targetPath, ("src.main.resources.config").replace(".", separator), "client.keystore"), StandardCopyOption.REPLACE_EXISTING);
-            }
-            try (InputStream is = OpenApiGenerator.class.getResourceAsStream("/binaries/client.truststore")) {
-                Files.copy(is, Paths.get(targetPath, ("src.main.resources.config").replace(".", separator), "client.truststore"), StandardCopyOption.REPLACE_EXISTING);
-            }
-        } else {
-            try (InputStream is = OpenApiGenerator.class.getResourceAsStream("/binaries/client.keystore")) {
-                Files.copy(is, Paths.get(targetPath, ("src.test.resources.config").replace(".", separator), "client.keystore"), StandardCopyOption.REPLACE_EXISTING);
-            }
-            try (InputStream is = OpenApiGenerator.class.getResourceAsStream("/binaries/client.truststore")) {
-                Files.copy(is, Paths.get(targetPath, ("src.test.resources.config").replace(".", separator), "client.truststore"), StandardCopyOption.REPLACE_EXISTING);
-            }
         }
 
         try (InputStream is = new ByteArrayInputStream(Generator.yamlMapper.writeValueAsBytes(model))) {
