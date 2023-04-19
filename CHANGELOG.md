@@ -1,5 +1,12 @@
 # Change Log
 
+## [2.1.15](https://github.com/networknt/light-codegen/tree/2.1.15) (2023-04-19)
+
+
+**Merged pull requests:**
+
+
+- fixes \#652 update codegen with the latest config and client connectio… [\#653](https://github.com/networknt/light-codegen/pull/653) ([stevehu](https://github.com/stevehu))
 ## [2.1.14](https://github.com/networknt/light-codegen/tree/2.1.14) (2023-04-19)
 
 
