@@ -3,6 +3,7 @@
 package @handlerPackage;
 
 import com.networknt.client.Http2Client;
+import com.networknt.client.simplepool.SimpleConnectionHolder;
 import com.networknt.exception.ApiException;
 import com.networknt.exception.ClientException;
 import io.undertow.UndertowOptions;
@@ -10,21 +11,21 @@ import io.undertow.client.ClientConnection;
 import io.undertow.client.ClientRequest;
 import io.undertow.client.ClientResponse;
 import io.undertow.util.Headers;
+import io.undertow.util.HttpString;
 import io.undertow.util.Methods;
-import org.junit.Assert;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xnio.IoUtils;
 import org.xnio.OptionMap;
 
 import java.net.URI;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 
+@@ExtendWith(TestServer.class)
 @with(s1 = item.get("handler").textValue() + "Test") {public class @s1} {
-    @@ClassRule
     public static TestServer server = TestServer.getInstance();
 
     @with(s2 = item.get("handler").textValue() + ".class") {static final Logger logger = LoggerFactory.getLogger(@s2); }
@@ -40,10 +41,7 @@ import java.util.concurrent.atomic.AtomicReference;
         /*
         final CountDownLatch latch = new CountDownLatch(1);
         SimpleConnectionHolder.ConnectionToken connectionToken = null;
-        try {
-        } catch (Exception e) {
-            throw new ClientException(e);
-        }
+
         final AtomicReference<ClientResponse> reference = new AtomicReference<>();
         try {
             if(enableHttps) {
@@ -67,8 +65,8 @@ import java.util.concurrent.atomic.AtomicReference;
         }
         int statusCode = reference.get().getResponseCode();
         String body = reference.get().getAttachment(Http2Client.RESPONSE_BODY);
-        Assert.assertEquals(200, statusCode);
-        Assert.assertNotNull(body);
+        Assertions.assertEquals(200, statusCode);
+        Assertions.assertNotNull(body);
         */
     }
 }
