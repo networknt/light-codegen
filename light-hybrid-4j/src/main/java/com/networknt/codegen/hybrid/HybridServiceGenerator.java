@@ -149,6 +149,13 @@ public class HybridServiceGenerator implements HybridGenerator {
         try (InputStream is = HybridServiceGenerator.class.getResourceAsStream("/binaries/server.truststore")) {
             Files.copy(is, Paths.get(targetPath, ("src.test.resources.config").replace(".", separator), "server.truststore"), StandardCopyOption.REPLACE_EXISTING);
         }
+        // to support unit test with HTTPS/HTTP2, we need to have client.truststore and client.keystore
+        try (InputStream is = HybridServiceGenerator.class.getResourceAsStream("/binaries/client.keystore")) {
+            Files.copy(is, Paths.get(targetPath, ("src.test.resources.config").replace(".", separator), "client.keystore"), StandardCopyOption.REPLACE_EXISTING);
+        }
+        try (InputStream is = HybridServiceGenerator.class.getResourceAsStream("/binaries/client.truststore")) {
+            Files.copy(is, Paths.get(targetPath, ("src.test.resources.config").replace(".", separator), "client.truststore"), StandardCopyOption.REPLACE_EXISTING);
+        }
 
         if(Files.notExists(Paths.get(targetPath, ("src.main.resources.config").replace(".", separator)))) {
             Files.createDirectories(Paths.get(targetPath, ("src.main.resources.config").replace(".", separator)));

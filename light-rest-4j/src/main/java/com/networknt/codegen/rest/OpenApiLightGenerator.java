@@ -255,6 +255,21 @@ public class OpenApiLightGenerator implements OpenApiGenerator {
         try (InputStream is = OpenApiGenerator.class.getResourceAsStream("/binaries/server.truststore")) {
             Generator.copyFile(is, Paths.get(targetPath, (configFolder).replace(".", separator), "server.truststore"));
         }
+        if (supportClient) {
+            try (InputStream is = OpenApiGenerator.class.getResourceAsStream("/binaries/client.keystore")) {
+                Generator.copyFile(is, Paths.get(targetPath, (configFolder).replace(".", separator), "client.keystore"));
+            }
+            try (InputStream is = OpenApiGenerator.class.getResourceAsStream("/binaries/client.truststore")) {
+                Generator.copyFile(is, Paths.get(targetPath, (configFolder).replace(".", separator), "client.truststore"));
+            }
+        } else {
+            try (InputStream is = OpenApiGenerator.class.getResourceAsStream("/binaries/client.keystore")) {
+                Generator.copyFile(is, Paths.get(targetPath, (testConfigFolder).replace(".", separator), "client.keystore"));
+            }
+            try (InputStream is = OpenApiGenerator.class.getResourceAsStream("/binaries/client.truststore")) {
+                Generator.copyFile(is, Paths.get(targetPath, (testConfigFolder).replace(".", separator), "client.truststore"));
+            }
+        }
 
         try (InputStream is = new ByteArrayInputStream(Generator.yamlMapper.writeValueAsBytes(model))) {
             Generator.copyFile(is, Paths.get(targetPath, (configFolder).replace(".", separator), "openapi.yaml"));
