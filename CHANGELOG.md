@@ -8,6 +8,8 @@
 
 - fixes \#656 rollback client.truststore and client.keystore for generators [\#657](https://github.com/networknt/light-codegen/pull/657) ([stevehu](https://github.com/stevehu))
 - fixes \#654 update hybrid generator for the junit 4 to junit 5 [\#655](https://github.com/networknt/light-codegen/pull/655) ([stevehu](https://github.com/stevehu))
+
+
 ## [2.1.15](https://github.com/networknt/light-codegen/tree/2.1.15) (2023-04-19)
 
 
