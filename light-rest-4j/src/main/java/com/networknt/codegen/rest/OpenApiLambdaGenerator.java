@@ -132,6 +132,12 @@ public class OpenApiLambdaGenerator implements OpenApiGenerator {
             try (InputStream is = OpenApiLambdaGenerator.class.getResourceAsStream("/binaries/server.truststore")) {
                 Generator.copyFile(is, Paths.get(targetPath, "proxy", "server.truststore"));
             }
+            try (InputStream is = OpenApiLambdaGenerator.class.getResourceAsStream("/binaries/client.keystore")) {
+                Generator.copyFile(is, Paths.get(targetPath, "proxy", "client.keystore"));
+            }
+            try (InputStream is = OpenApiLambdaGenerator.class.getResourceAsStream("/binaries/client.truststore")) {
+                Generator.copyFile(is, Paths.get(targetPath, "proxy", "client.truststore"));
+            }
             // logging
             transfer(targetPath, "proxy", "logback.xml", templates.rest.logback.template(rootPackage));
             // proxy.yml

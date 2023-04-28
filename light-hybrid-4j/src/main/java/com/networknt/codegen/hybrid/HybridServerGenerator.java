@@ -118,6 +118,21 @@ public class HybridServerGenerator implements HybridGenerator {
         try (InputStream is = HybridServerGenerator.class.getResourceAsStream("/binaries/server.truststore")) {
             Files.copy(is, Paths.get(targetPath, ("src.main.resources.config").replace(".", separator), "server.truststore"), StandardCopyOption.REPLACE_EXISTING);
         }
+        if(supportClient) {
+            try (InputStream is = HybridServerGenerator.class.getResourceAsStream("/binaries/client.keystore")) {
+                Files.copy(is, Paths.get(targetPath, ("src.main.resources.config").replace(".", separator), "client.keystore"), StandardCopyOption.REPLACE_EXISTING);
+            }
+            try (InputStream is = HybridServerGenerator.class.getResourceAsStream("/binaries/client.truststore")) {
+                Files.copy(is, Paths.get(targetPath, ("src.main.resources.config").replace(".", separator), "client.truststore"), StandardCopyOption.REPLACE_EXISTING);
+            }
+        } else {
+            try (InputStream is = HybridServerGenerator.class.getResourceAsStream("/binaries/client.keystore")) {
+                Files.copy(is, Paths.get(targetPath, ("src.test.resources.config").replace(".", separator), "client.keystore"), StandardCopyOption.REPLACE_EXISTING);
+            }
+            try (InputStream is = HybridServerGenerator.class.getResourceAsStream("/binaries/client.truststore")) {
+                Files.copy(is, Paths.get(targetPath, ("src.test.resources.config").replace(".", separator), "client.truststore"), StandardCopyOption.REPLACE_EXISTING);
+            }
+        }
 
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "handler.yml",
                 templates.hybrid.handlerYml.template(serviceId, handlerPackage, jsonPath, prometheusMetrics));
