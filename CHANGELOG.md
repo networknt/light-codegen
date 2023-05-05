@@ -1,5 +1,12 @@
 # Change Log
 
+## [2.1.18](https://github.com/networknt/light-codegen/tree/2.1.18) (2023-05-05)
+
+
+**Merged pull requests:**
+
+
+- fixes \#658 remove the datasource from the service.yml for hybrid-4j g… [\#659](https://github.com/networknt/light-codegen/pull/659) ([stevehu](https://github.com/stevehu))
 ## [2.1.17](https://github.com/networknt/light-codegen/tree/2.1.17) (2023-05-05)
 
 
