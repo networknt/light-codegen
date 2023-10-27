@@ -262,6 +262,7 @@
                 <configuration>
                     <archive>
                         <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                             <mainClass>${project.main.class}</mainClass>
                         </manifest>
                     </archive>

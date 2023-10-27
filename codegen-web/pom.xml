@@ -139,6 +139,7 @@
                 <configuration>
                     <archive>
                         <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                             <mainClass>com.networknt.server.Server</mainClass>
                         </manifest>
                     </archive>
