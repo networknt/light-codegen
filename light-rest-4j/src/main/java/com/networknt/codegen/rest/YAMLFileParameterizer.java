@@ -22,6 +22,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.composer.Composer;
 import org.yaml.snakeyaml.nodes.MappingNode;
 import org.yaml.snakeyaml.nodes.Node;
@@ -343,8 +344,8 @@ public class YAMLFileParameterizer {
 	
 	protected static Node loadResource(String resourceLocation) {
 		try (InputStream in = getResourceAsStream(resourceLocation);
-				BufferedReader inputReader = new BufferedReader(new InputStreamReader(in, UTF_8))) {
-			Composer composer = new Composer(new ParserImpl(new StreamReader(inputReader)), new Resolver());
+			BufferedReader inputReader = new BufferedReader(new InputStreamReader(in, UTF_8))) {
+			Composer composer = new Composer(new ParserImpl(new StreamReader(inputReader), new LoaderOptions()), new Resolver(), new LoaderOptions());
 			return composer.getSingleNode();
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
@@ -369,7 +370,7 @@ public class YAMLFileParameterizer {
 	
 	protected static Node loadFile(File file) {
 		try (Reader inputReader = Files.newBufferedReader(file.toPath(), UTF_8)) {
-			Composer composer = new Composer(new ParserImpl(new StreamReader(inputReader)), new Resolver());
+			Composer composer = new Composer(new ParserImpl(new StreamReader(inputReader), new LoaderOptions()), new Resolver(), new LoaderOptions());
 			return composer.getSingleNode();
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
