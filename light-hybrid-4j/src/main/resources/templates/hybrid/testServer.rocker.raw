@@ -26,10 +26,6 @@ public class TestServer implements BeforeAllCallback, AfterAllCallback {
 
     }
 
-    public ServerConfig getServerConfig() {
-        return Server.getServerConfig();
-    }
-
     public void restartServer() {
         try {
             if (refCount.get() == 0) {

@@ -6,6 +6,7 @@ import assertk.assertions.contains
 import assertk.assertions.isEqualTo
 import com.networknt.client.Http2Client
 import com.networknt.server.Server
+import com.networknt.server.ServerConfig
 import io.undertow.UndertowOptions
 import io.undertow.client.ClientCallback
 import io.undertow.client.ClientExchange
@@ -45,18 +46,18 @@ class LightTestServer() : BeforeAllCallback, AfterAllCallback {
 
     // Patch server config and start server
     override fun beforeAll(context: ExtensionContext?) {
-        oldIsDynamicPort = Server.getServerConfig().isDynamicPort
-        oldHttpsPort = Server.getServerConfig().httpsPort
-        Server.getServerConfig().isDynamicPort = false
-        Server.getServerConfig().httpsPort = httpsPort
+        oldIsDynamicPort = ServerConfig.getInstance().isDynamicPort
+        oldHttpsPort = ServerConfig.getInstance().httpsPort
+        ServerConfig.getInstance().isDynamicPort = false
+        ServerConfig.getInstance().httpsPort = httpsPort
         Server.init()
     }
 
     // Stop server and unpatch server config
     override fun afterAll(context: ExtensionContext?) {
         Server.stop()
-        Server.getServerConfig().isDynamicPort = oldIsDynamicPort!!
-        Server.getServerConfig().httpsPort = oldHttpsPort!!
+        ServerConfig.getInstance().isDynamicPort = oldIsDynamicPort!!
+        ServerConfig.getInstance().httpsPort = oldHttpsPort!!
     }
 
     companion object {

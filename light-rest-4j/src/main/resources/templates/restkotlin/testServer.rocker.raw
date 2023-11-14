@@ -26,10 +26,6 @@ public class TestServer extends ExternalResource {
 
     }
 
-    public ServerConfig getServerConfig() {
-        return Server.getServerConfig();
-    }
-
     @@Override
     protected void before() {
         try {

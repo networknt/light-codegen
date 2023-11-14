@@ -25,11 +25,6 @@ public class TestServer implements BeforeAllCallback, AfterAllCallback {
         return instance;
     }
 
-
-    public ServerConfig getServerConfig() {
-        return ServerConfig.getInstance();
-    }
-
     @Override
     public void beforeAll(ExtensionContext context) throws Exception {
         try {
