@@ -43,6 +43,8 @@ service.singletons:
   - com.networknt.balance.RoundRobinLoadBalance
 - com.networknt.cluster.Cluster:
   - com.networknt.cluster.LightCluster
+- com.networknt.cache.CacheManager:
+  - com.networknt.cache.CaffeineCacheManager
 # StartupHookProvider implementations, there are one to many and they are called in the same sequence defined.
 - com.networknt.server.StartupHookProvider:
   @if(config.get("kafkaProducer").booleanValue()){
@@ -89,3 +91,12 @@ service.singletons:
       connectionTimeout: 2000
 }
 }
+
+# cache.yml
+cache.caches:
+  - cacheName: jwt
+    expiryInMinutes: 15
+    maxSize: 100
+  - cacheName: jwk
+    expiryInMinutes: 129600
+    maxSize: 100
