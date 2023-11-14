@@ -4,6 +4,7 @@ import com.networknt.client.Http2Client;
 import com.networknt.client.simplepool.SimpleConnectionHolder;
 import com.networknt.exception.ApiException;
 import com.networknt.exception.ClientException;
+import com.networknt.server.ServerConfig;
 import io.undertow.client.ClientConnection;
 import io.undertow.client.ClientRequest;
 import io.undertow.client.ClientResponse;
@@ -32,10 +33,10 @@ public class FrameworkListHandlerTest {
 
     public static TestServer server = TestServer.getInstance();
 
-    static final boolean enableHttp2 = server.getServerConfig().isEnableHttp2();
-    static final boolean enableHttps = server.getServerConfig().isEnableHttps();
-    static final int httpPort = server.getServerConfig().getHttpPort();
-    static final int httpsPort = server.getServerConfig().getHttpsPort();
+    static final boolean enableHttp2 = ServerConfig.getInstance().isEnableHttp2();
+    static final boolean enableHttps = ServerConfig.getInstance().isEnableHttps();
+    static final int httpPort = ServerConfig.getInstance().getHttpPort();
+    static final int httpsPort = ServerConfig.getInstance().getHttpsPort();
     static final String url = enableHttp2 || enableHttps ? "https://localhost:" + httpsPort : "http://localhost:" + httpPort;
     final Http2Client client = Http2Client.getInstance();
 
