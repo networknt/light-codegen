@@ -1,5 +1,15 @@
 # Change Log
 
+## [2.1.29](https://github.com/networknt/light-codegen/tree/2.1.29) (2023-11-19)
+
+
+**Merged pull requests:**
+
+
+- fixes \#671 add cache manager and cache configuration to values.yml in… [\#672](https://github.com/networknt/light-codegen/pull/672) ([stevehu](https://github.com/stevehu))
+- fixes \#668 refactor based on the ServerConfig change [\#670](https://github.com/networknt/light-codegen/pull/670) ([stevehu](https://github.com/stevehu))
+- fixes \#668 refactor based on the ServerConfig change [\#669](https://github.com/networknt/light-codegen/pull/669) ([stevehu](https://github.com/stevehu))
+- fixes \#664 add addDefaultImplementationEntries to maven jar plugin [\#665](https://github.com/networknt/light-codegen/pull/665) ([stevehu](https://github.com/stevehu))
 ## [2.1.28](https://github.com/networknt/light-codegen/tree/2.1.28) (2023-10-24)
 
 
