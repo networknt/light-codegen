@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.6.46](https://github.com/networknt/light-codegen/tree/1.6.46) (2023-12-30)
+
+
+**Merged pull requests:**
+
+
+- fixes \#666 update the YAMLFileParameterizer after snakeyaml upgrade [\#667](https://github.com/networknt/light-codegen/pull/667) ([stevehu](https://github.com/stevehu))
 ## [1.6.45](https://github.com/networknt/light-codegen/tree/1.6.45) (2023-03-18)
 
 
