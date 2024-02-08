@@ -23,34 +23,34 @@ public class YAMLFileParameterizerTest {
     public void testNormalizeFilename() {
     	String s1="/a/b/c\\d.txt";
     	String s2="\\a\\b\\c\\d.txt";
-    	
+
     	String expected = String.format("%sa%sb%sc%sd.txt", File.separator, File.separator, File.separator, File.separator);
-    	
+
     	String ns1 = YAMLFileParameterizer.normalizeFilename(s1);
     	String ns2 = YAMLFileParameterizer.normalizeFilename(s2);
-    	
+
     	assertTrue(expected.equals(ns1));
     	assertTrue(expected.equals(ns2));
     }
-    
+
     @Test
     public void testFileExcludeSet() {
     	List<String> excludes = Arrays.asList("/a/b/c\\d.txt", "2.yml", "\\a\\b\\c\\d.txt", "");
-    	
+
     	Set<String> excludeSet = YAMLFileParameterizer.buildFileExcludeSet(".", excludes);
-    	
+
     	assertTrue(2==excludeSet.size());
     }
-    
+
     @Test
     public void testResourceExcludeSet() {
     	List<String> excludes = Arrays.asList("audit.yml", "body.yml");
-    	
+
     	Set<String> excludeSet = YAMLFileParameterizer.buildResourceExcludeSet("handlerconfig/", excludes);
-    	
+
     	assertTrue(2==excludeSet.size());
     }
-    
+
     @Test
     public void testParameterizing() throws IOException {
     	String destDirName = "/tmp/yml_param_test";

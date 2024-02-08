@@ -19,7 +19,7 @@ fi
 if [ ! -f "$CURRENT_DIR/rocker-compiler.conf" ]; then
     echo "generate config $CURRENT_DIR/rocker-compiler.conf"
 
-    echo "rocker.template.dir=$CURRENT_DIR" > rocker-compiler.conf 
+    echo "rocker.template.dir=$CURRENT_DIR" > rocker-compiler.conf
 fi
 
 if [ ! -d  "$CURRENT_DIR/target/classes" ]; then

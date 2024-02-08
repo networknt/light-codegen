@@ -86,4 +86,3 @@ fetchMinBytes: ${kafka-consumer.fetchMinBytes:-1}
 instanceTimeoutMs: ${kafka-consumer.instanceTimeoutMs:300000}
 # Amount of time to backoff when an iterator runs out of date.
 iteratorBackoffMs: ${kafka-consumer.iteratorBackoffMs:50}
-

@@ -9,7 +9,7 @@ if (-not (Test-Path $cliJar)) {
     Exit 1
 }
 
-if (-not (Test-Path env:JAVA_HOME)) { 
+if (-not (Test-Path env:JAVA_HOME)) {
     Write-Host "JAVA_HOME is not set."
     Exit 1
 }

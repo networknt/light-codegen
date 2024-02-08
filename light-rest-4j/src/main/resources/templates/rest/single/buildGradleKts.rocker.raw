@@ -124,4 +124,3 @@ tasks {
         dependsOn(fatJar)
     }
 }
-

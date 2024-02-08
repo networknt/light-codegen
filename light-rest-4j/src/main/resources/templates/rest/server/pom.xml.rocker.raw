@@ -24,7 +24,7 @@
             <groupId>@config.get("groupId").textValue()</groupId>
             <artifactId>service</artifactId>
         </dependency>
-        
+
         <dependency>
             <groupId>com.networknt</groupId>
             <artifactId>config</artifactId>

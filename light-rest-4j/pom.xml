@@ -67,11 +67,11 @@
             <groupId>com.fizzed</groupId>
             <artifactId>rocker-compiler</artifactId>
             <scope>provided</scope>
-        </dependency>   
+        </dependency>
         <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
-        </dependency> 
+        </dependency>
 		<dependency>
 		    <groupId>io.github.classgraph</groupId>
 		    <artifactId>classgraph</artifactId>

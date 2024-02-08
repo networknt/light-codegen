@@ -2,7 +2,7 @@
 @args (String serviceId, Boolean enableHttp, String httpPort, Boolean enableHttps, String httpsPort, Boolean enableHttp2, Boolean enableRegistry, String version, JsonNode config)
 #--------------------------------------------------------------------------------
 # values.yml : Set of values commonly overridden in microservices
-# 			   The file can be extended with other elements, as necessary 
+# 			   The file can be extended with other elements, as necessary
 #--------------------------------------------------------------------------------
 
 # client.yml

@@ -103,7 +103,7 @@
         <version.maven-deploy>2.8.2</version.maven-deploy>
         <version.maven-gpg>1.6</version.maven-gpg>
     </properties>
-    
+
     <modules>
         <module>codegen-core</module>
         <module>light-rest-4j</module>
@@ -288,7 +288,7 @@
 	            <groupId>com.fizzed</groupId>
 	            <artifactId>rocker-compiler</artifactId>
 	            <version>${version.rocker}</version>
-	        </dependency>            
+	        </dependency>
             <dependency>
                 <groupId>com.beust</groupId>
                 <artifactId>jcommander</artifactId>
