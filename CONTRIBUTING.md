@@ -9,10 +9,10 @@ top of things.
 
 ## Core vs Modules
 
-New functionality is typically directed toward middleware components to provide 
-a slimmer Framework Core, reducing its surface area, and to allow greater freedom 
-for middleware developers and maintainers. 
- 
+New functionality is typically directed toward middleware components to provide
+a slimmer Framework Core, reducing its surface area, and to allow greater freedom
+for middleware developers and maintainers.
+
 If you are unsure of whether your contribution should be implemented as a
 middleware component or part of Framework Core, you may visit
 [Gitter Chat](https://gitter.im/networknt/light-4j) for advice.
@@ -44,7 +44,7 @@ middleware component or part of Framework Core, you may visit
 ### Documentation
 
 For changes of a trivial nature to comments and documentation, it is not
-necessary to create a new issue. 
+necessary to create a new issue.
 
 ### Example
 
@@ -55,7 +55,7 @@ Adding new examples or enhance examples won't need to create a new issue.
 
 * Push your changes to a topic branch in your fork of the repository.
 * Submit a pull request to the repository in the networknt organization.
-* The core team looks at Pull Requests on a regular basis and will merge the pull request. 
+* The core team looks at Pull Requests on a regular basis and will merge the pull request.
 * Sometimes, we might need to contact contributor understand the details of the pull request.
 
 # Additional Resources

@@ -13,13 +13,13 @@ import com.networknt.codegen.OpenApiLightGeneratorTest;
 public class OpenApiSpecGeneratorTest {
 	private static final String configName = "/config.json";
 	private static final String outputDir = "/tmp/codegen/";
-	
+
 	@Test
 	public void test() throws IOException {
 		JsonNode config = Generator.jsonMapper.readTree(OpenApiLightGeneratorTest.class.getResourceAsStream(configName));
-		
+
 		OpenApiSpecGenerator generator = new OpenApiSpecGenerator();
-		
+
 		generator.generate(outputDir, null, config);
 	}
 }

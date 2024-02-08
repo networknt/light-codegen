@@ -69,7 +69,7 @@
         <dependency>
             <groupId>com.fizzed</groupId>
             <artifactId>rocker-compiler</artifactId>
-        </dependency>        
+        </dependency>
         <dependency>
             <groupId>com.beust</groupId>
             <artifactId>jcommander</artifactId>

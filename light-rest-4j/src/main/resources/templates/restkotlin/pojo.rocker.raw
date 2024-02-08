@@ -9,4 +9,3 @@ data class @className (
         @if(i.index() == props.size() - 1) {val @prop.get("name"): @prop.get("type")}
     }
 )
-

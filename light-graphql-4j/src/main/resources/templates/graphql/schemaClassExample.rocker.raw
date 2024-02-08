@@ -28,4 +28,3 @@ public class @schemaClass implements SchemaProvider {
                 .build();
     }
 }
-
