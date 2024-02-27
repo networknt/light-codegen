@@ -7,6 +7,8 @@
 
 
 - fixes \#675 add pre-commit hook and apply it [\#676](https://github.com/networknt/light-codegen/pull/676) ([stevehu](https://github.com/stevehu))
+
+
 ## [2.1.31](https://github.com/networknt/light-codegen/tree/2.1.31) (2024-01-16)
 
 
