@@ -20,7 +20,7 @@ oracleVersion=11.2.0.3
 mysqlVersion=8.0.32
 }
 @if(config.get("supportDb").booleanValue() && "postgres".equalsIgnoreCase(config.path("dbInfo").path("name").textValue())){
-postgresVersion=42.6.0
+postgresVersion=42.7.2
 }
 @if(config.get("supportH2ForTest").booleanValue()){
 h2Version=1.3.176
