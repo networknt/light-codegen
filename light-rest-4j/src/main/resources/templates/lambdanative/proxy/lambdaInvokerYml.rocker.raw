@@ -1,0 +1,12 @@
+@import java.util.Map
+@import java.util.List
+@args (String region, List<Map<String, Object>> items)
+# The aws region that is used to create the LambdaClient.
+region: @region
+# The LogType of the execution log of Lambda. Set Tail to include and None to not include.
+logType: Tail
+# mapping of the endpoints to Lambda functions
+functions:
+@for(item: items){
+  @item.get("endpoint"): @item.get("functionName")
+}
