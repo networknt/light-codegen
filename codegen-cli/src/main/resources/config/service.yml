@@ -9,3 +9,4 @@ singletons:
   - com.networknt.codegen.rest.OpenApiKotlinGenerator
   - com.networknt.codegen.rest.OpenApiLambdaGenerator
   - com.networknt.codegen.rest.OpenApiSpecGenerator
+  - com.networknt.codegen.rest.OpenApiLambdaNativeGenerator

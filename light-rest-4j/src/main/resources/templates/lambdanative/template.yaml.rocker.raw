@@ -2,7 +2,7 @@
 @import java.util.List
 @import com.networknt.codegen.rest.AbstractLambdaGenerator.OpenApiPath;
 @import com.networknt.codegen.rest.AbstractLambdaGenerator.MethodFunction;
-@args (String projectName, String handlerPackage, boolean packageDocker, boolean useLightProxy, List<Map<String, Object>> operationList, List<OpenApiPath> pathList)
+@args (String projectName, String handlerPackage, boolean packageDocker, String httpEntryPoint, List<Map<String, Object>> operationList, List<OpenApiPath> pathList)
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: >
@@ -16,7 +16,7 @@ Globals:
     Timeout: 20
 
 Resources:
-  @if(!useLightProxy){
+  @if(httpEntryPoint.equals("GTY")){
   ApiGateway:
     Type: AWS::Serverless::Api
     Properties:
@@ -77,7 +77,7 @@ Resources:
           Properties:
             @with(s = op.get("path")){Path: @s}
             @with(s = op.get("method")){Method: @s}
-            @if(!useLightProxy){
+            @if(httpEntryPoint.equals("GTY")){
             RestApiId:
               Ref: ApiGateway
             }
@@ -88,7 +88,7 @@ Resources:
       Dockerfile: Dockerfile
     }
   }
-  @if(!useLightProxy){
+  @if(httpEntryPoint.equals("GTY")){
   AuthorizerPerm:
     Type: AWS::Lambda::Permission
     DependsOn:

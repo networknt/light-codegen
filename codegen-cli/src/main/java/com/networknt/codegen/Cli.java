@@ -129,7 +129,7 @@ public class Cli {
                         configNode = Generator.yamlMapper.readTree(Files.readAllBytes(Paths.get(config)));
                     }
                 } else {
-                    throw new UnsupportedOperationException("Unknow file format " + ext);
+                    throw new UnsupportedOperationException("Unknown file format " + ext);
                 }
 
             }

@@ -1,0 +1,9 @@
+@args (boolean useLightProxy)
+Dev:
+Sit:
+Stage:
+Prod:
+@if(!useLightProxy) {
+  truststoreName: prod.truststore
+  truststorePass: password
+}
