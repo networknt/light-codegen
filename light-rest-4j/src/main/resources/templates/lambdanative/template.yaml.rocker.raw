@@ -2,21 +2,56 @@
 @import java.util.List
 @import com.networknt.codegen.rest.AbstractLambdaGenerator.OpenApiPath;
 @import com.networknt.codegen.rest.AbstractLambdaGenerator.MethodFunction;
-@args (String projectName, String handlerPackage, boolean packageDocker, String httpEntryPoint, List<Map<String, Object>> operationList, List<OpenApiPath> pathList)
+@args (String artifactId, String serviceId, String handlerPackage, boolean packageDocker, String lambdaTrigger, List<Map<String, Object>> operationList, List<OpenApiPath> pathList)
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: >
-  @projectName
+  @serviceId
 
-  Sample SAM Template for @projectName
+  Sample SAM Template for @serviceId
 
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
     Timeout: 20
 
+Parameters:
+  ParamStage:
+    Type: String
+    Description: Deployment stage.
+    Default: test
+  ParamServiceId:
+    Type: String
+    Description: Unique service id for your application
+    Default: @serviceId
+
 Resources:
-  @if(httpEntryPoint.equals("GTY")){
+  @with(s = artifactId.substring(0, 1).toUpperCase() + artifactId.substring(1) + "FunctionRole:"){@s}
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: @artifactId-function-role
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action:
+            - "sts:AssumeRole"
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: @with(s = "DirectInvoke" + artifactId.substring(0, 1).toUpperCase() + artifactId.substring(1) + "Lambda"){@s}
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              Action:
+                - lambda:InvokeFunction
+                - lambda:InvokeAsync
+              Effect: Allow
+              Resource: "*"
+
+  @if(lambdaTrigger.equals("GTY")){
   ApiGateway:
     Type: AWS::Serverless::Api
     Properties:
@@ -67,20 +102,11 @@ Resources:
       Runtime: provided.al2023
       MemorySize: 512
       FunctionName: @with(s = op.get("functionName")){@s}
+      @with(s = "!Sub ${" + artifactId.substring(0, 1).toUpperCase() + artifactId.substring(1) + "FunctionRole.Arn}"){Role: @s}
       Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
         Variables:
           PARAM1: VALUE
       }
-      Events:
-        @with(s = op.get("apiName") + ":"){@s}
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
-          Properties:
-            @with(s = op.get("path")){Path: @s}
-            @with(s = op.get("method")){Method: @s}
-            @if(httpEntryPoint.equals("GTY")){
-            RestApiId:
-              Ref: ApiGateway
-            }
     @if(packageDocker) {
     Metadata:
       DockerTag: java11-maven-v1
@@ -88,7 +114,69 @@ Resources:
       Dockerfile: Dockerfile
     }
   }
-  @if(httpEntryPoint.equals("GTY")){
+
+
+  @with(s = artifactId.substring(0, 1).toUpperCase() + artifactId.substring(1) + "NativeLambdaProxyFunction:"){@s}
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: s3://networknt-native-lambda-jar-for-deployment-reference/lambda-native-2.1.34-SNAPSHOT.jar
+      Handler: com.networknt.aws.lambda.proxy.LambdaProxy::handleRequest
+      Layers:
+        @with(s = artifactId.substring(0, 1).toUpperCase() + artifactId.substring(1) + "ConfigLayer"){- !Ref @s}
+      Runtime: java11
+      MemorySize: 512
+      FunctionName: @with(s = artifactId.substring(0, 1).toUpperCase() + artifactId.substring(1) + "NativeLambdaProxyFunction"){@s}
+      @with(s = "!Sub ${" + artifactId.substring(0, 1).toUpperCase() + artifactId.substring(1) + "FunctionRole.Arn}"){Role: @s}
+      Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+        Variables:
+          JAVA_TOOL_OPTIONS: -Dlight-4j-config-dir=/opt
+
+      Events:
+        @with(s = artifactId.substring(0, 1).toUpperCase() + artifactId.substring(1) + "HealthGet:"){@s}
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /health
+            Method: GET
+        @with(s = artifactId.substring(0, 1).toUpperCase() + artifactId.substring(1) + "AdmHealthGet:"){@s}
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /adm/health
+            Method: GET
+        @with(s = artifactId.substring(0, 1).toUpperCase() + artifactId.substring(1) + "AdmServerInfoGet:"){@s}
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /adm/server/info
+            Method: GET
+        @with(s = artifactId.substring(0, 1).toUpperCase() + artifactId.substring(1) + "AdmLoggerGet:"){@s}
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /adm/logger
+            Method: GET
+        @with(s = artifactId.substring(0, 1).toUpperCase() + artifactId.substring(1) + "AdmLoggerPost:"){@s}
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /adm/logger
+            Method: POST
+        @for(op : operationList) {
+        @with(s = op.get("apiName") + ":"){@s}
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            @with(s = op.get("path")){Path: @s}
+            @with(s = op.get("method")){Method: @s}
+        }
+  @with(s = artifactId.substring(0, 1).toUpperCase() + artifactId.substring(1) + "ConfigLayer:"){@s}
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      @with(s = "sam-app-" + artifactId + "-config-layer"){LayerName: @s}
+      @with(s = "Configuration for the " + artifactId){Description: @s}
+      ContentUri: config/
+      CompatibleRuntimes:
+        - java11
+        - java17
+      LicenseInfo: 'MIT'
+      RetentionPolicy: Retain
+
+  @if(lambdaTrigger.equals("GTY")){
   AuthorizerPerm:
     Type: AWS::Lambda::Permission
     DependsOn:

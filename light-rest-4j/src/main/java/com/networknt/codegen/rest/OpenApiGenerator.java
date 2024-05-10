@@ -320,6 +320,7 @@ public interface OpenApiGenerator extends Generator {
                 flattened.put("serviceName", Utils.camelize(normalizedPath) + Utils.camelize(entryOps.getKey()) + "Service");
                 flattened.put("functionName", Utils.camelize(normalizedPath) + Utils.camelize(entryOps.getKey()) + "Function");
                 flattened.put("endpoint", path + "@" + entryOps.getKey().toLowerCase());
+                flattened.put("endpointWithBasePath", basePath + path + "@" + entryOps.getKey().toLowerCase());
                 flattened.put("apiName", Utils.camelize(normalizedPath) + Utils.camelize(entryOps.getKey()));
                 Operation operation = entryOps.getValue();
                 flattened.put("normalizedPath", UrlGenerator.generateUrl(basePath, path, entryOps.getValue().getParameters()));

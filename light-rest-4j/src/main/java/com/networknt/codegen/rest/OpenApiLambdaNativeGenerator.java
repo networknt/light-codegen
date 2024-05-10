@@ -2,6 +2,7 @@ package com.networknt.codegen.rest;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.networknt.codegen.Generator;
 import com.networknt.config.JsonMapper;
 import com.networknt.jsonoverlay.Overlay;
 import com.networknt.oas.OpenApiParser;
@@ -9,9 +10,12 @@ import com.networknt.oas.model.OpenApi3;
 import com.networknt.oas.model.impl.OpenApi3Impl;
 import com.networknt.utility.StringUtils;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,11 +40,9 @@ public class OpenApiLambdaNativeGenerator extends AbstractLambdaGenerator implem
         // Lambda specific config
         boolean packageDocker = isPackageDocker(config, null);
         boolean buildMaven = isBuildMaven(config, null);
-        String httpEntryPoint = getHttpEntryPoint(config, null);  // NONE, HTTP, REST, URL, ALB
+        String lambdaTrigger = getLambdaTrigger(config, null);  // NONE, HTTP, REST, URL, ALB
 
-        String launchType = getLaunchType(config, null);
         String region = getRegion(config, null);
-        boolean publicVpc = isPublicVpc(config, null);
         // Common config
         String rootPackage = getRootPackage(config, null);
         String modelPackage = getModelPackage(config, null);
@@ -50,15 +52,8 @@ public class OpenApiLambdaNativeGenerator extends AbstractLambdaGenerator implem
         boolean overwriteHandlerTest = isOverwriteHandlerTest(config, null);
         boolean overwriteModel = isOverwriteModel(config, null);
         boolean generateModelOnly = isGenerateModelOnly(config, null);
-        boolean enableHttp = isEnableHttp(config, null);
-        String httpPort = getHttpPort(config, null);
-        boolean enableHttps = isEnableHttps(config, null);
-        String httpsPort = getHttpsPort(config, null);
-        boolean enableHttp2 = isEnableHttp2(config, null);
         boolean enableRegistry = isEnableRegistry(config, null);
-        boolean eclipseIDE = isEclipseIDE(config, null);
         boolean supportClient = isSupportClient(config, null);
-        boolean prometheusMetrics = isPrometheusMetrics(config, null);
         String dockerOrganization = getDockerOrganization(config, null);
         String version = getVersion(config, null);
         String groupId = getGroupId(config, null);
@@ -80,7 +75,13 @@ public class OpenApiLambdaNativeGenerator extends AbstractLambdaGenerator implem
         transfer(targetPath, "", ".gitignore", templates.lambdanative.gitignore.template());
 
         transfer(targetPath, "", "README.md", templates.lambdanative.README.template(artifactId, packageDocker, operationList));
-        transfer(targetPath, "", "template.yaml", templates.lambdanative.template.template(artifactId, handlerPackage, packageDocker, httpEntryPoint, operationList, pathList));
+        transfer(targetPath, "", "template.yaml", templates.lambdanative.template.template(artifactId, serviceId, handlerPackage, packageDocker, lambdaTrigger, operationList, pathList));
+        transfer(targetPath, "config", "values.yml",
+                templates.lambdanative.values.template(region, operationList, serviceId));
+
+        try (InputStream is = new ByteArrayInputStream(Generator.yamlMapper.writeValueAsBytes(model))) {
+            Generator.copyFile(is, Paths.get(targetPath, "config", "openapi.yaml"));
+        }
 
         // handler
         for (Map<String, Object> op : operationList) {
@@ -164,15 +165,15 @@ public class OpenApiLambdaNativeGenerator extends AbstractLambdaGenerator implem
         }
     }
 
-    public String getHttpEntryPoint(JsonNode config, String defaultValue) {
-        String httpEntryPoint = defaultValue;
-        JsonNode jsonNode = config.get("httpEntryPoint");
+    public String getLambdaTrigger(JsonNode config, String defaultValue) {
+        String lambdaTrigger = defaultValue;
+        JsonNode jsonNode = config.get("lambdaTrigger");
         if(jsonNode == null) {
-            ((ObjectNode)config).put("httpEntryPoint", httpEntryPoint);
+            ((ObjectNode)config).put("lambdaTrigger", lambdaTrigger);
         } else {
-            httpEntryPoint = jsonNode.textValue();
+            lambdaTrigger = jsonNode.textValue();
         }
-        return httpEntryPoint;
+        return lambdaTrigger;
     }
 
     ModelCallback callback = new ModelCallback() {
