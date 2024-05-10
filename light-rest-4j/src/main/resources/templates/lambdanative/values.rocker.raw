@@ -1,10 +1,75 @@
-@args (String serviceId, Boolean enableHttp, String httpPort, Boolean enableHttps, String httpsPort, Boolean enableHttp2, Boolean enableRegistry, String version)
-# server.yml
-server.httpPort: @httpPort
-server.enableHttp: @enableHttp
-server.httpsPort: @httpsPort
-server.enableHttps: @enableHttps
-server.enableHttp2: @enableHttp2
-server.enableRegistry: @enableRegistry
-server.serviceId: @serviceId
-server.buildNumber: @version
+@import java.util.Map
+@import java.util.List
+@args (String region, List<Map<String, Object>> items, String serviceId)
+# lambda-invoker.yml
+lambda-invoker.region: @region
+lambda-invoker.functions:
+@for(item: items){
+  @item.get("endpointWithBasePath"): @item.get("functionName")
+}
+
+# lambda-proxy.yml
+lambda-proxy.lambdaAppId: @serviceId
+
+# service.yml
+service.singletons:
+  - com.networknt.cache.CacheManager:
+    - com.networknt.cache.CaffeineCacheManager
+
+# cache.yml
+cache.caches:
+  - cacheName: jwt
+    expiryInMinutes: 11
+    maxSize: 1000
+  - cacheName: jwk
+    expiryInMinutes: 600
+    maxSize: 10
+  - cacheName: token
+    expiryInMinutes: 11
+    maxSize: 10
+
+# security.yml
+security.enableVerifyJwt: false
+
+# unified-security.yml
+unified-security.enabled: false
+unified-security.pathPrefixAuths:
+  - prefix: /
+    jwt: true
+
+# header.yml
+header.enabled: true
+
+# handler.yml
+handler.handlers:
+  # Light-framework cross-cutting concerns implemented in the microservice
+  - com.networknt.aws.lambda.handler.middleware.correlation.CorrelationMiddleware@@correlation
+  - com.networknt.aws.lambda.handler.middleware.traceability.TraceabilityMiddleware@@traceability
+  - com.networknt.aws.lambda.handler.middleware.header.HeaderMiddleware@@header
+  - com.networknt.aws.lambda.handler.middleware.specification.OpenApiMiddleware@@specification
+  - com.networknt.aws.lambda.handler.middleware.invoke.LambdaFunctionInvoker@@invoke
+  - com.networknt.aws.lambda.handler.middleware.limit.LimitMiddleware@@limit
+  - com.networknt.aws.lambda.handler.middleware.metrics.APMMetricsMiddleware@@metrics
+  - com.networknt.aws.lambda.handler.middleware.audit.AuditMiddleware@@audit
+  - com.networknt.aws.lambda.handler.middleware.validator.ValidatorMiddleware@@validator
+  - com.networknt.aws.lambda.handler.middleware.transformer.RequestTransformerMiddleware@@requestTransformer
+  - com.networknt.aws.lambda.handler.middleware.transformer.ResponseTransformerMiddleware@@responseTransformer
+  - com.networknt.aws.lambda.handler.middleware.sanitizer.SanitizerMiddleware@@sanitizer
+  - com.networknt.aws.lambda.handler.middleware.security.UnifiedSecurityMiddleware@@security
+  - com.networknt.aws.lambda.handler.middleware.security.JwtVerifyMiddleware@@jwt
+  - com.networknt.aws.lambda.handler.middleware.security.SwtVerifyMiddleware@@swt
+  - com.networknt.aws.lambda.handler.middleware.security.BasicAuthMiddleware@@basic
+  - com.networknt.aws.lambda.handler.middleware.security.ApiKeyMiddleware@@apikey
+  - com.networknt.aws.lambda.handler.middleware.token.TokenMiddleware@@token
+  # Framework endpoint handlers
+  - com.networknt.aws.lambda.handler.health.HealthCheckHandler@@health
+  - com.networknt.aws.lambda.handler.info.ServerInfoHandler@@info
+  - com.networknt.aws.lambda.handler.logger.LoggerGetHandler@@getLogger
+  - com.networknt.aws.lambda.handler.logger.LoggerSetHandler@@setLogger
+
+# sanitizer.yml
+sanitizer.enabled: true
+
+# limit.yml
+limit.enabled: true
+limit.rateLimit: 10/m 10000/d
