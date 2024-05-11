@@ -26,7 +26,7 @@ public class App implements RequestHandler<APIGatewayProxyRequestEvent, APIGatew
         } catch (Exception e) {
             logger.error("Exception:", e);
         }
-        BusinessHandler handler = new BusinessHandler();
+        BusinessHandler handler = BusinessHandler.getInstance();
         APIGatewayProxyResponseEvent response = handler.handleRequest(request, context);
         try {
             if(logger.isDebugEnabled()) logger.debug("response = {}", objectMapper.writeValueAsString(response));
