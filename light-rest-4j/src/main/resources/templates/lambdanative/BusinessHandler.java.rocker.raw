@@ -17,6 +17,18 @@ import java.util.Map;
  */
 public class BusinessHandler {
     private static final Logger logger = LoggerFactory.getLogger(BusinessHandler.class);
+
+    private BusinessHandler() {
+    }
+
+    private static final class InstanceHolder {
+        private static final BusinessHandler INSTANCE = new BusinessHandler();
+    }
+
+    public static BusinessHandler getInstance() {
+        return InstanceHolder.INSTANCE;
+    }
+
     public APIGatewayProxyResponseEvent handleRequest(final APIGatewayProxyRequestEvent input, final Context context) {
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/json");
