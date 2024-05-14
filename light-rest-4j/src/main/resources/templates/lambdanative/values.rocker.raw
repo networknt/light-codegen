@@ -1,15 +1,15 @@
 @import java.util.Map
 @import java.util.List
 @args (String region, List<Map<String, Object>> items, String serviceId)
-# lambda-invoker.yml
-lambda-invoker.region: @region
-lambda-invoker.functions:
+# lambda-app.yml
+lambda-app.lambdaAppId: @serviceId
+
+# lambda-proxy.yml
+lambda-proxy.region: @region
+lambda-proxy.functions:
 @for(item: items){
   @item.get("endpointWithBasePath"): @item.get("functionName")
 }
-
-# lambda-proxy.yml
-lambda-proxy.lambdaAppId: @serviceId
 
 # service.yml
 service.singletons:
@@ -47,7 +47,8 @@ handler.handlers:
   - com.networknt.aws.lambda.handler.middleware.traceability.TraceabilityMiddleware@@traceability
   - com.networknt.aws.lambda.handler.middleware.header.HeaderMiddleware@@header
   - com.networknt.aws.lambda.handler.middleware.specification.OpenApiMiddleware@@specification
-  - com.networknt.aws.lambda.handler.middleware.invoke.LambdaFunctionInvoker@@invoke
+  - com.networknt.aws.lambda.handler.middleware.proxy.LambdaProxyMiddleware@@proxy
+  - com.networknt.aws.lambda.handler.middleware.router.LambdaRouterMiddleware@@router
   - com.networknt.aws.lambda.handler.middleware.limit.LimitMiddleware@@limit
   - com.networknt.aws.lambda.handler.middleware.metrics.APMMetricsMiddleware@@metrics
   - com.networknt.aws.lambda.handler.middleware.audit.AuditMiddleware@@audit
