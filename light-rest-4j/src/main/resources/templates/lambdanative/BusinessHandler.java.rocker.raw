@@ -36,6 +36,7 @@ public class BusinessHandler {
         String output = "";
         @with (e = StringEscapeUtils.escapeJson(example)) {output = "@e";}
         response.withStatusCode(200)
+                .withIsBase64Encoded(false)
                 .withBody(output);
         return response;
     }
