@@ -11,6 +11,20 @@ lambda-proxy.functions:
   @item.get("endpointWithBasePath"): @item.get("functionName")
 }
 
+# service.yml
+service.singletons:
+  - com.networknt.registry.URL:
+    - com.networknt.registry.URLImpl
+  - com.networknt.registry.Registry:
+    - com.networknt.registry.support.DirectRegistry
+  - com.networknt.balance.LoadBalance:
+    - com.networknt.balance.RoundRobinLoadBalance
+  - com.networknt.cluster.Cluster:
+    - com.networknt.cluster.LightCluster
+  - com.networknt.cache.CacheManager:
+    # - com.networknt.aws.lambda.cache.DynamoDbCacheManager
+    - com.networknt.cache.CaffeineCacheManager
+
 # cache.yml
 cache.caches:
   - cacheName: jwt

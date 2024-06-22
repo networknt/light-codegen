@@ -74,6 +74,7 @@ public class OpenApiLambdaNativeGenerator extends AbstractLambdaGenerator implem
         List<OpenApiLambdaGenerator.OpenApiPath> pathList = getPathList(operationList);
         transfer(targetPath, "", ".gitignore", templates.lambdanative.gitignore.template());
         transfer(targetPath, "", ".gitattributes", templates.lambdanative.gitattributes.template());
+        transfer(targetPath, "", "LICENSE", templates.lambdanative.LICENSE.template());
 
         transfer(targetPath, "", "README.md", templates.lambdanative.README.template(artifactId, packageDocker, operationList));
         transfer(targetPath, "", "template.yaml", templates.lambdanative.template.template(artifactId, serviceId, handlerPackage, packageDocker, lambdaTrigger, operationList, pathList));

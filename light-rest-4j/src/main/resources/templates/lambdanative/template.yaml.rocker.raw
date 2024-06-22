@@ -119,10 +119,12 @@ Resources:
   @with(s = artifactId.substring(0, 1).toUpperCase() + artifactId.substring(1) + "NativeLambdaProxyFunction:"){@s}
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
+      # CodeUri: s3://networknt-native-lambda-jar-for-deployment-reference/lambda-native-custom-runtime.zip
       CodeUri: s3://networknt-native-lambda-jar-for-deployment-reference/lambda-native-2.1.34-SNAPSHOT.jar
       Handler: com.networknt.aws.lambda.app.LambdaApp::handleRequest
       Layers:
         @with(s = artifactId.substring(0, 1).toUpperCase() + artifactId.substring(1) + "ConfigLayer"){- !Ref @s}
+      # Runtime: provided.al2023
       Runtime: java11
       MemorySize: 512
       FunctionName: @with(s = artifactId.substring(0, 1).toUpperCase() + artifactId.substring(1) + "NativeLambdaProxyFunction"){@s}
