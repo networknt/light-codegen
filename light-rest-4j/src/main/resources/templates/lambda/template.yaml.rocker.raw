@@ -1,7 +1,7 @@
 @import java.util.Map
 @import java.util.List
-@import com.networknt.codegen.rest.OpenApiLambdaGenerator.OpenApiPath;
-@import com.networknt.codegen.rest.OpenApiLambdaGenerator.MethodFunction;
+@import com.networknt.codegen.rest.AbstractLambdaGenerator.OpenApiPath;
+@import com.networknt.codegen.rest.AbstractLambdaGenerator.MethodFunction;
 @args (String projectName, String handlerPackage, boolean packageDocker, boolean useLightProxy, List<Map<String, Object>> operationList, List<OpenApiPath> pathList)
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
@@ -64,7 +64,7 @@ Resources:
       } else {
       @with(s = op.get("functionName")){CodeUri: @s}
       @with(s = handlerPackage + ".App::handleRequest"){Handler: @s}
-      Runtime: provided
+      Runtime: provided.al2023
       MemorySize: 512
       FunctionName: @with(s = op.get("functionName")){@s}
       Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object

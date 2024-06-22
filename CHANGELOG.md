@@ -1,5 +1,22 @@
 # Change Log
 
+## [2.1.34](https://github.com/networknt/light-codegen/tree/2.1.34) (2024-06-22)
+
+
+**Merged pull requests:**
+
+
+- Issue697 [\#698](https://github.com/networknt/light-codegen/pull/698) ([stevehu](https://github.com/stevehu))
+- fixes \#695 Split the header to request/response and remove service.ym… [\#696](https://github.com/networknt/light-codegen/pull/696) ([stevehu](https://github.com/stevehu))
+- fixes \#692 update the lambda-native README.md to remove proxy and vpc [\#693](https://github.com/networknt/light-codegen/pull/693) ([stevehu](https://github.com/stevehu))
+- fixes \#690 add withIsBase64Encoded to false in BusinessHandler [\#691](https://github.com/networknt/light-codegen/pull/691) ([stevehu](https://github.com/stevehu))
+- fixes \#688 update native lambda template.yaml and values.yml [\#689](https://github.com/networknt/light-codegen/pull/689) ([stevehu](https://github.com/stevehu))
+- fixes \#686 update lambda native generator to make business handler si… [\#687](https://github.com/networknt/light-codegen/pull/687) ([stevehu](https://github.com/stevehu))
+- fixes \#684 update lambda-native generator to add config and update te… [\#685](https://github.com/networknt/light-codegen/pull/685) ([stevehu](https://github.com/stevehu))
+- fixes \#682 add lambda-native generator and upgrade lambda template [\#683](https://github.com/networknt/light-codegen/pull/683) ([stevehu](https://github.com/stevehu))
+- Fix NullPointerException in template file [\#681](https://github.com/networknt/light-codegen/pull/681) ([atmoshaman](https://github.com/atmoshaman))
+
+
 ## [2.1.33](https://github.com/networknt/light-codegen/tree/2.1.33) (2024-03-31)
 
 

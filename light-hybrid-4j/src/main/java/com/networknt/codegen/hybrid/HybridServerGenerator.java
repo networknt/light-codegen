@@ -57,6 +57,7 @@ public class HybridServerGenerator implements HybridGenerator {
         String decryptOption = getDecryptOption(config, null);
         String jsonPath = getJsonPath(config, null);
         boolean buildMaven = isBuildMaven(config, null);
+        boolean supportDb = isSupportDb(config, null);
         if(buildMaven) {
             transfer(targetPath, "", "pom.xml", templates.hybrid.server.pom.template(config));
             transferMaven(targetPath);
