@@ -43,6 +43,13 @@ handlers:
   # Framework endpoint handlers
   - com.networknt.health.HealthGetHandler@@health
   - com.networknt.info.ServerInfoGetHandler@@info
+  - com.networknt.logger.LoggerGetHandler@@getLogger
+  - com.networknt.logger.LoggerPostHandler@@postLogger
+  - com.networknt.logger.LoggerGetLogContentsHandler@@getLogContents
+  - com.networknt.modules.ModulesGetHandler@@modules
+  - com.networknt.modules.ModulesPostHandler@@configReload
+  - com.networknt.shutdown.ShutdownHandler@@shutdown
+  - com.networknt.cache.CacheGetHandler@@cache
   # - com.networknt.metrics.prometheus.PrometheusGetHandler@@getprometheus
   # GraphQL handlers
   - com.networknt.graphql.router.handlers.GraphqlGetHandler@@get
@@ -76,15 +83,66 @@ paths:
       - default
       - options
 
-  - path: '/health/${server.serviceId:@serviceId}'
+  - path: '/health'
     method: 'get'
     exec:
       - health
 
-  - path: '/server/info'
+  - path: '/adm/health/${server.serviceId:@serviceId}'
     method: 'get'
     exec:
+      - security
+      - health
+
+  - path: '/adm/server/info'
+    method: 'get'
+    exec:
+      - security
       - info
+
+  - path: '/adm/logger'
+    method: 'get'
+    exec:
+      - security
+      - getLogger
+
+  - path: '/adm/logger'
+    method: 'post'
+    exec:
+      - security
+      - body
+      - postLogger
+
+  - path: '/adm/logger/content'
+    method: 'GET'
+    exec:
+      - security
+      - getLogContents
+
+  - path: '/adm/modules'
+    method: 'get'
+    exec:
+      - security
+      - modules
+
+  - path: '/adm/modules'
+    method: 'post'
+    exec:
+      - security
+      - body
+      - configReload
+
+  - path: '/adm/shutdown'
+    method: 'delete'
+    exec:
+      - security
+      - shutdown
+
+  - path: '/adm/cache/{name}'
+    method: 'get'
+    exec:
+      - security
+      - cache
 
 @if(prometheusMetrics){  - path: '/prometheus'
     method: 'get'

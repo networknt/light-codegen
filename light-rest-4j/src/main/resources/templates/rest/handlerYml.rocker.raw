@@ -69,6 +69,7 @@ handlers:
   - com.networknt.specification.SpecSwaggerUIHandler@@swaggerui
   # - com.networknt.metrics.prometheus.PrometheusGetHandler@@getprometheus
   - com.networknt.server.handler.ServerShutdownHandler@@shutdown
+  - com.networknt.cache.CacheGetHandler@@cache
   # Business Handlers
 @for(item: items) {  - @with (p = handlerPackage + ".") {@p}@item.get("handlerName")
 }
@@ -94,51 +95,66 @@ paths:
       - default
       - @with (p = handlerPackage + ".") {@p}@item.get("handlerName")
 }
-  - path: '/health/${server.serviceId:@serviceId}'
+
+  - path: '/health'
+    method: 'get'
+    exec:
+      - health
+
+  - path: '/adm/health/${server.serviceId:@serviceId}'
     method: 'get'
     exec:
       - security
       - health
 
-  - path: '/server/info'
+  - path: '/adm/server/info'
     method: 'get'
     exec:
       - security
       - info
 
-  - path: '/logger'
+  - path: '/adm/logger'
     method: 'get'
     exec:
       - security
       - getLogger
 
-  - path: '/logger'
+  - path: '/adm/logger'
     method: 'post'
     exec:
       - security
       - body
       - postLogger
-  - path: '/logger/content'
-    method: 'GET'
+  - path: '/adm/logger/content'
+    method: 'get'
     exec:
       - security
       - getLogContents
 
-  - path: '/modules'
+  - path: '/adm/modules'
     method: 'get'
     exec:
+      - security
       - modules
 
-  - path: '/modules'
+  - path: '/adm/modules'
     method: 'post'
     exec:
+      - security
       - body
       - configReload
 
-  - path: '/shutdown'
+  - path: '/adm/shutdown'
     method: 'delete'
     exec:
+      - security
       - shutdown
+
+  - path: '/adm/cache/{name}'
+    method: 'get'
+    exec:
+      - security
+      - cache
 
 @if(prometheusMetrics){  - path: '/prometheus'
     method: 'get'
