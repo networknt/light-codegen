@@ -43,13 +43,15 @@ handlers:
   # Framework endpoint handlers
   - com.networknt.health.HealthGetHandler@@health
   - com.networknt.info.ServerInfoGetHandler@@info
-  - com.networknt.logger.LoggerGetHandler@@getLogger
-  - com.networknt.logger.LoggerPostHandler@@postLogger
-  - com.networknt.logger.LoggerGetLogContentsHandler@@getLogContents
-  - com.networknt.modules.ModulesGetHandler@@modules
-  - com.networknt.modules.ModulesPostHandler@@configReload
-  - com.networknt.shutdown.ShutdownHandler@@shutdown
-  - com.networknt.cache.CacheGetHandler@@cache
+  - com.networknt.logging.handler.LoggerGetHandler@@getLogger
+  - com.networknt.logging.handler.LoggerPostHandler@@postLogger
+  - com.networknt.logging.handler.LoggerGetLogContentsHandler@@getLogContents
+  - com.networknt.config.reload.handler.ModuleRegistryGetHandler@@modules
+  - com.networknt.config.reload.handler.ConfigReloadHandler@@configReload
+  - com.networknt.specification.SpecDisplayHandler@@spec
+  - com.networknt.specification.SpecSwaggerUIHandler@@swaggerui
+  - com.networknt.server.handler.ServerShutdownHandler@@shutdown
+  - com.networknt.cache.CacheExplorerHandler@@cache
   # - com.networknt.metrics.prometheus.PrometheusGetHandler@@getprometheus
   # GraphQL handlers
   - com.networknt.graphql.router.handlers.GraphqlGetHandler@@get

@@ -69,7 +69,7 @@ handlers:
   - com.networknt.specification.SpecSwaggerUIHandler@@swaggerui
   # - com.networknt.metrics.prometheus.PrometheusGetHandler@@getprometheus
   - com.networknt.server.handler.ServerShutdownHandler@@shutdown
-  - com.networknt.cache.CacheGetHandler@@cache
+  - com.networknt.cache.CacheExplorerHandler@@cache
   # Business Handlers
 @for(item: items) {  - @with (p = handlerPackage + ".") {@p}@item.get("handlerName")
 }

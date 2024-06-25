@@ -59,14 +59,14 @@ handlers:
   # Framework endpoint handlers
   - com.networknt.health.HealthGetHandler@@health
   - com.networknt.info.ServerInfoGetHandler@@info
-  - com.networknt.security.SecurityHandler@@security
-  - com.networknt.security.getLogger.GetLoggerHandler@@getLogger
-  - com.networknt.security.postLogger.PostLoggerHandler@@postLogger
-  - com.networknt.security.getLogContents.GetLogContentsHandler@@getLogContents
-  - com.networknt.security.modules.ModulesHandler@@modules
-  - com.networknt.security.configReload.ConfigReloadHandler@@configReload
-  - com.networknt.security.shutdown.ShutdownHandler@@shutdown
-  - com.networknt.security.cache.CacheHandler@@cache
+  - com.networknt.openapi.JwtVerifyHandler@@security
+  - com.networknt.logging.handler.LoggerGetHandler@@getLogger
+  - com.networknt.logging.handler.LoggerPostHandler@@postLogger
+  - com.networknt.logging.handler.LoggerGetLogContentsHandler@@getLogContents
+  - com.networknt.config.reload.handler.ModuleRegistryGetHandler@@modules
+  - com.networknt.config.reload.handler.ConfigReloadHandler@@configReload
+  - com.networknt.server.handler.ServerShutdownHandler@@shutdown
+  - com.networknt.cache.CacheExplorerHandler@@cache
 
   # Business Handlers
 
