@@ -98,7 +98,7 @@ public class HybridServerGenerator implements HybridGenerator {
         }
 
         // transfer(targetPath, ("src.main.resources.config").replace(".", separator), "secret.yml", templates.hybrid.secretYml.template());
-        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "hybrid-security.yml", templates.hybrid.securityYml.template());
+        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "security.yml", templates.hybrid.securityYml.template());
 
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "primary.crt", templates.hybrid.primaryCrt.template());
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "secondary.crt", templates.hybrid.secondaryCrt.template());

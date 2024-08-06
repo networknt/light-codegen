@@ -7,8 +7,8 @@
 # server.yml
 server.serviceId: com.networknt.placeholder-1.0.0
 
-# hybrid-security.yml
-hybrid-security.enableVerifyJwt: true
+# security.yml
+security.enableVerifyJwt: true
 
 # service.yml
 service.singletons:
