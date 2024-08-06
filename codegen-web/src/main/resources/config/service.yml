@@ -1,8 +1,5 @@
 # Singleton service factory configuration/IoC injection
 singletons:
-# HandlerProvider implementation
-- com.networknt.handler.HandlerProvider:
-  - com.networknt.rpc.router.RpcRouter
 # StartupHookProvider implementations
 - com.networknt.server.StartupHookProvider:
   # registry all service handlers by from annotations

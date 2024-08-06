@@ -1,0 +1,16 @@
+# server.yml
+server.httpPort: 49587
+server.enableHttp: true
+server.httpsPort: 49588
+server.enableHttps: false
+server.enableHttp2: false
+
+# unified-security.yml
+# unified-security.yml
+unified-security.pathPrefixAuths:
+  - prefix: /api/json
+    basic: true
+    jwt: true
+    apikey: true
+unified-security.anonymousPrefixes:
+  - /codegen
