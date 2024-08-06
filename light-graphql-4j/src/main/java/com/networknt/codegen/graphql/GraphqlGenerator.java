@@ -85,7 +85,7 @@ public class GraphqlGenerator implements Generator {
 
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "server.yml", templates.graphql.serverYml.template(serviceId, enableHttp, httpPort, enableHttps, httpsPort, enableHttp2, enableRegistry, version));
         transfer(targetPath, ("src.test.resources.config").replace(".", separator), "server.yml", templates.graphql.serverYml.template(serviceId, enableHttp, "49587", enableHttps, "49588", enableHttp2, enableRegistry, version));
-        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "graphql-security.yml", templates.graphql.securityYml.template());
+        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "security.yml", templates.graphql.securityYml.template());
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "graphql-validator.yml", templates.graphql.validatorYml.template());
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "primary.crt", templates.graphql.primaryCrt.template());
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "secondary.crt", templates.graphql.secondaryCrt.template());

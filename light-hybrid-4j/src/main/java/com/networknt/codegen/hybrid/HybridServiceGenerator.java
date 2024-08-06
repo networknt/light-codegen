@@ -86,7 +86,7 @@ public class HybridServiceGenerator implements HybridGenerator {
 
         transfer(targetPath, ("src.test.resources.config").replace(".", separator), "server.yml", templates.hybrid.serverYml.template(serviceId, enableHttp, "49587", enableHttps, "49588", enableHttp2, enableRegistry, version));
         //transfer(targetPath, ("src.test.resources.config").replace(".", separator), "secret.yml", templates.hybrid.secretYml.template());
-        transfer(targetPath, ("src.test.resources.config").replace(".", separator), "hybrid-security.yml", templates.hybrid.securityYml.template());
+        transfer(targetPath, ("src.test.resources.config").replace(".", separator), "security.yml", templates.hybrid.securityYml.template());
         if(kafkaProducer) {
             transfer(targetPath, ("src.test.resources.config").replace(".", separator), "kafka-producer.yml", templates.hybrid.kafkaProducerYml.template(kafkaTopic));
         }
