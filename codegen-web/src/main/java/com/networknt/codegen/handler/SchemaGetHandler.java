@@ -2,7 +2,7 @@ package com.networknt.codegen.handler;
 
 import com.networknt.codegen.FrameworkRegistry;
 import com.networknt.codegen.Generator;
-import com.networknt.rpc.Handler;
+import com.networknt.rpc.HybridHandler;
 import com.networknt.rpc.router.ServiceHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.HttpString;
@@ -17,7 +17,7 @@ import java.util.Map;
  * Created by steve on 10/05/17.
  */
 @ServiceHandler(id="lightapi.net/codegen/getSchema/0.0.1")
-public class SchemaGetHandler implements Handler {
+public class SchemaGetHandler implements HybridHandler {
     static private final Logger logger = LoggerFactory.getLogger(SchemaGetHandler.class);
 
     @Override

@@ -3,7 +3,7 @@ package com.networknt.codegen.handler;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.networknt.codegen.FrameworkRegistry;
 import com.networknt.config.Config;
-import com.networknt.rpc.Handler;
+import com.networknt.rpc.HybridHandler;
 import com.networknt.rpc.router.ServiceHandler;
 import com.networknt.utility.NioUtils;
 import io.undertow.server.HttpServerExchange;
@@ -18,7 +18,7 @@ import java.util.Set;
  * Created by steve on 26/04/17.
  */
 @ServiceHandler(id="lightapi.net/codegen/listFramework/0.0.1")
-public class FrameworkListHandler implements Handler {
+public class FrameworkListHandler implements HybridHandler {
     static private final Logger logger = LoggerFactory.getLogger(FrameworkListHandler.class);
     static private Set<String> frameworks = FrameworkRegistry.getInstance().getFrameworks();
 

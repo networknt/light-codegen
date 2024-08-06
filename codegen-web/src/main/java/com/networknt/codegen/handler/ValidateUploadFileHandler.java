@@ -1,6 +1,6 @@
 package com.networknt.codegen.handler;
 
-import com.networknt.rpc.Handler;
+import com.networknt.rpc.HybridHandler;
 import com.networknt.rpc.router.ServiceHandler;
 import com.networknt.utility.NioUtils;
 import io.undertow.server.HttpServerExchange;
@@ -20,7 +20,7 @@ import java.nio.file.Files;
  */
 @Deprecated
 @ServiceHandler(id="lightapi.net/codegen/validateUploadFile/0.0.1")
-public class ValidateUploadFileHandler implements Handler {
+public class ValidateUploadFileHandler implements HybridHandler {
     static private final Logger logger = LoggerFactory.getLogger(ValidateUploadFileHandler.class);
 
     /**
