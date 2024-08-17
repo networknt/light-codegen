@@ -40,6 +40,7 @@ dependencies {
     compile("com.networknt", "portal-registry", light4jVersion)
     compile("com.networknt", "logger-config", light4jVersion)
     compile("com.networknt", "decryptor", light4jVersion)
+    compile("com.networknt", "cache-explorer", light4jVersion)
     compile("com.networknt", "server", light4jVersion)
     compile("com.networknt", "openapi-parser", light4jVersion)
     compile("com.networknt", "openapi-meta", light4jVersion)

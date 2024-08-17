@@ -36,7 +36,7 @@
                 "enum": ["C", "U"]
               },
               "modelText": {
-                "type": "string"
+                "type": ["string", "object"]
               },
               "modelUrl": {
                 "type": "string"
@@ -46,7 +46,7 @@
                 "enum": ["C", "U"]
               },
               "configText" : {
-                "type": "string"
+                "type": ["string", "object"]
               },
               "configUrl": {
                 "type": "string"
@@ -77,7 +77,7 @@
           "enum": ["C", "U"]
         },
         "modelText": {
-          "type": "string"
+          "type": ["string", "object"]
         },
         "modelUrl": {
           "type": "string"
@@ -87,7 +87,7 @@
           "enum": ["C", "U"]
         },
         "configText" : {
-          "type" : "string"
+          "type": ["string", "object"]
         },
         "configUrl": {
           "type": "string"

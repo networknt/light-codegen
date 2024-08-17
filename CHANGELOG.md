@@ -1,5 +1,14 @@
 # Change Log
 
+## [2.1.35](https://github.com/networknt/light-codegen/tree/2.1.35) (2024-08-17)
+
+
+**Merged pull requests:**
+
+
+- fixes \#705 update security.yml for all frameworks [\#706](https://github.com/networknt/light-codegen/pull/706) ([stevehu](https://github.com/stevehu))
+- fixes \#703 update the codegen-web with the new light-hybrid-4j updates [\#704](https://github.com/networknt/light-codegen/pull/704) ([stevehu](https://github.com/stevehu))
+- fixes \#701 add cache-explorer to the maven and gradle dependency [\#702](https://github.com/networknt/light-codegen/pull/702) ([stevehu](https://github.com/stevehu))
 ## [2.1.34](https://github.com/networknt/light-codegen/tree/2.1.34) (2024-06-22)
 
 

@@ -59,15 +59,23 @@ handlers:
   # Framework endpoint handlers
   - com.networknt.health.HealthGetHandler@@health
   - com.networknt.info.ServerInfoGetHandler@@info
+  - com.networknt.openapi.JwtVerifyHandler@@security
+  - com.networknt.logging.handler.LoggerGetHandler@@getLogger
+  - com.networknt.logging.handler.LoggerPostHandler@@postLogger
+  - com.networknt.logging.handler.LoggerGetLogContentsHandler@@getLogContents
+  - com.networknt.config.reload.handler.ModuleRegistryGetHandler@@modules
+  - com.networknt.config.reload.handler.ConfigReloadHandler@@configReload
+  - com.networknt.server.handler.ServerShutdownHandler@@shutdown
+  - com.networknt.cache.CacheExplorerHandler@@cache
+
   # Business Handlers
 
 chains:
   default:
     - exception
 @if(prometheusMetrics){    - prometheus} else {    - metrics}
-    # - traceability
-    # - correlation
-    - jaeger
+    - traceability
+    - correlation
     # - dump
     - cors
     - json
@@ -83,15 +91,66 @@ paths:
     exec:
       - default
 
-  - path: '/health/${server.serviceId:@serviceId}'
+  - path: '/health'
     method: 'get'
     exec:
       - health
 
-  - path: '/server/info'
+  - path: '/adm/health/${server.serviceId:@serviceId}'
     method: 'get'
     exec:
+      - security
+      - health
+
+  - path: '/adm/server/info'
+    method: 'get'
+    exec:
+      - security
       - info
+
+  - path: '/adm/logger'
+    method: 'get'
+    exec:
+      - security
+      - getLogger
+
+  - path: '/adm/logger'
+    method: 'post'
+    exec:
+      - security
+      - body
+      - postLogger
+
+  - path: '/adm/logger/content'
+    method: 'GET'
+    exec:
+      - security
+      - getLogContents
+
+  - path: '/adm/modules'
+    method: 'get'
+    exec:
+      - security
+      - modules
+
+  - path: '/adm/modules'
+    method: 'post'
+    exec:
+      - security
+      - body
+      - configReload
+
+  - path: '/adm/shutdown'
+    method: 'delete'
+    exec:
+      - security
+      - shutdown
+
+  - path: '/adm/cache/{name}'
+    method: 'get'
+    exec:
+      - security
+      - cache
 
 @if(prometheusMetrics){  - path: '/prometheus'
     method: 'get'

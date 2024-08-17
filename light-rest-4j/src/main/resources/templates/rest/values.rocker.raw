@@ -21,9 +21,8 @@ server.enableRegistry: @enableRegistry
 server.serviceId: @serviceId
 server.buildNumber: @version
 
-# openapi-security.yml
-# https://github.com/networknt/light-rest-4j/blob/master/openapi-security/src/main/resources/config/openapi-security.yml
-openapi-security.enableVerifyJwt: false
+# security.yml
+security.enableVerifyJwt: false
 
 # service.yml
 service.singletons:

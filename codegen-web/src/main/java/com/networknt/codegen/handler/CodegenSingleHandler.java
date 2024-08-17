@@ -8,7 +8,7 @@ import com.networknt.codegen.Utils;
 import com.networknt.codegen.graphql.GraphqlGenerator;
 import com.networknt.config.Config;
 import com.networknt.config.JsonMapper;
-import com.networknt.rpc.Handler;
+import com.networknt.rpc.HybridHandler;
 import com.networknt.rpc.router.JsonHandler;
 import com.networknt.rpc.router.ServiceHandler;
 import com.networknt.utility.HashUtil;
@@ -37,7 +37,7 @@ import static java.io.File.separator;
  * @author Steve Hu
  */
 @ServiceHandler(id="lightapi.net/codegen/single/0.0.1")
-public class CodegenSingleHandler implements Handler {
+public class CodegenSingleHandler implements HybridHandler {
     static private final String CONFIG_NAME = "codegen-web";
     static private final String STATUS_INVALID_FRAMEWORK = "ERR11100";
     static private final String STATUS_MISSING_GENERATOR_ITEM = "ERR11101";
@@ -160,21 +160,5 @@ public class CodegenSingleHandler implements Handler {
         // return the zip file
         File file = new File(codegenWebConfig.getZipFolder() + separator + zipFile);
         return NioUtils.toByteBuffer(file);
-    }
-
-    @Override
-    public ByteBuffer validate(String serviceId, Object object) {
-        // get schema from serviceId, remember that the schema is for the data object only.
-        // the input object is the data attribute of the request body.
-        Map<String, Object> serviceMap = (Map<String, Object>) JsonHandler.schema.get(serviceId);
-        if(logger.isDebugEnabled()) {
-            try {
-                logger.debug("serviceId = " + serviceId  + " serviceMap = " + Config.getInstance().getMapper().writeValueAsString(serviceMap));
-            } catch (Exception e) {
-                logger.error("Exception:", e);
-            }
-        }
-        logger.debug("Skipping validation on generator request for now.");
-        return null;
     }
 }
