@@ -40,6 +40,9 @@ cache.caches:
 # security.yml
 security.enableVerifyJwt: false
 
+# metrics.yml
+metrics.enabled: false
+
 # unified-security.yml
 unified-security.enabled: false
 unified-security.pathPrefixAuths:
