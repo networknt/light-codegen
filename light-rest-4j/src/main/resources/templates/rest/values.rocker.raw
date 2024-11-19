@@ -24,6 +24,9 @@ server.buildNumber: @version
 # security.yml
 security.enableVerifyJwt: false
 
+# metrics.yml
+metrics.enabled: false
+
 # service.yml
 service.singletons:
 - com.networknt.registry.URL:
