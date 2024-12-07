@@ -147,8 +147,6 @@ public class OpenApiLightGenerator implements OpenApiGenerator {
                     transfer(targetPath, "", ".project", templates.rest.project.template(config));
                 }
                 // config
-                transfer(targetPath, (configFolder).replace(".", separator), "primary.crt", templates.rest.primaryCrt.template());
-                transfer(targetPath, (configFolder).replace(".", separator), "secondary.crt", templates.rest.secondaryCrt.template());
                 if(kafkaProducer) {
                     transfer(targetPath, (configFolder).replace(".", separator), "kafka-producer.yml", templates.rest.kafkaProducerYml.template(kafkaTopic));
                 }

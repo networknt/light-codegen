@@ -16,6 +16,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import static java.io.File.separator;
 
@@ -81,12 +82,6 @@ public class HybridServiceGenerator implements HybridGenerator {
             transfer(targetPath, "", ".project", templates.hybrid.project.template());
         }
 
-        // config
-        transfer(targetPath, ("src.test.resources.config").replace(".", separator), "service.yml", templates.hybrid.serviceYml.template(config));
-
-        transfer(targetPath, ("src.test.resources.config").replace(".", separator), "server.yml", templates.hybrid.serverYml.template(serviceId, enableHttp, "49587", enableHttps, "49588", enableHttp2, enableRegistry, version));
-        //transfer(targetPath, ("src.test.resources.config").replace(".", separator), "secret.yml", templates.hybrid.secretYml.template());
-        transfer(targetPath, ("src.test.resources.config").replace(".", separator), "security.yml", templates.hybrid.securityYml.template());
         if(kafkaProducer) {
             transfer(targetPath, ("src.test.resources.config").replace(".", separator), "kafka-producer.yml", templates.hybrid.kafkaProducerYml.template(kafkaTopic));
         }
@@ -103,10 +98,10 @@ public class HybridServiceGenerator implements HybridGenerator {
         // added with #471
         transfer(targetPath, ("src.test.resources.config").replace(".", separator), "app-status.yml", templates.hybrid.appStatusYml.template());
         // values.yml file, transfer to suppress the warning message during start startup and encourage usage.
-        transfer(targetPath, ("src.test.resources.config").replace(".", separator), "values.yml", templates.hybrid.values.template());
+        transfer(targetPath, ("src.test.resources.config").replace(".", separator), "values.yml", templates.hybrid.values.template(config, handlerPackage, jsonPath, serviceId, enableHttp, "49587", enableHttps, "49588", enableHttp2, enableRegistry, version));
 
         // handler
-        Map<String, Object> services = new HashMap<String, Object>();
+        Map<String, Object> services = new TreeMap<String, Object>();
         JsonNode anyModel = (JsonNode)model;
         String host = anyModel.get("host").textValue();
         String service = anyModel.get("service").textValue();
@@ -121,7 +116,7 @@ public class HybridServiceGenerator implements HybridGenerator {
                 }
                 transfer(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), item.get("handler").textValue() + ".java", templates.hybrid.handler.template(handlerPackage, host, service, item, example));
                 String sId  = host + "/" + service + "/" + item.get("name").textValue() + "/" + item.get("version").textValue();
-                Map<String, Object> map = new HashMap<>();
+                Map<String, Object> map = new TreeMap<>();
                 map.put("schema", item.get("schema"));
                 JsonNode anyScope = item.get("scope");
                 String scope = anyScope != null ? anyScope.textValue().trim() : null;
@@ -163,9 +158,6 @@ public class HybridServiceGenerator implements HybridGenerator {
 
         transfer(targetPath, ("src.test.resources.config").replace(".", separator), "handler.yml",
                 templates.hybrid.handlerYml.template(serviceId, handlerPackage, jsonPath, prometheusMetrics));
-
-        transfer(targetPath, ("src.test.resources.config").replace(".", separator), "rpc-router.yml",
-                templates.hybrid.rpcRouterYml.template(handlerPackage, jsonPath));
 
         // write the generated schema into the config folder for schema validation.
         try (InputStream is = new ByteArrayInputStream(Generator.jsonMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(services))) {
