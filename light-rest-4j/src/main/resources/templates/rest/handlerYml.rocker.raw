@@ -15,6 +15,9 @@ auditOnError: ${handler.auditOnError:false}
 # default, if not set:false
 auditStackTrace: ${handler.auditStackTrace:false}
 
+# Base Path of the API endpoints
+basePath: ${handler.basePath:/}
+
 #------------------------------------------------------------------------------
 # Support individual handler chains for each separate endpoint. It allows framework
 # handlers like health check, server info to bypass majority of the middleware handlers

@@ -1,6 +1,6 @@
 @import com.fasterxml.jackson.databind.JsonNode
 @args (JsonNode config, String expose)
-FROM openjdk:11.0.3-slim
+FROM amazoncorretto:11.0.21
 @if(config.get("multipleModule").booleanValue()){
 @if(config.get("buildMaven").booleanValue()){
 COPY /server/target/server.jar server.jar

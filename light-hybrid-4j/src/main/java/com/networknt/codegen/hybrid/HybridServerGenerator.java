@@ -84,24 +84,12 @@ public class HybridServerGenerator implements HybridGenerator {
             transfer(targetPath, "", ".project", templates.hybrid.project.template());
         }
 
-        // config
-        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "service.yml", templates.hybrid.serviceYml.template(config));
-
-        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "server.yml", templates.hybrid.serverYml.template(serviceId, enableHttp, httpPort, enableHttps, httpsPort, enableHttp2, enableRegistry, version));
-        transfer(targetPath, ("src.test.resources.config").replace(".", separator), "server.yml", templates.hybrid.serverYml.template(serviceId, enableHttp, "49587", enableHttps, "49588", enableHttp2, enableRegistry, version));
-
         if(kafkaProducer) {
             transfer(targetPath, ("src.main.resources.config").replace(".", separator), "kafka-producer.yml", templates.hybrid.kafkaProducerYml.template(kafkaTopic));
         }
         if(kafkaConsumer) {
             transfer(targetPath, ("src.main.resources.config").replace(".", separator), "kafka-streams.yml", templates.hybrid.kafkaStreamsYml.template(artifactId));
         }
-
-        // transfer(targetPath, ("src.main.resources.config").replace(".", separator), "secret.yml", templates.hybrid.secretYml.template());
-        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "security.yml", templates.hybrid.securityYml.template());
-
-        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "primary.crt", templates.hybrid.primaryCrt.template());
-        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "secondary.crt", templates.hybrid.secondaryCrt.template());
 
         // logging
         transfer(targetPath, ("src.main.resources").replace(".", separator), "logback.xml", templates.hybrid.logback.template());
@@ -110,7 +98,8 @@ public class HybridServerGenerator implements HybridGenerator {
         // added with #471
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "app-status.yml", templates.hybrid.appStatusYml.template());
         // values.yml file, transfer to suppress the warning message during start startup and encourage usage.
-        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "values.yml", templates.hybrid.values.template());
+        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "values.yml", templates.hybrid.values.template(config, handlerPackage, jsonPath, serviceId, enableHttp, httpPort, enableHttps, httpsPort, enableHttp2, enableRegistry, version));
+        transfer(targetPath, ("src.test.resources.config").replace(".", separator), "values.yml", templates.hybrid.values.template(config, handlerPackage, jsonPath, serviceId, enableHttp, "49587", enableHttps, "49588", enableHttp2, enableRegistry, version));
 
         // transfer binary files without touching them.
         try (InputStream is = HybridServerGenerator.class.getResourceAsStream("/binaries/server.keystore")) {
@@ -137,9 +126,6 @@ public class HybridServerGenerator implements HybridGenerator {
 
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "handler.yml",
                 templates.hybrid.handlerYml.template(serviceId, handlerPackage, jsonPath, prometheusMetrics));
-
-        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "rpc-router.yml",
-                templates.hybrid.rpcRouterYml.template(handlerPackage, jsonPath));
 
     }
 

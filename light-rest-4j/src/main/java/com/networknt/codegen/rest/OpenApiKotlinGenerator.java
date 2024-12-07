@@ -120,9 +120,6 @@ public class OpenApiKotlinGenerator implements OpenApiGenerator {
                 transfer(targetPath, ("src.main.resources.config").replace(".", separator), "openapi-security.yml", templates.restkotlin.openapiSecurity.template());
                 transfer(targetPath, ("src.main.resources.config").replace(".", separator), "openapi-validator.yml", templates.restkotlin.openapiValidator.template());
 
-                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "primary.crt", templates.restkotlin.primaryCrt.template());
-                transfer(targetPath, ("src.main.resources.config").replace(".", separator), "secondary.crt", templates.restkotlin.secondaryCrt.template());
-
                 // mask
                 transfer(targetPath, ("src.main.resources.config").replace(".", separator), "mask.yml", templates.restkotlin.maskYml.template());
                 // logging
