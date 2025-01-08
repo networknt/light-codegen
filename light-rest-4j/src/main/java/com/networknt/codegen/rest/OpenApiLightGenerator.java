@@ -137,7 +137,7 @@ public class OpenApiLightGenerator implements OpenApiGenerator {
 
                 transfer(targetPath, "docker", "Dockerfile", templates.rest.dockerfile.template(config, expose));
                 transfer(targetPath, "docker", "Dockerfile-Slim", templates.rest.dockerfileslim.template(config, expose));
-                transfer(targetPath, "", "build.sh", templates.rest.buildSh.template(config, serviceId));
+                transfer(targetPath, "", "build.sh", templates.rest.buildSh.template(config));
                 transfer(targetPath, "", "kubernetes.yml", templates.rest.kubernetes.template(dockerOrganization, serviceId, config.get("artifactId").textValue(), expose, version));
                 transfer(targetPath, "", ".gitignore", templates.rest.gitignore.template());
                 transfer(targetPath, "", "README.md", templates.rest.README.template(config));
