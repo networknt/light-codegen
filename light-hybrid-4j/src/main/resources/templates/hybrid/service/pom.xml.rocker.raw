@@ -339,12 +339,23 @@
         @if(config.get("supportAvro").booleanValue()){
         <repository>
             <id>confluent</id>
-            <url>http://packages.confluent.io/maven/</url>
+            <url>https://packages.confluent.io/maven/</url>
+        </repository>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
         </repository>
         }
-        <repository>
-            <id>sonatype-snapshots</id>
+       <repository>
+            <id>ossrh</id>
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>s01</id>
+            <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
