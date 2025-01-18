@@ -161,7 +161,7 @@ public class HybridServiceGenerator implements HybridGenerator {
 
         // write the generated schema into the config folder for schema validation.
         try (InputStream is = new ByteArrayInputStream(Generator.yamlMapper.writeValueAsBytes(model))) {
-            Generator.copyFile(is, Paths.get(targetPath, ("src.main.resources.config").replace(".", separator), "spec.yaml"));
+            Generator.copyFile(is, Paths.get(targetPath, ("src.main.resources").replace(".", separator), "spec.yaml"));
         }
     }
 }
