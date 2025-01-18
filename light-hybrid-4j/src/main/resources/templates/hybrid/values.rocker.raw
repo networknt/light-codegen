@@ -18,7 +18,7 @@ server.buildNumber: @version
 
 
 # security.yml
-security.enableVerifyJwt: true
+security.enableVerifyJwt: false
 
 # rpc-router.yml
 rpc-router.handlerPackage: @handlerPackage

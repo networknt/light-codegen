@@ -15,8 +15,8 @@ import java.nio.file.Paths;
  */
 public class HybridServiceGeneratorTest {
     public static String targetPath = "/tmp/hybridservice";
-    public static String configName = "/serviceConfig.json";
-    public static String schemaName = "/schema.json";
+    public static String configName = "/service.yaml";
+    public static String schemaName = "/spec.yaml";
 
     @BeforeAll
     public static void setUp() throws IOException {
@@ -31,8 +31,8 @@ public class HybridServiceGeneratorTest {
 
     @Test
     public void testGenerator() throws IOException {
-        JsonNode config = Generator.jsonMapper.readTree(HybridServiceGeneratorTest.class.getResourceAsStream(configName));
-        JsonNode model = Generator.jsonMapper.readTree(HybridServiceGeneratorTest.class.getResourceAsStream(schemaName));
+        JsonNode config = Generator.yamlMapper.readTree(HybridServiceGeneratorTest.class.getResourceAsStream(configName));
+        JsonNode model = Generator.yamlMapper.readTree(HybridServiceGeneratorTest.class.getResourceAsStream(schemaName));
         HybridServiceGenerator generator = new HybridServiceGenerator();
         generator.generate(targetPath, model, config);
     }

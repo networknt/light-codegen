@@ -3,20 +3,16 @@ package com.networknt.codegen.hybrid;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.networknt.codegen.Generator;
+import com.networknt.config.JsonMapper;
 import org.apache.commons.text.StringEscapeUtils;
 
 import java.io.ByteArrayInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 import static java.io.File.separator;
 
@@ -101,7 +97,6 @@ public class HybridServiceGenerator implements HybridGenerator {
         transfer(targetPath, ("src.test.resources.config").replace(".", separator), "values.yml", templates.hybrid.values.template(config, handlerPackage, jsonPath, serviceId, enableHttp, "49587", enableHttps, "49588", enableHttp2, enableRegistry, version));
 
         // handler
-        Map<String, Object> services = new TreeMap<String, Object>();
         JsonNode anyModel = (JsonNode)model;
         String host = anyModel.get("host").textValue();
         String service = anyModel.get("service").textValue();
@@ -109,31 +104,36 @@ public class HybridServiceGenerator implements HybridGenerator {
         if(jsonNode != null && jsonNode.isArray()) {
             ArrayNode items = (ArrayNode)jsonNode;
             for(JsonNode item : items) {
-                JsonNode any = item.get("example");
+                JsonNode response = item.get("response");
+                JsonNode any = response == null ? null : response.get("example");
                 String example = any != null ? StringEscapeUtils.escapeJson(any.toString()).trim() : "";
                 if(!overwriteHandler && checkExist(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), item.get("handler").textValue() + ".java")) {
                     continue;
                 }
                 transfer(targetPath, ("src.main.java." + handlerPackage).replace(".", separator), item.get("handler").textValue() + ".java", templates.hybrid.handler.template(handlerPackage, host, service, item, example));
-                String sId  = host + "/" + service + "/" + item.get("name").textValue() + "/" + item.get("version").textValue();
-                Map<String, Object> map = new TreeMap<>();
-                map.put("schema", item.get("schema"));
-                JsonNode anyScope = item.get("scope");
-                String scope = anyScope != null ? anyScope.textValue().trim() : null;
-                if(scope != null) map.put("scope", scope);
-                JsonNode anySkipAuth = item.get("skipAuth");
-                Boolean skipAuth = anySkipAuth != null ? anySkipAuth.booleanValue() : false;
-                if(skipAuth != null) map.put("skipAuth", skipAuth);
-                services.put(sId, map);
             }
 
             // handler test cases
             transfer(targetPath, ("src.test.java." + handlerPackage + ".").replace(".", separator),  "TestServer.java", templates.hybrid.testServer.template(handlerPackage));
             for(JsonNode item : items) {
+                JsonNode request = item.get("request");
+                JsonNode any = request == null ? null : request.get("example");
+                String example = any != null ? any.toString() : null;
+                String body = "";
+                if(example != null) {
+                    Map<String, Object> map = new LinkedHashMap<>();
+                    map.put("host", host);
+                    map.put("service", service);
+                    map.put("action", item.get("name"));
+                    map.put("version", item.get("version"));
+                    map.put("data", JsonMapper.string2Map(example));
+                    body = Generator.jsonMapper.writeValueAsString(map);
+                    body = StringEscapeUtils.escapeJson(body);
+                }
                 if(!overwriteHandlerTest && checkExist(targetPath, ("src.test.java." + handlerPackage).replace(".", separator), item.get("handler").textValue() + "Test.java")) {
                     continue;
                 }
-                transfer(targetPath, ("src.test.java." + handlerPackage).replace(".", separator), item.get("handler").textValue() + "Test.java", templates.hybrid.handlerTest.template(handlerPackage, host, service, item));
+                transfer(targetPath, ("src.test.java." + handlerPackage).replace(".", separator), item.get("handler").textValue() + "Test.java", templates.hybrid.handlerTest.template(handlerPackage, host, service, body, jsonPath, item));
             }
         }
 
@@ -160,8 +160,8 @@ public class HybridServiceGenerator implements HybridGenerator {
                 templates.hybrid.handlerYml.template(serviceId, handlerPackage, jsonPath, prometheusMetrics));
 
         // write the generated schema into the config folder for schema validation.
-        try (InputStream is = new ByteArrayInputStream(Generator.jsonMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(services))) {
-            Generator.copyFile(is, Paths.get(targetPath, ("src.main.resources").replace(".", separator), "schema.json"));
+        try (InputStream is = new ByteArrayInputStream(Generator.yamlMapper.writeValueAsBytes(model))) {
+            Generator.copyFile(is, Paths.get(targetPath, ("src.main.resources.config").replace(".", separator), "spec.yaml"));
         }
     }
 }

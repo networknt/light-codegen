@@ -1,0 +1,306 @@
+---
+host: lightapi.net
+service: rule
+action:
+  - name: createRule
+    version: 0.1.0
+    handler: CreateRule
+    scope: portal.w
+    request:
+      schema:
+        $ref: "#/schemas/createRuleRequest"
+      example:
+        hostId: "host123"
+        ruleId: "rule456"
+        ruleName: "My New Rule"
+        ruleVersion: "1.0"
+        ruleType: "Authorization"
+        ruleGroup: "Security"
+        ruleDesc: "This is a rule description for my new rule"
+        ruleOwner: "admin"
+        common: "Y"
+        conditions:
+          - field: "user_type"
+            operator: "equals"
+            value: "employee"
+          - field: "department"
+            operator: "contains"
+            value: "IT"
+    response:
+      schema:
+        $ref: "#/schemas/createRuleResponse"
+      example:
+        hostId: "host123"
+        ruleId: "rule456"
+        ruleName: "My New Rule"
+        ruleVersion: "1.0"
+        ruleType: "Authorization"
+        ruleGroup: "Security"
+        ruleDesc: "This is a rule description for my new rule"
+        ruleOwner: "admin"
+        common: "Y"
+        conditions:
+          - field: "user_type"
+            operator: "equals"
+            value: "employee"
+          - field: "department"
+            operator: "contains"
+            value: "IT"
+  - name: updateRule
+    version: 0.1.0
+    handler: UpdateRule
+    scope: portal.w
+    request:
+      schema:
+        $ref: "#/schemas/updateRuleRequest"
+      example:
+        ruleId: "rule456"
+        ruleName: "Updated Rule Name"
+        ruleVersion: "1.1"
+        ruleType: "Validation"
+        ruleGroup: "Compliance"
+        ruleDesc: "Updated rule description"
+        ruleOwner: "manager"
+        common: "N"
+        conditions:
+          - field: "status"
+            operator: "not_equals"
+            value: "pending"
+    response:
+      schema:
+        $ref: "#/schemas/updateRuleResponse"
+      example:
+        ruleId: "rule456"
+        ruleName: "Updated Rule Name"
+        ruleVersion: "1.1"
+        ruleType: "Validation"
+        ruleGroup: "Compliance"
+        ruleDesc: "Updated rule description"
+        ruleOwner: "manager"
+        common: "N"
+        conditions:
+          - field: "status"
+            operator: "not_equals"
+            value: "pending"
+
+  - name: deleteRule
+    version: 0.1.0
+    handler: DeleteRule
+    scope: portal.w
+    request:
+      schema:
+        $ref: "#/schemas/deleteRuleRequest"
+      example:
+        hostId: "host123"
+        ruleId: "rule456"
+    response:
+      schema:
+        $ref: "#/schemas/deleteRuleResponse"
+      example:
+        hostId: "host123"
+        ruleId: "rule456"
+schemas:
+  createRuleRequest:
+    title: Create Rule
+    type: object
+    properties:
+      hostId:
+        type: string
+        description: Host Id
+      ruleId:
+        type: string
+        description: Rule id
+      ruleName:
+        type: string
+        description: Rule Name
+      ruleVersion:
+        type: string
+        description: Rule Version
+      ruleType:
+        type: string
+        description: Rule Type
+      ruleGroup:
+        type: string
+        description: Rule Group
+      ruleDesc:
+        type: string
+        description: Rule desc
+      ruleOwner:
+        type: string
+        description: Rule Owner
+      common:
+        type: string
+        enum:
+          - Y
+          - N
+        description: Common
+      conditions:
+        type: array
+        items:
+          type: object
+        description: Rule Conditions
+    required:
+      - hostId
+      - ruleId
+      - ruleName
+      - ruleVersion
+      - ruleType
+      - ruleOwner
+      - common
+      - conditions
+  createRuleResponse:
+    title: Create Rule
+    type: object
+    properties:
+      hostId:
+        type: string
+        description: Host Id
+      ruleId:
+        type: string
+        description: Rule id
+      ruleName:
+        type: string
+        description: Rule Name
+      ruleVersion:
+        type: string
+        description: Rule Version
+      ruleType:
+        type: string
+        description: Rule Type
+      ruleGroup:
+        type: string
+        description: Rule Group
+      ruleDesc:
+        type: string
+        description: Rule desc
+      ruleOwner:
+        type: string
+        description: Rule Owner
+      common:
+        type: string
+        enum:
+          - Y
+          - N
+        description: Common
+      conditions:
+        type: array
+        items:
+          type: object
+        description: Rule Conditions
+    required:
+      - hostId
+      - ruleId
+      - ruleName
+      - ruleVersion
+      - ruleType
+      - ruleOwner
+      - common
+      - conditions
+  updateRuleRequest:
+    title: Update Rule
+    type: object
+    properties:
+      ruleId:
+        type: string
+        description: Rule id
+      ruleName:
+        type: string
+        description: Rule Name
+      ruleVersion:
+        type: string
+        description: Rule Version
+      ruleType:
+        type: string
+        description: Rule Type
+      ruleGroup:
+        type: string
+        description: Rule Group
+      ruleDesc:
+        type: string
+        description: Rule Desc
+      ruleOwner:
+        type: string
+        description: Rule Owner
+      common:
+        type: string
+        description: Common Flag
+      conditions:
+        type: array
+        items:
+          type: object
+        description: Rule Conditions
+    required:
+      - ruleId
+      - ruleName
+      - ruleVersion
+      - ruleType
+      - ruleOwner
+      - common
+      - conditions
+  updateRuleResponse:
+    title: Update Rule
+    type: object
+    properties:
+      ruleId:
+        type: string
+        description: Rule id
+      ruleName:
+        type: string
+        description: Rule Name
+      ruleVersion:
+        type: string
+        description: Rule Version
+      ruleType:
+        type: string
+        description: Rule Type
+      ruleGroup:
+        type: string
+        description: Rule Group
+      ruleDesc:
+        type: string
+        description: Rule Desc
+      ruleOwner:
+        type: string
+        description: Rule Owner
+      common:
+        type: string
+        description: Common Flag
+      conditions:
+        type: array
+        items:
+          type: object
+        description: Rule Conditions
+    required:
+      - ruleId
+      - ruleName
+      - ruleVersion
+      - ruleType
+      - ruleOwner
+      - common
+      - conditions
+  deleteRuleRequest:
+    title: Delete Rule
+    type: object
+    properties:
+      hostId:
+        type: string
+        description: Host Id
+      ruleId:
+        type: string
+        description: Rule Id
+    required:
+      - hostId
+      - ruleId
+  deleteRuleResponse:
+    title: Delete Rule
+    type: object
+    properties:
+      hostId:
+        type: string
+        description: Host Id
+      ruleId:
+        type: string
+        description: Rule Id
+    required:
+      - hostId
+      - ruleId
