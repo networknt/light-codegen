@@ -9,7 +9,7 @@
     <version>@config.get("version").textValue()</version>
 
     <properties>
-        <java.version>11</java.version>
+        <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.main.class>com.networknt.server.Server</project.main.class>
         <version.light-4j>2.2.0-SNAPSHOT</version.light-4j>
