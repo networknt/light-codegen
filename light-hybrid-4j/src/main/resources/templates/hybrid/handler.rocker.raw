@@ -3,7 +3,7 @@
 package @handlerPackage;
 
 import com.networknt.utility.NioUtils;
-import com.networknt.rpc.Handler;
+import com.networknt.rpc.HybridHandler;
 import com.networknt.rpc.router.ServiceHandler;
 import java.nio.ByteBuffer;
 import io.undertow.server.HttpServerExchange;
@@ -13,7 +13,7 @@ For more information on how to write business handlers, please check the link be
 https://doc.networknt.com/development/business-handler/hybrid/
 */
 @@ServiceHandler(id="@host/@service/@item.get("name").textValue()/@item.get("version").textValue()")
-public class @item.get("handler").textValue() implements Handler {
+public class @item.get("handler").textValue() implements HybridHandler {
     @@Override
     public ByteBuffer handle(HttpServerExchange exchange, Object input)  {
         return NioUtils.toByteBuffer("@example");

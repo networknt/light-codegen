@@ -1,0 +1,122 @@
+---
+host: lightapi.net
+service: codegen
+schemas:
+  getSchemaRequest:
+    title: Service
+    type: object
+    properties:
+      framework:
+        type: string
+    required:
+      - framework
+  multipleRequest:
+    title: Service
+    type: object
+    properties:
+      generators:
+        type: array
+        items:
+          properties:
+            modelType:
+              type: string
+              enum:
+                - C
+                - U
+            modelText:
+              type:
+                - string
+                - object
+            modelUrl:
+              type: string
+            configType:
+              type: string
+              enum:
+                - C
+                - U
+            configText:
+              type:
+                - string
+                - object
+            configUrl:
+              type: string
+            framework:
+              type: string
+            release:
+              type: string
+          required:
+            - configType
+            - modelType
+            - framework
+            - release
+        maxItems: 5
+        minItems: 1
+  singleRequest:
+    title: Service
+    type: object
+    properties:
+      modelType:
+        type: string
+        enum:
+          - C
+          - U
+      modelText:
+        type:
+          - string
+          - object
+      modelUrl:
+        type: string
+      configType:
+        type: string
+        enum:
+          - C
+          - U
+      configText:
+        type:
+          - string
+          - object
+      configUrl:
+        type: string
+      framework:
+        type: string
+      release:
+        type: string
+    required:
+      - configType
+      - modelType
+      - framework
+      - release
+action:
+  - name: listFramework
+    version: 0.0.1
+    handler: ListFramework
+    scope: codegen.r
+    request:
+      schema: {}
+  - name: getSchema
+    version: 0.0.1
+    handler: GetSchema
+    scope: codegen.r
+    request:
+      schema:
+        $ref: '#/schemas/getSchemaRequest'
+  - name: validateUploadFile
+    version: 0.0.1
+    handler: ValidateUploadFile
+    scope: codegen.r
+    request:
+      schema: {}
+  - name: multiple
+    version: 0.0.1
+    handler: Multiple
+    scope: codegen.w
+    request:
+      schema:
+        $ref: '#/schemas/multipleRequest'
+  - name: single
+    version: 0.0.1
+    handler: Single
+    scope: codegen.w
+    request:
+      schema:
+        $ref: '#/schemas/singleRequest'

@@ -1,5 +1,14 @@
 # Change Log
 
+## [2.2.0](https://github.com/networknt/light-codegen/tree/2.2.0) (2025-02-12)
+
+
+**Merged pull requests:**
+
+
+- fixes \#710 update rest and hybrid generator [\#711](https://github.com/networknt/light-codegen/pull/711) ([stevehu](https://github.com/stevehu))
+
+
 ## [2.1.37](https://github.com/networknt/light-codegen/tree/2.1.37) (2024-09-20)
 
 

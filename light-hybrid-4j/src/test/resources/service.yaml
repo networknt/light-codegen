@@ -1,0 +1,27 @@
+---
+name: rule-command
+version: 1.0.1
+groupId: net.lightapi
+artifactId: rule-command
+rootPackage: com.networknt.rule
+handlerPackage: com.networknt.rule.handler
+modelPackage: com.networknt.rule.model
+overwriteHandler: true
+overwriteHandlerTest: true
+httpPort: 8080
+enableHttp: true
+httpsPort: 8443
+enableHttps: false
+enableHttp2: false
+enableRegistry: false
+supportDb: true
+jsonPath: "/portal/command"
+dbInfo:
+  name: mysql
+  driverClassName: com.mysql.jdbc.Driver
+  jdbcUrl: jdbc:mysql://mysqldb:3306/oauth2?useSSL=false
+  username: root
+  password: my-secret-pw
+supportH2ForTest: false
+supportClient: false
+buildMaven: true

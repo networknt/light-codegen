@@ -9,27 +9,27 @@
     <version>@config.get("version").textValue()</version>
 
     <properties>
-        <java.version>11</java.version>
+        <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.main.class>com.networknt.server.Server</project.main.class>
-        <version.light-4j>2.1.37</version.light-4j>
-        <version.jackson>2.17.2</version.jackson>
-        <version.slf4j>2.0.13</version.slf4j>
+        <version.light-4j>2.2.0</version.light-4j>
+        <version.jackson>2.18.1</version.jackson>
+        <version.slf4j>2.0.16</version.slf4j>
         <version.jose4j>0.9.6</version.jose4j>
-        <version.logback>1.5.6</version.logback>
-        <version.junit>5.8.1</version.junit>
-        <version.undertow>2.3.17.Final</version.undertow>
+        <version.logback>1.5.12</version.logback>
+        <version.junit>5.11.3</version.junit>
+        <version.undertow>2.3.18.Final</version.undertow>
         <version.json-schema-validator>1.5.1</version.json-schema-validator>
-        @if(config.get("supportDb").booleanValue() || config.get("supportH2ForTest").booleanValue()){
+        @if((config.get("supportDb") != null && config.get("supportDb").booleanValue()) || config.get("supportH2ForTest").booleanValue()){
         <version.hikaricp>3.1.0</version.hikaricp>
         }
-        @if(config.get("supportDb").booleanValue() && "oracle".equalsIgnoreCase(config.path("dbInfo").path("name").textValue())){
+        @if(config.get("supportDb") != null && config.get("supportDb").booleanValue() && "oracle".equalsIgnoreCase(config.path("dbInfo").path("name").textValue())){
         <version.oracle>11.2.0.3</version.oracle>
         }
-        @if(config.get("supportDb").booleanValue() && "mysql".equalsIgnoreCase(config.path("dbInfo").path("name").textValue())){
+        @if(config.get("supportDb") != null && config.get("supportDb").booleanValue() && "mysql".equalsIgnoreCase(config.path("dbInfo").path("name").textValue())){
         <version.mysql>8.0.32</version.mysql>
         }
-        @if(config.get("supportDb").booleanValue() && "postgres".equalsIgnoreCase(config.path("dbInfo").path("name").textValue())){
+        @if(config.get("supportDb") != null && config.get("supportDb").booleanValue() && "postgres".equalsIgnoreCase(config.path("dbInfo").path("name").textValue())){
         <version.postgres>42.7.2</version.postgres>
         }
         @if(config.get("supportH2ForTest").booleanValue()){
@@ -39,7 +39,7 @@
         <version.confluent>7.6.0</version.confluent>
         }
         @if(config.get("kafkaProducer").booleanValue() || config.get("kafkaConsumer").booleanValue()){
-        <version.kafka>3.6.0</version.kafka>
+        <version.kafka>3.8.1</version.kafka>
         }
         <versions.maven-version>2.4</versions.maven-version>
         <version.javadoc-packagelist-plugin>1.0.0</version.javadoc-packagelist-plugin>
@@ -66,17 +66,17 @@
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
-            <artifactId>traceability</artifactId>
-            <version>${version.light-4j}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.networknt</groupId>
             <artifactId>correlation</artifactId>
             <version>${version.light-4j}</version>
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
             <artifactId>rpc-router</artifactId>
+            <version>${version.light-4j}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.networknt</groupId>
+            <artifactId>rpc-security</artifactId>
             <version>${version.light-4j}</version>
         </dependency>
         <dependency>
@@ -91,12 +91,37 @@
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
-            <artifactId>cors</artifactId>
+            <artifactId>logger-handler</artifactId>
             <version>${version.light-4j}</version>
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
-            <artifactId>jaeger-tracing</artifactId>
+            <artifactId>config-reload</artifactId>
+            <version>${version.light-4j}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.networknt</groupId>
+            <artifactId>cache-manager</artifactId>
+            <version>${version.light-4j}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.networknt</groupId>
+            <artifactId>caffeine-cache</artifactId>
+            <version>${version.light-4j}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.networknt</groupId>
+            <artifactId>cache-explorer</artifactId>
+            <version>${version.light-4j}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.networknt</groupId>
+            <artifactId>body</artifactId>
+            <version>${version.light-4j}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.networknt</groupId>
+            <artifactId>cors</artifactId>
             <version>${version.light-4j}</version>
         </dependency>
         <dependency>
@@ -155,28 +180,28 @@
             <artifactId>undertow-core</artifactId>
             <version>${version.undertow}</version>
         </dependency>
-        @if(config.get("supportDb").booleanValue() || config.get("supportH2ForTest").booleanValue()){
+        @if((config.get("supportDb") != null && config.get("supportDb").booleanValue()) || (config.get("supportH2ForTest") != null && config.get("supportH2ForTest").booleanValue())){
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
             <version>${version.hikaricp}</version>
         </dependency>
         }
-        @if(config.get("supportDb").booleanValue() && "oracle".equalsIgnoreCase(config.path("dbInfo").path("name").textValue())){
+        @if(config.get("supportDb") != null && config.get("supportDb").booleanValue() && "oracle".equalsIgnoreCase(config.path("dbInfo").path("name").textValue())){
         <dependency>
             <groupId>com.oracle</groupId>
             <artifactId>ojdbc6</artifactId>
             <version>${version.oracle}</version>
         </dependency>
         }
-        @if(config.get("supportDb").booleanValue() && "mysql".equalsIgnoreCase(config.path("dbInfo").path("name").textValue())){
+        @if(config.get("supportDb") != null && config.get("supportDb").booleanValue() && "mysql".equalsIgnoreCase(config.path("dbInfo").path("name").textValue())){
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>${version.mysql}</version>
         </dependency>
         }
-        @if(config.get("supportDb").booleanValue() && "postgres".equalsIgnoreCase(config.path("dbInfo").path("name").textValue())){
+        @if(config.get("supportDb") != null && config.get("supportDb").booleanValue() && "postgres".equalsIgnoreCase(config.path("dbInfo").path("name").textValue())){
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
@@ -314,12 +339,23 @@
         @if(config.get("supportAvro").booleanValue()){
         <repository>
             <id>confluent</id>
-            <url>http://packages.confluent.io/maven/</url>
+            <url>https://packages.confluent.io/maven/</url>
+        </repository>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
         </repository>
         }
-        <repository>
-            <id>sonatype-snapshots</id>
+       <repository>
+            <id>ossrh</id>
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>s01</id>
+            <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
@@ -327,81 +363,6 @@
     </repositories>
 
     <profiles>
-        <profile>
-            <id>release</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-shade-plugin</artifactId>
-                        <version>${version.maven-shade}</version>
-                        <executions>
-                            <execution>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>shade</goal>
-                                </goals>
-                                <configuration>
-                                    <dependencyReducedPomLocation>${project.build.directory}/dependency-reduced-pom.xml</dependencyReducedPomLocation>
-                                    <filters>
-                                        <filter>
-                                            <artifact>*:*</artifact>
-                                            <excludes>
-                                                <exclude>module-info.class</exclude>
-                                                <exclude>META-INF/*.SF</exclude>
-                                                <exclude>META-INF/*.DSA</exclude>
-                                                <exclude>META-INF/*.RSA</exclude>
-                                            </excludes>
-                                        </filter>
-                                    </filters>
-                                    <transformers>
-                                        <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
-                                    </transformers>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-source-plugin</artifactId>
-                        <version>${version.maven-source}</version>
-                        <executions>
-                            <execution>
-                                <id>attach-sources</id>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>${version.maven-javadoc}</version>
-                        <executions>
-                            <execution>
-                                <id>attach-javadocs</id>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>exec-maven-plugin</artifactId>
-                        <version>${version.exec-maven}</version>
-                        <configuration>
-                            <executable>java</executable>
-                            <arguments>
-                                <argument>-jar</argument>
-                                <argument>${project.build.directory}/${project.build.finalName}.${project.packaging}</argument>
-                            </arguments>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
         <profile>
             <id>debug</id>
             <activation>

@@ -6,7 +6,6 @@ server.enableHttps: false
 server.enableHttp2: false
 
 # unified-security.yml
-# unified-security.yml
 unified-security.pathPrefixAuths:
   - prefix: /api/json
     basic: true

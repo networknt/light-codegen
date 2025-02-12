@@ -123,8 +123,6 @@ public class OpenApiLambdaGenerator extends AbstractLambdaGenerator implements O
             }
             transfer(targetPath, "proxy", "server.yml", templates.lambda.proxy.server.template(serviceId, enableRegistry, version));
 
-            transfer(targetPath, "proxy", "primary.crt", templates.rest.primaryCrt.template());
-            transfer(targetPath, "proxy", "secondary.crt", templates.rest.secondaryCrt.template());
             // transfer binary files without touching them.
             try (InputStream is = OpenApiLambdaGenerator.class.getResourceAsStream("/binaries/server.keystore")) {
                 Generator.copyFile(is, Paths.get(targetPath, "proxy", "server.keystore"));
