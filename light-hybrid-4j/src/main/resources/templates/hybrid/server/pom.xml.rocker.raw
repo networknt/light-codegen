@@ -33,7 +33,7 @@
         <version.postgres>42.7.2</version.postgres>
         }
         @if(config.get("supportH2ForTest").booleanValue()){
-        <version.h2>2.2.220</version.h2>
+        <version.h2>2.3.232</version.h2>
         }
         @if(config.get("supportAvro").booleanValue()){
         <version.confluent>7.6.0</version.confluent>
