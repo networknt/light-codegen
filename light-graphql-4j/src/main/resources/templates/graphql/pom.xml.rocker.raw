@@ -31,7 +31,7 @@
         <version.mysql>8.0.32</version.mysql>
         }
         @if(config.get("supportDb").booleanValue() && "postgres".equalsIgnoreCase(config.path("dbInfo").path("name").textValue())){
-        <version.postgres>42.7.2</version.postgres>
+        <version.postgres>42.7.5</version.postgres>
         }
         @if(config.get("supportH2ForTest").booleanValue()){
         <version.h2>2.3.232</version.h2>
