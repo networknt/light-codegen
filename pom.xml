@@ -83,7 +83,7 @@
         <version.assertj>3.8.0</version.assertj>
         <version.hdrhistogram>2.2.2</version.hdrhistogram>
         <version.json-schema-validator>1.5.1</version.json-schema-validator>
-        <version.snakeyaml>2.3</version.snakeyaml>
+        <version.snakeyaml>2.4</version.snakeyaml>
         <version.rocker>1.2.1</version.rocker>
         <version.jcommander>1.82</version.jcommander>
         <version.graphql>22.2</version.graphql>
