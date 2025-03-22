@@ -60,7 +60,7 @@ public class CodegenSingleHandler implements HybridHandler {
         String projectFolder = codegenWebConfig.getTmpFolder() + separator + output;
 
         Map<String, Object> generatorMap = (Map<String, Object>)input;
-        if(logger.isDebugEnabled()) logger.debug("dataMap = " + JsonMapper.toJson(generatorMap));
+        if(logger.isDebugEnabled()) logger.debug("dataMap = {}", JsonMapper.toJson(generatorMap));
 
         if(generatorMap == null) {
             return NioUtils.toByteBuffer(getStatus(exchange, STATUS_MISSING_GENERATOR_ITEM));
