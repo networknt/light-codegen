@@ -36,7 +36,7 @@
         <version.h2>2.3.232</version.h2>
         }
         @if(config.get("supportAvro").booleanValue()){
-        <version.confluent>7.6.0</version.confluent>
+        <version.confluent>7.9.1</version.confluent>
         }
         @if(config.get("kafkaProducer").booleanValue() ||config.get("kafkaConsumer").booleanValue()){
         <version.kafka>3.9.1</version.kafka>
