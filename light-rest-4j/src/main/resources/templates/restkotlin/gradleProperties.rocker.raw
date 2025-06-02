@@ -1,7 +1,7 @@
 @import com.fasterxml.jackson.databind.JsonNode
 @args (JsonNode config)
 # Versions of Frequently used Libraries
-kafkaVersion=3.7.2
+kafkaVersion=3.9.1
 light4jVersion=2.2.2-SNAPSHOT
 jacksonVersion=2.18.3
 undertowVersion=2.3.18.Final
