@@ -13,6 +13,7 @@ import com.networknt.rpc.router.JsonHandler;
 import com.networknt.rpc.router.ServiceHandler;
 import com.networknt.utility.HashUtil;
 import com.networknt.utility.NioUtils;
+import com.networknt.utility.UuidUtil;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.HttpString;
 import org.slf4j.Logger;
@@ -55,7 +56,7 @@ public class CodegenSingleHandler implements HybridHandler {
     @Override
     public ByteBuffer handle(HttpServerExchange exchange, Object input)  {
         // generate a destination folder name.
-        String output = HashUtil.generateUUID();
+        String output = UuidUtil.uuidToBase64(UuidUtil.getUUID());
         String zipFile = output + ".zip";
         String projectFolder = codegenWebConfig.getTmpFolder() + separator + output;
 

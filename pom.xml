@@ -19,7 +19,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.networknt</groupId>
     <artifactId>light-codegen</artifactId>
-    <version>2.2.1</version>
+    <version>2.2.2</version>
     <packaging>pom</packaging>
     <name>Parent POM</name>
     <description>Light Code Generator</description>
@@ -53,20 +53,49 @@
     </scm>
 
     <distributionManagement>
-        <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
         <repository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+            <id>central</id>
+            <url>https://central.sonatype.com/service/local/staging/deploy/maven2/</url>
         </repository>
+        <snapshotRepository>
+            <id>central</id>
+            <url>https://central.sonatype.com/repository/maven-snapshots/</url>
+        </snapshotRepository>
     </distributionManagement>
+
+    <repositories>
+        <repository>
+            <id>snapshot</id>
+            <url>https://central.sonatype.com/repository/maven-snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>central</id>
+            <url>https://repo1.maven.org/maven2</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>central</id>
+            <url>https://repo1.maven.org/maven2</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </pluginRepository>
+    </pluginRepositories>
 
     <properties>
         <java.version>11</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <version.light-4j>2.2.1</version.light-4j>
+        <version.light-4j>2.2.2</version.light-4j>
         <version.jackson>2.18.3</version.jackson>
         <version.slf4j>2.0.17</version.slf4j>
         <version.jose4j>0.9.6</version.jose4j>
@@ -101,7 +130,7 @@
         <version.maven-surefire>2.22.2</version.maven-surefire>
         <version.jacoco-maven>0.8.5</version.jacoco-maven>
         <version.maven-deploy>2.8.2</version.maven-deploy>
-        <version.maven-gpg>1.6</version.maven-gpg>
+        <version.maven-gpg>3.2.7</version.maven-gpg>
     </properties>
 
     <modules>
@@ -386,22 +415,6 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>versions-maven-plugin</artifactId>
-                <version>${version.maven-version}</version>
-            </plugin>
-            <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>${version.nexus-staging-maven}</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <serverId>ossrh</serverId>
-                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
-                </configuration>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
                 <version>${version.maven-source}</version>
@@ -471,11 +484,6 @@
             <!-- end JACOCO -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <version>${version.maven-deploy}</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${version.maven-compiler}</version>
                 <configuration>
@@ -538,32 +546,6 @@
         </pluginManagement>
     </build>
 
-    <repositories>
-        <repository>
-            <id>central</id>
-            <url>
-                https://oss.sonatype.org/content/repositories/releases
-            </url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>snapshots</id>
-            <url>
-                https://oss.sonatype.org/content/repositories/snapshots
-            </url>
-            <snapshots>
-                <enabled>true</enabled>
-                <!-- never, daily, interval:X (where X is in minutes) or always -->
-                <!--<updatePolicy>daily</updatePolicy> -->
-            </snapshots>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-        </repository>
-    </repositories>
-
     <reporting>
         <plugins>
             <plugin>
@@ -598,6 +580,16 @@
                                 </goals>
                             </execution>
                         </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.sonatype.central</groupId>
+                        <artifactId>central-publishing-maven-plugin</artifactId>
+                        <version>0.7.0</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <publishingServerId>central</publishingServerId>
+                            <autoPublish>true</autoPublish>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>
