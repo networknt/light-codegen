@@ -21,12 +21,13 @@
     <parent>
         <groupId>com.networknt</groupId>
         <artifactId>light-codegen</artifactId>
-        <version>2.2.2</version>
+        <version>2.2.3-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>light-graphql-4j-generator</artifactId>
     <packaging>jar</packaging>
+    <name>light-graphql-4j-generator</name>
     <description>light-graphql-4j code generator.</description>
 
     <dependencies>
