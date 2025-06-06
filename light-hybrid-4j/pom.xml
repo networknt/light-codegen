@@ -27,6 +27,7 @@
 
     <artifactId>light-hybrid-4j-generator</artifactId>
     <packaging>jar</packaging>
+    <name>light-hybrid-4j-generator</name>
     <description>light-hybrid-4j code generator.</description>
 
     <dependencies>

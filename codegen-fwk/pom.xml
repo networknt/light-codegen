@@ -27,6 +27,7 @@
 
     <artifactId>codegen-fwk</artifactId>
     <packaging>jar</packaging>
+    <name>codegen-fwk</name>
     <description>light-generator framework.</description>
 
     <build>

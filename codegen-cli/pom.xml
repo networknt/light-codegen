@@ -27,6 +27,7 @@
 
     <artifactId>codegen-cli</artifactId>
     <packaging>jar</packaging>
+    <name>codegen-cli</name>
     <description>light-generator cli.</description>
 
     <dependencies>

@@ -27,6 +27,7 @@
 
     <artifactId>codegen-core</artifactId>
     <packaging>jar</packaging>
+    <name>codegen-core</name>
     <description>light generator core.</description>
 
     <build>

@@ -27,6 +27,7 @@
 
     <artifactId>light-graphql-4j-generator</artifactId>
     <packaging>jar</packaging>
+    <name>light-graphql-4j-generator</name>
     <description>light-graphql-4j code generator.</description>
 
     <dependencies>

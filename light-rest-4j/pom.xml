@@ -27,6 +27,7 @@
 
     <artifactId>light-rest-4j-generator</artifactId>
     <packaging>jar</packaging>
+    <name>light-rest-4j-generator</name>
     <description>light-rest-4j code generator.</description>
 
     <dependencies>
