@@ -1,5 +1,11 @@
 # Change Log
 
+## [2.3.1](https://github.com/networknt/light-codegen/tree/2.3.1) (2025-09-19)
+
+
+**Merged pull requests:**
+
+
 ## [2.3.0](https://github.com/networknt/light-codegen/tree/2.3.0) (2025-06-25)
 
 
