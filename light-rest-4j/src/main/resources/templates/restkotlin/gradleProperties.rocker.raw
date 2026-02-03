@@ -2,10 +2,10 @@
 @args (JsonNode config)
 # Versions of Frequently used Libraries
 kafkaVersion=3.9.1
-light4jVersion=2.3.1
+light4jVersion=2.3.2
 jacksonVersion=2.18.3
-undertowVersion=2.3.18.Final
-logbackVersion=1.5.18
+undertowVersion=2.3.22.Final
+logbackVersion=1.5.26
 jsonSchemaValidatorVersion=1.5.1
 junitVersion=5.3.1
 kotlinLoggingVersion=1.6.22
