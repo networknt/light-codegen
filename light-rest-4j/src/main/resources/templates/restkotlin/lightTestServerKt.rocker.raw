@@ -5,7 +5,7 @@ import assertk.Assert
 import assertk.assertions.contains
 import assertk.assertions.isEqualTo
 import com.networknt.client.Http2Client
-import com.networknt.client.simplepool.SimpleConnectionHolder
+import com.networknt.client.simplepool.SimpleConnectionState
 import com.networknt.server.Server
 import com.networknt.server.ServerConfig
 import io.undertow.UndertowOptions
