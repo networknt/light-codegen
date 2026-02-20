@@ -5,6 +5,7 @@ import assertk.Assert
 import assertk.assertions.contains
 import assertk.assertions.isEqualTo
 import com.networknt.client.Http2Client
+import com.networknt.client.simplepool.SimpleConnectionState
 import com.networknt.server.Server
 import com.networknt.server.ServerConfig
 import io.undertow.UndertowOptions
@@ -113,14 +114,15 @@ class LightTestServer() : BeforeAllCallback, AfterAllCallback {
 
             val client = Http2Client.getInstance()
 
-            client.connect(
+            val token = client.borrow(
                 URI(baseUrl),
                 Http2Client.WORKER,
                 Http2Client.SSL,
                 Http2Client.BUFFER_POOL,
                 OptionMap.create(UndertowOptions.ENABLE_HTTP2, true)
-            ).get().use { connection ->
-
+            )
+            try {
+                val connection = token.rawConnection as io.undertow.client.ClientConnection
                 val request = ClientRequest().setPath(path).setMethod(method)
                 authenticate(request, auth)
                 val latch = CountDownLatch(1)
@@ -148,6 +150,8 @@ class LightTestServer() : BeforeAllCallback, AfterAllCallback {
                 log.info { "Response code = ${response.responseCode}" }
                 log.info { "Response body = ${response.getAttachment(Http2Client.RESPONSE_BODY)}" }
                 return response
+            } finally {
+                client.restore(token)
             }
 
         }

@@ -1,7 +1,7 @@
 package com.networknt.codegen.handler;
 
 import com.networknt.client.Http2Client;
-import com.networknt.client.simplepool.SimpleConnectionHolder;
+import com.networknt.client.simplepool.SimpleConnectionState;
 import com.networknt.exception.ApiException;
 import com.networknt.exception.ClientException;
 import com.networknt.server.ServerConfig;
@@ -47,7 +47,7 @@ public class SchemaGetHandlerTest {
 
         final AtomicReference<ClientResponse> reference = new AtomicReference<>();
         final CountDownLatch latch = new CountDownLatch(1);
-        SimpleConnectionHolder.ConnectionToken connectionToken = null;
+        SimpleConnectionState.ConnectionToken connectionToken = null;
 
         try {
             connectionToken = client.borrow(new URI(url), Http2Client.WORKER, client.getDefaultXnioSsl(), Http2Client.BUFFER_POOL, OptionMap.EMPTY);
