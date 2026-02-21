@@ -24,7 +24,7 @@ public class OpenApiKotlinGeneratorTest {
         Files.createDirectories(Paths.get(targetPath));
     }
 
-    //    @AfterClass
+    //    @AfterAll
     public static void tearDown() throws IOException {
         Files.deleteIfExists(Paths.get(targetPath));
     }
