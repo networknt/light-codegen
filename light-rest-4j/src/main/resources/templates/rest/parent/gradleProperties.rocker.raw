@@ -8,7 +8,7 @@ slf4jVersion=2.0.17
 undertowVersion=2.3.22.Final
 logbackVersion=1.5.26
 jsonSchemaValidatorVersion=1.5.1
-junitVersion=5.11.3
+junitVersion=5.11.4
 @if(config.get("supportDb").booleanValue() || config.get("supportH2ForTest").booleanValue()){
 hikaricpVersion=3.1.0
 }

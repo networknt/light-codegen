@@ -20,7 +20,7 @@
         <version.snakeyaml>2.4</version.snakeyaml>
         <version.lambda-core>1.4.0</version.lambda-core>
         <version.lambda-events>3.16.1</version.lambda-events>
-        <version.junit>5.11.3</version.junit>
+        <version.junit>5.11.4</version.junit>
     </properties>
     <repositories>
         <repository>
