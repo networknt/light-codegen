@@ -101,6 +101,7 @@
         <version.jose4j>0.9.6</version.jose4j>
         <version.antlr4>4.7</version.antlr4>
         <version.commons-text>1.15.0</version.commons-text>
+        <version.commons-lang3>3.17.0</version.commons-lang3>
         <version.commons.io>2.18.0</version.commons.io>
         <version.commons.codec>1.18.0</version.commons.codec>
         <version.encoder>1.3.1</version.encoder>
@@ -288,6 +289,11 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-text</artifactId>
                 <version>${version.commons-text}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${version.commons-lang3}</version>
             </dependency>
             <dependency>
                 <groupId>commons-io</groupId>
