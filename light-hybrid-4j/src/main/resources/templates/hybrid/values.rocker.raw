@@ -21,7 +21,7 @@ server.buildNumber: @version
 security.enableVerifyJwt: false
 
 # rpc-router.yml
-rpc-router.handlerPackage: @handlerPackage
+rpc-router.handlerPackages: @handlerPackage
 rpc-router.jsonPath: @jsonPath
 
 # service.yml
