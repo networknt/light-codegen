@@ -93,7 +93,7 @@
     </pluginRepositories>
 
     <properties>
-        <java.version>21</java.version>
+        <java.version>25</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <version.light-4j>2.3.5-SNAPSHOT</version.light-4j>
         <version.jackson>2.21.1</version.jackson>
@@ -128,7 +128,7 @@
         <version.maven-compiler>3.8.1</version.maven-compiler>
         <version.nexus-staging-maven>1.7.0</version.nexus-staging-maven>
         <version.maven-surefire>3.5.2</version.maven-surefire>
-        <version.jacoco-maven>0.8.5</version.jacoco-maven>
+        <version.jacoco-maven>0.8.14</version.jacoco-maven>
         <version.maven-deploy>2.8.2</version.maven-deploy>
         <version.maven-gpg>3.2.7</version.maven-gpg>
     </properties>
