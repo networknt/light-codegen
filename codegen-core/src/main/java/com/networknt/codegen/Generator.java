@@ -137,7 +137,6 @@ public interface Generator {
         transfer("/maven/mvnw.cmd", targetPath, "", "mvnw.cmd");
         transfer("/maven/mvn/wrapper/maven-wrapper.jar", targetPath, ".mvn/wrapper", "maven-wrapper.jar");
         transfer("/maven/mvn/wrapper/maven-wrapper.properties", targetPath, ".mvn/wrapper", "maven-wrapper.properties");
-        transfer("/maven/mvn/wrapper/MavenWrapperDownloader.java", targetPath, ".mvn/wrapper", "MavenWrapperDownloader.java");
     }
 
     /**
