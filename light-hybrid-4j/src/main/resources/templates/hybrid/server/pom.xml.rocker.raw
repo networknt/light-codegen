@@ -36,10 +36,10 @@
         <version.h2>2.3.232</version.h2>
         }
         @if(config.get("supportAvro").booleanValue()){
-        <version.confluent>8.3.1</version.confluent>
+        <version.confluent>8.2.1</version.confluent>
         }
         @if(config.get("kafkaProducer").booleanValue() || config.get("kafkaConsumer").booleanValue()){
-        <version.kafka>4.3.1</version.kafka>
+        <version.kafka>4.2.1</version.kafka>
         }
         <versions.maven-version>2.4</versions.maven-version>
         <version.javadoc-packagelist-plugin>1.0.0</version.javadoc-packagelist-plugin>
