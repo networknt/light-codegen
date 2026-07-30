@@ -2,7 +2,7 @@
 @args (JsonNode config)
 # Versions of Frequently used Libraries
 kafkaVersion=3.9.2
-light4jVersion=2.3.5
+light4jVersion=2.3.6-SNAPSHOT
 jacksonVersion=2.19.4
 slf4jVersion=2.0.17
 undertowVersion=2.4.1.Final
