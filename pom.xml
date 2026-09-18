@@ -120,7 +120,6 @@
         <version.qdox>2.0-M9</version.qdox>
         <version.classgraph>4.8.149</version.classgraph>
         <version.maven-version>2.4</version.maven-version>
-        <version.javadoc-packagelist-plugin>1.0.0</version.javadoc-packagelist-plugin>
         <version.maven-javadoc>3.4.1</version.maven-javadoc>
         <version.maven-source>3.2.0</version.maven-source>
         <version.maven-jar>3.2.0</version.maven-jar>
@@ -398,19 +397,6 @@
         </testResources>
 
         <plugins>
-            <plugin>
-                <groupId>com.networknt</groupId>
-                <artifactId>javadoc-packagelist-maven-plugin</artifactId>
-                <version>${version.javadoc-packagelist-plugin}</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>gen-package-list</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
