@@ -127,7 +127,7 @@
         <version.exec-maven>1.6.0</version.exec-maven>
         <version.maven-compiler>3.8.1</version.maven-compiler>
         <version.nexus-staging-maven>1.7.0</version.nexus-staging-maven>
-        <version.maven-surefire>3.5.2</version.maven-surefire>
+        <version.maven-surefire>3.6.0</version.maven-surefire>
         <version.jacoco-maven>0.8.14</version.jacoco-maven>
         <version.maven-deploy>2.8.2</version.maven-deploy>
         <version.maven-gpg>3.2.7</version.maven-gpg>
