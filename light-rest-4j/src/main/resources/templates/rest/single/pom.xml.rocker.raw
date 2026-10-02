@@ -41,7 +41,7 @@
         @if(config.get("kafkaProducer").booleanValue() ||config.get("kafkaConsumer").booleanValue()){
         <version.kafka>4.3.1</version.kafka>
         }
-        <versions.maven-version>2.4</versions.maven-version>
+        <versions.maven-version>2.22.0</versions.maven-version>
         <version.maven-javadoc>3.4.1</version.maven-javadoc>
         <version.maven-jar>3.5.1</version.maven-jar>
         <version.maven-shade>3.2.1</version.maven-shade>
