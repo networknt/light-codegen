@@ -120,7 +120,7 @@
         <version.qdox>2.0-M9</version.qdox>
         <version.classgraph>4.8.149</version.classgraph>
         <version.maven-version>2.4</version.maven-version>
-        <version.maven-javadoc>3.4.1</version.maven-javadoc>
+        <version.maven-javadoc>3.12.0</version.maven-javadoc>
         <version.maven-source>3.2.0</version.maven-source>
         <version.maven-jar>3.2.0</version.maven-jar>
         <version.maven-shade>3.2.1</version.maven-shade>
