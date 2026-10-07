@@ -1,5 +1,31 @@
 # Change Log
 
+## [2.4.0](https://github.com/networknt/light-codegen/tree/2.4.0) (2026-10-07)
+
+**Commits:**
+
+- upgrade to version 2.4.0 before release in master branch ([13a151f](https://github.com/networknt/light-codegen/commit/13a151f6a99290752d50ba1fc13be5e82866c11d)) (by Steve Hu)
+- upgrade confluent to 8.3.2 from 8.3.1 ([8b278b4](https://github.com/networknt/light-codegen/commit/8b278b4a2d352597699254a2a82cdfea660050a8)) (by Steve Hu)
+- upgrade maven-javadoc to 3.12.0 from 3.4.1 ([0e8d560](https://github.com/networknt/light-codegen/commit/0e8d56037f50282e75996efe73d2595fe87afdb6)) (by Steve Hu)
+- upgrade h2 to 2.5.252 from 2.5.250 ([d1db793](https://github.com/networknt/light-codegen/commit/d1db793199d952229fffb641c0a71c656d89bc1d)) (by Steve Hu)
+- upgrade maven-version to 2.22.0 from 2.4 ([008d948](https://github.com/networknt/light-codegen/commit/008d9488d68f883ab36af34b2ae57969b5d1bcbb)) (by Steve Hu)
+- upgrade slf4j to 2.0.20 from 2.0.19 ([85154b2](https://github.com/networknt/light-codegen/commit/85154b2382f63e9f257ac30bbc2a670057f1cf35)) (by Steve Hu)
+- upgrade jose4j to 0.9.7 from 0.9.6 ([df20953](https://github.com/networknt/light-codegen/commit/df20953a6c45295f556610d95e5198e3c5c64aa5)) (by Steve Hu)
+- upgrade jackson to 2.22.3 from 2.22.1 ([9e774df](https://github.com/networknt/light-codegen/commit/9e774df64f83dc390a662f2e1ea12159f63e0461)) (by Steve Hu)
+- upgrade to version 2.3.8-SNAPSHOT after release in master branch ([cccc2c0](https://github.com/networknt/light-codegen/commit/cccc2c04980b771adab77401482c6f13e77aed61)) (by Steve Hu)
+- upgrade slf4j to 2.0.19 from 2.0.17 ([e6e99ed](https://github.com/networknt/light-codegen/commit/e6e99ed10c043825c0e7559fd8d46fb538954e49)) (by Steve Hu)
+- upgrade maven-surefire to 3.6.0 ([29a23c2](https://github.com/networknt/light-codegen/commit/29a23c24dc097c5a5199b7e3aa8d0a558cb0be98)) (by Steve Hu)
+- upgrade hikaricp to 7.1.0 from 6.2.1 ([5ea1acb](https://github.com/networknt/light-codegen/commit/5ea1acb8749aad283ba177b0aa1e5fbc58f10ea7)) (by Steve Hu)
+- upgrade logback to 1.6.3 from 1.5.37 ([45ffbe4](https://github.com/networknt/light-codegen/commit/45ffbe4d765e5b1419a5aa65098b8e7d13798b4a)) (by Steve Hu)
+- Remove obsolete javadoc-packagelist-maven-plugin workaround ([94992e6](https://github.com/networknt/light-codegen/commit/94992e64a4c0ba13136701853f34658bdbbd7069)) (by Steve Hu)
+- upgrade central-publishing-maven to 0.11.0 from 0.7.0 ([0cebd01](https://github.com/networknt/light-codegen/commit/0cebd01be5fb621e2abf3230fd165228abcfbb95)) (by Steve Hu)
+- upgrade maven-jar to 3.5.1 from 3.1.2 ([4b52d13](https://github.com/networknt/light-codegen/commit/4b52d131196d1e1f0049f78782c469835e83e0dd)) (by Steve Hu)
+- upgrade h2 to 2.5.250 from 2.3.232 ([14486c5](https://github.com/networknt/light-codegen/commit/14486c56da0d94c81a81ed28d4c56f15d4e4ca7b)) (by Steve Hu)
+- update kafka and confluent version to 4.3.1 and 8.3.1 ([5707370](https://github.com/networknt/light-codegen/commit/570737053c5d1c3c7daa570d272c4fb6e6a29659)) (by Steve Hu)
+- update json-schema-validator version to 2.0.7 ([608fc8b](https://github.com/networknt/light-codegen/commit/608fc8b1eba8846700e2e451fc53ee5b66e30668)) (by Steve Hu)
+- update json-schema-validator version to 2.0.5 ([c0f293f](https://github.com/networknt/light-codegen/commit/c0f293fc1800323000209c6d5af53a942cd2ce22)) (by Steve Hu)
+- upgrade to version 2.3.8-SNAPSHOT after release in master branch ([27c9b87](https://github.com/networknt/light-codegen/commit/27c9b8736303368277507b5d79858867c7825870)) (by Steve Hu)
+
 ## [2.3.7](https://github.com/networknt/light-codegen/tree/2.3.7) (2026-08-12)
 
 
