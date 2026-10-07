@@ -12,17 +12,17 @@
         <java.version>21</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.main.class>com.networknt.server.Server</project.main.class>
-        <version.light-4j>2.3.7</version.light-4j>
-        <version.jackson>2.22.1</version.jackson>
-        <version.slf4j>2.0.17</version.slf4j>
-        <version.jose4j>0.9.6</version.jose4j>
-        <version.logback>1.5.37</version.logback>
+        <version.light-4j>2.4.0</version.light-4j>
+        <version.jackson>2.22.3</version.jackson>
+        <version.slf4j>2.0.20</version.slf4j>
+        <version.jose4j>0.9.7</version.jose4j>
+        <version.logback>1.6.3</version.logback>
         <version.junit>5.11.4</version.junit>
         <version.undertow>2.4.1.Final</version.undertow>
         <version.graphql>22.2</version.graphql>
         <version.rxjava>2.1.5</version.rxjava>
         @if(config.get("supportDb").booleanValue() || config.get("supportH2ForTest").booleanValue()){
-        <version.hikaricp>6.2.1</version.hikaricp>
+        <version.hikaricp>7.1.0</version.hikaricp>
         }
         @if(config.get("supportDb").booleanValue() && "oracle".equalsIgnoreCase(config.path("dbInfo").path("name").textValue())){
         <version.oracle>11.2.0.3</version.oracle>
@@ -34,12 +34,11 @@
         <version.postgres>42.7.13</version.postgres>
         }
         @if(config.get("supportH2ForTest").booleanValue()){
-        <version.h2>2.3.232</version.h2>
+        <version.h2>2.5.252</version.h2>
         }
-        <versions.maven-version>2.4</versions.maven-version>
-        <version.javadoc-packagelist-plugin>1.0.0</version.javadoc-packagelist-plugin>
-        <version.maven-javadoc>3.4.1</version.maven-javadoc>
-        <version.maven-jar>3.1.2</version.maven-jar>
+        <versions.maven-version>2.22.0</versions.maven-version>
+        <version.maven-javadoc>3.12.0</version.maven-javadoc>
+        <version.maven-jar>3.5.1</version.maven-jar>
         <version.maven-shade>3.2.1</version.maven-shade>
         <version.maven-compiler>3.8.1</version.maven-compiler>
         <version.maven-deploy>2.8.2</version.maven-deploy>
@@ -285,19 +284,6 @@
         <directory>target</directory>
         <finalName>${project.artifactId}-${project.version}</finalName>
         <plugins>
-            <plugin>
-                <groupId>com.networknt</groupId>
-                <artifactId>javadoc-packagelist-maven-plugin</artifactId>
-                <version>${version.javadoc-packagelist-plugin}</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>gen-package-list</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
