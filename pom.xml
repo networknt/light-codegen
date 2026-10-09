@@ -130,7 +130,7 @@
         <version.maven-surefire>3.6.0</version.maven-surefire>
         <version.jacoco-maven>0.8.14</version.jacoco-maven>
         <version.maven-deploy>2.8.2</version.maven-deploy>
-        <version.maven-gpg>3.2.7</version.maven-gpg>
+        <version.maven-gpg>3.2.8</version.maven-gpg>
     </properties>
 
     <modules>
