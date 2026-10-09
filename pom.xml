@@ -123,7 +123,7 @@
         <version.maven-javadoc>3.12.0</version.maven-javadoc>
         <version.maven-source>3.4.0</version.maven-source>
         <version.maven-jar>3.2.0</version.maven-jar>
-        <version.maven-shade>3.2.1</version.maven-shade>
+        <version.maven-shade>3.6.2</version.maven-shade>
         <version.exec-maven>3.6.4</version.exec-maven>
         <version.maven-compiler>3.8.1</version.maven-compiler>
         <version.nexus-staging-maven>1.7.0</version.nexus-staging-maven>
