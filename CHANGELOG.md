@@ -1,5 +1,25 @@
 # Change Log
 
+## [2.4.1](https://github.com/networknt/light-codegen/tree/2.4.1) (2026-10-11)
+
+**Commits:**
+
+- upgrade to version 2.4.1 before release in master branch ([c6a9e82](https://github.com/networknt/light-codegen/commit/c6a9e82de368aa3356bc9bd238fc7b247e46f341)) (by Steve Hu)
+- upgrade maven-shade to 3.6.2 from 3.2.1 ([389eccb](https://github.com/networknt/light-codegen/commit/389eccbb4c4cf15c7a0dd06a3f13a8a4529e160a)) (by Steve Hu)
+- upgrade exec-maven to 3.6.4 from 1.6.0 ([0a99436](https://github.com/networknt/light-codegen/commit/0a99436a757d08ecad6026027cea9f4a166ba112)) (by Steve Hu)
+- upgrade maven-gpg to 3.2.8 from 3.2.7 ([0cd968e](https://github.com/networknt/light-codegen/commit/0cd968eb5c05143eb6341146aec88077440d9084)) (by Steve Hu)
+- upgrade maven-source to 3.4.0 ([a2d8b8e](https://github.com/networknt/light-codegen/commit/a2d8b8e49b6e942f945739b1f3c713c05e71cd2f)) (by Steve Hu)
+- build: upgrade JUnit to 6.1.3 ([e461b24](https://github.com/networknt/light-codegen/commit/e461b24b665cee724eabbc50a78986f87d7c943c)) (by Steve Hu)
+- upgrade hamcrest to 3.0 from 1.3 ([7a4d831](https://github.com/networknt/light-codegen/commit/7a4d83199b26d1e01f991e84b16757a525a3a8ea)) (by Steve Hu)
+- upgrade udertow to 2.4.4.Final from 2.4.1.Final ([4dcfe3d](https://github.com/networknt/light-codegen/commit/4dcfe3d198e0de270e8e4cb6622f8aab9cda567a)) (by Steve Hu)
+- upgrade logback to 1.6.5 from 1.6.3 ([9e51259](https://github.com/networknt/light-codegen/commit/9e512599be1291b765b22205e89241882f041716)) (by Steve Hu)
+- upgrade snakeyaml to 2.7 from 2.4 ([535d66e](https://github.com/networknt/light-codegen/commit/535d66eb323009c19e9f92e3a048093dc6139942)) (by Steve Hu)
+- upgrade json-schema-validator to 2.0.8 from 2.0.7 ([f32f513](https://github.com/networknt/light-codegen/commit/f32f513076847468934ca58b944e107fe4799516)) (by Steve Hu)
+- upgrade postgres to 42.7.14 from 42.7.13 ([4d98a4f](https://github.com/networknt/light-codegen/commit/4d98a4f17290369e461877381007851a93910001)) (by Steve Hu)
+- upgrade undertow to 2.4.1.Final from 2.4.4.Final ([a8e6908](https://github.com/networknt/light-codegen/commit/a8e690879ab89c6ee29a12553b6bea205e48d14a)) (by Steve Hu)
+- upgrade encoder to 1.5.0 from 1.3.1 ([77d8572](https://github.com/networknt/light-codegen/commit/77d8572133616233452abcc8c13a004d284339f1)) (by Steve Hu)
+- upgrade to version 2.4.1-SNAPSHOT after release in master branch ([44ac8a1](https://github.com/networknt/light-codegen/commit/44ac8a1ab6ea1129d320ae47e2a901435c84ca97)) (by Steve Hu)
+
 ## [2.4.0](https://github.com/networknt/light-codegen/tree/2.4.0) (2026-10-07)
 
 **Commits:**
