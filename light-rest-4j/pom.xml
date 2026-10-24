@@ -70,6 +70,7 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <!-- Preserve the existing classic API export for generator consumers. -->
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
         </dependency>

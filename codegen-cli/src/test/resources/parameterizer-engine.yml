@@ -1,0 +1,5 @@
+# Engine resource fixture
+message: café λ
+enabled: yes
+list:
+  - value
