@@ -113,7 +113,6 @@
         <version.assertj>3.27.7</version.assertj>
         <version.hdrhistogram>2.2.2</version.hdrhistogram>
         <version.json-schema-validator>2.0.8</version.json-schema-validator>
-        <version.snakeyaml>2.7</version.snakeyaml>
         <version.rocker>1.2.1</version.rocker>
         <version.jcommander>1.82</version.jcommander>
         <version.graphql>22.2</version.graphql>
@@ -316,11 +315,6 @@
                 <groupId>io.undertow</groupId>
                 <artifactId>undertow-core</artifactId>
                 <version>${version.undertow}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.yaml</groupId>
-                <artifactId>snakeyaml</artifactId>
-                <version>${version.snakeyaml}</version>
             </dependency>
             <dependency>
                 <groupId>com.fizzed</groupId>
