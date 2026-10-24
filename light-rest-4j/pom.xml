@@ -69,6 +69,11 @@
             <artifactId>rocker-compiler</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <!-- Preserve the existing classic API export for generator consumers. -->
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+        </dependency>
 		<dependency>
 		    <groupId>io.github.classgraph</groupId>
 		    <artifactId>classgraph</artifactId>

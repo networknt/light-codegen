@@ -14,16 +14,14 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.yaml.snakeyaml.LoaderOptions;
-import org.yaml.snakeyaml.composer.Composer;
-import org.yaml.snakeyaml.nodes.MappingNode;
-import org.yaml.snakeyaml.nodes.Node;
-import org.yaml.snakeyaml.nodes.NodeTuple;
-import org.yaml.snakeyaml.nodes.ScalarNode;
-import org.yaml.snakeyaml.nodes.SequenceNode;
-import org.yaml.snakeyaml.parser.ParserImpl;
-import org.yaml.snakeyaml.reader.StreamReader;
-import org.yaml.snakeyaml.resolver.Resolver;
+import org.snakeyaml.engine.v2.api.LoadSettings;
+import org.snakeyaml.engine.v2.api.lowlevel.Compose;
+import org.snakeyaml.engine.v2.nodes.MappingNode;
+import org.snakeyaml.engine.v2.nodes.Node;
+import org.snakeyaml.engine.v2.nodes.NodeTuple;
+import org.snakeyaml.engine.v2.nodes.ScalarNode;
+import org.snakeyaml.engine.v2.nodes.SequenceNode;
+import org.snakeyaml.engine.v2.schema.CoreSchema;
 
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -336,8 +334,7 @@ public class YAMLFileParameterizer {
 	protected static Node loadResource(String resourceLocation) {
 		try (InputStream in = getResourceAsStream(resourceLocation);
 			BufferedReader inputReader = new BufferedReader(new InputStreamReader(in, UTF_8))) {
-			Composer composer = new Composer(new ParserImpl(new StreamReader(inputReader), new LoaderOptions()), new Resolver(), new LoaderOptions());
-			return composer.getSingleNode();
+			return newCompose().composeReader(inputReader).orElse(null);
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 		}
@@ -361,13 +358,17 @@ public class YAMLFileParameterizer {
 
 	protected static Node loadFile(File file) {
 		try (Reader inputReader = Files.newBufferedReader(file.toPath(), UTF_8)) {
-			Composer composer = new Composer(new ParserImpl(new StreamReader(inputReader), new LoaderOptions()), new Resolver(), new LoaderOptions());
-			return composer.getSingleNode();
+			return newCompose().composeReader(inputReader).orElse(null);
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 		}
 
 		return null;
+	}
+
+	private static Compose newCompose() {
+		return new Compose(LoadSettings.builder().setSchema(new CoreSchema())
+				.setUseMarks(true).setAllowDuplicateKeys(true).build());
 	}
 
 	protected static List<String> readFile(File file) {
@@ -424,13 +425,13 @@ public class YAMLFileParameterizer {
 			Node k = tuple.getKeyNode();
 			Node v = tuple.getValueNode();
 
-			int startLine = k.getStartMark().getLine();
-			int stopLine = v.getEndMark().getLine();
+			int startLine = k.getStartMark().orElseThrow().getLine();
+			int stopLine = v.getEndMark().orElseThrow().getLine();
 
 			// stop line can be:
 			//  1. the start line of the next node.
 			// 	2. last line of file (empty line or non-empty line).
-			if (null!=nextTuple && nextTuple.getKeyNode().getStartMark().getLine()==stopLine) {
+			if (null!=nextTuple && nextTuple.getKeyNode().getStartMark().orElseThrow().getLine()==stopLine) {
 				stopLine -= 1;
 			}
 
