@@ -1,6 +1,6 @@
 package com.networknt.codegen;
 
-import com.networknt.jackson.Jackson2Defaults;
+import com.networknt.jackson.JacksonDefaults;
 import tools.jackson.dataformat.yaml.YAMLFactory;
 import tools.jackson.dataformat.yaml.YAMLMapper;
 
@@ -9,7 +9,7 @@ final class CodegenMappers {
     private CodegenMappers() { }
 
     static YAMLMapper yamlMapper() {
-        var factory = Jackson2Defaults.configure(YAMLFactory.builder()).build();
-        return Jackson2Defaults.configure(YAMLMapper.builder(factory)).build();
+        var factory = JacksonDefaults.configure(YAMLFactory.builder()).build();
+        return JacksonDefaults.configure(YAMLMapper.builder(factory)).build();
     }
 }

@@ -2,7 +2,7 @@ package com.networknt.codegen.handler;
 
 import com.networknt.client.Http2Client;
 import com.networknt.client.simplepool.SimpleConnectionState;
-import com.networknt.config.Jackson2Defaults;
+import com.networknt.jackson.JacksonDefaults;
 import com.networknt.exception.ClientException;
 import com.networknt.server.ServerConfig;
 import io.undertow.client.ClientConnection;
@@ -81,7 +81,7 @@ public class GeneratorServiceHandlerTest {
                 request.getRequestHeaders().put(Headers.CONTENT_TYPE, "application/json");
                 request.getRequestHeaders().put(Headers.TRANSFER_ENCODING, "chunked");
                 try {
-                    connection.sendRequest(request, client.createClientCallback(reference, latch, Jackson2Defaults.mapper().writeValueAsString(params)));
+                    connection.sendRequest(request, client.createClientCallback(reference, latch, JacksonDefaults.mapper().writeValueAsString(params)));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -114,7 +114,7 @@ public class GeneratorServiceHandlerTest {
         params.put("service", "codegen");
         params.put("action", "multiple");
         params.put("version", "0.0.1");
-        params.put("data", Jackson2Defaults.mapper().readValue("{\"generators\":[{\"framework\":\"invalid\",\"release\":\"1.0.0\",\"modelType\":\"C\",\"modelText\":{\"key\":\"value\"},\"configType\":\"C\",\"configText\":{\"key\":\"value\"}}]}", Map.class));
+        params.put("data", JacksonDefaults.mapper().readValue("{\"generators\":[{\"framework\":\"invalid\",\"release\":\"1.0.0\",\"modelType\":\"C\",\"modelText\":{\"key\":\"value\"},\"configType\":\"C\",\"configText\":{\"key\":\"value\"}}]}", Map.class));
 
         final AtomicReference<ClientResponse> reference = new AtomicReference<>();
         final CountDownLatch latch = new CountDownLatch(1);
@@ -129,7 +129,7 @@ public class GeneratorServiceHandlerTest {
                 request.getRequestHeaders().put(Headers.CONTENT_TYPE, "application/json");
                 request.getRequestHeaders().put(Headers.TRANSFER_ENCODING, "chunked");
                 try {
-                    connection.sendRequest(request, client.createClientCallback(reference, latch, Jackson2Defaults.mapper().writeValueAsString(params)));
+                    connection.sendRequest(request, client.createClientCallback(reference, latch, JacksonDefaults.mapper().writeValueAsString(params)));
                 } catch (JacksonException e) {
                     e.printStackTrace();
                 }
@@ -162,7 +162,7 @@ public class GeneratorServiceHandlerTest {
         params.put("service", "codegen");
         params.put("action", "single");
         params.put("version", "0.0.1");
-        params.put("data", Jackson2Defaults.mapper().readValue("{\"framework\":\"invalid\",\"release\":\"1.0.0\",\"modelType\":\"C\",\"modelText\":{\"key\":\"value\"},\"configType\":\"C\",\"configText\":{\"key\":\"value\"}}", Map.class));
+        params.put("data", JacksonDefaults.mapper().readValue("{\"framework\":\"invalid\",\"release\":\"1.0.0\",\"modelType\":\"C\",\"modelText\":{\"key\":\"value\"},\"configType\":\"C\",\"configText\":{\"key\":\"value\"}}", Map.class));
 
         final AtomicReference<ClientResponse> reference = new AtomicReference<>();
         final CountDownLatch latch = new CountDownLatch(1);
@@ -177,7 +177,7 @@ public class GeneratorServiceHandlerTest {
                 request.getRequestHeaders().put(Headers.CONTENT_TYPE, "application/json");
                 request.getRequestHeaders().put(Headers.TRANSFER_ENCODING, "chunked");
                 try {
-                    connection.sendRequest(request, client.createClientCallback(reference, latch, Jackson2Defaults.mapper().writeValueAsString(params)));
+                    connection.sendRequest(request, client.createClientCallback(reference, latch, JacksonDefaults.mapper().writeValueAsString(params)));
                 } catch (JacksonException e) {
                     e.printStackTrace();
                 }

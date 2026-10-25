@@ -45,3 +45,11 @@ python3 scripts/verify-generated-builds.py --maven-repo /path/to/isolated/m2 --g
 ```
 
 The check uses all emitted Lambda function Maven projects. It does not build or push container images, invoke AWS, or qualify Kotlin Maven mode.
+
+### Exact-source CI qualification
+
+Consumer CI requires the latest full-core workflow for the exact resolved light-4j SHA to have completed successfully. Pending, failed or missing core qualification blocks the build. The core workflow continues to run its full reactor tests; consumers install that qualified source and run their own full tests and other prerequisite suites. `core-qualification.json` records the accepted run.
+
+The full dependency ledger is audited across all groups. Every NetworkNT release and snapshot must be source-installed, apart from the explicitly SHA-256-pinned Jackson 3 validator release. Known Jackson 2 yaml-rule and chaos-monkey releases are rejected even with a local-install marker. Jackson 2 dependencies in other groups are reported; ready migrations reject them except shared annotations.
+
+Generator config preserves legacy yes/no/on/off values through a public SnakeYAML event pass followed by Jackson parsing. It does not subclass Jackson parser internals. Keys, quoted strings, explicit string tags, numeric forms and alias handling retain their measured behavior. This two-pass normalization applies only to generator configuration.

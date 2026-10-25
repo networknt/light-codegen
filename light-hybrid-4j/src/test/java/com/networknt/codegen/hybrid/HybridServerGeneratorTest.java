@@ -1,7 +1,7 @@
 package com.networknt.codegen.hybrid;
 
 import com.networknt.codegen.Generator;
-import com.networknt.config.Jackson2Defaults;
+import com.networknt.jackson.JacksonDefaults;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -20,7 +20,7 @@ public class HybridServerGeneratorTest {
     public static String targetPath = "/tmp/hybridserver";
     public static String configName = "/serverConfig.json";
 
-    ObjectMapper mapper = Jackson2Defaults.mapper();
+    ObjectMapper mapper = JacksonDefaults.mapper();
 
     @BeforeAll
     public static void setUp() throws IOException {

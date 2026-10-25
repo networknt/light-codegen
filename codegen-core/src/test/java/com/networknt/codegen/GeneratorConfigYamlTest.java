@@ -6,6 +6,23 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class GeneratorConfigYamlTest {
     @Test
+    void publicEventNormalizationPreservesUnicodeAnchorsContainersAndEncoding() {
+        String yaml = "name: '😀'\r\nyes: on\r\nitems: [yes, {no: off}]\r\n" +
+                "a: &shared !!bool 'yes'\r\nb: *shared\r\nquoted: 'yes'\r\n";
+        var result = GeneratorConfigYaml.readTree(yaml);
+        assertEquals("😀", result.get("name").asString());
+        assertTrue(result.get("yes").booleanValue());
+        assertTrue(result.get("items").get(0).booleanValue());
+        assertFalse(result.get("items").get(1).get("no").booleanValue());
+        assertTrue(result.get("a").booleanValue());
+        assertEquals("shared", result.get("b").asString());
+        assertEquals("yes", result.get("quoted").asString());
+        assertEquals(result, GeneratorConfigYaml.readTree(yaml.getBytes(java.nio.charset.StandardCharsets.UTF_16)));
+        assertTrue(GeneratorConfigYaml.readTree("flag: yes\n---\n[broken").get("flag").booleanValue());
+        assertThrows(tools.jackson.core.JacksonException.class, () -> GeneratorConfigYaml.readTree("flag: [broken"));
+    }
+
+    @Test
     void preservesLegacyKeysNumbersAliasesAndMixedCaseStrings() {
         var input = GeneratorConfigYaml.readTree("yes: on\nno: off\noctal: 010\na: &x yes\nb: *x\n");
         assertTrue(input.get("yes").booleanValue());

@@ -1,97 +1,114 @@
 package com.networknt.codegen;
 
-import com.networknt.jackson.Jackson2Defaults;
+import com.networknt.jackson.JacksonDefaults;
 import org.snakeyaml.engine.v2.api.LoadSettings;
+import org.snakeyaml.engine.v2.api.YamlUnicodeReader;
+import org.snakeyaml.engine.v2.api.lowlevel.Parse;
 import org.snakeyaml.engine.v2.events.ScalarEvent;
-import tools.jackson.core.JacksonException;
-import tools.jackson.core.JsonToken;
-import tools.jackson.core.ObjectReadContext;
-import tools.jackson.core.io.IOContext;
-import tools.jackson.core.util.BufferRecycler;
+import org.snakeyaml.engine.v2.exceptions.YamlEngineException;
+import org.snakeyaml.engine.v2.nodes.Tag;
+import tools.jackson.core.exc.JacksonIOException;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.dataformat.yaml.YAMLFactory;
 import tools.jackson.dataformat.yaml.YAMLMapper;
-import tools.jackson.dataformat.yaml.YAMLParser;
 import tools.jackson.dataformat.yaml.YAMLReadFeature;
 import tools.jackson.dataformat.yaml.YAMLSchema;
 
-import java.io.CharArrayReader;
-import java.io.InputStream;
-import java.io.Reader;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.ArrayDeque;
 import java.util.Set;
 
-/** Configuration-only YAML 1.1 scalar compatibility; model parsing remains YAML 1.2. */
+/** Configuration-only legacy boolean compatibility using public YAML event APIs. */
 public final class GeneratorConfigYaml {
     private static final Set<String> TRUE = Set.of("yes", "Yes", "YES", "on", "On", "ON");
     private static final Set<String> FALSE = Set.of("no", "No", "NO", "off", "Off", "OFF");
-    private static final YAMLMapper MAPPER = Jackson2Defaults.configure(
-            YAMLMapper.builder(new ConfigFactory())).build();
+    private static final LoadSettings EVENTS = LoadSettings.builder()
+            .setCodePointLimit(Integer.MAX_VALUE).setUseMarks(true).build();
+    private static final YAMLMapper MAPPER = JacksonDefaults.configure(YAMLMapper.builder(
+            JacksonDefaults.configure(YAMLFactory.builder()).yamlSchema(YAMLSchema.CORE)
+                    .enable(YAMLReadFeature.PARSE_OCTAL_NUMBERS).build())).build();
 
     private GeneratorConfigYaml() { }
 
     public static JsonNode readTree(String input) {
-        return MAPPER.readTree(input);
+        return MAPPER.readTree(input == null ? null : normalizeBooleans(input));
     }
 
     public static JsonNode readTree(byte[] input) {
-        return MAPPER.readTree(input);
-    }
-
-    /** Keep Jackson's field names, alias representation, numeric nodes and limits. */
-    private static final class ConfigFactory extends YAMLFactory {
-        private static final long serialVersionUID = 1L;
-
-        private ConfigFactory() {
-            super(Jackson2Defaults.configure(YAMLFactory.builder()).yamlSchema(YAMLSchema.CORE)
-                    .enable(YAMLReadFeature.PARSE_OCTAL_NUMBERS));
-        }
-
-        @Override
-        protected YAMLParser _createParser(ObjectReadContext context, IOContext io, Reader reader) {
-            return new ConfigParser(context, io, _getBufferRecycler(),
-                    context.getStreamReadFeatures(_streamReadFeatures),
-                    context.getFormatReadFeatures(_formatReadFeatures), _loadSettings, reader);
-        }
-
-        @Override
-        protected YAMLParser _createParser(ObjectReadContext context, IOContext io, InputStream input) {
-            return _createParser(context, io, _createReader(input, null, io));
-        }
-
-        @Override
-        protected YAMLParser _createParser(ObjectReadContext context, IOContext io,
-                                           byte[] input, int offset, int length) {
-            return _createParser(context, io, _createReader(input, offset, length, null, io));
-        }
-
-        @Override
-        protected YAMLParser _createParser(ObjectReadContext context, IOContext io,
-                                           char[] input, int offset, int length, boolean recyclable) {
-            return _createParser(context, io, new CharArrayReader(input, offset, length));
+        if (input == null) return MAPPER.readTree(input);
+        try (var reader = new YamlUnicodeReader(new ByteArrayInputStream(input))) {
+            var text = new StringWriter();
+            reader.transferTo(text);
+            return readTree(text.toString());
+        } catch (IOException exception) {
+            throw JacksonIOException.construct(exception);
         }
     }
 
-    private static final class ConfigParser extends YAMLParser {
-        private ConfigParser(ObjectReadContext context, IOContext io, BufferRecycler recycler,
-                             int streamFeatures, int formatFeatures, LoadSettings settings, Reader reader) {
-            super(context, io, recycler, streamFeatures, formatFeatures, settings, reader);
-        }
-
-        @Override
-        protected Boolean _matchYAMLBoolean(String value, int length) {
-            if (TRUE.contains(value)) return Boolean.TRUE;
-            if (FALSE.contains(value)) return Boolean.FALSE;
-            return super._matchYAMLBoolean(value, length);
-        }
-
-        @Override
-        protected JsonToken _decodeScalar(ScalarEvent event) throws JacksonException {
-            JsonToken token = super._decodeScalar(event);
-            if (token == JsonToken.VALUE_STRING && event.isPlain() && event.getTag().isEmpty()) {
-                if (TRUE.contains(event.getValue())) return JsonToken.VALUE_TRUE;
-                if (FALSE.contains(event.getValue())) return JsonToken.VALUE_FALSE;
+    /** Rewrite values only; Jackson still owns keys, numeric nodes, aliases and stream limits. */
+    private static String normalizeBooleans(String input) {
+        var containers = new ArrayDeque<Container>();
+        var output = new StringBuilder(input.length());
+        int previousCharacter = 0;
+        int previousCodePoint = 0;
+        try {
+            for (var event : new Parse(EVENTS).parseString(input)) {
+                switch (event.getEventId()) {
+                    case MappingStart -> containers.push(new Container(true));
+                    case SequenceStart -> containers.push(new Container(false));
+                    case MappingEnd, SequenceEnd -> {
+                        containers.pop();
+                        completeNode(containers);
+                    }
+                    case Scalar -> {
+                        var scalar = (ScalarEvent) event;
+                        boolean key = !containers.isEmpty() && containers.peek().mapping && containers.peek().key;
+                        String value = scalar.getValue();
+                        boolean legacy = TRUE.contains(value) || FALSE.contains(value);
+                        boolean explicitBoolean = scalar.getTag().filter(Tag.BOOL.getValue()::equals).isPresent();
+                        if (!key && legacy && (explicitBoolean || scalar.isPlain() && scalar.getTag().isEmpty())) {
+                            int startPoint = scalar.getStartMark().orElseThrow().getIndex();
+                            int endPoint = scalar.getEndMark().orElseThrow().getIndex();
+                            int start = input.offsetByCodePoints(previousCharacter, startPoint - previousCodePoint);
+                            int end = input.offsetByCodePoints(start, endPoint - startPoint);
+                            output.append(input, previousCharacter, start);
+                            scalar.getAnchor().ifPresent(anchor -> output.append('&').append(anchor.getValue()).append(' '));
+                            output.append(TRUE.contains(value) ? "true" : "false");
+                            previousCharacter = end;
+                            previousCodePoint = endPoint;
+                        }
+                        completeNode(containers);
+                    }
+                    case Alias -> completeNode(containers);
+                    // readTree consumes one document; preserve its trailing-document policy.
+                    case DocumentEnd -> {
+                        output.append(input, previousCharacter, input.length());
+                        return output.toString();
+                    }
+                    default -> { }
+                }
             }
-            return token;
+        } catch (YamlEngineException exception) {
+            // Keep Jackson's normal exception type and diagnostics for malformed YAML.
+            return input;
+        }
+        return output.append(input, previousCharacter, input.length()).toString();
+    }
+
+    private static void completeNode(ArrayDeque<Container> containers) {
+        if (!containers.isEmpty() && containers.peek().mapping) {
+            containers.peek().key = !containers.peek().key;
+        }
+    }
+
+    private static final class Container {
+        private final boolean mapping;
+        private boolean key = true;
+
+        private Container(boolean mapping) {
+            this.mapping = mapping;
         }
     }
 }

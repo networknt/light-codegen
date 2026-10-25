@@ -11,6 +11,7 @@ on:
     branches: [master]
 permissions:
   contents: read
+  actions: read
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -116,6 +117,9 @@ jobs:
       - name: Build prerequisites and run full tests
         shell: bash
         env:
+          GH_TOKEN: ${{ github.token }}
+          JACKSON3_REUSE_CORE_QUALIFICATION: 1
+          JACKSON3_CORE_QUALIFICATION_REPORT: ${{ github.workspace }}/core-qualification.json
           JACKSON3_MAVEN_REPO: ${{ runner.temp }}/m2
           JACKSON3_YAML_RULE: ${{ github.workspace }}/sources/yaml-rule
           JACKSON3_HTTP_CLIENT: ${{ github.workspace }}/sources/http-client
@@ -133,44 +137,14 @@ jobs:
           mvn -f consumer/pom.xml "-Dmaven.repo.local=$JACKSON3_MAVEN_REPO" clean install 2>&1 | tee -a source-build.log
       - name: Compile generated Java and Kotlin projects
         run: python3 consumer/scripts/verify-generated-builds.py --maven-repo "${{ runner.temp }}/m2" --gradle-home "${{ runner.temp }}/gradle"
-      - name: Reject remotely resolved NetworkNT snapshots
+      - name: Audit resolved artifacts, including releases and Jackson boundaries
         env:
           SOURCE_MAVEN_REPO: ${{ runner.temp }}/m2
+        shell: bash
         run: |
           set -euo pipefail
-          mvn -B -Dstyle.color=never -f consumer/pom.xml "-Dmaven.repo.local=$SOURCE_MAVEN_REPO" dependency:tree -Dincludes=com.networknt:* 2>&1 | tee resolved-networknt.txt
-          python3 - <<'PYTHON'
-          import os
-          import re
-          from pathlib import Path
-          root = Path(os.environ['SOURCE_MAVEN_REPO']) / 'com/networknt'
-          failures = []
-          checked = set()
-          for line in Path('resolved-networknt.txt').read_text().splitlines():
-              match = re.search(r'com[.]networknt:([^: ]+):([^ ]+)', line)
-              if not match:
-                  continue
-              name, coordinates = match.groups()
-              parts = coordinates.split(':')
-              versions = [i for i, part in enumerate(parts) if part.endswith('-SNAPSHOT')]
-              if not versions:
-                  continue
-              index = versions[0]
-              version = parts[index]
-              extension = 'pom' if parts[0] == 'pom' else 'jar'
-              classifier = '-' + parts[1] if index > 1 else '-tests' if parts[0] == 'test-jar' else ''
-              artifact = name + '-' + version + classifier + '.' + extension
-              key = name + '/' + version + '/' + artifact
-              if key in checked:
-                  continue
-              checked.add(key)
-              tracking = root / name / version / '_remote.repositories'
-              if not tracking.exists() or artifact + '>=' not in tracking.read_text().splitlines():
-                  failures.append(key)
-          assert checked, 'No resolved NetworkNT snapshots found'
-          assert not failures, 'Snapshots not installed from source: ' + ', '.join(failures)
-          print('All resolved NetworkNT snapshots were installed from source:', len(checked))
-          PYTHON
+          mvn -B -Dstyle.color=never -f consumer/pom.xml "-Dmaven.repo.local=$SOURCE_MAVEN_REPO" dependency:tree 2>&1 | tee resolved-dependencies.txt
+          python3 sources/light-4j/scripts/jackson3_artifact_audit.py --repository "$SOURCE_MAVEN_REPO" --tree resolved-dependencies.txt --report artifact-audit.json --require-jackson3-only
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -179,6 +153,8 @@ jobs:
             source-build.log
             source-commits.txt
             source-refs.json
-            resolved-networknt.txt
+            resolved-dependencies.txt
+            artifact-audit.json
+            core-qualification.json
             **/target/surefire-reports/**
             **/target/*smoke*.log

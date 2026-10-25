@@ -1,7 +1,7 @@
 package com.networknt.codegen.graphql;
 
 import com.networknt.codegen.Generator;
-import com.networknt.config.Jackson2Defaults;
+import com.networknt.jackson.JacksonDefaults;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,7 +25,7 @@ public class GraphqlGeneratorTest {
     public static String configName = "/config.json";
     public static String schemaName = "/schema.graphqls";
 
-    ObjectMapper mapper = Jackson2Defaults.mapper();
+    ObjectMapper mapper = JacksonDefaults.mapper();
 
     @BeforeAll
     public static void setUp() throws IOException {

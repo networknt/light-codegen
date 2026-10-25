@@ -2,7 +2,7 @@ package com.networknt.codegen;
 
 import com.fizzed.rocker.runtime.ArrayOfByteArraysOutput;
 import com.fizzed.rocker.runtime.DefaultRockerModel;
-import com.networknt.jackson.Jackson2Defaults;
+import com.networknt.jackson.JacksonDefaults;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -32,7 +32,7 @@ import static java.io.File.separator;
 public interface Generator {
     // Jackson ObjectMapper with YAML support.
     public static ObjectMapper yamlMapper = CodegenMappers.yamlMapper();
-    public static ObjectMapper jsonMapper = Jackson2Defaults.mapper();
+    public static ObjectMapper jsonMapper = JacksonDefaults.mapper();
     // config schema cache
     Map<String, byte []> schemaMap = new HashMap<>();
 
