@@ -133,6 +133,27 @@ jobs:
           mvn -f consumer/pom.xml "-Dmaven.repo.local=$JACKSON3_MAVEN_REPO" clean install 2>&1 | tee -a source-build.log
       - name: Compile generated Java and Kotlin projects
         run: python3 consumer/scripts/verify-generated-builds.py --maven-repo "${{ runner.temp }}/m2" --gradle-home "${{ runner.temp }}/gradle"
+      - name: Reject remotely resolved NetworkNT snapshots
+        env:
+          SOURCE_MAVEN_REPO: ${{ runner.temp }}/m2
+        run: |
+          python3 - <<'PYTHON'
+          import os
+          from pathlib import Path
+          root = Path(os.environ['SOURCE_MAVEN_REPO']) / 'com/networknt'
+          failures = []
+          versions = list(root.glob('*/*-SNAPSHOT'))
+          assert versions, 'No source-installed NetworkNT snapshots found'
+          for version in versions:
+              artifact = version.parent.name + '-' + version.name
+              extension = 'jar' if (version / (artifact + '.jar')).exists() else 'pom'
+              tracking = version / '_remote.repositories'
+              local_marker = artifact + '.' + extension + '>='
+              if not tracking.exists() or local_marker not in tracking.read_text().splitlines():
+                  failures.append(str(version.relative_to(root)))
+          assert not failures, 'Snapshots not installed from source: ' + ', '.join(failures)
+          print('All resolved NetworkNT snapshots were installed from source')
+          PYTHON
       - uses: actions/upload-artifact@v4
         if: always()
         with:
