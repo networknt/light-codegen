@@ -29,3 +29,19 @@ Generated Java Maven projects target Java 25 to match the current framework bina
 Kotlin Gradle output uses build.gradle.kts/settings.gradle.kts, Gradle 9.3.1, Kotlin 2.3.20, Java 25 and jackson-module-kotlin 3.2.3. Local qualification covers this Gradle path; Kotlin Maven output is not qualified.
 
 Local qualification includes the full generator reactor and fresh generated Java main/test compilation for REST, hybrid, GraphQL, Lambda and Lambda native, plus an offline Kotlin Gradle main/test compile in isolated caches. Generated service tests were compiled but not executed. No Docker build, service deployment or AWS execution is implied.
+
+### Reproducible Jackson 3 source build
+
+`.github/workflows/jackson3-source-build.yml` builds the prerequisite source stack in a fresh isolated Maven repository and runs its full test suites. It resolves every prerequisite to a full commit SHA once and uploads `source-refs.json`, `source-commits.txt` and Surefire reports. The shared mapper policy prerequisite is light-4j #2821; merge that before its consumers.
+
+The optional `source_refs` workflow-dispatch input replays recorded full SHAs. GitHub enables dispatch only after the workflow exists on the default branch; before merge, reproduce from the recorded source checkouts locally. A green local suite is separate from a successful remote source-build run.
+
+YAML generator configuration uses `GeneratorConfigYaml.readTree` at the CLI and web input boundaries. This preserves unquoted legacy `yes/no/on/off` flags while quoted strings and JSON strings stay strings. OpenAPI documents continue to use the YAML 1.2 `Generator.yamlMapper`; external callers parsing YAML configuration should use the configuration reader.
+
+Generated Docker templates use Java 25 images to match the emitted compiler targets. CI invokes `scripts/verify-generated-builds.py`, generating fresh REST, hybrid, GraphQL, Lambda, Lambda native and Kotlin projects and compiling their main and test sources. Reproduce after the full source stack and codegen reactor have been installed:
+
+```sh
+python3 scripts/verify-generated-builds.py --maven-repo /path/to/isolated/m2 --gradle-home /path/to/isolated/gradle --offline
+```
+
+The check uses all emitted Lambda function Maven projects. It does not build or push container images, invoke AWS, or qualify Kotlin Maven mode.

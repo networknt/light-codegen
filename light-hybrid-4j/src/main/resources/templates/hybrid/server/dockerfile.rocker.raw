@@ -1,6 +1,6 @@
 @import tools.jackson.databind.JsonNode
 @args (JsonNode config, String expose)
-FROM azul/zulu-openjdk-alpine:11 as packager
+FROM azul/zulu-openjdk-alpine:25 as packager
 
 RUN { \
         java --version ; \

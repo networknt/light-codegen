@@ -1,9 +1,9 @@
 package com.networknt.codegen.handler;
 
-import tools.jackson.databind.JsonNode;
 import com.networknt.codegen.CodegenWebConfig;
 import com.networknt.codegen.FrameworkRegistry;
 import com.networknt.codegen.Generator;
+import com.networknt.codegen.GeneratorConfigYaml;
 import com.networknt.codegen.Utils;
 import com.networknt.codegen.graphql.GraphqlGenerator;
 import com.networknt.config.Config;
@@ -16,9 +16,6 @@ import com.networknt.utility.NioUtils;
 import com.networknt.utility.UuidUtil;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.HttpString;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.net.URL;
 import java.nio.ByteBuffer;
@@ -28,6 +25,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import tools.jackson.databind.JsonNode;
 
 import static java.io.File.separator;
 
@@ -115,7 +115,7 @@ public class CodegenSingleHandler implements HybridHandler {
                 if(configText.startsWith("{") || configText.startsWith("[")) {
                     config = Generator.jsonMapper.readTree(configText);
                 } else {
-                    config = Generator.yamlMapper.readTree(configText);
+                    config = GeneratorConfigYaml.readTree(configText);
                 }
             } else if("U".equals(configType)) {
                 String configUrl = (String)generatorMap.get("configUrl");
@@ -124,7 +124,7 @@ public class CodegenSingleHandler implements HybridHandler {
                 if(configUrl.endsWith(".json")) {
                     config = Generator.jsonMapper.readTree(Utils.urlToByteArray(new URL(configUrl)));
                 } else if(configUrl.endsWith(".yml") || configUrl.endsWith(".yaml")) {
-                    config = Generator.yamlMapper.readTree(Utils.urlToByteArray(new URL(configUrl)));
+                    config = GeneratorConfigYaml.readTree(Utils.urlToByteArray(new URL(configUrl)));
                 } else {
                     return NioUtils.toByteBuffer(getStatus(exchange, STATUS_INVALID_CONFIG_URL_EXTENSION, configUrl));
                 }

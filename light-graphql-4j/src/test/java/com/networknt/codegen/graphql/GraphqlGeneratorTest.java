@@ -1,12 +1,7 @@
 package com.networknt.codegen.graphql;
 
-import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.ObjectMapper;
 import com.networknt.codegen.Generator;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeAll;
-import static org.junit.jupiter.api.Assertions.*;
-
+import com.networknt.config.Jackson2Defaults;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,6 +9,12 @@ import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Map;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by steve on 01/05/17.
@@ -24,7 +25,7 @@ public class GraphqlGeneratorTest {
     public static String configName = "/config.json";
     public static String schemaName = "/schema.graphqls";
 
-    ObjectMapper mapper = com.networknt.config.Jackson2Defaults.mapper();
+    ObjectMapper mapper = Jackson2Defaults.mapper();
 
     @BeforeAll
     public static void setUp() throws IOException {
