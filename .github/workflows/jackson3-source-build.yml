@@ -137,22 +137,39 @@ jobs:
         env:
           SOURCE_MAVEN_REPO: ${{ runner.temp }}/m2
         run: |
+          set -euo pipefail
+          mvn -B -Dstyle.color=never -f consumer/pom.xml "-Dmaven.repo.local=$SOURCE_MAVEN_REPO" dependency:tree -Dincludes=com.networknt:* 2>&1 | tee resolved-networknt.txt
           python3 - <<'PYTHON'
           import os
+          import re
           from pathlib import Path
           root = Path(os.environ['SOURCE_MAVEN_REPO']) / 'com/networknt'
           failures = []
-          versions = list(root.glob('*/*-SNAPSHOT'))
-          assert versions, 'No source-installed NetworkNT snapshots found'
-          for version in versions:
-              artifact = version.parent.name + '-' + version.name
-              extension = 'jar' if (version / (artifact + '.jar')).exists() else 'pom'
-              tracking = version / '_remote.repositories'
-              local_marker = artifact + '.' + extension + '>='
-              if not tracking.exists() or local_marker not in tracking.read_text().splitlines():
-                  failures.append(str(version.relative_to(root)))
+          checked = set()
+          for line in Path('resolved-networknt.txt').read_text().splitlines():
+              match = re.search(r'com[.]networknt:([^: ]+):([^ ]+)', line)
+              if not match:
+                  continue
+              name, coordinates = match.groups()
+              parts = coordinates.split(':')
+              versions = [i for i, part in enumerate(parts) if part.endswith('-SNAPSHOT')]
+              if not versions:
+                  continue
+              index = versions[0]
+              version = parts[index]
+              extension = 'pom' if parts[0] == 'pom' else 'jar'
+              classifier = '-' + parts[1] if index > 1 else '-tests' if parts[0] == 'test-jar' else ''
+              artifact = name + '-' + version + classifier + '.' + extension
+              key = name + '/' + version + '/' + artifact
+              if key in checked:
+                  continue
+              checked.add(key)
+              tracking = root / name / version / '_remote.repositories'
+              if not tracking.exists() or artifact + '>=' not in tracking.read_text().splitlines():
+                  failures.append(key)
+          assert checked, 'No resolved NetworkNT snapshots found'
           assert not failures, 'Snapshots not installed from source: ' + ', '.join(failures)
-          print('All resolved NetworkNT snapshots were installed from source')
+          print('All resolved NetworkNT snapshots were installed from source:', len(checked))
           PYTHON
       - uses: actions/upload-artifact@v4
         if: always()
@@ -162,5 +179,6 @@ jobs:
             source-build.log
             source-commits.txt
             source-refs.json
+            resolved-networknt.txt
             **/target/surefire-reports/**
             **/target/*smoke*.log
