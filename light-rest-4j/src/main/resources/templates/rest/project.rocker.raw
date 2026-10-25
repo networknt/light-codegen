@@ -1,5 +1,5 @@
 @option discardLogicWhitespace=true
-@import com.fasterxml.jackson.databind.JsonNode
+@import tools.jackson.databind.JsonNode
 @args (JsonNode config)
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>

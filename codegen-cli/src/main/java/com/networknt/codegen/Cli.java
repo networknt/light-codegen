@@ -3,11 +3,9 @@ package com.networknt.codegen;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 import com.fizzed.rocker.runtime.RockerRuntime;
 import com.networknt.utility.NioUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -29,7 +27,7 @@ public class Cli {
     private static final String YML="yml";
     private static final String GRAPHQLS = "graphqls";
 
-    private ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory());
+    private ObjectMapper objectMapper = Generator.yamlMapper;
 
     @Parameter(names={"--framework", "-f"}, required = true,
             description = "The framework template to be used as scaffolding to the generated code.")

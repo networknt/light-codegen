@@ -1,4 +1,4 @@
-@import com.fasterxml.jackson.databind.JsonNode
+@import tools.jackson.databind.JsonNode
 @args (JsonNode config)
 plugins {
     id 'java'

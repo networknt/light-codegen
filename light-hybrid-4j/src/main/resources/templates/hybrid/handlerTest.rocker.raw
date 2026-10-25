@@ -1,4 +1,4 @@
-@import com.fasterxml.jackson.databind.JsonNode
+@import tools.jackson.databind.JsonNode
 @args (String handlerPackage, String host, String service, String body, String jsonPath, JsonNode item)
 package @handlerPackage;
 

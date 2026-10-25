@@ -1,6 +1,6 @@
 package com.networknt.codegen.hybrid;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 
 import java.io.IOException;
 import java.io.InputStream;

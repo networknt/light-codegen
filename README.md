@@ -19,3 +19,13 @@ The generator is very easy to use, and there are numeric ways to use it. Command
 If you want to know all the options with the light-codegen, you can follow the tutorials for each generator at [light-codegen tutorial](https://doc.networknt.com/tutorial/generator/).
 
 Also, there are so many [other tutorials](https://doc.networknt.com/tutorial/) that are using light-codegen to scaffold projects, and these can be found in the tutorial section.
+
+## Jackson 3 source and generated projects
+
+This source line requires the Jackson 3 light-4j/http-client/REST prerequisites, Jackson 3.2.3, and yaml-rule 4.0.0-SNAPSHOT where used. Public Generator JsonNode/ObjectMapper types now use tools.jackson; annotations retain com.fasterxml.jackson.annotation. JSON and YAML mappers preserve the measured Jackson 2 common feature policy and stream constraints. They are immutable; YAML input uses YAML 1.2 scalars. Java time and Optional support are built into Jackson 3. Classic SnakeYAML cleanup remains deferred.
+
+Generated Java Maven projects target Java 25 to match the current framework binaries. Their Jackson BOM/dependencies and json-schema-validator use the Jackson 3 line. REST uses Logstash Encoder 9.0 to avoid reintroducing Jackson 2. Lambda native dependencies now select the migrated framework snapshot rather than the older Jackson 2 snapshot. Generated project versions remain supplied by the user config.
+
+Kotlin Gradle output uses build.gradle.kts/settings.gradle.kts, Gradle 9.3.1, Kotlin 2.3.20, Java 25 and jackson-module-kotlin 3.2.3. Local qualification covers this Gradle path; Kotlin Maven output is not qualified.
+
+Local qualification includes the full generator reactor and fresh generated Java main/test compilation for REST, hybrid, GraphQL, Lambda and Lambda native, plus an offline Kotlin Gradle main/test compile in isolated caches. Generated service tests were compiled but not executed. No Docker build, service deployment or AWS execution is implied.

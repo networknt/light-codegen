@@ -1,6 +1,6 @@
 package com.networknt.codegen.handler;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 import com.networknt.codegen.CodegenWebConfig;
 import com.networknt.codegen.FrameworkRegistry;
 import com.networknt.codegen.Generator;

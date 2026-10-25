@@ -97,7 +97,7 @@
         <java.version>25</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <version.light-4j>2.4.2-SNAPSHOT</version.light-4j>
-        <version.jackson>2.22.3</version.jackson>
+        <version.jackson>3.2.3</version.jackson>
         <version.slf4j>2.0.20</version.slf4j>
         <version.jose4j>0.9.7</version.jose4j>
         <version.antlr4>4.7</version.antlr4>
@@ -112,7 +112,7 @@
         <version.hamcrest>3.0</version.hamcrest>
         <version.assertj>3.27.7</version.assertj>
         <version.hdrhistogram>2.2.2</version.hdrhistogram>
-        <version.json-schema-validator>2.0.8</version.json-schema-validator>
+        <version.json-schema-validator>3.0.8</version.json-schema-validator>
         <version.snakeyaml>2.7</version.snakeyaml>
         <version.snakeyaml-engine>3.0.1</version.snakeyaml-engine>
         <version.rocker>1.2.1</version.rocker>
@@ -154,7 +154,7 @@
                 <scope>import</scope>
             </dependency>
             <dependency>
-                <groupId>com.fasterxml.jackson</groupId>
+                <groupId>tools.jackson</groupId>
                 <artifactId>jackson-bom</artifactId>
                 <version>${version.jackson}</version>
                 <type>pom</type>

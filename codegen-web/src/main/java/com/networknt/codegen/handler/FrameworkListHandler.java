@@ -1,6 +1,6 @@
 package com.networknt.codegen.handler;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import tools.jackson.core.JacksonException;
 import com.networknt.codegen.FrameworkRegistry;
 import com.networknt.config.Config;
 import com.networknt.rpc.HybridHandler;
@@ -32,7 +32,7 @@ public class FrameworkListHandler implements HybridHandler {
         exchange.getResponseHeaders().add(new HttpString("Content-Type"), "application/json");
         try {
             result = Config.getInstance().getMapper().writeValueAsString(frameworks);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             // return empty back in this case.
         }
         return NioUtils.toByteBuffer(result);

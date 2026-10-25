@@ -1,7 +1,7 @@
 package com.networknt.codegen.graphql;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 import com.networknt.codegen.Generator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeAll;
@@ -24,7 +24,7 @@ public class GraphqlGeneratorTest {
     public static String configName = "/config.json";
     public static String schemaName = "/schema.graphqls";
 
-    ObjectMapper mapper = new ObjectMapper();
+    ObjectMapper mapper = com.networknt.config.Jackson2Defaults.mapper();
 
     @BeforeAll
     public static void setUp() throws IOException {

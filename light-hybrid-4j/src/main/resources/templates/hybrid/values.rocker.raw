@@ -1,4 +1,4 @@
-@import com.fasterxml.jackson.databind.JsonNode
+@import tools.jackson.databind.JsonNode
 @args (JsonNode config, String handlerPackage, String jsonPath, String serviceId, Boolean enableHttp, String httpPort, Boolean enableHttps, String httpsPort, Boolean enableHttp2, Boolean enableRegistry, String version)
 #--------------------------------------------------------------------------------
 # values.yml : Set of values commonly overridden in microservices

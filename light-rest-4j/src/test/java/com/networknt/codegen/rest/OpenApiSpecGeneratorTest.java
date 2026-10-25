@@ -2,7 +2,7 @@ package com.networknt.codegen.rest;
 
 import java.io.IOException;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 import com.networknt.codegen.Generator;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;

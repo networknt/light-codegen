@@ -1,8 +1,7 @@
 package com.networknt.codegen.rest;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
 import com.networknt.codegen.Generator;
 import com.networknt.codegen.Utils;
 import com.networknt.config.ConfigException;
@@ -436,7 +435,7 @@ public interface OpenApiGenerator extends Generator {
                 }
                 try {
                     result = Generator.jsonMapper.writeValueAsString(valueToBeStringify);
-                } catch (JsonProcessingException e) {
+                } catch (JacksonException e) {
                     e.printStackTrace();
                 }
                 if (result.startsWith("\"")) {
@@ -464,7 +463,7 @@ public interface OpenApiGenerator extends Generator {
                     String ex = null;
                     try {
                         ex = Generator.jsonMapper.writeValueAsString(example);
-                    } catch (JsonProcessingException e) {
+                    } catch (JacksonException e) {
                         e.printStackTrace();
                     }
                     result.put("example", ex);
@@ -480,7 +479,7 @@ public interface OpenApiGenerator extends Generator {
                             String s = null;
                             try {
                                 s = Generator.jsonMapper.writeValueAsString(e.getValue());
-                            } catch (JsonProcessingException ex) {
+                            } catch (JacksonException ex) {
                                 ex.printStackTrace();
                             }
                             result.put("example", s);

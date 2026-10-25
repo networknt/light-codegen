@@ -13,10 +13,9 @@ import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ObjectNode;
 import com.fizzed.rocker.runtime.ArrayOfByteArraysOutput;
 import com.fizzed.rocker.runtime.DefaultRockerModel;
 
@@ -32,8 +31,8 @@ import org.apache.commons.io.IOUtils;
  */
 public interface Generator {
     // Jackson ObjectMapper with YAML support.
-    public static ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory());
-    public static ObjectMapper jsonMapper = new ObjectMapper();
+    public static ObjectMapper yamlMapper = CodegenMappers.yamlMapper();
+    public static ObjectMapper jsonMapper = com.networknt.config.Jackson2Defaults.mapper();
     // config schema cache
     Map<String, byte []> schemaMap = new HashMap<>();
 

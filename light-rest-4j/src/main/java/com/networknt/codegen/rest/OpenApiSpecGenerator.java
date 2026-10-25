@@ -1,6 +1,6 @@
 package com.networknt.codegen.rest;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 import com.networknt.codegen.Generator;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ScanResult;

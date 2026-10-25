@@ -1,4 +1,4 @@
-@import com.fasterxml.jackson.databind.JsonNode
+@import tools.jackson.databind.JsonNode
 @args (JsonNode config, String expose)
 FROM openjdk:11.0.3-slim
 @if(config.get("buildMaven").booleanValue()){
