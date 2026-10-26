@@ -41,6 +41,7 @@ jobs:
           SOURCE_REFS: ${{ inputs.source_refs || '{}' }}
         shell: bash
         run: |
+          jq -e --arg core "$JACKSON3_CORE_REVISION" --argjson expected '["http-client","json-overlay","light-4j","light-aws-lambda","light-graphql-4j","light-hybrid-4j","light-lambda-native","light-rest-4j","openapi-parser","yaml-rule"]' '.["light-4j"] == $core and keys == $expected and all(.[]; type == "string" and test("^[0-9a-f]{40}$"))' consumer/ci/jackson3-source-refs.json >/dev/null
           source_refs=$(jq -c --argjson overrides "$SOURCE_REFS" '. * $overrides' consumer/ci/jackson3-source-refs.json)
           python3 qualification-policy/scripts/resolve_jackson3_consumer_sources.py \
             --core-sha "$JACKSON3_CORE_REVISION" \
