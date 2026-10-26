@@ -12,6 +12,9 @@ on:
 permissions:
   contents: read
   actions: read
+env:
+  # Proposed immutable policy pin; promotion requires review of this commit.
+  JACKSON3_QUALIFIER_REVISION: 27aed6a44a91d40a4a590be563b3d6e2fbc3415b
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -25,6 +28,11 @@ jobs:
         with:
           distribution: temurin
           java-version: '25'
+      - uses: actions/checkout@v4
+        with:
+          repository: networknt/light-4j
+          ref: ${{ env.JACKSON3_QUALIFIER_REVISION }}
+          path: qualification-policy
       - name: Resolve prerequisite commits
         id: prerequisites
         env:
@@ -50,10 +58,14 @@ jobs:
             fi
             ref=$(gh api "repos/networknt/$repo/commits/$ref" --jq .sha)
             echo "${repo//-/_}=$ref" >> "$GITHUB_OUTPUT"
+            if [[ "$repo" == light-4j ]]; then resolved_core=$ref; fi
           }
-          resolve yaml-rule
-          resolve http-client
           resolve light-4j fix-jackson3-mapper-policy
+          core_overrides=$(jq -c 'with_entries(select(.key == "yaml-rule" or .key == "http-client"))' <<< "$SOURCE_REFS")
+          python3 qualification-policy/scripts/jackson3_core_qualification.py \
+            --source-sha "$resolved_core" --overrides "$core_overrides" \
+            --trusted-revision "$JACKSON3_QUALIFIER_REVISION" \
+            --report core-qualification.json --github-output "$GITHUB_OUTPUT"
           resolve json-overlay
           resolve openapi-parser
           resolve light-rest-4j
@@ -125,13 +137,14 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           JACKSON3_REUSE_CORE_QUALIFICATION: 1
+          JACKSON3_CORE_SOURCE: ${{ github.workspace }}/sources/light-4j
           JACKSON3_CORE_QUALIFICATION_REPORT: ${{ github.workspace }}/core-qualification.json
           JACKSON3_MAVEN_REPO: ${{ runner.temp }}/m2
           JACKSON3_YAML_RULE: ${{ github.workspace }}/sources/yaml-rule
           JACKSON3_HTTP_CLIENT: ${{ github.workspace }}/sources/http-client
         run: |
           set -euo pipefail
-          bash sources/light-4j/scripts/verify-jackson3-bootstrap.sh 2>&1 | tee source-build.log
+          bash qualification-policy/scripts/verify-jackson3-bootstrap.sh 2>&1 | tee source-build.log
           mvn -f sources/yaml-rule/pom.xml "-Dmaven.repo.local=$JACKSON3_MAVEN_REPO" clean install 2>&1 | tee -a source-build.log
           mvn -f sources/json-overlay/pom.xml "-Dmaven.repo.local=$JACKSON3_MAVEN_REPO" clean install 2>&1 | tee -a source-build.log
           mvn -f sources/openapi-parser/pom.xml "-Dmaven.repo.local=$JACKSON3_MAVEN_REPO" clean install 2>&1 | tee -a source-build.log
