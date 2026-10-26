@@ -13,8 +13,9 @@ permissions:
   contents: read
   actions: read
 env:
-  # Proposed immutable policy pin; promotion requires review of this commit.
-  JACKSON3_QUALIFIER_REVISION: 27aed6a44a91d40a4a590be563b3d6e2fbc3415b
+  # Reviewed master policy and separately qualified candidate; both pins are immutable.
+  JACKSON3_QUALIFIER_REVISION: f0d2100f972eec765b2b276e7ace38922394f0a6
+  JACKSON3_CORE_REVISION: 97b2359b92ed3e1d05cac04f2da8760aa954e49d
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -33,46 +34,17 @@ jobs:
           repository: networknt/light-4j
           ref: ${{ env.JACKSON3_QUALIFIER_REVISION }}
           path: qualification-policy
-      - name: Resolve prerequisite commits
+      - name: Select qualified core and resolve remaining prerequisites
         id: prerequisites
         env:
           GH_TOKEN: ${{ github.token }}
           SOURCE_REFS: ${{ inputs.source_refs || '{}' }}
         shell: bash
         run: |
-          jq -e 'type == "object" and all(to_entries[]; (.key | IN("yaml-rule", "http-client", "light-4j", "json-overlay", "openapi-parser", "light-rest-4j", "light-hybrid-4j", "light-graphql-4j", "light-aws-lambda", "light-lambda-native")) and (.value | type == "string" and test("^[0-9a-f]{40}$")))' <<< "$SOURCE_REFS"
-          resolve() {
-            local repo=$1 branch=${2:-} ref pulls
-            ref=$(jq -r --arg repo "$repo" '.[$repo] // empty' <<< "$SOURCE_REFS")
-            if [[ -z "$ref" && -n "$branch" ]]; then
-              pulls=$(gh api --paginate --slurp "repos/networknt/$repo/pulls?head=networknt:$branch&state=all&per_page=100")
-              ref=$(jq -r '[.[][] | select(.state == "open")] | if length == 1 then .[0].head.sha elif length > 1 then error("Ambiguous source branch") else empty end' <<< "$pulls")
-              if [[ -z "$ref" ]]; then
-                jq -e '[.[][]] | length == 0 or any(.[]; .merged_at != null)' <<< "$pulls" >/dev/null || {
-                  echo "Prerequisite branch $repo:$branch was closed without merging" >&2; exit 1;
-                }
-              fi
-            fi
-            if [[ -z "$ref" ]]; then
-              ref=$(gh api "repos/networknt/$repo" --jq .default_branch)
-            fi
-            ref=$(gh api "repos/networknt/$repo/commits/$ref" --jq .sha)
-            echo "${repo//-/_}=$ref" >> "$GITHUB_OUTPUT"
-            if [[ "$repo" == light-4j ]]; then resolved_core=$ref; fi
-          }
-          resolve light-4j fix-jackson3-mapper-policy
-          core_overrides=$(jq -c 'with_entries(select(.key == "yaml-rule" or .key == "http-client"))' <<< "$SOURCE_REFS")
-          python3 qualification-policy/scripts/jackson3_core_qualification.py \
-            --source-sha "$resolved_core" --overrides "$core_overrides" \
-            --trusted-revision "$JACKSON3_QUALIFIER_REVISION" \
+          python3 qualification-policy/scripts/resolve_jackson3_consumer_sources.py \
+            --core-sha "$JACKSON3_CORE_REVISION" \
+            --repositories '{"json-overlay":null,"openapi-parser":null,"light-rest-4j":null,"light-hybrid-4j":null,"light-graphql-4j":null,"light-aws-lambda":"migrate-jackson-3","light-lambda-native":"migrate-jackson-3"}' --source-refs "$SOURCE_REFS" \
             --report core-qualification.json --github-output "$GITHUB_OUTPUT"
-          resolve json-overlay
-          resolve openapi-parser
-          resolve light-rest-4j
-          resolve light-hybrid-4j
-          resolve light-graphql-4j
-          resolve light-aws-lambda migrate-jackson-3
-          resolve light-lambda-native migrate-jackson-3
       - uses: actions/checkout@v4
         with:
           repository: networknt/yaml-rule
