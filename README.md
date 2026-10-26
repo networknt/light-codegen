@@ -48,8 +48,10 @@ The check uses all emitted Lambda function Maven projects. It does not build or 
 
 ### Exact-source CI qualification
 
-Consumer CI requires the latest full-core workflow for the exact resolved light-4j SHA to have completed successfully. Pending, failed or missing core qualification blocks the build. The core workflow continues to run its full reactor tests; consumers install that qualified source and run their own full tests and other prerequisite suites. `core-qualification.json` records the accepted run.
+Consumer CI requires retained successful full-reactor evidence for the actual checked-out light-4j SHA and the same yaml-rule/http-client source commits. Core PR CI explicitly checks out the PR head, not its merge ref. Replay dispatches cannot qualify consumers. The attempt-specific evidence artifact records the actual checkout, prerequisite SHAs and test totals. A later pending, failed or cancelled run does not invalidate earlier valid evidence. All API pages and retained attempts are considered; missing or expired evidence blocks reuse. `core-qualification.json` records the accepted run and artifact.
 
 The full dependency ledger is audited across all groups. Every NetworkNT release and snapshot must be source-installed, apart from the explicitly SHA-256-pinned Jackson 3 validator release. Known Jackson 2 yaml-rule and chaos-monkey releases are rejected even with a local-install marker. Jackson 2 dependencies in other groups are reported; ready migrations reject them except shared annotations.
 
 Generator config preserves legacy yes/no/on/off values through a public SnakeYAML event pass followed by Jackson parsing. It does not subclass Jackson parser internals. Keys, quoted strings, explicit string tags, numeric forms and alias handling retain their measured behavior. This two-pass normalization applies only to generator configuration.
+
+Generator configuration input has a 20,000,000-code-point limit, applied before parsing on both input paths. Configs with no legacy boolean candidates go directly through Jackson once. The compatibility event pass is bounded by the same input limit and validates nesting, names and scalar lengths; Jackson retains its numeric/radix rules and numeric limits. Framework-wide mapper limits are unchanged.

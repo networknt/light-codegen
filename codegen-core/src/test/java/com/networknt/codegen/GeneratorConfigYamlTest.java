@@ -6,6 +6,21 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class GeneratorConfigYamlTest {
     @Test
+    void bothParsingPathsEnforceConfigAndStreamLimits() {
+        String oversized = "#".repeat(GeneratorConfigYaml.MAX_CONFIG_CODE_POINTS + 1);
+        assertThrows(tools.jackson.core.exc.StreamConstraintsException.class,
+                () -> GeneratorConfigYaml.readTree(oversized));
+        assertThrows(tools.jackson.core.exc.StreamConstraintsException.class,
+                () -> GeneratorConfigYaml.readTree("flag: yes\n" + oversized));
+        for (String prefix : new String[]{"flag: true\n", "flag: yes\n"}) {
+            assertThrows(tools.jackson.core.exc.StreamConstraintsException.class,
+                    () -> GeneratorConfigYaml.readTree(prefix + "nested: " + "[".repeat(1001) + "0" + "]".repeat(1001)));
+            assertThrows(tools.jackson.core.exc.StreamConstraintsException.class,
+                    () -> GeneratorConfigYaml.readTree(prefix + "number: " + "1".repeat(1001)));
+        }
+    }
+
+    @Test
     void publicEventNormalizationPreservesUnicodeAnchorsContainersAndEncoding() {
         String yaml = "name: '😀'\r\nyes: on\r\nitems: [yes, {no: off}]\r\n" +
                 "a: &shared !!bool 'yes'\r\nb: *shared\r\nquoted: 'yes'\r\n";
