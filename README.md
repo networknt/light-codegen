@@ -55,3 +55,14 @@ The full dependency ledger is audited across all groups. Every NetworkNT release
 Generator config preserves legacy yes/no/on/off values through a public SnakeYAML event pass followed by Jackson parsing. It does not subclass Jackson parser internals. Keys, quoted strings, explicit string tags, numeric forms and alias handling retain their measured behavior. This two-pass normalization applies only to generator configuration.
 
 Generator configuration input has a 20,000,000-code-point limit, applied before parsing on both input paths. Configs with no legacy boolean candidates go directly through Jackson once. The compatibility event pass is bounded by the same input limit and validates nesting, names and scalar lengths; Jackson retains its numeric/radix rules and numeric limits. Framework-wide mapper limits are unchanged.
+
+
+### Updating Jackson 3 sibling source pins after merge
+
+The source manifest deliberately pins reviewed commits, including sibling PR sources. It does not follow branch heads. Later CI-only or documentation commits in a sibling do not require repeatedly chasing its head.
+
+Before merging this dependent PR, merge networknt/light-aws-lambda#168, then networknt/light-lambda-native#189. Resolve each actual merge commit through GitHub (`gh pr view <number> --repo networknt/<repo> --json mergeCommit`); do not substitute the old PR head or a moving branch. For codegen, merge and requalify the Lambda native dependency after AWS first.
+
+Fetch each sibling repository’s master and verify the selected commit is its ancestor with `git merge-base --is-ancestor <merge-sha> origin/master`. Replace the corresponding values in `ci/jackson3-source-refs.json` with those full 40-character merge SHAs in a reviewed dependent change. Keep the remaining closure pins and the qualified core/policy SHAs unchanged. Run fresh source-build CI on that dependent commit and review its resolved-source artifact before merging. A squash or merge commit must be qualified even when its runtime tree matches the earlier pin.
+
+For later sibling updates after this PR merges, use the same manifest-update PR and fresh dependent CI procedure. Never silently advance pins or infer qualification from the sibling’s own green build.
