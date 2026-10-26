@@ -41,9 +41,10 @@ jobs:
           SOURCE_REFS: ${{ inputs.source_refs || '{}' }}
         shell: bash
         run: |
+          source_refs=$(jq -c --argjson overrides "$SOURCE_REFS" '. * $overrides' consumer/ci/jackson3-source-refs.json)
           python3 qualification-policy/scripts/resolve_jackson3_consumer_sources.py \
             --core-sha "$JACKSON3_CORE_REVISION" \
-            --repositories '{"json-overlay":null,"openapi-parser":null,"light-rest-4j":null,"light-hybrid-4j":null,"light-graphql-4j":null,"light-aws-lambda":"migrate-jackson-3","light-lambda-native":"migrate-jackson-3"}' --source-refs "$SOURCE_REFS" \
+            --repositories '{"json-overlay":null,"openapi-parser":null,"light-rest-4j":null,"light-hybrid-4j":null,"light-graphql-4j":null,"light-aws-lambda":null,"light-lambda-native":null}' --source-refs "$source_refs" \
             --report core-qualification.json --github-output "$GITHUB_OUTPUT"
       - uses: actions/checkout@v4
         with:
