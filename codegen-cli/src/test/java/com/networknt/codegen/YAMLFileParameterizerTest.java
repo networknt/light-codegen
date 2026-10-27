@@ -1,6 +1,6 @@
 package com.networknt.codegen;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 
 import java.io.File;
 import java.io.FilenameFilter;

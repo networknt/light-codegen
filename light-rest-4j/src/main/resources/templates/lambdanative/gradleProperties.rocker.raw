@@ -1,8 +1,8 @@
 # Versions of Frequently used Libraries
-light4jVersion=2.1.34-SNAPSHOT
+light4jVersion=2.4.2-SNAPSHOT
 lambdaCoreVersion=1.4.0
 lambdaEventsVersion=3.16.1
-jacksonVersion=2.19.4
+jacksonVersion=3.2.3
 slf4jVersion=2.0.20
 logbackVersion=1.6.3
 junitVersion=5.11.4

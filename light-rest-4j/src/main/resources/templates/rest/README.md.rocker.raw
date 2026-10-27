@@ -1,4 +1,4 @@
-@import com.fasterxml.jackson.databind.JsonNode
+@import tools.jackson.databind.JsonNode
 @args (JsonNode config)
 # OpenAPI Light-4J Server
 @if(config.get("multipleModule").booleanValue()){

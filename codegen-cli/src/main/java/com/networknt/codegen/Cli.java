@@ -3,21 +3,19 @@ package com.networknt.codegen;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fizzed.rocker.runtime.RockerRuntime;
 import com.networknt.utility.NioUtils;
-import org.apache.commons.lang3.StringUtils;
-
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Set;
+import org.apache.commons.lang3.StringUtils;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+
 import static java.io.File.separator;
 
 /**
@@ -29,7 +27,7 @@ public class Cli {
     private static final String YML="yml";
     private static final String GRAPHQLS = "graphqls";
 
-    private ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory());
+    private ObjectMapper objectMapper = Generator.yamlMapper;
 
     @Parameter(names={"--framework", "-f"}, required = true,
             description = "The framework template to be used as scaffolding to the generated code.")
@@ -124,9 +122,9 @@ public class Cli {
                     }
                 } else if (StringUtils.equalsIgnoreCase(ext, YML)||StringUtils.equalsIgnoreCase(ext, YAML)) {
                     if (Utils.isUrl(config)) {
-                        configNode = Generator.yamlMapper.readTree(Utils.urlToByteArray(new URL(config)));
+                        configNode = GeneratorConfigYaml.readTree(Utils.urlToByteArray(new URL(config)));
                     } else {
-                        configNode = Generator.yamlMapper.readTree(Files.readAllBytes(Paths.get(config)));
+                        configNode = GeneratorConfigYaml.readTree(Files.readAllBytes(Paths.get(config)));
                     }
                 } else {
                     throw new UnsupportedOperationException("Unknown file format " + ext);

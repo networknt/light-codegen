@@ -1,0 +1,153 @@
+name: Jackson 3 source build
+on:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      source_refs:
+        description: JSON map of prerequisite repositories to full commit SHAs
+        type: string
+        default: '{}'
+  push:
+    branches: [master]
+permissions:
+  contents: read
+  actions: read
+env:
+  # Reviewed master policy and separately qualified candidate; both pins are immutable.
+  JACKSON3_QUALIFIER_REVISION: f0d2100f972eec765b2b276e7ace38922394f0a6
+  JACKSON3_CORE_REVISION: 97b2359b92ed3e1d05cac04f2da8760aa954e49d
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: consumer
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+      - uses: actions/checkout@v4
+        with:
+          repository: networknt/light-4j
+          ref: ${{ env.JACKSON3_QUALIFIER_REVISION }}
+          path: qualification-policy
+      - name: Select qualified core and resolve remaining prerequisites
+        id: prerequisites
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_REFS: ${{ inputs.source_refs || '{}' }}
+        shell: bash
+        run: |
+          jq -e --arg core "$JACKSON3_CORE_REVISION" --argjson expected '["http-client","json-overlay","light-4j","light-aws-lambda","light-graphql-4j","light-hybrid-4j","light-lambda-native","light-rest-4j","openapi-parser","yaml-rule"]' '.["light-4j"] == $core and keys == $expected and all(.[]; type == "string" and test("^[0-9a-f]{40}$"))' consumer/ci/jackson3-source-refs.json >/dev/null
+          source_refs=$(jq -c --argjson overrides "$SOURCE_REFS" '. * $overrides' consumer/ci/jackson3-source-refs.json)
+          python3 qualification-policy/scripts/resolve_jackson3_consumer_sources.py \
+            --core-sha "$JACKSON3_CORE_REVISION" \
+            --repositories '{"json-overlay":null,"openapi-parser":null,"light-rest-4j":null,"light-hybrid-4j":null,"light-graphql-4j":null,"light-aws-lambda":null,"light-lambda-native":null}' --source-refs "$source_refs" \
+            --report core-qualification.json --github-output "$GITHUB_OUTPUT"
+      - uses: actions/checkout@v4
+        with:
+          repository: networknt/yaml-rule
+          ref: ${{ steps.prerequisites.outputs.yaml_rule }}
+          path: sources/yaml-rule
+      - uses: actions/checkout@v4
+        with:
+          repository: networknt/http-client
+          ref: ${{ steps.prerequisites.outputs.http_client }}
+          path: sources/http-client
+      - uses: actions/checkout@v4
+        with:
+          repository: networknt/light-4j
+          ref: ${{ steps.prerequisites.outputs.light_4j }}
+          path: sources/light-4j
+      - uses: actions/checkout@v4
+        with:
+          repository: networknt/json-overlay
+          ref: ${{ steps.prerequisites.outputs.json_overlay }}
+          path: sources/json-overlay
+      - uses: actions/checkout@v4
+        with:
+          repository: networknt/openapi-parser
+          ref: ${{ steps.prerequisites.outputs.openapi_parser }}
+          path: sources/openapi-parser
+      - uses: actions/checkout@v4
+        with:
+          repository: networknt/light-rest-4j
+          ref: ${{ steps.prerequisites.outputs.light_rest_4j }}
+          path: sources/light-rest-4j
+      - uses: actions/checkout@v4
+        with:
+          repository: networknt/light-hybrid-4j
+          ref: ${{ steps.prerequisites.outputs.light_hybrid_4j }}
+          path: sources/light-hybrid-4j
+      - uses: actions/checkout@v4
+        with:
+          repository: networknt/light-graphql-4j
+          ref: ${{ steps.prerequisites.outputs.light_graphql_4j }}
+          path: sources/light-graphql-4j
+      - uses: actions/checkout@v4
+        with:
+          repository: networknt/light-aws-lambda
+          ref: ${{ steps.prerequisites.outputs.light_aws_lambda }}
+          path: sources/light-aws-lambda
+      - uses: actions/checkout@v4
+        with:
+          repository: networknt/light-lambda-native
+          ref: ${{ steps.prerequisites.outputs.light_lambda_native }}
+          path: sources/light-lambda-native
+      - name: Record source commits
+        shell: bash
+        run: |
+          for source in consumer sources/*; do
+            echo "$source $(git -C "$source" rev-parse HEAD)"
+          done | tee source-commits.txt
+          for source in sources/*; do
+            printf '{"key":"%s","value":"%s"}\n' "${source##*/}" "$(git -C "$source" rev-parse HEAD)"
+          done | jq -s from_entries | tee source-refs.json
+      - name: Build prerequisites and run full tests
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          JACKSON3_REUSE_CORE_QUALIFICATION: 1
+          JACKSON3_CORE_SOURCE: ${{ github.workspace }}/sources/light-4j
+          JACKSON3_CORE_QUALIFICATION_REPORT: ${{ github.workspace }}/core-qualification.json
+          JACKSON3_MAVEN_REPO: ${{ runner.temp }}/m2
+          JACKSON3_YAML_RULE: ${{ github.workspace }}/sources/yaml-rule
+          JACKSON3_HTTP_CLIENT: ${{ github.workspace }}/sources/http-client
+        run: |
+          set -euo pipefail
+          bash qualification-policy/scripts/verify-jackson3-bootstrap.sh 2>&1 | tee source-build.log
+          mvn -f sources/yaml-rule/pom.xml "-Dmaven.repo.local=$JACKSON3_MAVEN_REPO" clean install 2>&1 | tee -a source-build.log
+          mvn -f sources/json-overlay/pom.xml "-Dmaven.repo.local=$JACKSON3_MAVEN_REPO" clean install 2>&1 | tee -a source-build.log
+          mvn -f sources/openapi-parser/pom.xml "-Dmaven.repo.local=$JACKSON3_MAVEN_REPO" clean install 2>&1 | tee -a source-build.log
+          mvn -f sources/light-rest-4j/pom.xml "-Dmaven.repo.local=$JACKSON3_MAVEN_REPO" clean install 2>&1 | tee -a source-build.log
+          mvn -f sources/light-hybrid-4j/pom.xml "-Dmaven.repo.local=$JACKSON3_MAVEN_REPO" clean install 2>&1 | tee -a source-build.log
+          mvn -f sources/light-graphql-4j/pom.xml "-Dmaven.repo.local=$JACKSON3_MAVEN_REPO" clean install 2>&1 | tee -a source-build.log
+          mvn -f sources/light-aws-lambda/pom.xml "-Dmaven.repo.local=$JACKSON3_MAVEN_REPO" clean install 2>&1 | tee -a source-build.log
+          mvn -f sources/light-lambda-native/pom.xml "-Dmaven.repo.local=$JACKSON3_MAVEN_REPO" clean install 2>&1 | tee -a source-build.log
+          mvn -f consumer/pom.xml "-Dmaven.repo.local=$JACKSON3_MAVEN_REPO" clean install 2>&1 | tee -a source-build.log
+      - name: Compile generated Java and Kotlin projects
+        run: python3 consumer/scripts/verify-generated-builds.py --maven-repo "${{ runner.temp }}/m2" --gradle-home "${{ runner.temp }}/gradle"
+      - name: Audit resolved artifacts, including releases and Jackson boundaries
+        env:
+          SOURCE_MAVEN_REPO: ${{ runner.temp }}/m2
+        shell: bash
+        run: |
+          set -euo pipefail
+          mvn -B -Dstyle.color=never -f consumer/pom.xml "-Dmaven.repo.local=$SOURCE_MAVEN_REPO" dependency:tree 2>&1 | tee resolved-dependencies.txt
+          python3 sources/light-4j/scripts/jackson3_artifact_audit.py --repository "$SOURCE_MAVEN_REPO" --tree resolved-dependencies.txt --report artifact-audit.json --require-jackson3-only
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: source-build-reports
+          path: |
+            source-build.log
+            source-commits.txt
+            source-refs.json
+            resolved-dependencies.txt
+            artifact-audit.json
+            core-qualification.json
+            **/target/surefire-reports/**
+            **/target/*smoke*.log

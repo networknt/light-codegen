@@ -1,7 +1,7 @@
 package com.networknt.codegen.hybrid;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ArrayNode;
 import com.networknt.codegen.Generator;
 import com.networknt.config.JsonMapper;
 import org.apache.commons.text.StringEscapeUtils;

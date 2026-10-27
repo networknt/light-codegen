@@ -1,7 +1,9 @@
 package com.networknt.codegen;
 
+import com.fizzed.rocker.runtime.ArrayOfByteArraysOutput;
+import com.fizzed.rocker.runtime.DefaultRockerModel;
+import com.networknt.jackson.JacksonDefaults;
 import java.io.File;
-import static java.io.File.separator;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,15 +14,12 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.fizzed.rocker.runtime.ArrayOfByteArraysOutput;
-import com.fizzed.rocker.runtime.DefaultRockerModel;
-
 import org.apache.commons.io.IOUtils;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ObjectNode;
+
+import static java.io.File.separator;
 
 /**
  * This is the interface that every generator needs to implement. There are three methods
@@ -32,8 +31,8 @@ import org.apache.commons.io.IOUtils;
  */
 public interface Generator {
     // Jackson ObjectMapper with YAML support.
-    public static ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory());
-    public static ObjectMapper jsonMapper = new ObjectMapper();
+    public static ObjectMapper yamlMapper = CodegenMappers.yamlMapper();
+    public static ObjectMapper jsonMapper = JacksonDefaults.mapper();
     // config schema cache
     Map<String, byte []> schemaMap = new HashMap<>();
 

@@ -1,4 +1,4 @@
-@import com.fasterxml.jackson.databind.JsonNode
+@import tools.jackson.databind.JsonNode
 @args (JsonNode config)
 plugins {
     application
@@ -59,7 +59,7 @@ dependencies {
     compile("com.networknt", "kafka-streams", light4jVersion)
     }
     val jacksonVersion: String by project
-    compile("com.fasterxml.jackson.core", "jackson-databind", jacksonVersion)
+    compile("tools.jackson.core", "jackson-databind", jacksonVersion)
     val jsonSchemaValidatorVersion: String by project
     compile("com.networknt", "json-schema-validator", jsonSchemaValidatorVersion)
     val logbackVersion: String by project

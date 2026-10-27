@@ -1,4 +1,4 @@
-@import com.fasterxml.jackson.databind.JsonNode
+@import tools.jackson.databind.JsonNode
 @args (JsonNode config)
 plugins {
     java
@@ -6,7 +6,7 @@ plugins {
 
 dependencies {
     val jacksonVersion: String by project
-    compile("com.fasterxml.jackson.core", "jackson-databind", jacksonVersion)
+    compile("tools.jackson.core", "jackson-databind", jacksonVersion)
     val slf4jVersion: String by project
     compile("org.slf4j", "slf4j-api", slf4jVersion)
     val junitVersion: String by project

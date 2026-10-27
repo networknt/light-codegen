@@ -1,6 +1,6 @@
 package com.networknt.codegen.rest;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 import com.networknt.codegen.Generator;
 import com.networknt.config.JsonMapper;
 import com.networknt.jsonoverlay.Overlay;
@@ -105,10 +105,11 @@ public class OpenApiKotlinGenerator implements OpenApiGenerator {
                 if(buildMaven) {
                     transferMaven(targetPath);
                 } else {
-                    transfer(targetPath, "", "buildGradleKts.rocker.raw", templates.restkotlin.buildGradleKts.template(config));
+                    transfer(targetPath, "", "build.gradle.kts", templates.restkotlin.buildGradleKts.template(config));
                     transfer(targetPath, "", "gradle.properties", templates.restkotlin.gradleProperties.template(config));
-                    transfer(targetPath, "", "settingsGradleKts.rocker.raw", templates.restkotlin.settingsGradleKts.template(config));
+                    transfer(targetPath, "", "settings.gradle.kts", templates.restkotlin.settingsGradleKts.template(config));
                     transferGradle(targetPath);
+                    transfer(targetPath, "gradle/wrapper", "gradle-wrapper.properties", templates.restkotlin.gradleWrapperProperties.template());
                 }
 
                 // config

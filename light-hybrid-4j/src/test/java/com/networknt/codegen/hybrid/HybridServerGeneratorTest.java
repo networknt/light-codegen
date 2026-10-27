@@ -1,15 +1,16 @@
 package com.networknt.codegen.hybrid;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.networknt.codegen.Generator;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeAll;
-import static org.junit.jupiter.api.Assertions.*;
-
+import com.networknt.jackson.JacksonDefaults;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by steve on 28/04/17.
@@ -19,7 +20,7 @@ public class HybridServerGeneratorTest {
     public static String targetPath = "/tmp/hybridserver";
     public static String configName = "/serverConfig.json";
 
-    ObjectMapper mapper = new ObjectMapper();
+    ObjectMapper mapper = JacksonDefaults.mapper();
 
     @BeforeAll
     public static void setUp() throws IOException {

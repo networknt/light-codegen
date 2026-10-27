@@ -1,9 +1,8 @@
 package com.networknt.codegen;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectReader;
 import org.junit.jupiter.api.Test;
 
 
@@ -11,7 +10,7 @@ import org.junit.jupiter.api.Test;
  * Created by steve on 24/04/17.
  */
 public class CliTest {
-    private ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory());
+    private ObjectMapper objectMapper = Generator.yamlMapper;
     private final ObjectReader reader = objectMapper.reader();
 
     @Test

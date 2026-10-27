@@ -6,7 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 import com.networknt.codegen.rest.OpenApiLightGenerator;
 import com.networknt.config.Config;
 import org.junit.jupiter.api.Disabled;

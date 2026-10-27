@@ -1,7 +1,7 @@
 package com.networknt.codegen.graphql;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 import com.networknt.codegen.Generator;
 import com.networknt.config.ConfigException;
 

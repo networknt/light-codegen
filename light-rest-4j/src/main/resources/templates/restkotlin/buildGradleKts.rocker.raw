@@ -1,82 +1,87 @@
-@import com.fasterxml.jackson.databind.JsonNode
+@import tools.jackson.databind.JsonNode
 @args (JsonNode config)
 plugins {
     application
-    kotlin("jvm") version "1.3.50"
-    // https://github.com/ben-manes/gradle-versions-plugin
-    id("com.github.ben-manes.versions") version "0.20.0"
+    kotlin("jvm") version "2.3.20"
     // https://github.com/johnrengelman/shadow
-    id("com.github.johnrengelman.shadow") version "4.0.4"
+    id("com.gradleup.shadow") version "9.3.1"
 }
 
 application {
-    mainClassName = "com.networknt.server.Server"
+    mainClass = "com.networknt.server.Server"
+}
+
+kotlin {
+    jvmToolchain(25)
+}
+
+tasks.test {
+    useJUnitPlatform()
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-    kotlinOptions.jvmTarget = "1.8"
+    compilerOptions.jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_25)
 }
 
 dependencies {
-    compile(kotlin("stdlib"))
+    implementation(kotlin("stdlib"))
     val light4jVersion: String by project
 
     // light-4j
-    compile("com.networknt", "server", light4jVersion)
-    compile("com.networknt", "handler", light4jVersion)
-    compile("com.networknt", "info", light4jVersion)
-    compile("com.networknt", "health", light4jVersion)
-    compile("com.networknt", "metrics", light4jVersion)
-    compile("com.networknt", "traceability", light4jVersion)
-    compile("com.networknt", "correlation", light4jVersion)
-    compile("com.networknt", "encode-decode", light4jVersion)
-    compile("com.networknt", "body", light4jVersion)
-    compile("com.networknt", "audit", light4jVersion)
-    compile("com.networknt", "sanitizer", light4jVersion)
+    implementation("com.networknt", "server", light4jVersion)
+    implementation("com.networknt", "handler", light4jVersion)
+    implementation("com.networknt", "info", light4jVersion)
+    implementation("com.networknt", "health", light4jVersion)
+    implementation("com.networknt", "metrics", light4jVersion)
+    implementation("com.networknt", "traceability", light4jVersion)
+    implementation("com.networknt", "correlation", light4jVersion)
+    implementation("com.networknt", "encode-decode", light4jVersion)
+    implementation("com.networknt", "body", light4jVersion)
+    implementation("com.networknt", "audit", light4jVersion)
+    implementation("com.networknt", "sanitizer", light4jVersion)
 
-    compile("com.networknt", "openapi-parser", light4jVersion)
-    compile("com.networknt", "openapi-meta", light4jVersion)
-    compile("com.networknt", "openapi-security", light4jVersion)
-    compile("com.networknt", "openapi-validator", light4jVersion)
-    compile("com.networknt", "specification", light4jVersion)
+    implementation("com.networknt", "openapi-parser", light4jVersion)
+    implementation("com.networknt", "openapi-meta", light4jVersion)
+    implementation("com.networknt", "openapi-security", light4jVersion)
+    implementation("com.networknt", "openapi-validator", light4jVersion)
+    implementation("com.networknt", "specification", light4jVersion)
 
     // json-schema-validator
     val jsonSchemaValidatorVersion : String by project
-    compile("com.networknt", "json-schema-validator", jsonSchemaValidatorVersion)
+    implementation("com.networknt", "json-schema-validator", jsonSchemaValidatorVersion)
 
 
     // jackson json/xml/yaml serialisation
     val jacksonVersion: String by project
-    compile("com.fasterxml.jackson.core", "jackson-core", jacksonVersion)
-    compile("com.fasterxml.jackson.core", "jackson-databind", jacksonVersion)
-    compile("com.fasterxml.jackson.module", "jackson-module-kotlin", jacksonVersion)
-    compile("com.fasterxml.jackson.datatype", "jackson-datatype-jsr310", jacksonVersion)
+    implementation("tools.jackson.core", "jackson-core", jacksonVersion)
+    implementation("tools.jackson.core", "jackson-databind", jacksonVersion)
+    implementation("tools.jackson.module", "jackson-module-kotlin", jacksonVersion)
 
     // undertow version for the http core
     val undertowVersion: String by project
-    compile("io.undertow", "undertow-core", undertowVersion)
+    implementation("io.undertow", "undertow-core", undertowVersion)
 
     val logbackVersion: String by project
-    compile("ch.qos.logback", "logback-classic", logbackVersion)
+    implementation("ch.qos.logback", "logback-classic", logbackVersion)
 
     val kotlinLoggingVersion: String by project
-    compile("io.github.microutils", "kotlin-logging", kotlinLoggingVersion)
+    implementation("io.github.microutils", "kotlin-logging", kotlinLoggingVersion)
 
     @if(config.get("supportDb").booleanValue() || config.get("supportH2ForTest").booleanValue()){
     val hikaricpVersion: String by project
-    compile("com.zaxxer", "HikariCP", hikaricpVersion)
+    implementation("com.zaxxer", "HikariCP", hikaricpVersion)
     }
     @if(config.get("supportDb").booleanValue() && "oracle".equalsIgnoreCase(config.path("dbInfo").path("name").textValue())){
     val oracleVersion: String by project
-    compile("com.oracle", "ojdbc6", oracleVersion)
+    implementation("com.oracle", "ojdbc6", oracleVersion)
     }
     @if(config.get("supportDb").booleanValue() && "mysql".equalsIgnoreCase(config.path("dbInfo").path("name").textValue())){
     val mysqlVersion: String by project
-    compile("mysql", "mysql-connector-java", mysqlVersion)
+    implementation("mysql", "mysql-connector-java", mysqlVersion)
     }
     @if(config.get("supportDb").booleanValue() && "postgres".equalsIgnoreCase(config.path("dbInfo").path("name").textValue())){
     val postgresVersion: String by project
-    compile("org.postgresql", "postgresql", postgresVersion)
+    implementation("org.postgresql", "postgresql", postgresVersion)
     }
 
     // standard testing libraries
@@ -87,10 +92,10 @@ dependencies {
 
     // assertk
     val assertkVersion: String by project
-    testCompile("com.willowtreeapps.assertk", "assertk-jvm", assertkVersion)
+    testImplementation("com.willowtreeapps.assertk", "assertk-jvm", assertkVersion)
     @if(config.get("supportH2ForTest").booleanValue()){
     val h2Version: String by project
-    testCompile("com.h2database", "h2", h2Version)
+    testImplementation("com.h2database", "h2", h2Version)
     }
 
 }
@@ -98,5 +103,4 @@ dependencies {
 repositories {
     mavenLocal() // mavenLocal must be added first.
     mavenCentral()
-    jcenter()
 }
