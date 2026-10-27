@@ -2,10 +2,10 @@
   "http-client": "5ecee29dbb08d813512f5379c2e1b902d553c5d4",
   "json-overlay": "e309fd63f95317067c9b13a4bed7ac16727bfea5",
   "light-4j": "97b2359b92ed3e1d05cac04f2da8760aa954e49d",
-  "light-aws-lambda": "dddbbc9e7f6f690f8688ceac024728b6a84f4808",
+  "light-aws-lambda": "5913c7c25b01b6d384fd9c39014dc91d63dfc35e",
   "light-graphql-4j": "917a0bcf96cb308d739ae1417fbd16ec3b8d1ef8",
   "light-hybrid-4j": "a7e30f5c8fe641f2cbd9f34404a6513adb7e1c04",
-  "light-lambda-native": "af992cb093213293a42a3601c3356cc9122033ac",
+  "light-lambda-native": "5ba49d703b7b2c50bb7f2a99e359e287a541b150",
   "light-rest-4j": "a31955945036d9108b7e9bb72167415cc9cfc287",
   "openapi-parser": "9ae849056e49f7c796fe28bfe6093fbe4847cc5c",
   "yaml-rule": "c237cc3a25720f43e57bf571e25d5fa06687aa3b"
