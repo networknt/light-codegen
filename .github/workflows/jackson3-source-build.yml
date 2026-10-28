@@ -15,7 +15,7 @@ permissions:
 env:
   # Reviewed master policy and separately qualified candidate; both pins are immutable.
   JACKSON3_QUALIFIER_REVISION: f0d2100f972eec765b2b276e7ace38922394f0a6
-  JACKSON3_CORE_REVISION: 97b2359b92ed3e1d05cac04f2da8760aa954e49d
+  JACKSON3_CORE_REVISION: bc3e4b5e2719d705d58a2edeabeb9bb5009c7401
 jobs:
   test:
     runs-on: ubuntu-latest
