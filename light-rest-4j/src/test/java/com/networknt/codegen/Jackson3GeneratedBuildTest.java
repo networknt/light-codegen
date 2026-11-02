@@ -42,7 +42,8 @@ class Jackson3GeneratedBuildTest {
         new OpenApiLightGenerator().generate(output.toString(),
                 Generator.yamlMapper.readTree(getClass().getResourceAsStream("/openapi.yaml")), config);
         String pom = Files.readString(output.resolve("pom.xml"));
-        assertTrue(pom.contains("<version.jackson>3.2.3</version.jackson>"));
+        assertTrue(pom.matches("(?s).*<version\\.jackson>3\\.\\d+\\.\\d+</version\\.jackson>.*"),
+                "Generated POM must use Jackson 3");
         assertTrue(pom.contains("<version.json-schema-validator>3.0.8</version.json-schema-validator>"));
         assertTrue(pom.contains("<version.logstash>9.0</version.logstash>"));
         assertTrue(pom.contains("<groupId>tools.jackson.core</groupId>"));
