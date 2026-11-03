@@ -112,7 +112,7 @@
         <version.hamcrest>3.0</version.hamcrest>
         <version.assertj>3.27.7</version.assertj>
         <version.hdrhistogram>2.2.2</version.hdrhistogram>
-        <version.json-schema-validator>3.0.8</version.json-schema-validator>
+        <version.json-schema-validator>3.0.9</version.json-schema-validator>
         <version.snakeyaml>2.7</version.snakeyaml>
         <version.snakeyaml-engine>3.0.1</version.snakeyaml-engine>
         <version.rocker>1.2.1</version.rocker>

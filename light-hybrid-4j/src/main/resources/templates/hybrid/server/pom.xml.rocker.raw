@@ -19,7 +19,7 @@
         <version.logback>1.6.6</version.logback>
         <version.junit>6.1.3</version.junit>
         <version.undertow>2.4.4.Final</version.undertow>
-        <version.json-schema-validator>3.0.8</version.json-schema-validator>
+        <version.json-schema-validator>3.0.9</version.json-schema-validator>
         @if((config.get("supportDb") != null && config.get("supportDb").booleanValue()) || (config.get("supportH2ForTest") != null && config.get("supportH2ForTest").booleanValue())){
         <version.hikaricp>7.1.0</version.hikaricp>
         }
