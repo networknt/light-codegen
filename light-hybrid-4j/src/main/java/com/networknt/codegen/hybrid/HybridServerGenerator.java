@@ -98,8 +98,8 @@ public class HybridServerGenerator implements HybridGenerator {
         // added with #471
         transfer(targetPath, ("src.main.resources.config").replace(".", separator), "app-status.yml", templates.hybrid.appStatusYml.template());
         // values.yml file, transfer to suppress the warning message during start startup and encourage usage.
-        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "values.yml", templates.hybrid.values.template(config, handlerPackage, jsonPath, serviceId, enableHttp, httpPort, enableHttps, httpsPort, enableHttp2, enableRegistry, version));
-        transfer(targetPath, ("src.test.resources.config").replace(".", separator), "values.yml", templates.hybrid.values.template(config, handlerPackage, jsonPath, serviceId, enableHttp, "49587", enableHttps, "49588", enableHttp2, enableRegistry, version));
+        transfer(targetPath, ("src.main.resources.config").replace(".", separator), "values.yml", templates.hybrid.values.template(config, handlerPackage, jsonPath, serviceId, enableHttp, httpPort, enableHttps, httpsPort, enableHttp2, enableRegistry, version, false, kafkaConsumer));
+        transfer(targetPath, ("src.test.resources.config").replace(".", separator), "values.yml", templates.hybrid.values.template(config, handlerPackage, jsonPath, serviceId, enableHttp, "49587", enableHttps, "49588", enableHttp2, enableRegistry, version, false, kafkaConsumer));
 
         // transfer binary files without touching them.
         try (InputStream is = HybridServerGenerator.class.getResourceAsStream("/binaries/server.keystore")) {

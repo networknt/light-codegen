@@ -1,5 +1,5 @@
 @import tools.jackson.databind.JsonNode
-@args (JsonNode config, String handlerPackage, String jsonPath, String serviceId, Boolean enableHttp, String httpPort, Boolean enableHttps, String httpsPort, Boolean enableHttp2, Boolean enableRegistry, String version)
+@args (JsonNode config, String handlerPackage, String jsonPath, String serviceId, Boolean enableHttp, String httpPort, Boolean enableHttps, String httpsPort, Boolean enableHttp2, Boolean enableRegistry, String version, Boolean generateKafkaConsumerConfig, Boolean generateKafkaStreamsConfig)
 #--------------------------------------------------------------------------------
 # values.yml : Set of values commonly overridden in microservices
 #--------------------------------------------------------------------------------
@@ -66,12 +66,14 @@ service.singletons:
 }
 
 # Schema registration: false requires pre-registered schemas.
+# When upgrading, rename kafka-*.schema.registry.auto.register.schemas overrides.
+# Old override names are unused; an old false alone leaves the true default below.
 @if(config.get("kafkaProducer").booleanValue()){
 kafka-producer.auto.register.schemas: true
 }
-@if(config.get("kafkaConsumer").booleanValue()){
+@if(generateKafkaConsumerConfig){
 kafka-consumer.auto.register.schemas: true
 }
-@if(config.get("kafkaStreams").booleanValue()){
+@if(generateKafkaStreamsConfig){
 kafka-streams.auto.register.schemas: true
 }

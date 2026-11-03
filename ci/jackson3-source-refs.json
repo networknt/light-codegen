@@ -1,7 +1,7 @@
 {
   "http-client": "5650bef3439bedbf725be49d397a1acdab3e7b8e",
   "json-overlay": "ff5a04621ca19dbe35dee6731df5daea650289e3",
-  "light-4j": "6b532f1f67f5b17adc42db23023e0f68c78f89a2",
+  "light-4j": "e77455b400f4319c41eb19aaa06c780200dee48e",
   "light-aws-lambda": "784fec3afd2f12d66d167bce22dcb08859c23933",
   "light-graphql-4j": "376a79ed21b5b7c2fc64f26571aa992bed1ed888",
   "light-hybrid-4j": "ab2b8dc0b2b84ade1681cdd0d1efbc8807088e85",
