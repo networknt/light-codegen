@@ -66,3 +66,19 @@ Before merging this dependent PR, merge networknt/light-aws-lambda#168, then net
 Fetch each sibling repository’s master and verify the selected commit is its ancestor with `git merge-base --is-ancestor <merge-sha> origin/master`. Replace the corresponding values in `ci/jackson3-source-refs.json` with those full 40-character merge SHAs in a reviewed dependent change. Keep the remaining closure pins and the qualified core/policy SHAs unchanged. Run fresh source-build CI on that dependent commit and review its resolved-source artifact before merging. A squash or merge commit must be qualified even when its runtime tree matches the earlier pin.
 
 For later sibling updates after this PR merges, use the same manifest-update PR and fresh dependent CI procedure. Never silently advance pins or infer qualification from the sibling’s own green build.
+
+### Kafka schema registration migration
+
+Kafka templates use `auto.register.schemas` and the corresponding
+`kafka-producer.auto.register.schemas`, `kafka-consumer.auto.register.schemas`,
+and `kafka-streams.auto.register.schemas` overrides in `values.yml`.
+**Before regenerating or upgrading configuration**, rename existing
+`kafka-*.schema.registry.auto.register.schemas` overrides. The old override names
+are unused: an old `false` override alone leaves the canonical default `true`.
+Generated `values.yml` repeats this warning next to the canonical settings.
+Confluent ignored the old `schema.registry.auto.register.schemas` property, so
+renaming an old `false` setting makes lookup-only behavior effective. Register
+schemas before selecting canonical `false`; `true` allows automatic registration.
+Light's own Avro serializer retains its legacy fallback for handwritten old-key
+configurations, with the canonical key taking precedence. Users relying on that
+fallback must also migrate their values overrides to retain a `false` setting.

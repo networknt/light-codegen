@@ -11,8 +11,8 @@ properties:
   group.id: ${kafka-consumer.group.id:group1}
   # Schema registry url
   schema.registry.url: ${kafka-consumer.schema.registry.url:http://localhost:8081}
-  # Schema registry auto register schema indicator for streams application. If true, the first request will register the schema auto automatically.
-  schema.registry.auto.register.schemas: ${kafka-consumer.schema.registry.auto.register.schemas:true}
+  # Automatically register schemas during serialization. False requires pre-registered schemas.
+  auto.register.schemas: ${kafka-consumer.auto.register.schemas:true}
   # Schema registry client truststore location, use the following two properties only if schema registry url is https.
   # schema.registry.ssl.truststore.location: ${kafka-consumer.schema.registry.ssl.truststore.location:/config/client.truststore}
   # Schema registry client truststore password
