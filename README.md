@@ -26,8 +26,10 @@ Also, there are so many [other tutorials](https://doc.networknt.com/tutorial/) t
 Kafka templates use `auto.register.schemas` and the corresponding
 `kafka-producer.auto.register.schemas`, `kafka-consumer.auto.register.schemas`,
 and `kafka-streams.auto.register.schemas` overrides in `values.yml`.
-Rename existing `kafka-*.schema.registry.auto.register.schemas` overrides when
-regenerating or upgrading configuration; the old override names are unused.
+**Before regenerating or upgrading configuration**, rename existing
+`kafka-*.schema.registry.auto.register.schemas` overrides. The old override names
+are unused: an old `false` override alone leaves the canonical default `true`.
+Generated `values.yml` repeats this warning next to the canonical settings.
 Confluent ignored the old `schema.registry.auto.register.schemas` property, so
 renaming an old `false` setting makes lookup-only behavior effective. Register
 schemas before selecting canonical `false`; `true` allows automatic registration.
