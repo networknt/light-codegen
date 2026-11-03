@@ -66,6 +66,15 @@ class KafkaSchemaRegistrationGenerationTest {
                 String placeholder = "${" + client + ".auto.register.schemas:true}";
                 assertTrue(yaml.contains("auto.register.schemas: " + placeholder), path.toString());
                 assertFalse(yaml.contains("schema.registry.auto.register.schemas"), path.toString());
+                String tlsKey = client + ".ssl.endpoint.identification.algorithm";
+                String tlsPlaceholder = "${" + tlsKey + ":https}";
+                assertTrue(yaml.contains("# ssl.endpoint.identification.algorithm: " + tlsPlaceholder), path.toString());
+                assertFalse(yaml.contains(":algo-name}"), path.toString());
+                ConfigInjection.setDecryptedValueMap(new HashMap<>());
+                assertEquals("https", ConfigInjection.getInjectValue(tlsPlaceholder, true));
+                ConfigInjection.setDecryptedValueMap(new HashMap<>(Map.of(tlsKey, "")));
+                assertEquals("", ConfigInjection.getInjectValue(tlsPlaceholder, true));
+
                 ConfigInjection.setDecryptedValueMap(new HashMap<>(Map.of(client + ".schema.registry.auto.register.schemas", false)));
                 assertEquals(true, ConfigInjection.getInjectValue(placeholder, true), "Old names require explicit migration");
                 ConfigInjection.setDecryptedValueMap(new HashMap<>(Map.of(client + ".auto.register.schemas", false)));

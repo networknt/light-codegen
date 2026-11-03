@@ -36,3 +36,15 @@ schemas before selecting canonical `false`; `true` allows automatic registration
 Light's own Avro serializer retains its legacy fallback for handwritten old-key
 configurations, with the canonical key taking precedence. Users relying on that
 fallback must also migrate their values overrides to retain a `false` setting.
+
+## Kafka TLS endpoint identification (#265)
+
+Generated producer, consumer and Streams TLS examples now show `https` for
+`ssl.endpoint.identification.algorithm`. The lines remain commented, preserving
+Kafka's native hostname-verification default until explicitly enabled. If an
+older generated example was uncommented, replace its `algo-name` value or
+external override with `https`; `algo-name` is not a valid Java identification
+algorithm and fails a TLS handshake. The `kafka-*.ssl.endpoint.identification.algorithm`
+keys remain unchanged. An explicitly configured empty string disables hostname
+verification; it is not the default. Certificates must match the broker hostname.
+The generation regression covers both generators and all eight Kafka flag combinations.
