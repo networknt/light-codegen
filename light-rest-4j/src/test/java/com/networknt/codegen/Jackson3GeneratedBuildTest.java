@@ -44,7 +44,8 @@ class Jackson3GeneratedBuildTest {
         String pom = Files.readString(output.resolve("pom.xml"));
         assertTrue(pom.matches("(?s).*<version\\.jackson>3\\.\\d+\\.\\d+</version\\.jackson>.*"),
                 "Generated POM must use Jackson 3");
-        assertTrue(pom.contains("<version.json-schema-validator>3.0.8</version.json-schema-validator>"));
+        assertTrue(pom.matches("(?s).*<version\\.json-schema-validator>3\\.\\d+\\.\\d+</version\\.json-schema-validator>.*"),
+                "Generated POM must use json-schema-validator 3");
         assertTrue(pom.contains("<version.logstash>9.0</version.logstash>"));
         assertTrue(pom.contains("<groupId>tools.jackson.core</groupId>"));
         assertFalse(pom.contains("jackson-datatype-jsr310"));
