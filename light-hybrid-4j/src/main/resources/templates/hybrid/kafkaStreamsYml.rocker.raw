@@ -10,8 +10,8 @@ properties:
   application.id: ${kafka-streams.application.id:@artifactId}
   # Schema registry url
   schema.registry.url: ${kafka-streams.schema.registry.url:http://localhost:8081}
-  # Schema registry auto register schema indicator for streams application. If true, the first request will register the schema auto automatically.
-  schema.registry.auto.register.schemas: ${kafka-streams.schema.registry.auto.register.schemas:true}
+  # Automatically register schemas during serialization. False requires pre-registered schemas.
+  auto.register.schemas: ${kafka-streams.auto.register.schemas:true}
   # Schema registry client truststore location, use the following two properties only if schema registry url is https.
   # schema.registry.ssl.truststore.location: ${kafka-streams.schema.registry.ssl.truststore.location:/config/client.truststore}
   # Schema registry client truststore password
