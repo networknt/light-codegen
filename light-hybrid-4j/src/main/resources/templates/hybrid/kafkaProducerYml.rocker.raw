@@ -36,7 +36,7 @@ properties:
   # security.protocol: ${kafka-producer.security.protocol:SASL_SSL}
   # sasl.mechanism: ${kafka-producer.sasl.mechanism:PLAIN}
   # sasl.jaas.config: "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"${kafka-producer.username:username}\" password=\"${kafka-producer.password:password}\";"
-  # ssl.endpoint.identification.algorithm: ${kafka-producer.ssl.endpoint.identification.algorithm:algo-name}
+  # ssl.endpoint.identification.algorithm: ${kafka-producer.ssl.endpoint.identification.algorithm:https}
   # ssl.truststore.location: ${kafka-producer.ssl.truststore.location:/truststore/kafka.server.truststore.jks}
   # ssl.truststore.password: ${kafka-producer.ssl.truststore.password:changeme}
   # client.rack: ${kafka-producer.client.rack:rack-name}

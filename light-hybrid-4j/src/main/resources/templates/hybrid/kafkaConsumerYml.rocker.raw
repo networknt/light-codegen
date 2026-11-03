@@ -23,7 +23,7 @@ properties:
   # sasl.jaas.config: "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"${kafka-consumer.username:username}\" password=\"${kafka-consumer.password:password}\";"
   # ssl.truststore.location: ${kafka-consumer.ssl.truststore.location:/truststore/kafka.server.truststore.jks}
   # ssl.truststore.password: ${kafka-consumer.ssl.truststore.password:changeme}
-  # ssl.endpoint.identification.algorithm: ${kafka-consumer.ssl.endpoint.identification.algorithm:algo-name}
+  # ssl.endpoint.identification.algorithm: ${kafka-consumer.ssl.endpoint.identification.algorithm:https}
   # Apache Kafka 2.3 clients or later will then read from followers that have matching broker.rack as the specified client.rack ID.
   # client.rack: ${kafka-consumer.client.rack:rack-name}
   # basic authentication user:pass for the schema registry

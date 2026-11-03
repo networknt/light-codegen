@@ -20,7 +20,7 @@ properties:
   # security.protocol: ${kafka-streams.security.protocol:SASL_SSL}
   # sasl.mechanism: ${kafka-streams.sasl.mechanism:PLAIN}
   # sasl.jaas.config: "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"${kafka-streams.username:username}\" password=\"${kafka-streams.password:password}\";"
-  # ssl.endpoint.identification.algorithm: ${kafka-streams.ssl.endpoint.identification.algorithm:algo-name}
+  # ssl.endpoint.identification.algorithm: ${kafka-streams.ssl.endpoint.identification.algorithm:https}
   # Apache Kafka 2.3 clients or later will then read from followers that have matching broker.rack as the specified client.rack ID.
   # client.rack: ${kafka-streams.client.rack:rack-name}
   # basic authentication user:pass for the schema registry
