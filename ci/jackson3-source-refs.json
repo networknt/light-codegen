@@ -1,12 +1,12 @@
 {
-  "http-client": "5650bef3439bedbf725be49d397a1acdab3e7b8e",
-  "json-overlay": "ff5a04621ca19dbe35dee6731df5daea650289e3",
-  "light-4j": "e77455b400f4319c41eb19aaa06c780200dee48e",
-  "light-aws-lambda": "784fec3afd2f12d66d167bce22dcb08859c23933",
-  "light-graphql-4j": "376a79ed21b5b7c2fc64f26571aa992bed1ed888",
-  "light-hybrid-4j": "ab2b8dc0b2b84ade1681cdd0d1efbc8807088e85",
-  "light-lambda-native": "619c6db7ce9086365e86f59401705d324e1d2e3b",
-  "light-rest-4j": "cf49cbbf4d98d00927415c98ed27cea23f3e9474",
-  "openapi-parser": "4e994fe0c01bdc3134adc1b8c08b7905e1e5275f",
-  "yaml-rule": "de75f33381f0b4a44679da36513075e8807eb26d"
+  "http-client": "fdc96cc5d9df2475ee2129f7a70f300b5b6c0a06",
+  "json-overlay": "85e7fc322d9c65eeb2f4f9557888c6db664d382f",
+  "light-4j": "bc3e4b5e2719d705d58a2edeabeb9bb5009c7401",
+  "light-aws-lambda": "2e887ab0344b41d20a95528ba8145fb5fd34f90f",
+  "light-graphql-4j": "1bd88ea7f4667e14182f3be57561595768a32fef",
+  "light-hybrid-4j": "a06752dfe9c65acce3d531ac7a933099dc850f21",
+  "light-lambda-native": "0eba6085d5d8816f40d760d779d5d9783573c76b",
+  "light-rest-4j": "0b65bfb78a15d71060d81158d29a0276ac31fae4",
+  "openapi-parser": "d679c1f435651ec0b00c07591427d951fb98ecc2",
+  "yaml-rule": "c237cc3a25720f43e57bf571e25d5fa06687aa3b"
 }
