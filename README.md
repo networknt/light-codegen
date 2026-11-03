@@ -32,7 +32,7 @@ Local qualification includes the full generator reactor and fresh generated Java
 
 ### Reproducible Jackson 3 source build
 
-`.github/workflows/jackson3-source-build.yml` builds the prerequisite source stack in an isolated Maven repository, reuses independently qualified full-core test evidence, and runs the prerequisite and full consumer suites. It pins reviewed policy `f0d2100f972eec765b2b276e7ace38922394f0a6` and candidate `bc3e4b5e2719d705d58a2edeabeb9bb5009c7401`; yaml-rule/http-client are selected from that verified evidence. The complete prerequisite closure is pinned in `ci/jackson3-source-refs.json`, initialized from the successful source-build manifest, with reviewed updates expressed as full SHAs; no default-branch or migration-branch lookup is used. Explicit `source_refs` replay overrides are merged into that map and remain subject to core qualification. The workflow uploads `source-refs.json`, `source-commits.txt`, `core-qualification.json` and Surefire reports. Core registration and workflow-token acceptance are merged in light-4j #2825 and #2826.
+`.github/workflows/jackson3-source-build.yml` builds the prerequisite source stack in an isolated Maven repository, reuses independently qualified full-core test evidence, and runs the prerequisite and full consumer suites. It pins reviewed policy `f0d2100f972eec765b2b276e7ace38922394f0a6` and Jackson 3.1.8 candidate `6b532f1f67f5b17adc42db23023e0f68c78f89a2`; yaml-rule/http-client are selected from that verified evidence. The complete prerequisite closure is pinned in `ci/jackson3-source-refs.json`, updated to the Jackson 3.1.8 source heads, with updates expressed as full SHAs; no default-branch or migration-branch lookup is used. Explicit `source_refs` replay overrides are merged into that map and remain subject to core qualification. The workflow uploads `source-refs.json`, `source-commits.txt`, `core-qualification.json` and Surefire reports. Core registration and workflow-token acceptance are merged in light-4j #2825 and #2826.
 
 The optional `source_refs` workflow-dispatch input replays recorded full SHAs. GitHub enables dispatch only after the workflow exists on the default branch; before merge, reproduce from the recorded source checkouts locally. A green local suite is separate from a successful remote source-build run.
 
@@ -66,3 +66,31 @@ Before merging this dependent PR, merge networknt/light-aws-lambda#168, then net
 Fetch each sibling repository’s master and verify the selected commit is its ancestor with `git merge-base --is-ancestor <merge-sha> origin/master`. Replace the corresponding values in `ci/jackson3-source-refs.json` with those full 40-character merge SHAs in a reviewed dependent change. Keep the remaining closure pins and the qualified core/policy SHAs unchanged. Run fresh source-build CI on that dependent commit and review its resolved-source artifact before merging. A squash or merge commit must be qualified even when its runtime tree matches the earlier pin.
 
 For later sibling updates after this PR merges, use the same manifest-update PR and fresh dependent CI procedure. Never silently advance pins or infer qualification from the sibling’s own green build.
+
+
+### Kafka schema registration migration
+
+Kafka templates use `auto.register.schemas` and the corresponding
+`kafka-producer.auto.register.schemas`, `kafka-consumer.auto.register.schemas`,
+and `kafka-streams.auto.register.schemas` overrides in `values.yml`.
+Rename existing `kafka-*.schema.registry.auto.register.schemas` overrides when
+regenerating or upgrading configuration; the old override names are unused.
+Confluent ignored the old `schema.registry.auto.register.schemas` property, so
+renaming an old `false` setting makes lookup-only behavior effective. Register
+schemas before selecting canonical `false`; `true` allows automatic registration.
+Light's own Avro serializer retains its legacy fallback for handwritten old-key
+configurations, with the canonical key taking precedence. Users relying on that
+fallback must also migrate their values overrides to retain a `false` setting.
+
+### Jackson 3.1.8 source validation
+
+The Maven pin remains `3.1.8`. The source manifest and workflow core pin select
+the Jackson 3.1.8 downgrade commits. `GeneratorConfigYaml` uses the 3.1 public
+YAML APIs and a configuration-only event adapter for Core scalar resolution and
+legacy booleans; the general YAML mapper keeps its JSON-schema scalar behavior.
+The independently pinned qualification policy is unchanged. The selected core
+candidate still requires successful retained qualification under that policy;
+pin updates do not establish qualification. The selected core includes the Jackson 3.1.8 common-feature fixture repair.
+Full remote source-build CI and successful retained qualification under the
+pinned policy are required before merge. Local tests use cached framework
+snapshots and are separate from this prerequisite qualification.

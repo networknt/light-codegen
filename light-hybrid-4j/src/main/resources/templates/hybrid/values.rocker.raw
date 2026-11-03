@@ -64,3 +64,14 @@ service.singletons:
 - io.confluent.kafka.schemaregistry.client.SchemaRegistryClient:
   - com.networknt.kafka.common.LightSchemaRegistryClient
 }
+
+# Schema registration: false requires pre-registered schemas.
+@if(config.get("kafkaProducer").booleanValue()){
+kafka-producer.auto.register.schemas: true
+}
+@if(config.get("kafkaConsumer").booleanValue()){
+kafka-consumer.auto.register.schemas: true
+}
+@if(config.get("kafkaStreams").booleanValue()){
+kafka-streams.auto.register.schemas: true
+}

@@ -13,9 +13,9 @@ permissions:
   contents: read
   actions: read
 env:
-  # Reviewed master policy and separately qualified candidate; both pins are immutable.
+  # Reviewed policy and Jackson 3.1.8 candidate; qualification is checked before building.
   JACKSON3_QUALIFIER_REVISION: f0d2100f972eec765b2b276e7ace38922394f0a6
-  JACKSON3_CORE_REVISION: bc3e4b5e2719d705d58a2edeabeb9bb5009c7401
+  JACKSON3_CORE_REVISION: 6b532f1f67f5b17adc42db23023e0f68c78f89a2
 jobs:
   test:
     runs-on: ubuntu-latest
