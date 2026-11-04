@@ -1,5 +1,19 @@
 # Change Log
 
+## [2.5.0](https://github.com/networknt/light-codegen/tree/2.5.0) (2026-11-04)
+
+**Commits:**
+
+- upgrade to version 2.5.0 before release in 2.x branch ([6e65554](https://github.com/networknt/light-codegen/commit/6e65554be96ea9d52ec1855ed2c7962225be87b1)) (by Steve Hu)
+- Use canonical Kafka schema settings in generated configs (2.x) (#739) ([d01c7a8](https://github.com/networknt/light-codegen/commit/d01c7a85523734636aca1d4b0bfa48b45042d76f)) (by Steve Hu)
+- upgrade to version 2.5.0-SNAPSHOT after release in 2.x branch ([b408735](https://github.com/networknt/light-codegen/commit/b408735805b0cfbf79cae668b8cb09ab6087cfb9)) (by Steve Hu)
+- upgrade lambda-core to 1.4.1 from 1.4.0 ([863edb7](https://github.com/networknt/light-codegen/commit/863edb7778996baf3a03a5de8797948e0edbebcb)) (by Steve Hu)
+- upgrade encoder to 1.6.0 from 1.5.0 ([01ee4f7](https://github.com/networknt/light-codegen/commit/01ee4f7de6bd65cf4bd968fc1cc691801fe396c3)) (by Steve Hu)
+- upgrade jackson to 2.22.4 from 2.22.3 ([a547ff6](https://github.com/networknt/light-codegen/commit/a547ff6e85a2c0628fb430a11cf9184f68b205e0)) (by Steve Hu)
+- upgrade logback to 1.6.6 from 1.6.5 ([8f71b45](https://github.com/networknt/light-codegen/commit/8f71b45618d05cf4fca6f99202b0c3f73ae1c131)) (by Steve Hu)
+- upgrade maven-version to 2.23.0 from 2.22.0 ([a2bb0e7](https://github.com/networknt/light-codegen/commit/a2bb0e7a9ff858c6a660a2a6be7a0e25e44dda23)) (by Steve Hu)
+- upgrade to version 2.4.2-SNAPSHOT after release in master branch ([7723d46](https://github.com/networknt/light-codegen/commit/7723d46d6d97a7cb80fae4872faf947fa2145e15)) (by Steve Hu)
+
 ## [2.4.1](https://github.com/networknt/light-codegen/tree/2.4.1) (2026-10-11)
 
 **Commits:**
