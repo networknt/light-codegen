@@ -45,7 +45,7 @@
         <version.maven-javadoc>3.12.0</version.maven-javadoc>
         <version.maven-jar>3.5.1</version.maven-jar>
         <version.maven-shade>3.6.2</version.maven-shade>
-        <version.maven-compiler>3.8.1</version.maven-compiler>
+        <version.maven-compiler>3.16.0</version.maven-compiler>
         <version.maven-deploy>2.8.2</version.maven-deploy>
         <version.exec-maven>3.6.4</version.exec-maven>
         <version.maven-surefire>3.6.1</version.maven-surefire>
