@@ -1,5 +1,18 @@
 # Change Log
 
+## [2.5.1](https://github.com/networknt/light-codegen/tree/2.5.1) (2026-11-21)
+
+**Commits:**
+
+- upgrade to version 2.5.1 before release in 2.x branch ([b0eec3a](https://github.com/networknt/light-codegen/commit/b0eec3a6f2c695060cee239f9a9bfc397a3b31ee)) (by Steve Hu)
+- upgrade logback to 1.6.8 from 1.6.7 ([e9f2c8c](https://github.com/networknt/light-codegen/commit/e9f2c8c4bbf1b50dd58481a2b2fa0209b0ea03ec)) (by Steve Hu)
+- upgrade logback to 1.6.7 from 1.6.6 ([c54d4e0](https://github.com/networknt/light-codegen/commit/c54d4e051abea147ffdecb4f3b588fe2731988b5)) (by Steve Hu)
+- upgrade maven-version to 2.25.2 from 2.23.0 ([ec9d652](https://github.com/networknt/light-codegen/commit/ec9d652717e2087f7197dec5348def596c58a578)) (by Steve Hu)
+- upgrade exec-maven to 3.7.0 from 3.6.4 ([a2368a9](https://github.com/networknt/light-codegen/commit/a2368a9f223d1b659eb1912ffa8f463ec5771823)) (by Steve Hu)
+- upgrade maven-compiler to 3.16.0 from 3.8.1 ([98ffd9a](https://github.com/networknt/light-codegen/commit/98ffd9a56d17242a7e34927bfbbf01bfcf6ad94f)) (by Steve Hu)
+- upgrade maven-surefire to 3.6.1 from 3.6.0 ([2aff287](https://github.com/networknt/light-codegen/commit/2aff287ecdecec0d16c12d0156d1fec3ac62c6d4)) (by Steve Hu)
+- upgrade to version 2.5.1-SNAPSHOT after release in 2.x branch ([895de08](https://github.com/networknt/light-codegen/commit/895de08de7701b48ac4b1bbadb5dc5e0586d7414)) (by Steve Hu)
+
 ## [2.5.0](https://github.com/networknt/light-codegen/tree/2.5.0) (2026-11-04)
 
 **Commits:**
